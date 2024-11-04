@@ -13,3 +13,136 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+model Users {
+  id         String   @id
+  name       String
+  admin      Boolean  @default(false)
+  teacher    Boolean  @default(true)
+  created_at DateTime @default(now())
+  username   String   @unique
+
+  passwords      Passwords[]
+  users_subjects UsersSubjects[]
+  practices      Practices[]
+  registered     Practices[]     @relation("registered")
+}
+
+model Passwords {
+  id         String   @id
+  user_id    String
+  password   String
+  created_at DateTime @default(now())
+
+  user Users @relation(fields: [user_id], references: [id])
+}
+
+model Subjects {
+  id             String   @id
+  name           String
+  created_at     DateTime @default(now())
+  practice_hours Int
+  theory_hours   Int
+
+  users_subjects UsersSubjects[]
+  practices      Practices[]
+}
+
+model UsersSubjects {
+  user_id    String
+  subject_id String
+
+  user    Users    @relation(fields: [user_id], references: [id])
+  subject Subjects @relation(fields: [subject_id], references: [id])
+
+  @@id([user_id, subject_id])
+  @@map("users_subjects")
+}
+
+model Laboratories {
+  id         String   @id
+  created_at DateTime @default(now())
+  name       String   @unique
+  open_hour  Int
+  close_hour Int
+  common_use Boolean  @default(false)
+
+  practices Practices[]
+  machines  Machines[]
+}
+
+model Practices {
+  id            String   @id
+  user_id       String
+  subject_id    String
+  topic         String
+  name          String
+  software      String
+  created_at    DateTime @default(now())
+  students      Int?
+  registered_by String
+  laboratory_id String
+
+  user       Users        @relation(fields: [user_id], references: [id])
+  subject    Subjects     @relation(fields: [subject_id], references: [id])
+  registered Users        @relation("registered", fields: [registered_by], references: [id])
+  laboratory Laboratories @relation(fields: [laboratory_id], references: [id])
+}
+
+model Careers {
+  id         String     @id
+  name       String     @unique
+  created_at DateTime   @default(now())
+  students   Students[]
+}
+
+model Students {
+  nc         String   @id
+  lastname   String
+  firstname  String
+  semester   Int
+  created_at DateTime @default(now())
+  career_id  String
+
+  career Careers  @relation(fields: [career_id], references: [id])
+  visits Visits[]
+}
+
+model Visits {
+  id         String   @id
+  created_at DateTime @default(now())
+  exit_at    DateTime
+  student_nc String
+
+  student Students @relation(fields: [student_nc], references: [nc])
+}
+
+enum States {
+  AVAILABLE
+  MAINTENANCE
+}
+
+model Machines {
+  id            String   @id
+  number        Int
+  status        States   @default(AVAILABLE)
+  processor     String
+  ram           String
+  storage       String
+  description   String
+  laboratory_id String
+  created_at    DateTime @default(now())
+
+  laboratory Laboratories @relation(fields: [laboratory_id], references: [id])
+  reports    Reports[]
+}
+
+model Reports {
+  id         String    @id
+  created_at DateTime  @default(now())
+  comment    String
+  machine_id String
+  checked_at DateTime?
+
+  machine Machines @relation(fields: [machine_id], references: [id])
+}
