@@ -4,9 +4,9 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": 0,
+    "scrollTop": -224.2897,
     "scrollLeft": 0,
-    "zoomLevel": 0.88,
+    "zoomLevel": 1,
     "show": 494,
     "database": 16,
     "databaseName": "",
@@ -735,7 +735,7 @@
       "wrujk1ToHlzADhBBwGacs": {
         "id": "wrujk1ToHlzADhBBwGacs",
         "tableId": "e5UirBqrTLn5SCccmDT_p",
-        "name": "last_name",
+        "name": "lastname",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -748,14 +748,14 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730311436139,
+          "updateAt": 1730748165713,
           "createAt": 1730311416569
         }
       },
       "zkeJPRnNmrTDqTFrvt5D2": {
         "id": "zkeJPRnNmrTDqTFrvt5D2",
         "tableId": "e5UirBqrTLn5SCccmDT_p",
-        "name": "first_name",
+        "name": "firstname",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -768,7 +768,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730311446168,
+          "updateAt": 1730748171179,
           "createAt": 1730311437507
         }
       },
@@ -839,7 +839,7 @@
         "comment": "",
         "dataType": "int",
         "default": "",
-        "options": 4,
+        "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -848,7 +848,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730311865022,
+          "updateAt": 1730748063254,
           "createAt": 1730311788856
         }
       },
@@ -2826,7 +2826,7 @@
       1730311416568,
       -1,
       {
-        "name": 1730311432122,
+        "name": 1730748165712,
         "dataType": 1730311435542,
         "options(notNull)": 1730311436139
       }
@@ -2836,7 +2836,7 @@
       1730311437506,
       -1,
       {
-        "name": 1730311441892,
+        "name": 1730748171179,
         "dataType": 1730311445281,
         "options(notNull)": 1730311446167
       }
@@ -2892,7 +2892,7 @@
         "name": 1730311865021,
         "dataType": 1730311865021,
         "options(notNull)": 1730311865021,
-        "options(unique)": 1730311865021,
+        "options(unique)": 1730748063253,
         "default": 1730311865021
       }
     ],
