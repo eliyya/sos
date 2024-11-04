@@ -4,9 +4,9 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -61.2,
+    "scrollTop": 0,
     "scrollLeft": 0,
-    "zoomLevel": 1,
+    "zoomLevel": 0.88,
     "show": 494,
     "database": 16,
     "databaseName": "",
@@ -247,7 +247,7 @@
       },
       "I1hjL8qBS0131Igh1LFk1": {
         "id": "I1hjL8qBS0131Igh1LFk1",
-        "name": "subject",
+        "name": "subjects",
         "comment": "",
         "columnIds": [
           "rL4Ya_BFciZO-tkb3J4ne",
@@ -274,7 +274,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1730744000857,
+          "updateAt": 1730746854826,
           "createAt": 1730740255813
         }
       },
@@ -1875,20 +1875,20 @@
       "m-RdZpaYHxptHHoWKbJPB": {
         "id": "m-RdZpaYHxptHHoWKbJPB",
         "tableId": "I1hjL8qBS0131Igh1LFk1",
-        "name": "teory_hours",
+        "name": "theory_hours",
         "comment": "",
         "dataType": "",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
-          "widthName": 64,
+          "widthName": 71,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730744062527,
+          "updateAt": 1730746863071,
           "createAt": 1730744000857
         }
       },
@@ -3150,7 +3150,7 @@
       1730740255812,
       -1,
       {
-        "name": 1730740263706
+        "name": 1730746854825
       }
     ],
     "0UD6cGUgcTOEcH6q1hu8c": [
@@ -3627,7 +3627,8 @@
       1730744000857,
       -1,
       {
-        "name": 1730744062526
+        "name": 1730746860933,
+        "options(notNull)": 1730746863071
       }
     ],
     "wrovDJ9rGTJjasIGHkJ_P": [
