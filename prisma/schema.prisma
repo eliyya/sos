@@ -56,7 +56,6 @@ model UsersSubjects {
   subject Subjects @relation(fields: [subject_id], references: [id])
 
   @@id([user_id, subject_id])
-  @@map("users_subjects")
 }
 
 model Laboratories {
@@ -69,6 +68,7 @@ model Laboratories {
 
   practices Practices[]
   machines  Machines[]
+  Visits    Visits[]
 }
 
 model Practices {
@@ -109,12 +109,15 @@ model Students {
 }
 
 model Visits {
-  id         String   @id
-  created_at DateTime @default(now())
-  exit_at    DateTime
-  student_nc String
-
-  student Students @relation(fields: [student_nc], references: [nc])
+  id            String       @id
+  created_at    DateTime     @default(now())
+  exit_at       DateTime
+  student_nc    String
+  laboratory_id String
+  machine_id    String
+  student       Students     @relation(fields: [student_nc], references: [nc])
+  laboratory    Laboratories @relation(fields: [laboratory_id], references: [id])
+  machine       Machines     @relation(fields: [machine_id], references: [id])
 }
 
 enum States {
@@ -135,6 +138,7 @@ model Machines {
 
   laboratory Laboratories @relation(fields: [laboratory_id], references: [id])
   reports    Reports[]
+  Visits     Visits[]
 }
 
 model Reports {
