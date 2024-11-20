@@ -17,8 +17,7 @@ datasource db {
 model Users {
   id         String   @id
   name       String
-  admin      Boolean  @default(false)
-  teacher    Boolean  @default(true)
+  roles      BigInt   @default(2)
   created_at DateTime @default(now())
   username   String   @unique
 

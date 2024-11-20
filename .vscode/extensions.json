@@ -7,6 +7,7 @@
     "dineug.vuerd-vscode",
     "csstools.postcss",
     "vunguyentuan.vscode-postcss",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+    "hediet.vscode-drawio"
   ]
 }

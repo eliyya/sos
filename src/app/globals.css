@@ -22,3 +22,6 @@ body {
     display: flex;
     flex-direction: column;
 }
+input {
+    color: #0a0a0a;
+}
