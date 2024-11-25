@@ -1,12 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { HEADERS } from '@/lib/constants'
+import { NextRequest } from 'next/server'
+import { app } from '@eliyya/type-routes'
+import { MiddlewareHandler } from './lib/MiddlewareHandler'
+import { db } from './lib/db'
 
-function injectPathname(request: NextRequest, response: NextResponse) {
-    response.headers.set(HEADERS.PATHNAME, request.nextUrl.pathname)
-    return response
-}
+const handler = new MiddlewareHandler()
 
-export async function middleware(request: NextRequest) {
-    const next = () => injectPathname(request, NextResponse.next())
-    return next()
+export const config = {
+    matcher: '/((?!_next|favicon.ico|sitemap.xml|robots.txt).*)',
 }
+export const middleware = (request: NextRequest) => handler.handle(request)
+
+handler.set(app(), async ({ next, redirect }) => {
+    const lab = await db.query.Laboratory.findFirst({
+        columns: {
+            id: true,
+        },
+    })
+    if (lab) return redirect(app.labs.$id(lab.id))
+    return redirect(app.labs.null())
+})

@@ -4,8 +4,13 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider = "prisma-client-js"
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+generator drizzle {
+  provider = "drizzle-prisma-generator"
+  output   = "../src/lib/drizzle.ts"
 }
 
 datasource db {
@@ -14,29 +19,33 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Users {
+model User {
   id         String   @id
   name       String
   roles      BigInt   @default(2)
   created_at DateTime @default(now())
   username   String   @unique
 
-  passwords      Passwords[]
+  passwords      Password[]
   users_subjects UsersSubjects[]
-  practices      Practices[]
-  registered     Practices[]     @relation("registered")
+  practices      Practice[]
+  registered     Practice[]      @relation("registered")
+
+  @@map("users")
 }
 
-model Passwords {
+model Password {
   id         String   @id
   user_id    String
   password   String
   created_at DateTime @default(now())
 
-  user Users @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("passwords")
 }
 
-model Subjects {
+model Subject {
   id             String   @id
   name           String
   created_at     DateTime @default(now())
@@ -44,20 +53,22 @@ model Subjects {
   theory_hours   Int
 
   users_subjects UsersSubjects[]
-  practices      Practices[]
+  practices      Practice[]
+
+  @@map("subjects")
 }
 
 model UsersSubjects {
   user_id    String
   subject_id String
 
-  user    Users    @relation(fields: [user_id], references: [id])
-  subject Subjects @relation(fields: [subject_id], references: [id])
+  user    User    @relation(fields: [user_id], references: [id])
+  subject Subject @relation(fields: [subject_id], references: [id])
 
   @@id([user_id, subject_id])
 }
 
-model Laboratories {
+model Laboratory {
   id         String   @id
   created_at DateTime @default(now())
   name       String   @unique
@@ -65,12 +76,14 @@ model Laboratories {
   close_hour Int
   common_use Boolean  @default(false)
 
-  practices Practices[]
-  machines  Machines[]
-  Visits    Visits[]
+  practices Practice[]
+  machines  Machine[]
+  Visits    Visit[]
+
+  @@map("laboratories")
 }
 
-model Practices {
+model Practice {
   id            String   @id
   user_id       String
   subject_id    String
@@ -82,20 +95,24 @@ model Practices {
   registered_by String
   laboratory_id String
 
-  user       Users        @relation(fields: [user_id], references: [id])
-  subject    Subjects     @relation(fields: [subject_id], references: [id])
-  registered Users        @relation("registered", fields: [registered_by], references: [id])
-  laboratory Laboratories @relation(fields: [laboratory_id], references: [id])
+  user       User       @relation(fields: [user_id], references: [id])
+  subject    Subject    @relation(fields: [subject_id], references: [id])
+  registered User       @relation("registered", fields: [registered_by], references: [id])
+  laboratory Laboratory @relation(fields: [laboratory_id], references: [id])
+
+  @@map("practices")
 }
 
-model Careers {
-  id         String     @id
-  name       String     @unique
-  created_at DateTime   @default(now())
-  students   Students[]
+model Career {
+  id         String    @id
+  name       String    @unique
+  created_at DateTime  @default(now())
+  students   student[]
+
+  @@map("careers")
 }
 
-model Students {
+model student {
   nc         String   @id
   lastname   String
   firstname  String
@@ -103,20 +120,24 @@ model Students {
   created_at DateTime @default(now())
   career_id  String
 
-  career Careers  @relation(fields: [career_id], references: [id])
-  visits Visits[]
+  career Career  @relation(fields: [career_id], references: [id])
+  visits Visit[]
+
+  @@map("students")
 }
 
-model Visits {
-  id            String       @id
-  created_at    DateTime     @default(now())
+model Visit {
+  id            String     @id
+  created_at    DateTime   @default(now())
   exit_at       DateTime
   student_nc    String
   laboratory_id String
   machine_id    String
-  student       Students     @relation(fields: [student_nc], references: [nc])
-  laboratory    Laboratories @relation(fields: [laboratory_id], references: [id])
-  machine       Machines     @relation(fields: [machine_id], references: [id])
+  student       student    @relation(fields: [student_nc], references: [nc])
+  laboratory    Laboratory @relation(fields: [laboratory_id], references: [id])
+  machine       Machine    @relation(fields: [machine_id], references: [id])
+
+  @@map("visits")
 }
 
 enum States {
@@ -124,7 +145,7 @@ enum States {
   MAINTENANCE
 }
 
-model Machines {
+model Machine {
   id            String   @id
   number        Int
   status        States   @default(AVAILABLE)
@@ -135,17 +156,21 @@ model Machines {
   laboratory_id String
   created_at    DateTime @default(now())
 
-  laboratory Laboratories @relation(fields: [laboratory_id], references: [id])
-  reports    Reports[]
-  Visits     Visits[]
+  laboratory Laboratory @relation(fields: [laboratory_id], references: [id])
+  reports    Report[]
+  Visits     Visit[]
+
+  @@map("machines")
 }
 
-model Reports {
+model Report {
   id         String    @id
   created_at DateTime  @default(now())
   comment    String
   machine_id String
   checked_at DateTime?
 
-  machine Machines @relation(fields: [machine_id], references: [id])
+  machine Machine @relation(fields: [machine_id], references: [id])
+
+  @@map("reports")
 }

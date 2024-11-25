@@ -1,11 +1,20 @@
-import { PrismaClient } from '@prisma/client'
+import { drizzle } from 'drizzle-orm/vercel-postgres'
+import * as schema from '@/lib/drizzle'
+import { createClient } from '@vercel/postgres'
 
 declare const globalThis: {
-    prismaGlobal: PrismaClient
+    drizzleGlobal: ReturnType<typeof drizzle<typeof schema>>
 } & typeof global
 
-const db = globalThis.prismaGlobal ?? new PrismaClient()
+const db =
+    globalThis.drizzleGlobal ??
+    drizzle(
+        createClient({
+            connectionString: process.env.DATABASE_URL!,
+        }),
+        { schema },
+    )
 
-if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = db
+if (process.env.NODE_ENV !== 'production') globalThis.drizzleGlobal = db
 
 export { db }
