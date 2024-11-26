@@ -2,9 +2,11 @@ import { db } from '@/lib/db'
 import app from '@eliyya/type-routes'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const runtime = 'nodejs'
+
 export async function GET(request: NextRequest) {
-    const lab = await db.query.Laboratory.findFirst({
-        columns: {
+    const lab = await db.laboratory.findFirst({
+        select: {
             id: true,
         },
     })
