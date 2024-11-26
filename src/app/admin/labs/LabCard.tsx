@@ -25,7 +25,7 @@ export function LabCard(props: LabCardProps) {
             </div>
             <div className="flex gap-4 items-center">
                 <Link
-                    className="h-5 aspect-square hover:bg-gray-200 rounded-sm"
+                    className="h-5 aspect-square hover:bg-gray-200 rounded-xs"
                     href={`/admin/labs/${props.id}/tools`}
                 >
                     <svg viewBox="0 -0.5 21 21">
@@ -40,7 +40,7 @@ export function LabCard(props: LabCardProps) {
                     </svg>
                 </Link>
                 <Link
-                    className="h-5 aspect-square hover:bg-gray-200 rounded-sm"
+                    className="h-5 aspect-square hover:bg-gray-200 rounded-xs"
                     href={'/admin/labs/edit/' + props.id}
                 >
                     <svg viewBox="0 0 24 24">
@@ -48,7 +48,7 @@ export function LabCard(props: LabCardProps) {
                     </svg>
                 </Link>
                 <Link
-                    className="h-5 aspect-square hover:bg-gray-200 rounded-sm"
+                    className="h-5 aspect-square hover:bg-gray-200 rounded-xs"
                     href={'/admin/labs/delete/' + props.id}
                 >
                     <svg viewBox="0 0 26 26">

@@ -20,7 +20,7 @@ export function TeacherCard(props: TeacherCardProps) {
             </div>
             <div className="flex gap-4 items-center">
                 <Link
-                    className="h-5 aspect-square hover:bg-gray-200 rounded-sm"
+                    className="h-5 aspect-square hover:bg-gray-200 rounded-xs"
                     href={'/admin/docentes/edit/' + props.id}
                 >
                     <svg viewBox="0 0 24 24">
@@ -28,7 +28,7 @@ export function TeacherCard(props: TeacherCardProps) {
                     </svg>
                 </Link>
                 <Link
-                    className="h-5 aspect-square hover:bg-gray-200 rounded-sm"
+                    className="h-5 aspect-square hover:bg-gray-200 rounded-xs"
                     href={'/admin/docentes/delete/' + props.id}
                 >
                     <svg viewBox="0 0 26 26">
