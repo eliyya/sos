@@ -1,6 +1,6 @@
-import { drizzle } from 'drizzle-orm/vercel-postgres'
+import { drizzle } from 'drizzle-orm/postgres-js'
 import * as schema from '@/lib/drizzle'
-import { createClient } from '@vercel/postgres'
+import postgres from 'postgres'
 
 declare const globalThis: {
     drizzleGlobal: ReturnType<typeof drizzle<typeof schema>>
@@ -8,12 +8,10 @@ declare const globalThis: {
 
 const db =
     globalThis.drizzleGlobal ??
-    drizzle(
-        createClient({
-            connectionString: process.env.DATABASE_URL!,
-        }),
-        { schema },
-    )
+    drizzle({
+        client: postgres(process.env.DATABASE_URL!),
+        schema: schema,
+    })
 
 if (process.env.NODE_ENV !== 'production') globalThis.drizzleGlobal = db
 
