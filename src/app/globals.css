@@ -3,6 +3,47 @@
 @tailwind utilities;
 
 :root {
+    --background: 39 38% 97%;
+    --foreground: 20 65% 14%;
+
+    --card: 35 75% 92%;
+    --card-foreground: 20 65% 14%;
+
+    --popover: 39 38% 97%;
+    --popover-foreground: 20 65% 14%;
+
+    --primary: 24 77% 57%;
+    --primary-foreground: 39 38% 97%;
+
+    --secondary: 35 75% 83%;
+    --secondary-foreground: 20 65% 14%;
+
+    --muted: 35 75% 92%;
+    --muted-foreground: 20 40% 28%;
+
+    --accent: 35 75% 83%;
+    --accent-foreground: 20 65% 14%;
+
+    --destructive: 15 72% 48%;
+    --destructive-foreground: 39 38% 97%;
+
+    --border: 35 75% 83%;
+    --input: 35 75% 83%;
+    --ring: 24 77% 57%;
+
+    --radius: 0.5rem;
+}
+
+@layer base {
+    * {
+        border-color: hsl(var(--border)); /* Usar directamente la variable */
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+/* :root {
     --background: #ffffff;
     --foreground: #171717;
 }
@@ -21,4 +62,4 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-}
+} */
