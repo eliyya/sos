@@ -52,6 +52,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
         -   [ ] Alumnos
     -   [ ] SSG
     -   [ ] Sesiones
+-   [ ] Login
 -   [ ] Panel Principal
     -   [ ] Vista de Horario
     -   [ ] Selección de Horario
