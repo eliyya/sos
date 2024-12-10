@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { WeeklySchedule } from '@/components/shedule/weekly-schedule'
-import { Header } from '@/components/layout/header'
+import { Header } from '@/components/Header'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',

@@ -1,5 +1,5 @@
-import { DashboardHeader } from '@/components/dashboard/header'
-import { DashboardShell } from '@/components/dashboard/shell'
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
+import { DashboardShell } from '@/components/dashboard/DashboardShell'
 import { TeacherDashboard } from '@/components/teacher/dashboard'
 import { Metadata } from 'next'
 

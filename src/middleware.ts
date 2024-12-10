@@ -1,19 +1,19 @@
 import { NextRequest } from 'next/server'
 import { MiddlewareHandler } from './lib/MiddlewareHandler'
+import app from '@eliyya/type-routes'
+import { getUser } from './actions/auth'
 
 const handler = new MiddlewareHandler()
 
 export const config = {
-    matcher: '/((?!_next|favicon.ico|sitemap.xml|robots.txt).*)',
+    matcher: app.login(),
 }
 export const middleware = (request: NextRequest) => handler.handle(request)
 
-// handler.set(app(), async ({ next, redirect }) => {
-//     const lab = await db.query.Laboratory.findFirst({
-//         columns: {
-//             id: true,
-//         },
-//     })
-//     if (lab) return redirect(app.labs.$id(lab.id))
-//     return redirect(app.labs.null())
-// })
+handler.set(app.login(), async ({ next, redirect }) => {
+    console.log('asd')
+
+    const user = await getUser()
+    if (!user) return next()
+    return redirect(app())
+})

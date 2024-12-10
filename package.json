@@ -2,11 +2,15 @@
   "name": "sos",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "prisma": {
+    "seed": "node --experimental-strip-types prisma/seed.ts"
   },
   "dependencies": {
     "@eliyya/type-routes": "^1.1.2",
@@ -17,8 +21,10 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/themes": "^3.1.6",
     "@sapphire/snowflake": "^3.5.5",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jose": "^5.9.6",
     "lucide-react": "^0.468.0",
     "next": "15.0.4",
     "next-themes": "^0.4.4",
@@ -26,9 +32,11 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.54.0",
     "tailwind-merge": "^2.5.5",
+    "valibot": "^1.0.0-beta.9",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0-beta.6",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.10.1",
     "@types/react": "^19",
@@ -37,7 +45,7 @@
     "eslint-config-next": "15.0.4",
     "postcss": "^8",
     "prisma": "^6.0.1",
-    "tailwindcss": "^3.4.16",
+    "tailwindcss": "^4.0.0-beta.6",
     "typescript": "^5.7.2"
   }
 }

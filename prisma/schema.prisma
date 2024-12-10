@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 // generator drizzle {
@@ -107,12 +108,12 @@ model Career {
   id         String    @id
   name       String    @unique
   created_at DateTime  @default(now())
-  students   student[]
+  students   Student[]
 
   @@map("careers")
 }
 
-model student {
+model Student {
   nc         String   @id
   lastname   String
   firstname  String
@@ -133,7 +134,7 @@ model Visit {
   student_nc    String
   laboratory_id String
   machine_id    String
-  student       student    @relation(fields: [student_nc], references: [nc])
+  student       Student    @relation(fields: [student_nc], references: [nc])
   laboratory    Laboratory @relation(fields: [laboratory_id], references: [id])
   machine       Machine    @relation(fields: [machine_id], references: [id])
 

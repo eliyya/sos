@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { TeacherReservations } from '@/components/teacher/reservations'
-import { DashboardHeader } from '@/components/dashboard/header'
-import { DashboardShell } from '@/components/dashboard/shell'
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
+import { DashboardShell } from '@/components/dashboard/DashboardShell'
 
 export const metadata: Metadata = {
     title: 'Mis Reservas | LabReserve',
