@@ -23,6 +23,26 @@ export class BitField<T extends Record<string, bigint>> {
         throw new TypeError(`Invalid bitfield input: ${bits}`)
     }
 
+    /**
+     * Generate all posible combinations that includes the passed bit
+     * @param flags
+     * @returns bigint[]
+     * @example
+     * getCombinationsOf(1n)  // [ 1n, 3n, 5n, 7n, 9n ]
+     */
+    static getCombinationsOf(flag: bigint): bigint[] {
+        const values = Object.values(BitField.Flags)
+        let max = 0n
+        for (const value of values) {
+            if (value > max) max = value
+        }
+        const result = Array.from(
+            { length: Number((max * (max + 1n)) / 2n + 1n) },
+            (_, i) => BigInt(i),
+        ).filter(num => (num & flag) !== 0n) // Filtra los números que cumplen la condición
+        return result
+    }
+
     has(bit: keyof T | bigint | (keyof T | bigint)[]): boolean {
         const flags = (this.constructor as typeof BitField).Flags
         const resolved = Array.isArray(bit)
