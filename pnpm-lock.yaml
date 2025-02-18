@@ -12,7 +12,7 @@ importers:
         specifier: 2.0.3
         version: 2.0.3(next@15.1.6(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@eliyya/typed-css-modules':
-        specifier: ^1.0.0
+        specifier: 1.0.0
         version: 1.0.0(next@15.1.6(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@prisma/client':
         specifier: 6.3.1
@@ -150,11 +150,14 @@ importers:
         specifier: 11.0.3
         version: 11.0.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       speakeasy:
-        specifier: ^2.0.0
+        specifier: 2.0.0
         version: 2.0.0
       tailwind-merge:
         specifier: 3.0.1
         version: 3.0.1
+      zod:
+        specifier: 3.24.1
+        version: 3.24.1
     devDependencies:
       '@eslint/eslintrc':
         specifier: 3.2.0
@@ -4745,6 +4748,9 @@ packages:
   zip-stream@4.1.1:
     resolution: {integrity: sha512-9qv4rlDiopXg4E69k+vMHjNN63YFMe9sZMrdlvKnCjlCRWeCBswPPMPUfx+ipsAWq1LXHe70RcbaHdJJpS6hyQ==}
     engines: {node: '>= 10'}
+
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
 snapshots:
 
@@ -9844,3 +9850,5 @@ snapshots:
       archiver-utils: 3.0.4
       compress-commons: 4.1.2
       readable-stream: 3.6.2
+
+  zod@3.24.1: {}

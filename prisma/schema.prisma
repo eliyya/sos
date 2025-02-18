@@ -9,11 +9,6 @@ generator client {
   previewFeatures = ["typedSql"]
 }
 
-// generator drizzle {
-//   provider = "drizzle-prisma-generator"
-//   output   = "../src/lib/drizzle.ts"
-// }
-
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -21,13 +16,13 @@ datasource db {
 }
 
 model User {
-  id         String   @id
+  id         Int      @id @default(autoincrement())
   name       String
   roles      BigInt   @default(2)
   created_at DateTime @default(now())
   username   String   @unique
 
-  passwords      Password[]
+  passwords      Auth[]
   users_subjects UsersSubjects[]
   practices      Practice[]
   registered     Practice[]      @relation("registered")
@@ -35,19 +30,19 @@ model User {
   @@map("users")
 }
 
-model Password {
-  id         String   @id
-  user_id    String
+model Auth {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
   password   String
   created_at DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [id])
 
-  @@map("passwords")
+  @@map("auths")
 }
 
 model Subject {
-  id             String   @id
+  id             Int      @id @default(autoincrement())
   name           String
   created_at     DateTime @default(now())
   practice_hours Int
@@ -60,8 +55,8 @@ model Subject {
 }
 
 model UsersSubjects {
-  user_id    String
-  subject_id String
+  user_id    Int
+  subject_id Int
 
   user    User    @relation(fields: [user_id], references: [id])
   subject Subject @relation(fields: [subject_id], references: [id])
@@ -86,14 +81,14 @@ model Laboratory {
 
 model Practice {
   id            String   @id
-  user_id       String
-  subject_id    String
+  user_id       Int
+  subject_id    Int
   topic         String
   name          String
   software      String
   created_at    DateTime @default(now())
   students      Int?
-  registered_by String
+  registered_by Int
   laboratory_id String
 
   user       User       @relation(fields: [user_id], references: [id])
@@ -105,7 +100,7 @@ model Practice {
 }
 
 model Career {
-  id         String    @id
+  id         Int       @id @default(autoincrement())
   name       String    @unique
   created_at DateTime  @default(now())
   students   Student[]
@@ -119,7 +114,7 @@ model Student {
   firstname  String
   semester   Int
   created_at DateTime @default(now())
-  career_id  String
+  career_id  Int
 
   career Career  @relation(fields: [career_id], references: [id])
   visits Visit[]
@@ -128,12 +123,12 @@ model Student {
 }
 
 model Visit {
-  id            String     @id
+  id            Int        @id @default(autoincrement())
   created_at    DateTime   @default(now())
   exit_at       DateTime
   student_nc    String
   laboratory_id String
-  machine_id    String
+  machine_id    Int
   student       Student    @relation(fields: [student_nc], references: [nc])
   laboratory    Laboratory @relation(fields: [laboratory_id], references: [id])
   machine       Machine    @relation(fields: [machine_id], references: [id])
@@ -147,7 +142,7 @@ enum States {
 }
 
 model Machine {
-  id            String   @id
+  id            Int      @id @default(autoincrement())
   number        Int
   status        States   @default(AVAILABLE)
   processor     String
@@ -165,10 +160,10 @@ model Machine {
 }
 
 model Report {
-  id         String    @id
+  id         Int       @id @default(autoincrement())
   created_at DateTime  @default(now())
   comment    String
-  machine_id String
+  machine_id Int
   checked_at DateTime?
 
   machine Machine @relation(fields: [machine_id], references: [id])
