@@ -8,5 +8,9 @@
     "singleQuote": true,
     "bracketSpacing": true,
     "bracketSameLine": false,
-    "quoteProps": "as-needed"
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": true,
+    "plugins": [
+        "prettier-plugin-tailwindcss"
+    ]
 }

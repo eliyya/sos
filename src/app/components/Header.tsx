@@ -7,15 +7,15 @@ import { RoleBitField } from '@/lib/RoleBitField'
 
 export function Header() {
     return (
-        <header className="bg-primary/10 py-6">
-            <nav className="container mx-auto px-4 flex justify-between items-center">
-                <Link href={app()} className="flex items-center gap-2">
-                    <BeakerIcon className="h-8 w-8 text-primary" />
-                    <span className="text-1xl font-bold text-foreground">
+        <header className='bg-primary/10 py-6'>
+            <nav className='container mx-auto flex items-center justify-between px-4'>
+                <Link href={app()} className='flex items-center gap-2'>
+                    <BeakerIcon className='text-primary h-8 w-8' />
+                    <span className='text-1xl text-foreground font-bold'>
                         SOS
                     </span>
                 </Link>
-                <div className="flex gap-4">
+                <div className='flex gap-4'>
                     <Suspense>
                         <HeaderLogin />
                     </Suspense>

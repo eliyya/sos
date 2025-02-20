@@ -1,29 +1,44 @@
-import type { Metadata } from 'next'
 import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from '@/components/ui/toester'
+import { ThemeProvider } from 'next-themes'
+import { Inter } from 'next/font/google'
+import type { Metadata } from 'next'
+import { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
+import { ToastProvider } from '@/components/Toast'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
+import { Provider } from 'jotai'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'SOS',
     description: 'sistemas de reserva',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
-}: Readonly<{
-    children: React.ReactNode
-}>) {
+}: {
+    children: ReactNode
+}) {
+    const locale = await getLocale()
+    const messages = await getMessages()
     return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={`antialiased`}>
+        <html lang={locale} suppressHydrationWarning>
+            <body
+                className={cn('flex min-h-screen flex-col', inter.className)}
+                suppressContentEditableWarning
+            >
                 <ThemeProvider
-                    attribute="class"
-                    defaultTheme="light"
+                    attribute='class'
+                    defaultTheme='light'
                     enableSystem
-                    disableTransitionOnChange
                 >
-                    {children}
-                    <Toaster />
+                    <ToastProvider>
+                        <NextIntlClientProvider messages={messages}>
+                            <Provider>{children}</Provider>
+                        </NextIntlClientProvider>
+                    </ToastProvider>
                 </ThemeProvider>
             </body>
         </html>

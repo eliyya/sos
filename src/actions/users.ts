@@ -99,7 +99,8 @@ export async function login({
             .sign(JWT_SECRET)
         ;(await cookies()).set(COOKIES.SESSION, token, {
             expires,
-            path: app(),
+            path: '/',
+            httpOnly: true,
         })
 
         const p = UserSchema.safeParse(user)
