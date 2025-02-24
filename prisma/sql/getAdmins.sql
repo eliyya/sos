@@ -1,3 +1,3 @@
 SELECT * 
     FROM "users"
-    WHERE ("roles" & 1) != 0
+    WHERE ("role" & 1) != 0

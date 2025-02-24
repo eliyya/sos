@@ -18,14 +18,17 @@ datasource db {
 model User {
   id         Int      @id @default(autoincrement())
   name       String
-  roles      BigInt   @default(2)
+  role       BigInt   @default(2)
   created_at DateTime @default(now())
   username   String   @unique
 
-  passwords      Auth[]
-  users_subjects UsersSubjects[]
-  practices      Practice[]
-  registered     Practice[]      @relation("registered")
+  auths              Auth[]
+  practices          Practice[]
+  practice_registers Practice[] @relation("practice_registers")
+  classes            Class[]
+  sessions           Session[]
+  issues             Issue[]
+  comments           Comment[]
 
   @@map("users")
 }
@@ -35,6 +38,7 @@ model Auth {
   user_id    Int
   password   String
   created_at DateTime @default(now())
+  totp       String?
 
   user User @relation(fields: [user_id], references: [id])
 
@@ -48,24 +52,44 @@ model Subject {
   practice_hours Int
   theory_hours   Int
 
-  users_subjects UsersSubjects[]
-  practices      Practice[]
+  practices Practice[]
+  classes   Class[]
 
   @@map("subjects")
 }
 
-model UsersSubjects {
+model Session {
+  id         Int      @id @default(autoincrement())
   user_id    Int
+  ip         String
+  expires_at DateTime
+  created_at DateTime @default(now())
+  browser    String
+  os         String
+  device     String
+  model      String
+  secret     String   @unique
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("sessions")
+}
+
+model Class {
+  id         Int @id @default(autoincrement())
   subject_id Int
+  teacher_id Int
+  career_id  Int
 
-  user    User    @relation(fields: [user_id], references: [id])
   subject Subject @relation(fields: [subject_id], references: [id])
+  teacher User    @relation(fields: [teacher_id], references: [id])
+  career  Career  @relation(fields: [career_id], references: [id])
 
-  @@id([user_id, subject_id])
+  @@map("classes")
 }
 
 model Laboratory {
-  id         String   @id
+  id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   name       String   @unique
   open_hour  Int
@@ -74,29 +98,49 @@ model Laboratory {
 
   practices Practice[]
   machines  Machine[]
-  Visits    Visit[]
+  visits    Visit[]
 
   @@map("laboratories")
 }
 
 model Practice {
-  id            String   @id
+  id            Int      @id @default(autoincrement())
   user_id       Int
   subject_id    Int
   topic         String
   name          String
-  software      String
   created_at    DateTime @default(now())
   students      Int?
   registered_by Int
-  laboratory_id String
+  laboratory_id Int
 
-  user       User       @relation(fields: [user_id], references: [id])
-  subject    Subject    @relation(fields: [subject_id], references: [id])
-  registered User       @relation("registered", fields: [registered_by], references: [id])
-  laboratory Laboratory @relation(fields: [laboratory_id], references: [id])
+  user               User               @relation(fields: [user_id], references: [id])
+  subject            Subject            @relation(fields: [subject_id], references: [id])
+  registered_by_user User               @relation("practice_registers", fields: [registered_by], references: [id])
+  laboratory         Laboratory         @relation(fields: [laboratory_id], references: [id])
+  software_practices SoftwarePractice[]
 
   @@map("practices")
+}
+
+model Software {
+  id                 Int                @id @default(autoincrement())
+  name               String
+  software_practices SoftwarePractice[]
+  software_machines  SoftwareMachine[]
+
+  @@map("software")
+}
+
+model SoftwarePractice {
+  software_id Int
+  practice_id Int
+
+  software Software @relation(fields: [software_id], references: [id])
+  practice Practice @relation(fields: [practice_id], references: [id])
+
+  @@id([software_id, practice_id])
+  @@map("software_practices")
 }
 
 model Career {
@@ -104,6 +148,7 @@ model Career {
   name       String    @unique
   created_at DateTime  @default(now())
   students   Student[]
+  classes    Class[]
 
   @@map("careers")
 }
@@ -127,7 +172,7 @@ model Visit {
   created_at    DateTime   @default(now())
   exit_at       DateTime
   student_nc    String
-  laboratory_id String
+  laboratory_id Int
   machine_id    Int
   student       Student    @relation(fields: [student_nc], references: [nc])
   laboratory    Laboratory @relation(fields: [laboratory_id], references: [id])
@@ -149,24 +194,52 @@ model Machine {
   ram           String
   storage       String
   description   String
-  laboratory_id String
+  laboratory_id Int
   created_at    DateTime @default(now())
 
-  laboratory Laboratory @relation(fields: [laboratory_id], references: [id])
-  reports    Report[]
-  Visits     Visit[]
+  laboratory        Laboratory        @relation(fields: [laboratory_id], references: [id])
+  issues            Issue[]
+  visits            Visit[]
+  software_machines SoftwareMachine[]
 
   @@map("machines")
 }
 
-model Report {
+model SoftwareMachine {
+  software_id Int
+  machine_id  Int
+
+  software Software @relation(fields: [software_id], references: [id])
+  machine  Machine  @relation(fields: [machine_id], references: [id])
+
+  @@id([software_id, machine_id])
+  @@map("software_machines")
+}
+
+model Issue {
   id         Int       @id @default(autoincrement())
   created_at DateTime  @default(now())
   comment    String
   machine_id Int
-  checked_at DateTime?
+  closed_at  DateTime?
+  user_id    Int
 
-  machine Machine @relation(fields: [machine_id], references: [id])
+  machine  Machine   @relation(fields: [machine_id], references: [id])
+  user     User      @relation(fields: [user_id], references: [id])
+  comments Comment[]
 
-  @@map("reports")
+  @@map("issue")
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  content    String
+  user_id    Int
+  issue_id   Int
+
+  user  User  @relation(fields: [user_id], references: [id])
+  issue Issue @relation(fields: [issue_id], references: [id])
+
+  @@map("comment")
 }
