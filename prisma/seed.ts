@@ -16,8 +16,8 @@ await db.user.create({
     data: {
         name: process.env.FIRST_ADMIN_NAME,
         username: process.env.FIRST_ADMIN_USERNAME,
-        roles: 1,
-        passwords: {
+        role: 1,
+        auths: {
             create: {
                 password: await hash(process.env.FIRST_ADMIN_PASSWORD, 10),
             },

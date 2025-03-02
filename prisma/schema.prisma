@@ -81,9 +81,10 @@ model Class {
   teacher_id Int
   career_id  Int
 
-  subject Subject @relation(fields: [subject_id], references: [id])
-  teacher User    @relation(fields: [teacher_id], references: [id])
-  career  Career  @relation(fields: [career_id], references: [id])
+  subject        Subject          @relation(fields: [subject_id], references: [id])
+  teacher        User             @relation(fields: [teacher_id], references: [id])
+  career         Career           @relation(fields: [career_id], references: [id])
+  StudentClasses StudentClasses[]
 
   @@map("classes")
 }
@@ -161,8 +162,9 @@ model Student {
   created_at DateTime @default(now())
   career_id  Int
 
-  career Career  @relation(fields: [career_id], references: [id])
-  visits Visit[]
+  career         Career           @relation(fields: [career_id], references: [id])
+  visits         Visit[]
+  StudentClasses StudentClasses[]
 
   @@map("students")
 }
@@ -242,4 +244,15 @@ model Comment {
   issue Issue @relation(fields: [issue_id], references: [id])
 
   @@map("comment")
+}
+
+model StudentClasses {
+  student_nc String
+  class_id   Int
+
+  student Student @relation(fields: [student_nc], references: [nc])
+  class   Class   @relation(fields: [class_id], references: [id])
+
+  @@id([student_nc, class_id])
+  @@map("student_classes")
 }
