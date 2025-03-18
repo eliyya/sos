@@ -22,18 +22,17 @@ class NextError extends Error {
     }
 }
 
-
 interface HandlerFunction {
     (props: handlerFunctionProps): Promise<NextResponse> | NextResponse
 }
 export class MiddlewareHandler extends Map<string | RegExp, HandlerFunction> {
-    middlewares: {path:string | RegExp, handler: HandlerFunction}[] = []
-    
+    middlewares: { path: string | RegExp; handler: HandlerFunction }[] = []
+
     use(path: string | RegExp, handler: HandlerFunction) {
-        this.middlewares.push({path, handler})
+        this.middlewares.push({ path, handler })
         return this
     }
-    
+
     getHandler(path: string) {
         if (this.has(path)) return this.get(path)!
         for (const [k, v] of this.entries()) {
@@ -43,67 +42,48 @@ export class MiddlewareHandler extends Map<string | RegExp, HandlerFunction> {
     }
 
     async handle(request: NextRequest) {
-        const middles = this.middlewares.filter(
-            ({path}) => path instanceof RegExp 
-                ? path.test(request.nextUrl.pathname)
-                : path === request.nextUrl.pathname
+        const middles = this.middlewares.filter(({ path }) =>
+            path instanceof RegExp ?
+                path.test(request.nextUrl.pathname)
+            :   path === request.nextUrl.pathname,
         )
-            for (const {handler} of middles) {
-                try {
-                    return await handler(({
-                        request,
-                        response: (...args) =>
-                            MiddlewareHandler.injectPathname(
-                                request,
-                                new NextResponse(...args),
-                            ),
-                        done: (...args) =>
-                            MiddlewareHandler.injectPathname(
-                                request,
-                                NextResponse.next(...args),
-                            ),
-                        redirect: (url, init) =>
-                            MiddlewareHandler.injectPathname(
-                                request,
-                                NextResponse.redirect(
-                                    typeof url === 'string' ?
-                                        new URL(url, request.nextUrl)
-                                    :   url,
-                                    init,
-                                ),
-                            ),
-                        next: () => { throw new NextError('next()') },
-                    }))
-                } catch (error) {
-                    if (error instanceof NextError) {
-                        continue
-                    } else throw error
-                }
+        const ctx: handlerFunctionProps = {
+            request,
+            response: (...args) =>
+                MiddlewareHandler.injectPathname(
+                    request,
+                    new NextResponse(...args),
+                ),
+            done: (...args) =>
+                MiddlewareHandler.injectPathname(
+                    request,
+                    NextResponse.next(...args),
+                ),
+            redirect: (url, init) =>
+                MiddlewareHandler.injectPathname(
+                    request,
+                    NextResponse.redirect(
+                        typeof url === 'string' ?
+                            new URL(url, request.nextUrl)
+                        :   url,
+                        init,
+                    ),
+                ),
+            next: () => {
+                throw new NextError('next()')
+            },
+        }
+
+        for (const { handler } of middles) {
+            try {
+                return await handler(ctx)
+            } catch (error) {
+                if (error instanceof NextError) {
+                    continue
+                } else throw error
             }
-            return this.getHandler(request.nextUrl.pathname)({
-                request,
-                response: (...args) =>
-                    MiddlewareHandler.injectPathname(
-                        request,
-                        new NextResponse(...args),
-                    ),
-                done: (...args) =>
-                    MiddlewareHandler.injectPathname(
-                        request,
-                        NextResponse.next(...args),
-                    ),
-                redirect: (url, init) =>
-                    MiddlewareHandler.injectPathname(
-                        request,
-                        NextResponse.redirect(
-                            typeof url === 'string' ?
-                                new URL(url, request.nextUrl)
-                            :   url,
-                            init,
-                        ),
-                    ),
-                next: () => { throw new NextError('next()') }
-            })
+        }
+        return this.getHandler(request.nextUrl.pathname)(ctx)
     }
 
     async handlerDefault({ done }: handlerFunctionProps) {
