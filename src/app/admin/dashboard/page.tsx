@@ -6,7 +6,7 @@ import {
     CalendarIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Card } from '@/components/ui/card'
+import { Card } from '@/components/Card'
 
 export const metadata: Metadata = {
     title: 'panel de Administrador | LabReserve',
@@ -44,25 +44,25 @@ export default function AdminDashboardPage() {
     return (
         <>
             <DashboardHeader
-                heading="Panel de Administracion"
-                text="Gestiona laboratorio, reservas y usuarios del sistemas."
+                heading='Panel de Administracion'
+                text='Gestiona laboratorio, reservas y usuarios del sistemas.'
             />
-            <div className="grid gap-8 mt-8">
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className='mt-8 grid gap-8'>
+                <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
                     {stats.map(stat => (
-                        <Card key={stat.title} className="p-6">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-primary/10 rounded-full">
-                                    <stat.icon className="h-6 w-6 text-primary" />
+                        <Card key={stat.title} className='p-6'>
+                            <div className='flex items-center gap-4'>
+                                <div className='bg-primary/10 rounded-full p-3'>
+                                    <stat.icon className='text-primary h-6 w-6' />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-muted-foreground">
+                                    <p className='text-muted-foreground text-sm font-medium'>
                                         {stat.title}
                                     </p>
-                                    <h3 className="text-2xl font-bold">
+                                    <h3 className='text-2xl font-bold'>
                                         {stat.value}
                                     </h3>
-                                    <p className="text-xs text-muted-foreground mt-1">
+                                    <p className='text-muted-foreground mt-1 text-xs'>
                                         {stat.description}
                                     </p>
                                 </div>

@@ -1,7 +1,7 @@
 'use client'
 
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card } from '@/components/Card'
+import { Button } from '@/components/Button'
 import {
     Table,
     TableBody,
@@ -9,7 +9,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table'
+} from '@/components/Table'
 import { CalendarIcon, ClockIcon } from 'lucide-react'
 
 const upcomingReservations = [
@@ -31,12 +31,12 @@ const upcomingReservations = [
 
 export function TeacherDashboard() {
     return (
-        <div className="grid gap-8 mt-8">
-            <Card className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold">Próximas Reservas</h2>
+        <div className='mt-8 grid gap-8'>
+            <Card className='p-6'>
+                <div className='mb-6 flex items-center justify-between'>
+                    <h2 className='text-xl font-semibold'>Próximas Reservas</h2>
                     <Button>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className='mr-2 h-4 w-4' />
                         Nueva Reserva
                     </Button>
                 </div>
@@ -57,14 +57,14 @@ export function TeacherDashboard() {
                                 <TableCell>{reservation.lab}</TableCell>
                                 <TableCell>{reservation.date}</TableCell>
                                 <TableCell>
-                                    <div className="flex items-center gap-2">
-                                        <ClockIcon className="h-4 w-4 text-muted-foreground" />
+                                    <div className='flex items-center gap-2'>
+                                        <ClockIcon className='text-muted-foreground h-4 w-4' />
                                         {reservation.time}
                                     </div>
                                 </TableCell>
                                 <TableCell>{reservation.subject}</TableCell>
                                 <TableCell>
-                                    <Button variant="outline" size="sm">
+                                    <Button variant='outline' size='sm'>
                                         Ver Detalles
                                     </Button>
                                 </TableCell>
