@@ -1,6 +1,6 @@
 'use client'
 
-import { LogIn, Mail, RectangleEllipsis } from 'lucide-react'
+import { LogIn, RectangleEllipsis, User } from 'lucide-react'
 import { CompletInput } from '@/components/Inputs'
 import { Button } from '@/components/Button'
 import { login, refreshToken as refreshTokenAction } from '@/actions/auth'
@@ -86,7 +86,7 @@ export function LoginForm() {
                 }}
                 error={usernameError}
             >
-                <Mail className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
             </CompletInput>
             <CompletInput
                 required
