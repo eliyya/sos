@@ -1,9 +1,9 @@
 import { BeakerIcon } from 'lucide-react'
 import Link from 'next/link'
 import app from '@eliyya/type-routes'
-import { getUser } from '@/actions/auth'
+import { getPaylodadUser } from '@/actions/auth'
 import { Suspense } from 'react'
-import { RoleBitField } from '@/lib/RoleBitField'
+import { RoleBitField } from '@/bitfields/RoleBitField'
 
 export function Header() {
     return (
@@ -29,15 +29,15 @@ export function Header() {
 }
 
 async function HeaderLogin() {
-    const user = await getUser()
+    const user = await getPaylodadUser()
     if (!user) return <Link href={app.login()}>Iniciar Sesión</Link>
     return null
 }
 
 async function HeaderAdmin() {
-    const user = await getUser()
+    const user = await getPaylodadUser()
     if (!user) return null
-    if (!new RoleBitField(user.roles).has([RoleBitField.Flags.Admin]))
+    if (!new RoleBitField(BigInt(user.role)).has([RoleBitField.Flags.Admin]))
         return null
     return <Link href={app.admin.dashboard()}>Admin</Link>
 }

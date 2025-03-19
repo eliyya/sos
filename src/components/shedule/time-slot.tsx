@@ -1,12 +1,12 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/Button'
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
 
 interface TimeSlotProps {
@@ -31,21 +31,21 @@ export function TimeSlot({
                     <TooltipTrigger asChild>
                         <div
                             className={cn(
-                                'h-12 rounded-md bg-primary/20 border border-primary p-2 text-xs cursor-pointer',
+                                'bg-primary/20 border-primary h-12 cursor-pointer rounded-md border p-2 text-xs',
                                 'hover:bg-primary/30 transition-colors',
                             )}
                         >
-                            <div className="font-medium truncate">
+                            <div className='truncate font-medium'>
                                 {subject}
                             </div>
-                            <div className="text-muted-foreground truncate">
+                            <div className='text-muted-foreground truncate'>
                                 {teacher}
                             </div>
                         </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <div className="text-sm">
-                            <p className="font-medium">{subject}</p>
+                        <div className='text-sm'>
+                            <p className='font-medium'>{subject}</p>
                             <p>{teacher}</p>
                             <p>
                                 {day} - {hour}:00
@@ -59,8 +59,8 @@ export function TimeSlot({
 
     return (
         <Button
-            variant="outline"
-            className="h-12 w-full bg-card hover:bg-accent"
+            variant='outline'
+            className='bg-card hover:bg-accent h-12 w-full'
             onClick={() => {
                 // TODO: Implement reservation modal
                 console.log('Reserve slot:', day, hour)

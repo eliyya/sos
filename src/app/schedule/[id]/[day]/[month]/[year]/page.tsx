@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { WeeklySchedule } from '@/components/shedule/weekly-schedule'
-import { Header } from '@/components/Header'
+import { Header } from '../../../../../components/Header'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 export default function SchedulePage() {
     return (
-        <div className="min-h-screen bg-background">
+        <div className='bg-background min-h-screen'>
             <Header />
-            <main className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-8">Horario Semanal</h1>
+            <main className='container mx-auto px-4 py-8'>
+                <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                 <WeeklySchedule currentWeek={new Date()} />
             </main>
         </div>

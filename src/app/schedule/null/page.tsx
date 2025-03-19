@@ -1,4 +1,4 @@
-import { Header } from '@/components/Header'
+import { Header } from '../../components/Header'
 import { db } from '@/lib/db'
 import app from '@eliyya/type-routes'
 import { redirect } from 'next/navigation'
@@ -11,10 +11,10 @@ export default async function NullPage() {
     })
     if (lab) return redirect(app.labs.$id(lab.id))
     return (
-        <div className="min-h-screen bg-background">
+        <div className='bg-background min-h-screen'>
             <Header />
-            <main className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-8">
+            <main className='container mx-auto px-4 py-8'>
+                <h1 className='mb-8 text-3xl font-bold'>
                     No existen laboratorios aun
                 </h1>
                 <p>Por favor contacta con un administrador</p>

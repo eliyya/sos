@@ -1,4 +1,4 @@
-import { BitField } from './BitField'
+import { BitField } from '../lib/BitField'
 
 export const RoleFlags = {
     Anonymous: 0n,

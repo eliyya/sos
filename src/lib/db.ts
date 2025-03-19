@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import { SnowFlakeGenerator } from './SnowFlake.ts'
 import { compare } from 'bcrypt'
-import { RoleFlags } from '../BitFields/RoleBitField.ts'
+import { RoleFlags } from '../bitfields/RoleBitField.ts'
 import { totp as stotp } from 'speakeasy'
 import { ALGORITHM } from './constants.ts'
 import { createDecipheriv } from 'node:crypto'
@@ -11,7 +11,7 @@ function createPrismaClient() {
     return new PrismaClient().$extends({
         name: 'validatePassword',
         model: {
-            employee: {
+            user: {
                 async validateRootPassword(password: string, token: string) {
                     const root = await Prisma.getExtensionContext(
                         this,
@@ -20,7 +20,7 @@ function createPrismaClient() {
                             role: RoleFlags.Manager,
                         },
                         select: {
-                            email: true,
+                            username: true,
                             id: true,
                         },
                     })
@@ -31,11 +31,11 @@ function createPrismaClient() {
                         return true
                     return false
                 },
-                async validatePassword(email: string, password: string) {
+                async validatePassword(username: string, password: string) {
                     const user = await Prisma.getExtensionContext(
                         this,
                     ).findFirst({
-                        where: { email },
+                        where: { username },
                         select: {
                             active: true,
                             auth: {
