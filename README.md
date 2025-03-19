@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Requirements
 
--   Node.js v22.11.0 or mayor
+- Node.js v22.11.0 or mayor
 
 ## Getting Started
 
@@ -28,8 +28,8 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 To learn more about Next.js, take a look at the following resources:
 
--   [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
--   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
@@ -41,42 +41,42 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## TODO
 
--   [ ] Previo
-    -   [ ] Base de Datos
-        -   [ ] Modelado
-        -   [ ] Migración
-        -   [ ] Conexión
-    -   [ ] Server Actions
-        -   [ ] Laboratorios
-        -   [ ] Usuarios
-        -   [ ] Alumnos
-    -   [ ] SSG
-    -   [ ] Sesiones
--   [ ] Login
--   [ ] Panel Principal
-    -   [ ] Vista de Horario
-    -   [ ] Selección de Horario
--   [ ] Panel Usuario
-    -   [ ] Cambio de Contraseña
-    -   [ ] Cierre de Sesión
-    -   [ ] Materias Asignadas
-    -   [ ] Horarios Pendientes
-        -   [ ] Cancelación
-    -   [ ] ~~Reporte de maquinas~~
--   [ ] Panel Admin
-    -   [ ] Laboratorios
-    -   [ ] Materias
-    -   [ ] Docentes
-    -   [ ] Carreras
-    -   [ ] Alumnos
-    -   [ ] ~~Maquinas~~
-    -   [ ] Base de Datos
-        -   [ ] Exportar Datos
-        -   [ ] Importar Específicos
-    -   [ ] Centro de Computo
-        -   [ ] Registro de Visitas de Estudiantes
-        -   [ ] Registro de Alumnos
-    -   [ ] Informes
-        -   [ ] Cantidad de usuarios
-        -   [ ] Horarios mas usados
-        -   [ ] Por carreras
+- [ ] Previo
+    - [ ] Base de Datos
+        - [ ] Modelado
+        - [ ] Migración
+        - [ ] Conexión
+    - [ ] Server Actions
+        - [ ] Laboratorios
+        - [ ] Usuarios
+        - [ ] Alumnos
+    - [ ] SSG
+    - [ ] Sesiones
+- [ ] Login
+- [ ] Panel Principal
+    - [ ] Vista de Horario
+    - [ ] Selección de Horario
+- [ ] Panel Usuario
+    - [ ] Cambio de Contraseña
+    - [ ] Cierre de Sesión
+    - [ ] Materias Asignadas
+    - [ ] Horarios Pendientes
+        - [ ] Cancelación
+    - [ ] ~~Reporte de maquinas~~
+- [ ] Panel Admin
+    - [ ] Laboratorios
+    - [ ] Materias
+    - [ ] Docentes
+    - [ ] Carreras
+    - [ ] Alumnos
+    - [ ] ~~Maquinas~~
+    - [ ] Base de Datos
+        - [ ] Exportar Datos
+        - [ ] Importar Específicos
+    - [ ] Centro de Computo
+        - [ ] Registro de Visitas de Estudiantes
+        - [ ] Registro de Alumnos
+    - [ ] Informes
+        - [ ] Cantidad de usuarios
+        - [ ] Horarios mas usados
+        - [ ] Por carreras
