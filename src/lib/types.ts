@@ -3,7 +3,7 @@ import type { JWTPayload as JoseJWTPayload } from 'jose'
 
 export type LoginFormState = {
     errors?: {
-        email?: 'Email is required'
+        username?: 'Username is required'
         password?: 'Password is required'
         token?: 'Token is not valid' | 'Token is required'
     }

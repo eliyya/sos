@@ -2,7 +2,7 @@
 import { COOKIES } from '@/lib/constants'
 import { cookies } from 'next/headers'
 import { ENCODED_JWT_SECRET } from '@/constants/server'
-import { db } from '@/lib/db'
+import { db, snowflake } from '@/lib/db'
 import {
     LoginFormState,
     AuthTypes,
@@ -11,10 +11,11 @@ import {
     JWTPayload,
 } from '@/lib/types'
 import { decodeJwt, jwtVerify, SignJWT } from 'jose'
-import { NEXT_PUBLIC_AGENCY, NEXT_PUBLIC_VERCEL_URL } from '@/env/client'
+import { NEXT_PUBLIC_VERCEL_URL } from '@/env/client'
 import { wrapTry } from '@/lib/utils'
 import { randomBytes } from 'node:crypto'
 import { decrypt, encrypt } from '@/lib/encrypt'
+import { APP_NAME } from '@/constants/client'
 
 export async function getPaylodadUser() {
     const token = (await cookies()).get(COOKIES.SESSION)?.value
@@ -48,16 +49,17 @@ export async function registerDevice({
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 7)
     const encripted_secret = await encrypt(secret)
-    return await db.devices.create({
+    return await db.session.create({
         data: {
-            employee_id: user_id,
+            user_id: user_id,
             ip,
             expires_at: expiresAt,
             browser,
             device,
             os,
             model,
-            encripted_secret,
+            secret: encripted_secret,
+            id: snowflake.generate(),
         },
         select: {
             id: true,
@@ -81,26 +83,26 @@ export async function refreshToken({
 }: RefreshTokenProps): Promise<RefreshTokenReturn> {
     if (!refreshToken) return { error: 'Faltan parametros' }
     const payload = decodeJwt<RefreshTokenPayload>(refreshToken)
-    const deviceData = await db.devices.findFirst({
+    const deviceData = await db.session.findFirst({
         where: {
-            id: Number(payload.device_id),
+            id: payload.device_id,
         },
         include: {
-            employee: true,
+            user: true,
         },
     })
     if (!deviceData) return { error: 'Device not found' }
     if (new Date() > deviceData.expires_at) {
-        db.devices.delete({
+        db.session.delete({
             where: {
-                id: Number(payload.device_id),
+                id: payload.device_id,
             },
         })
         return {
             error: 'Device expired',
         }
     }
-    const secret = await decrypt(deviceData.encripted_secret)
+    const secret = await decrypt(deviceData.secret)
     const [error] = await wrapTry(() =>
         jwtVerify<RefreshTokenPayload>(
             refreshToken,
@@ -116,11 +118,11 @@ export async function refreshToken({
         iat: Math.floor(Date.now() / 1000),
         nbf: Math.floor(Date.now() / 1000) - 1,
         iss: NEXT_PUBLIC_VERCEL_URL,
-        aud: NEXT_PUBLIC_AGENCY,
-        sub: deviceData.employee_id,
+        aud: APP_NAME,
+        sub: deviceData.user_id,
         type: AuthTypes.session,
-        name: deviceData.employee.name,
-        role: deviceData.employee.role.toString(),
+        name: deviceData.user.name,
+        role: deviceData.user.role.toString(),
     }
     const accesToken = await new SignJWT(npayload)
         .setProtectedHeader({ alg: 'HS256' })
@@ -150,11 +152,11 @@ export async function login(
     },
 ): Promise<LoginFormState> {
     // validate email and password
-    const email = data.get('email') as string
-    if (!email) {
+    const username = data.get('username') as string
+    if (!username) {
         return {
             errors: {
-                email: 'Email is required',
+                username: 'Username is required',
             },
             status: LoginFormStatus.error,
         }
@@ -171,17 +173,17 @@ export async function login(
     }
 
     // validate email and password
-    if (!(await db.employee.validatePassword(email, password))) {
+    if (!(await db.user.validatePassword(username, password))) {
         return {
             message: 'Email or password is incorrect',
             status: LoginFormStatus.error,
         }
     }
 
-    // get employee
-    const employee = (await db.employee.findFirst({
+    // get user
+    const user = (await db.user.findFirst({
         where: {
-            email,
+            username,
         },
         select: {
             id: true,
@@ -190,7 +192,7 @@ export async function login(
         },
     }))!
 
-    if (await db.employee.hasTOTP(employee.id)) {
+    if (await db.user.hasTOTP(user.id)) {
         const token = data.get('token') as string
         if (!token) {
             return {
@@ -200,7 +202,7 @@ export async function login(
                 status: LoginFormStatus.error,
             }
         }
-        const isValid = await db.employee.validateTOTP(employee.id, token)
+        const isValid = await db.user.validateTOTP(user.id, token)
         if (!isValid)
             return {
                 errors: {
@@ -213,7 +215,7 @@ export async function login(
     const JWT_SECRET_LOGIN = randomBytes(16).toString('hex')
     const dev = await registerDevice({
         ...dinfo,
-        user_id: employee.id,
+        user_id: user.id,
         secret: JWT_SECRET_LOGIN,
     })
 
@@ -225,8 +227,8 @@ export async function login(
         iat: Math.floor(Date.now() / 1000),
         nbf: Math.floor(Date.now() / 1000) - 1,
         iss: NEXT_PUBLIC_VERCEL_URL,
-        aud: NEXT_PUBLIC_AGENCY,
-        sub: employee.id,
+        aud: APP_NAME,
+        sub: user.id,
         type: AuthTypes.refresh,
         device_id: dev.id.toString(),
     }

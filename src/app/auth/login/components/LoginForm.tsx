@@ -15,7 +15,6 @@ import app from '@eliyya/type-routes'
 import { getMyIp } from '@/lib/ip'
 import { getDeviceInfo } from '@/lib/device'
 import { idb } from '@/lib/idb'
-// import device from 'device'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
@@ -43,7 +42,7 @@ export function LoginForm() {
                     if (status === LoginFormStatus.auth) {
                         return setOpen(true)
                     } else if (status === LoginFormStatus.error) {
-                        if (errors?.email) setEmailError(errors.email)
+                        if (errors?.username) setEmailError(errors.username)
                         if (errors?.password) setPasswordError(errors.password)
                         if (message) setError(message)
                         return
@@ -53,7 +52,7 @@ export function LoginForm() {
                             // save agent in idb
                             idb.user.clear().then(async () => {
                                 // redirect to dashboard
-                                replace(app())
+                                replace(app.admin.dashboard())
                             })
                             // const catFrom = await syncCategoriesFromDB()
                         }

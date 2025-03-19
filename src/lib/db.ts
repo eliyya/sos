@@ -1,7 +1,6 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient, STATUS } from '@prisma/client'
 import { SnowFlakeGenerator } from './SnowFlake.ts'
 import { compare } from 'bcrypt'
-import { RoleFlags } from '../bitfields/RoleBitField.ts'
 import { totp as stotp } from 'speakeasy'
 import { ALGORITHM } from './constants.ts'
 import { createDecipheriv } from 'node:crypto'
@@ -12,41 +11,21 @@ function createPrismaClient() {
         name: 'validatePassword',
         model: {
             user: {
-                async validateRootPassword(password: string, token: string) {
-                    const root = await Prisma.getExtensionContext(
-                        this,
-                    ).findFirst({
-                        where: {
-                            role: RoleFlags.Manager,
-                        },
-                        select: {
-                            username: true,
-                            id: true,
-                        },
-                    })
-                    if (
-                        (await this.validatePassword(root!.email, password)) &&
-                        (await this.validateTOTP(root!.id, token))
-                    )
-                        return true
-                    return false
-                },
                 async validatePassword(username: string, password: string) {
                     const user = await Prisma.getExtensionContext(
                         this,
                     ).findFirst({
-                        where: { username },
+                        where: { username, status: STATUS.ACTIVE },
                         select: {
-                            active: true,
-                            auth: {
+                            auths: {
                                 select: {
                                     password: true,
                                 },
                             },
                         },
                     })
-                    if (!user?.active || !user.auth) return false
-                    return await compare(password, user.auth.password)
+                    if (!user?.auths?.length) return false
+                    return await compare(password, user.auths[0].password)
                 },
                 async hasTOTP(id: string) {
                     const user = await Prisma.getExtensionContext(
@@ -54,21 +33,21 @@ function createPrismaClient() {
                     ).findFirst({
                         where: { id },
                         select: {
-                            auth: {
+                            auths: {
                                 select: {
                                     totp: true,
                                 },
                             },
                         },
                     })
-                    return !!user?.auth?.totp
+                    return !!user?.auths[0]?.totp
                 },
                 async validateTOTP(id: string, token: string) {
                     const user = await Prisma.getExtensionContext(
                         this,
                     ).$parent.auth.findFirst({
                         where: {
-                            employee_id: id,
+                            user_id: id,
                         },
                         select: {
                             totp: true,
