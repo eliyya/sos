@@ -9,7 +9,7 @@ import {
     DialogContent,
     DialogTitle,
 } from '@/components/Dialog'
-import { LoginDialogAtom, emailAtom, passwordAtom } from '../global/login'
+import { LoginDialogAtom, usernameAtom, passwordAtom } from '../global/login'
 import { useAtom, useAtomValue } from 'jotai'
 import { CompletInput } from '@/components/Inputs'
 import { KeyRound } from 'lucide-react'
@@ -26,7 +26,7 @@ import { idb } from '@/lib/idb'
 export function ResetPasswordDialog() {
     const t = useTranslations('app.auth.verify.components.VerifyForm')
     const [open, setOpen] = useAtom(LoginDialogAtom)
-    const email = useAtomValue(emailAtom)
+    const username = useAtomValue(usernameAtom)
     const password = useAtomValue(passwordAtom)
     const [error, setError] = useState('')
     const [pending, startTransition] = useTransition()
@@ -65,7 +65,7 @@ export function ResetPasswordDialog() {
                                 if (!r.error) {
                                     // save agent in idb
                                     idb.user.clear().then(async () => {
-                                        replace(app())
+                                        replace(app.admin.dashboard())
                                     })
                                 }
                             }
@@ -73,7 +73,7 @@ export function ResetPasswordDialog() {
                     }}
                     className='space-y-4'
                 >
-                    <input type='hidden' value={email} name='email' />
+                    <input type='hidden' value={username} name='username' />
                     <input type='hidden' value={password} name='password' />
                     <CompletInput
                         required

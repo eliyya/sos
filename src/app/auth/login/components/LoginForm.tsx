@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { LoginFormStatus } from '@/lib/types'
 import { useAtom, useSetAtom } from 'jotai'
-import { emailAtom, LoginDialogAtom, passwordAtom } from '../global/login'
+import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { getMyIp } from '@/lib/ip'
@@ -19,10 +19,10 @@ import { idb } from '@/lib/idb'
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
     const setOpen = useSetAtom(LoginDialogAtom)
-    const [email, setEmail] = useAtom(emailAtom)
+    const [username, setUsername] = useAtom(usernameAtom)
     const [password, setPassword] = useAtom(passwordAtom)
     const [error, setError] = useState('')
-    const [emailError, setEmailError] = useState('')
+    const [usernameError, setUsernameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
     const [pending, startTransition] = useTransition()
     const { replace } = useRouter()
@@ -42,7 +42,7 @@ export function LoginForm() {
                     if (status === LoginFormStatus.auth) {
                         return setOpen(true)
                     } else if (status === LoginFormStatus.error) {
-                        if (errors?.username) setEmailError(errors.username)
+                        if (errors?.username) setUsernameError(errors.username)
                         if (errors?.password) setPasswordError(errors.password)
                         if (message) setError(message)
                         return
@@ -75,16 +75,16 @@ export function LoginForm() {
             )}
             <CompletInput
                 required
-                label={t('mail')}
-                type='email'
-                name='email'
-                placeholder={t('email-placeholder')}
-                value={email}
+                label={t('username')}
+                type='text'
+                name='username'
+                placeholder={t('username-placeholder')}
+                value={username}
                 onChange={e => {
-                    setEmail(e.target.value)
-                    setEmailError('')
+                    setUsername(e.target.value)
+                    setUsernameError('')
                 }}
-                error={emailError}
+                error={usernameError}
             >
                 <Mail className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
             </CompletInput>

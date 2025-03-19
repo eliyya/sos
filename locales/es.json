@@ -6,10 +6,10 @@
                     "loginForm": {
                         "welcome": "Bienvenido de nuevo",
                         "sub": "Inicia sesión para continuar",
-                        "mail": "Correo",
+                        "username": "Usuario",
                         "pass": "Contraseña",
                         "login": "Iniciar Sesión",
-                        "email-placeholder": "empleado@empresa.com"
+                        "username-placeholder": "pacoweb"
                     }
                 }
             },
