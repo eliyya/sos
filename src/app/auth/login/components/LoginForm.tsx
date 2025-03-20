@@ -52,7 +52,7 @@ export function LoginForm() {
                             // save agent in idb
                             idb.user.clear().then(async () => {
                                 // redirect to dashboard
-                                replace(app.admin.dashboard())
+                                replace(app.dashboard())
                             })
                             // const catFrom = await syncCategoriesFromDB()
                         }

@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
+import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { Card } from '@/components/Card'
 import { BeakerIcon, Plus } from 'lucide-react'
 import Link from 'next/link'

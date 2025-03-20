@@ -65,7 +65,7 @@ export function ResetPasswordDialog() {
                                 if (!r.error) {
                                     // save agent in idb
                                     idb.user.clear().then(async () => {
-                                        replace(app.admin.dashboard())
+                                        replace(app.dashboard())
                                     })
                                 }
                             }

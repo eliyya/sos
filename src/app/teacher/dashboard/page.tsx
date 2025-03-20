@@ -1,5 +1,5 @@
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
-import { DashboardShell } from '@/components/dashboard/DashboardShell'
+import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
+import { DashboardShell } from '@/app/dashboard/components/DashboardShell'
 import { TeacherDashboard } from '@/components/teacher/dashboard'
 import { Metadata } from 'next'
 
@@ -12,8 +12,8 @@ export default function SettingsPage() {
     return (
         <DashboardShell>
             <DashboardHeader
-                heading="panel de docentes "
-                text="Administra tu cuenta  "
+                heading='panel de docentes '
+                text='Administra tu cuenta  '
             />
             <TeacherDashboard />
         </DashboardShell>
