@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -14,139 +15,264 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Users {
+model User {
   id         String   @id
   name       String
-  admin      Boolean  @default(false)
-  teacher    Boolean  @default(true)
+  role       BigInt   @default(2)
   created_at DateTime @default(now())
   username   String   @unique
+  status     STATUS   @default(ACTIVE)
 
-  passwords      Passwords[]
-  users_subjects UsersSubjects[]
-  practices      Practices[]
-  registered     Practices[]     @relation("registered")
+  auths              Auth[]
+  practices          Practice[]
+  practice_registers Practice[] @relation("practice_registers")
+  classes            Class[]
+  sessions           Session[]
+  issues             Issue[]
+  comments           Comment[]
+
+  @@map("users")
 }
 
-model Passwords {
+model Auth {
   id         String   @id
   user_id    String
   password   String
   created_at DateTime @default(now())
+  totp       String?
 
-  user Users @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("auths")
 }
 
-model Subjects {
+model Subject {
   id             String   @id
   name           String
   created_at     DateTime @default(now())
   practice_hours Int
   theory_hours   Int
 
-  users_subjects UsersSubjects[]
-  practices      Practices[]
+  classes Class[]
+
+  @@map("subjects")
 }
 
-model UsersSubjects {
-  user_id    String
-  subject_id String
-
-  user    Users    @relation(fields: [user_id], references: [id])
-  subject Subjects @relation(fields: [subject_id], references: [id])
-
-  @@id([user_id, subject_id])
-}
-
-model Laboratories {
+model Session {
   id         String   @id
+  user_id    String
+  ip         String
+  expires_at DateTime
   created_at DateTime @default(now())
-  name       String   @unique
+  browser    String
+  os         String
+  device     String
+  model      String
+  secret     String   @unique
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("sessions")
+}
+
+model Class {
+  id         String   @id
+  subject_id String
+  teacher_id String
+  career_id  String
+  status     STATUS   @default(ACTIVE)
+  created_at DateTime @default(now())
+
+  subject        Subject          @relation(fields: [subject_id], references: [id])
+  teacher        User             @relation(fields: [teacher_id], references: [id])
+  career         Career           @relation(fields: [career_id], references: [id])
+  StudentClasses StudentClasses[]
+
+  @@map("classes")
+}
+
+enum LABORATORY_TYPE {
+  COMPUTER_CENTER
+  LABORATORY
+}
+
+model Laboratory {
+  id         String          @id
+  created_at DateTime        @default(now())
+  name       String          @unique
   open_hour  Int
   close_hour Int
-  common_use Boolean  @default(false)
+  type       LABORATORY_TYPE @default(LABORATORY)
+  status     STATUS          @default(ACTIVE)
 
-  practices Practices[]
-  machines  Machines[]
-  Visits    Visits[]
+  practices Practice[]
+  machines  Machine[]
+  visits    Visit[]
+
+  @@map("laboratories")
 }
 
-model Practices {
+model Practice {
   id            String   @id
   user_id       String
-  subject_id    String
   topic         String
   name          String
-  software      String
   created_at    DateTime @default(now())
   students      Int?
   registered_by String
   laboratory_id String
+  observations  String?
+  class_id      String
+  status        STATUS   @default(ACTIVE)
 
-  user       Users        @relation(fields: [user_id], references: [id])
-  subject    Subjects     @relation(fields: [subject_id], references: [id])
-  registered Users        @relation("registered", fields: [registered_by], references: [id])
-  laboratory Laboratories @relation(fields: [laboratory_id], references: [id])
+  user               User               @relation(fields: [user_id], references: [id])
+  registered_by_user User               @relation("practice_registers", fields: [registered_by], references: [id])
+  laboratory         Laboratory         @relation(fields: [laboratory_id], references: [id])
+  software_practices SoftwarePractice[]
+
+  @@map("practices")
 }
 
-model Careers {
-  id         String     @id
-  name       String     @unique
-  created_at DateTime   @default(now())
-  students   Students[]
+model Software {
+  id   String @id
+  name String
+
+  software_practices SoftwarePractice[]
+  software_machines  SoftwareMachine[]
+
+  @@map("software")
 }
 
-model Students {
+model SoftwarePractice {
+  software_id String
+  practice_id String
+
+  software Software @relation(fields: [software_id], references: [id])
+  practice Practice @relation(fields: [practice_id], references: [id])
+
+  @@id([software_id, practice_id])
+  @@map("software_practices")
+}
+
+model Career {
+  id         String   @id
+  name       String   @unique
+  created_at DateTime @default(now())
+
+  students Student[]
+  classes  Class[]
+
+  @@map("careers")
+}
+
+model Student {
   nc         String   @id
   lastname   String
   firstname  String
-  semester   Int
+  semester   Int      @default(1)
   created_at DateTime @default(now())
   career_id  String
 
-  career Careers  @relation(fields: [career_id], references: [id])
-  visits Visits[]
+  career         Career           @relation(fields: [career_id], references: [id])
+  visits         Visit[]
+  StudentClasses StudentClasses[]
+
+  @@map("students")
 }
 
-model Visits {
-  id            String       @id
-  created_at    DateTime     @default(now())
-  exit_at       DateTime
+model Visit {
+  id            String    @id
+  created_at    DateTime  @default(now())
+  exit_at       DateTime?
   student_nc    String
   laboratory_id String
-  machine_id    String
-  student       Students     @relation(fields: [student_nc], references: [nc])
-  laboratory    Laboratories @relation(fields: [laboratory_id], references: [id])
-  machine       Machines     @relation(fields: [machine_id], references: [id])
+  machine_id    String?
+
+  student    Student    @relation(fields: [student_nc], references: [nc])
+  laboratory Laboratory @relation(fields: [laboratory_id], references: [id])
+  machine    Machine?   @relation(fields: [machine_id], references: [id])
+
+  @@map("visits")
 }
 
-enum States {
+enum MACHINE_STATUS {
   AVAILABLE
   MAINTENANCE
 }
 
-model Machines {
-  id            String   @id
+enum STATUS {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
+model Machine {
+  id            String         @id
   number        Int
-  status        States   @default(AVAILABLE)
+  status        MACHINE_STATUS @default(AVAILABLE)
   processor     String
   ram           String
   storage       String
-  description   String
-  laboratory_id String
-  created_at    DateTime @default(now())
+  description   String         @default("")
+  laboratory_id String?
+  created_at    DateTime       @default(now())
+  serie         String?
 
-  laboratory Laboratories @relation(fields: [laboratory_id], references: [id])
-  reports    Reports[]
-  Visits     Visits[]
+  laboratory        Laboratory?       @relation(fields: [laboratory_id], references: [id])
+  issues            Issue[]
+  visits            Visit[]
+  software_machines SoftwareMachine[]
+
+  @@map("machines")
 }
 
-model Reports {
+model SoftwareMachine {
+  software_id String
+  machine_id  String
+
+  software Software @relation(fields: [software_id], references: [id])
+  machine  Machine  @relation(fields: [machine_id], references: [id])
+
+  @@id([software_id, machine_id])
+  @@map("software_machines")
+}
+
+model Issue {
   id         String    @id
   created_at DateTime  @default(now())
   comment    String
   machine_id String
-  checked_at DateTime?
+  closed_at  DateTime?
+  user_id    String
 
-  machine Machines @relation(fields: [machine_id], references: [id])
+  machine  Machine   @relation(fields: [machine_id], references: [id])
+  user     User      @relation(fields: [user_id], references: [id])
+  comments Comment[]
+
+  @@map("issue")
+}
+
+model Comment {
+  id         String   @id
+  created_at DateTime @default(now())
+  content    String
+
+  user_id  String
+  issue_id String
+
+  user  User  @relation(fields: [user_id], references: [id])
+  issue Issue @relation(fields: [issue_id], references: [id])
+
+  @@map("comment")
+}
+
+model StudentClasses {
+  student_nc String
+  class_id   String
+
+  student Student @relation(fields: [student_nc], references: [nc])
+  class   Class   @relation(fields: [class_id], references: [id])
+
+  @@id([student_nc, class_id])
+  @@map("student_classes")
 }

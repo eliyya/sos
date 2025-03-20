@@ -1,0 +1,28 @@
+{
+    "app": {
+        "auth": {
+            "login": {
+                "components": {
+                    "loginForm": {
+                        "welcome": "Bienvenido de nuevo",
+                        "sub": "Inicia sesión para continuar",
+                        "username": "Usuario",
+                        "pass": "Contraseña",
+                        "login": "Iniciar Sesión",
+                        "username-placeholder": "pacoweb"
+                    }
+                }
+            },
+            "verify": {
+                "components": {
+                    "VerifyForm": {
+                        "tittle": "Antes de continuar",
+                        "sub": "Verifiquemos que eres en realidad tu",
+                        "totp": "Token",
+                        "submit": "Iniciar Sesión"
+                    }
+                }
+            }
+        }
+    }
+}

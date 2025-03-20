@@ -1,17 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Requirements
+
+- Node.js v22.11.0 or mayor
+
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm i
+```
+
+Then run the development server:
+
+```bash
+node --run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -34,3 +38,45 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## TODO
+
+- [ ] Previo
+    - [ ] Base de Datos
+        - [ ] Modelado
+        - [ ] Migración
+        - [ ] Conexión
+    - [ ] Server Actions
+        - [ ] Laboratorios
+        - [ ] Usuarios
+        - [ ] Alumnos
+    - [ ] SSG
+    - [ ] Sesiones
+- [ ] Login
+- [ ] Panel Principal
+    - [ ] Vista de Horario
+    - [ ] Selección de Horario
+- [ ] Panel Usuario
+    - [ ] Cambio de Contraseña
+    - [ ] Cierre de Sesión
+    - [ ] Materias Asignadas
+    - [ ] Horarios Pendientes
+        - [ ] Cancelación
+    - [ ] ~~Reporte de maquinas~~
+- [ ] Panel Admin
+    - [ ] Laboratorios
+    - [ ] Materias
+    - [ ] Docentes
+    - [ ] Carreras
+    - [ ] Alumnos
+    - [ ] ~~Maquinas~~
+    - [ ] Base de Datos
+        - [ ] Exportar Datos
+        - [ ] Importar Específicos
+    - [ ] Centro de Computo
+        - [ ] Registro de Visitas de Estudiantes
+        - [ ] Registro de Alumnos
+    - [ ] Informes
+        - [ ] Cantidad de usuarios
+        - [ ] Horarios mas usados
+        - [ ] Por carreras
