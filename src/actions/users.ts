@@ -1,13 +1,18 @@
 'use server'
 
-import { COOKIES, JWT_SECRET, snowflake } from '@/lib/constants'
-import { db } from '@/lib/db'
-import { UserSchema } from '@/lib/schemas'
-import app from '@eliyya/type-routes'
-import { compare, hash } from 'bcrypt'
-import { SignJWT } from 'jose'
-import { cookies } from 'next/headers'
-import * as z from 'zod'
+// import { COOKIES, JWT_SECRET } from '@/lib/constants'
+import { db, snowflake } from '@/lib/db'
+import { hash } from 'bcrypt'
+// import { UserSchema } from '@/lib/schemas'
+// import app from '@eliyya/type-routes'
+// import { compare, hash } from 'bcrypt'
+// import { SignJWT } from 'jose'
+// import { cookies } from 'next/headers'
+// import * as z from 'zod'
+
+export async function getUsers() {
+    return db.user.findMany()
+}
 
 interface RegisterProps {
     name: string
@@ -32,13 +37,13 @@ export async function registerAdmin(data: RegisterProps) {
         }
     await db.user.create({
         data: {
-            id: snowflake.generate().toString(),
+            id: snowflake.generate(),
             name,
             username,
-            roles: 1,
-            passwords: {
+            role: 1n,
+            auths: {
                 create: {
-                    id: snowflake.generate().toString(),
+                    id: snowflake.generate(),
                     password: await hash(password, 10),
                 },
             },
@@ -46,67 +51,67 @@ export async function registerAdmin(data: RegisterProps) {
     })
 }
 
-/**
- *
- * @throws Password or user incorrect
- * @throws `Password has been changued since {Date}`
- * @throws Internal error
- */
-export async function login({
-    password,
-    username,
-}: {
-    password: string
-    username: string
-}) {
-    const user = await db.user.findUnique({
-        where: {
-            username,
-        },
-        include: {
-            passwords: {
-                orderBy: {
-                    created_at: 'desc',
-                },
-            },
-        },
-    })
+// /**
+//  *
+//  * @throws Password or user incorrect
+//  * @throws `Password has been changued since {Date}`
+//  * @throws Internal error
+//  */
+// export async function login({
+// password,
+// username,
+// }: {
+// password: string
+// username: string
+// }) {
+// const user = await db.user.findUnique({
+//     where: {
+//         username,
+//     },
+//     include: {
+//         passwords: {
+//             orderBy: {
+//                 created_at: 'desc',
+//             },
+//         },
+//     },
+// })
 
-    if (!user) throw new Error('Password or user incorrect')
+// if (!user) throw new Error('Password or user incorrect')
 
-    const [currentPassword, ...oldPasswords] = user.passwords
-    if (!(await compare(password, currentPassword.password))) {
-        for (const { password: oldPassword, created_at } of oldPasswords) {
-            if (await compare(password, oldPassword))
-                throw new Error(
-                    'Password has been changued since ' + created_at,
-                )
-        }
-        throw new Error('Password or user incorrect')
-    }
+// const [currentPassword, ...oldPasswords] = user.passwords
+// if (!(await compare(password, currentPassword.password))) {
+//     for (const { password: oldPassword, created_at } of oldPasswords) {
+//         if (await compare(password, oldPassword))
+//             throw new Error(
+//                 'Password has been changued since ' + created_at,
+//             )
+//     }
+//     throw new Error('Password or user incorrect')
+// }
 
-    const expires = new Date()
-    expires.setDate(expires.getDate() + 1)
-    try {
-        const token = await new SignJWT({
-            ...user,
-            roles: user.roles.toString(),
-            exp: expires.getTime(),
-        })
-            .setProtectedHeader({ alg: 'HS256' })
-            .setIssuedAt()
-            .setExpirationTime('1d')
-            .sign(JWT_SECRET)
-        ;(await cookies()).set(COOKIES.SESSION, token, {
-            expires,
-            path: '/',
-            httpOnly: true,
-        })
+// const expires = new Date()
+// expires.setDate(expires.getDate() + 1)
+// try {
+//     const token = await new SignJWT({
+//         ...user,
+//         roles: user.roles.toString(),
+//         exp: expires.getTime(),
+//     })
+//         .setProtectedHeader({ alg: 'HS256' })
+//         .setIssuedAt()
+//         .setExpirationTime('1d')
+//         .sign(JWT_SECRET)
+//     ;(await cookies()).set(COOKIES.SESSION, token, {
+//         expires,
+//         path: '/',
+//         httpOnly: true,
+//     })
 
-        const p = UserSchema.safeParse(user)
-        console.log(p)
-    } catch (error) {
-        console.error(error)
-        throw new Error('Internal error', { cause: error })
-    }
-}
+//     const p = UserSchema.safeParse(user)
+//     console.log(p)
+// } catch (error) {
+//     console.error(error)
+//     throw new Error('Internal error', { cause: error })
+// }
+// }

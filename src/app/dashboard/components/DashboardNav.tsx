@@ -12,6 +12,7 @@ import {
     LogOutIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
+import { ComponentType } from 'react'
 
 const adminNavItems = [
     {
@@ -36,16 +37,20 @@ const adminNavItems = [
     },
 ]
 
-const teacherNavItems = [
+const teacherNavItems: {
+    title: string
+    href: string
+    icon: ComponentType<{ className: string }>
+}[] = [
     {
         title: 'Dashboard',
-        href: '/teacher/dashboard',
+        href: app.dashboard(),
         icon: LayoutDashboardIcon,
     },
     {
-        title: 'Mis Reservas',
-        href: '/teacher/reservations',
-        icon: CalendarIcon,
+        title: 'Gestion de Usuarios',
+        href: app.dashboard.management.users(),
+        icon: BeakerIcon,
     },
 ]
 
@@ -59,7 +64,7 @@ export function DashboardNav() {
             <Link href={app.dashboard()}>
                 <div className='mb-8 flex items-center gap-2 px-4'>
                     <BeakerIcon className='text-primary h-6 w-6' />
-                    <span className='text-lg font-semibold'>LabReserve</span>
+                    <span className='text-lg font-semibold'>SOS</span>
                 </div>
             </Link>
 
@@ -89,7 +94,7 @@ export function DashboardNav() {
                         Configuración
                     </Link>
                     <Link
-                        href='/logout'
+                        href={app.auth.logout()}
                         className='text-muted-foreground hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                     >
                         <LogOutIcon className='h-4 w-4' />

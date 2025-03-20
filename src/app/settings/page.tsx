@@ -4,7 +4,7 @@ import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { DashboardShell } from '@/app/dashboard/components/DashboardShell'
 
 export const metadata: Metadata = {
-    title: 'Configuración | LabReserve',
+    title: 'Configuración | SOS',
     description: 'Gestiona tu cuenta y preferencias',
 }
 

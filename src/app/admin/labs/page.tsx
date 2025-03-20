@@ -6,7 +6,7 @@ import Link from 'next/link'
 import app from '@eliyya/type-routes'
 
 export const metadata: Metadata = {
-    title: 'Panel de Administrador | Laboratorios | LabReserve',
+    title: 'Panel de Administrador | Laboratorios | SOS',
     description: 'Gestión de Laboratorios',
 }
 

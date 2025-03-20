@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 export class BitField<T extends Record<string, bigint>> {
     static Flags: Record<string, bigint> = {}
     static DefaultBit: bigint = 0n
@@ -13,14 +14,15 @@ export class BitField<T extends Record<string, bigint>> {
     }
 
     static resolve<K extends Record<string, bigint>>(
-        bits: bigint | (keyof K)[] | BitField<K>,
+        bits: bigint | (keyof K)[] | keyof K | BitField<K>,
         flags: K,
     ): bigint {
         if (bits instanceof BitField) return bits.bitfield
+        if (typeof bits === 'string') return flags[bits]
         if (Array.isArray(bits))
             return bits.reduce((acc, key) => acc | (flags[key] || 0n), 0n)
         if (typeof bits === 'bigint') return bits
-        throw new TypeError(`Invalid bitfield input: ${bits}`)
+        throw new TypeError(`Invalid bitfield input: ${bits.toString()}`)
     }
 
     /**
@@ -45,11 +47,12 @@ export class BitField<T extends Record<string, bigint>> {
 
     has(bit: keyof T | bigint | (keyof T | bigint)[]): boolean {
         const flags = (this.constructor as typeof BitField).Flags
-        const resolved = Array.isArray(bit)
-            ? // @ts-ignore
-              bit.reduce((acc, b) => acc | BitField.resolve(b, flags), 0n)
-            : // @ts-ignore
-              BitField.resolve(bit, flags)
+        const resolved =
+            Array.isArray(bit) ?
+                // @ts-ignore
+                bit.reduce((acc, b) => acc | BitField.resolve(b, flags), 0n)
+                // @ts-ignore
+            :   BitField.resolve(bit, flags)
         // @ts-ignore
         return (this.bitfield & resolved) === resolved
     }
@@ -76,10 +79,13 @@ export class BitField<T extends Record<string, bigint>> {
 
     serialize(): Record<string, boolean> {
         const flags = (this.constructor as typeof BitField).Flags
-        return Object.keys(flags).reduce((acc, key) => {
-            acc[key] = this.has(key as keyof T)
-            return acc
-        }, {} as Record<string, boolean>)
+        return Object.keys(flags).reduce(
+            (acc, key) => {
+                acc[key] = this.has(key as keyof T)
+                return acc
+            },
+            {} as Record<string, boolean>,
+        )
     }
 
     toArray(): (keyof T)[] {
