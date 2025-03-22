@@ -8,6 +8,7 @@ import {
     PropertyForIDB,
 } from './types'
 import { SnowFlakeGenerator } from './SnowFlake'
+import { IDB_NAME } from '@/constants/client'
 
 class IndexDataBase extends Dexie {
     property_drafts!: Table<PropertyForIDB>
@@ -16,7 +17,7 @@ class IndexDataBase extends Dexie {
     conditions!: Table<ConditionForIDB>
 
     constructor() {
-        super('lm14cms_database')
+        super(IDB_NAME)
         this.version(1).stores({
             property_drafts: 'id', // 'id' como clave primaria
             user: 'id',
