@@ -3,7 +3,7 @@
 import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
 import { Search } from 'lucide-react'
-import { queryAtom } from '../global/users'
+import { queryAtom } from '@/global/management-users'
 
 export function SearchInput() {
     const [query, setQuery] = useAtom(queryAtom)

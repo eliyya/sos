@@ -15,47 +15,61 @@ import {
 import { User } from '@prisma/client'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { EditUserDialog } from './EditUserDialog'
+import { useSetAtom } from 'jotai'
+import { EditUserDialogAtom, userToEditAtom } from '@/global/management-users'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
+    const openEditUserDialog = useSetAtom(EditUserDialogAtom)
+    const setEditUser = useSetAtom(userToEditAtom)
 
     useEffect(() => {
         getUsers().then(setUsers)
     }, [])
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>Rol</TableHead>
-                    <TableHead>Options</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {users.map(user => (
-                    <TableRow key={user.id}>
-                        <TableCell>
-                            <div className='flex flex-col'>
-                                <label>{user.name}</label>
-                                <span>@{user.username}</span>
-                            </div>
-                        </TableCell>
-                        <TableCell>
-                            <Badges rolesBit={user.role} />
-                        </TableCell>
-                        <TableCell className='flex gap-0.5'>
-                            <Button size='icon'>
-                                <Pencil className='text-xs' />
-                            </Button>
-                            <Button size='icon'>
-                                <Trash2 className='w-xs text-xs' />
-                            </Button>
-                        </TableCell>
+        <>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Rol</TableHead>
+                        <TableHead>Options</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {users.map(user => (
+                        <TableRow key={user.id}>
+                            <TableCell>
+                                <div className='flex flex-col'>
+                                    <label>{user.name}</label>
+                                    <span>@{user.username}</span>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <Badges rolesBit={user.role} />
+                            </TableCell>
+                            <TableCell className='flex gap-0.5'>
+                                <Button
+                                    size='icon'
+                                    onClick={() => {
+                                        openEditUserDialog(true)
+                                        setEditUser(user)
+                                    }}
+                                >
+                                    <Pencil className='text-xs' />
+                                </Button>
+                                <Button size='icon'>
+                                    <Trash2 className='w-xs text-xs' />
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <EditUserDialog />
+        </>
     )
 }
 
