@@ -39,5 +39,5 @@ async function HeaderAdmin() {
     if (!user) return null
     if (!new RoleBitField(BigInt(user.role)).has([RoleBitField.Flags.Admin]))
         return null
-    return <Link href={app.admin.dashboard()}>Admin</Link>
+    return <Link href={app.dashboard()}>Admin</Link>
 }

@@ -12,6 +12,7 @@ import {
     LogOutIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
+import { ComponentType } from 'react'
 
 const adminNavItems = [
     {
@@ -36,16 +37,20 @@ const adminNavItems = [
     },
 ]
 
-const teacherNavItems = [
+const teacherNavItems: {
+    title: string
+    href: string
+    icon: ComponentType<{ className: string }>
+}[] = [
     {
         title: 'Dashboard',
-        href: '/teacher/dashboard',
+        href: app.dashboard(),
         icon: LayoutDashboardIcon,
     },
     {
-        title: 'Mis Reservas',
-        href: '/teacher/reservations',
-        icon: CalendarIcon,
+        title: 'Gestion de Usuarios',
+        href: app.dashboard.management.users(),
+        icon: BeakerIcon,
     },
 ]
 
@@ -55,44 +60,44 @@ export function DashboardNav() {
     const items = isAdmin ? adminNavItems : teacherNavItems
 
     return (
-        <nav className="w-64 min-h-screen bg-muted/50 border-r px-4 py-8">
-            <Link href={app()}>
-                <div className="flex items-center gap-2 px-4 mb-8">
-                    <BeakerIcon className="h-6 w-6 text-primary" />
-                    <span className="font-semibold text-lg">LabReserve</span>
+        <nav className='bg-muted/50 min-h-screen w-64 border-r px-4 py-8'>
+            <Link href={app.dashboard()}>
+                <div className='mb-8 flex items-center gap-2 px-4'>
+                    <BeakerIcon className='text-primary h-6 w-6' />
+                    <span className='text-lg font-semibold'>SOS</span>
                 </div>
             </Link>
 
-            <div className="space-y-2">
+            <div className='space-y-2'>
                 {items.map(item => (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            'flex items-center gap-3 px-4 py-2 text-sm rounded-md hover:bg-accent',
-                            pathname === item.href
-                                ? 'bg-accent text-accent-foreground font-medium'
-                                : 'text-muted-foreground',
+                            'hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm',
+                            pathname === item.href ?
+                                'bg-accent text-accent-foreground font-medium'
+                            :   'text-muted-foreground',
                         )}
                     >
-                        <item.icon className="h-4 w-4" />
+                        <item.icon className='h-4 w-4' />
                         {item.title}
                     </Link>
                 ))}
 
-                <div className="mt-auto pt-4 border-t">
+                <div className='mt-auto border-t pt-4'>
                     <Link
-                        href="/settings"
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground rounded-md hover:bg-accent"
+                        href='/settings'
+                        className='text-muted-foreground hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                     >
-                        <Settings2Icon className="h-4 w-4" />
+                        <Settings2Icon className='h-4 w-4' />
                         Configuración
                     </Link>
                     <Link
-                        href="/logout"
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground rounded-md hover:bg-accent"
+                        href={app.auth.logout()}
+                        className='text-muted-foreground hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                     >
-                        <LogOutIcon className="h-4 w-4" />
+                        <LogOutIcon className='h-4 w-4' />
                         Cerrar Sesión
                     </Link>
                 </div>

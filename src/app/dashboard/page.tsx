@@ -1,15 +1,15 @@
-import { Metadata } from 'next'
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import {
     AlertCircleIcon,
     BeakerIcon,
     CalendarIcon,
     UsersIcon,
 } from 'lucide-react'
+import { Metadata } from 'next'
 import { Card } from '@/components/Card'
+import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 
 export const metadata: Metadata = {
-    title: 'panel de Administrador | LabReserve',
+    title: 'Panel de Administrador | SOS',
     description: 'gestión de laboratorios y usuarios',
 }
 

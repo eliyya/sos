@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
 // import { AdminDashboard } from '@/components/admin/Dashboard'
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
-import { DashboardShell } from '@/components/dashboard/DashboardShell'
+import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
+import { DashboardShell } from '@/app/dashboard/components/DashboardShell'
 
 export const metadata: Metadata = {
-    title: 'panel de Administrador | LabReserve',
+    title: 'panel de Administrador | SOS',
     description: 'gestión de laboratorios y usuarios',
 }
 
