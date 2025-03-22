@@ -397,7 +397,7 @@ export const RetornableCompletSelect = forwardRef(
                             setCurrentValue(option as OnChangeValue<T, IM>) // Guardamos el nuevo valor
                             setIsChanged(
                                 JSON.stringify(
-                                    normalizeValue(currentValue),
+                                    normalizeValue(option),
                                     (k, v) =>
                                         typeof v === 'bigint' ?
                                             v.toString()
@@ -425,6 +425,7 @@ export const RetornableCompletSelect = forwardRef(
                                         'var(--color-yellow-500)'
                                     :   'var(--color-secondary)',
                                 borderRadius: 'var(--radius-lg)',
+                                boxShadow: 'var(--shadow-md)',
                                 paddingLeft:
                                     children ? '2rem' : base.paddingLeft,
                             }),
