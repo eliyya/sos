@@ -640,7 +640,7 @@ export function RetornableCompletCreatableSelect<
                 {label}
                 {required && <span className='ml-1'>*</span>}
             </label>
-            <div className='relative block'>
+            <div className='relative'>
                 {children}
                 <ReactCreatableSelect
                     {...props}
