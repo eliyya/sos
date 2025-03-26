@@ -12,22 +12,25 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { User } from '@prisma/client'
+import { STATUS, User } from '@prisma/client'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { EditUserDialog } from './EditUserDialog'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
     EditUserDialogAtom,
+    openArchiveUser,
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
+import { ArchiveUserDialog } from './DeleteUserDialog'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
     const openEditUserDialog = useSetAtom(EditUserDialogAtom)
-    const setEditUser = useSetAtom(userToEditAtom)
+    const setUserSelected = useSetAtom(userToEditAtom)
     const update = useAtomValue(updateUsersAtom)
+    const setArchiveUserDialog = useSetAtom(openArchiveUser)
 
     useEffect(() => {
         getUsers().then(setUsers)
@@ -44,36 +47,47 @@ export function UsersTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {users.map(user => (
-                        <TableRow key={user.id}>
-                            <TableCell>
-                                <div className='flex flex-col'>
-                                    <label>{user.name}</label>
-                                    <span>@{user.username}</span>
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <Badges rolesBit={user.role} />
-                            </TableCell>
-                            <TableCell className='flex gap-0.5'>
-                                <Button
-                                    size='icon'
-                                    onClick={() => {
-                                        openEditUserDialog(true)
-                                        setEditUser(user)
-                                    }}
-                                >
-                                    <Pencil className='text-xs' />
-                                </Button>
-                                <Button size='icon'>
-                                    <Trash2 className='w-xs text-xs' />
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                    {users
+                        .filter(u => u.status === STATUS.ACTIVE)
+                        .map(user => (
+                            <TableRow key={user.id}>
+                                <TableCell>
+                                    <div className='flex flex-col'>
+                                        <label>{user.name}</label>
+                                        <span>@{user.username}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badges rolesBit={user.role} />
+                                </TableCell>
+                                <TableCell className='flex gap-0.5'>
+                                    {/* Editar */}
+                                    <Button
+                                        size='icon'
+                                        onClick={() => {
+                                            openEditUserDialog(true)
+                                            setUserSelected(user)
+                                        }}
+                                    >
+                                        <Pencil className='text-xs' />
+                                    </Button>
+                                    {/* Archivar */}
+                                    <Button
+                                        size='icon'
+                                        onClick={() => {
+                                            setUserSelected(user)
+                                            setArchiveUserDialog(true)
+                                        }}
+                                    >
+                                        <Trash2 className='w-xs text-xs' />
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
                 </TableBody>
             </Table>
             <EditUserDialog />
+            <ArchiveUserDialog />
         </>
     )
 }

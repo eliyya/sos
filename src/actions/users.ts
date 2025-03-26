@@ -2,6 +2,7 @@
 
 // import { COOKIES, JWT_SECRET } from '@/lib/constants'
 import { db, snowflake } from '@/lib/db'
+import { STATUS } from '@prisma/client'
 import { hash } from 'bcrypt'
 // import { UserSchema } from '@/lib/schemas'
 // import app from '@eliyya/type-routes'
@@ -73,6 +74,23 @@ export async function editUser(formData: FormData) {
         return { error: null }
     } catch {
         return { error: 'Algo sucedio mal' }
+    }
+}
+
+export async function archiveUser(formData: FormData) {
+    const id = formData.get('id') as string
+    try {
+        await db.user.update({
+            where: {
+                id,
+            },
+            data: {
+                status: STATUS.ARCHIVED,
+            },
+        })
+        return { error: null }
+    } catch {
+        return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
 
