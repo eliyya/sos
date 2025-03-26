@@ -16,17 +16,22 @@ import { User } from '@prisma/client'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { EditUserDialog } from './EditUserDialog'
-import { useSetAtom } from 'jotai'
-import { EditUserDialogAtom, userToEditAtom } from '@/global/management-users'
+import { useAtomValue, useSetAtom } from 'jotai'
+import {
+    EditUserDialogAtom,
+    updateUsersAtom,
+    userToEditAtom,
+} from '@/global/management-users'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
     const openEditUserDialog = useSetAtom(EditUserDialogAtom)
     const setEditUser = useSetAtom(userToEditAtom)
+    const update = useAtomValue(updateUsersAtom)
 
     useEffect(() => {
         getUsers().then(setUsers)
-    }, [])
+    }, [update])
 
     return (
         <>

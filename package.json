@@ -86,5 +86,19 @@
     },
     "prisma": {
         "seed": "node --experimental-strip-types prisma/seed.ts"
+    },
+    "overrides": {
+        "@eliyya/type-routes": {
+            "next": "$next"
+        },
+        "@eliyya/typed-css-modules": {
+            "next": "$next"
+        },
+        "@serwist/next": {
+            "next": "$next"
+        },
+        "next-intl": {
+            "next": "$next"
+        }
     }
 }

@@ -51,6 +51,31 @@ export async function registerAdmin(data: RegisterProps) {
     })
 }
 
+export async function editUser(formData: FormData) {
+    let role = 0n
+    for (const rol of formData.getAll('roles').map(t => BigInt(t as string)))
+        role += rol
+    const username = formData.get('username') as string
+    const name = formData.get('name') as string
+    const id = formData.get('id') as string
+
+    try {
+        await db.user.update({
+            where: {
+                id,
+            },
+            data: {
+                name,
+                username,
+                role,
+            },
+        })
+        return { error: null }
+    } catch {
+        return { error: 'Algo sucedio mal' }
+    }
+}
+
 // /**
 //  *
 //  * @throws Password or user incorrect

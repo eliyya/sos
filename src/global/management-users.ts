@@ -11,3 +11,4 @@ export const userToEditAtom = atom<User>({
     username: '',
     status: STATUS.DELETED,
 })
+export const updateUsersAtom = atom<symbol>(Symbol())
