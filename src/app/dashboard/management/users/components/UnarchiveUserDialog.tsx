@@ -1,20 +1,20 @@
 'use client'
 
-import { archiveUser } from '@/actions/users'
+import { unarchiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
-    openArchiveUserAtom,
+    openUnarchiveUserAtom,
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Archive, Ban } from 'lucide-react'
+import { ArchiveRestore, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
-export function ArchiveUserDialog() {
-    const [open, setOpen] = useAtom(openArchiveUserAtom)
+export function UnarchiveUserDialog() {
+    const [open, setOpen] = useAtom(openUnarchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
     const user = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
@@ -26,15 +26,17 @@ export function ArchiveUserDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Archivar @{user.username}</span>
+                    <span className='text-3xl'>
+                        Desarchivar @{user.username}
+                    </span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de archivar a {user.name}?
+                    ¿Está seguro de desarchivar a {user.name}?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await archiveUser(data)
+                            const { error } = await unarchiveUser(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -57,6 +59,7 @@ export function ArchiveUserDialog() {
                     <input type='hidden' value={user.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
+                            variant={'secondary'}
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
@@ -68,11 +71,11 @@ export function ArchiveUserDialog() {
                         </Button>
                         <Button
                             type='submit'
-                            variant={'destructive'}
+                            variant={'default'}
                             disabled={inTransition}
                         >
-                            <Archive className='mr-2 h-5 w-5' />
-                            Archivar
+                            <ArchiveRestore className='mr-2 h-5 w-5' />
+                            Desarchivar
                         </Button>
                     </div>
                 </form>

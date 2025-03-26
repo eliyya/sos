@@ -48,7 +48,7 @@ export const DialogContent = forwardRef<
         <Content
             ref={ref}
             className={cn(
-                'bg-background fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 shadow-lg duration-200',
+                'bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 shadow-lg duration-200',
                 // sm:
                 'sm:rounded-lg',
                 // data-[state=open]:
@@ -62,9 +62,9 @@ export const DialogContent = forwardRef<
             {children}
             <Close
                 className={cn(
-                    'ring-offset-background absolute right-4 top-4 cursor-pointer rounded-sm opacity-70 transition-opacity',
+                    'ring-offset-background absolute top-4 right-4 cursor-pointer rounded-sm opacity-70 transition-opacity',
                     // focus:
-                    'focus:ring-ring focus:outline-none focus:ring-2 focus:ring-offset-2',
+                    'focus:ring-ring focus:ring-2 focus:ring-offset-2 focus:outline-none',
                     // hover:
                     'hover:opacity-100',
                     // disabled:
@@ -115,7 +115,7 @@ export const DialogTitle = ({
 }: ComponentProps<typeof Title>) => (
     <Title
         className={cn(
-            'text-xl font-semibold leading-none tracking-tight',
+            'text-xl leading-none font-semibold tracking-tight',
             className,
         )}
         {...props}

@@ -13,24 +13,25 @@ import {
     Table,
 } from '@/components/Table'
 import { STATUS, User } from '@prisma/client'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { EditUserDialog } from './EditUserDialog'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
     EditUserDialogAtom,
-    openArchiveUser,
+    openArchiveUserAtom,
+    showArchivedAtom,
     updateUsersAtom,
     userToEditAtom,
+    openUnarchiveUserAtom,
 } from '@/global/management-users'
 import { ArchiveUserDialog } from './DeleteUserDialog'
+import { UnarchiveUserDialog } from './UnarchiveUserDialog'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
-    const openEditUserDialog = useSetAtom(EditUserDialogAtom)
-    const setUserSelected = useSetAtom(userToEditAtom)
     const update = useAtomValue(updateUsersAtom)
-    const setArchiveUserDialog = useSetAtom(openArchiveUser)
+    const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
         getUsers().then(setUsers)
@@ -48,7 +49,11 @@ export function UsersTable() {
                 </TableHeader>
                 <TableBody>
                     {users
-                        .filter(u => u.status === STATUS.ACTIVE)
+                        .filter(
+                            u =>
+                                (u.status === STATUS.ACTIVE && !archived) ||
+                                (u.status === STATUS.ARCHIVED && archived),
+                        )
                         .map(user => (
                             <TableRow key={user.id}>
                                 <TableCell>
@@ -61,26 +66,7 @@ export function UsersTable() {
                                     <Badges rolesBit={user.role} />
                                 </TableCell>
                                 <TableCell className='flex gap-0.5'>
-                                    {/* Editar */}
-                                    <Button
-                                        size='icon'
-                                        onClick={() => {
-                                            openEditUserDialog(true)
-                                            setUserSelected(user)
-                                        }}
-                                    >
-                                        <Pencil className='text-xs' />
-                                    </Button>
-                                    {/* Archivar */}
-                                    <Button
-                                        size='icon'
-                                        onClick={() => {
-                                            setUserSelected(user)
-                                            setArchiveUserDialog(true)
-                                        }}
-                                    >
-                                        <Trash2 className='w-xs text-xs' />
-                                    </Button>
+                                    <Buttons user={user} />
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -88,6 +74,7 @@ export function UsersTable() {
             </Table>
             <EditUserDialog />
             <ArchiveUserDialog />
+            <UnarchiveUserDialog />
         </>
     )
 }
@@ -116,4 +103,67 @@ function Badges({ rolesBit }: BadgesProps) {
                 ))}
         </>
     )
+}
+
+interface ButtonsProps {
+    user: User
+}
+function Buttons({ user }: ButtonsProps) {
+    const openEditUserDialog = useSetAtom(EditUserDialogAtom)
+    const setUserSelected = useSetAtom(userToEditAtom)
+    const setArchiveUserDialog = useSetAtom(openArchiveUserAtom)
+    const openUnarchiveDialog = useSetAtom(openUnarchiveUserAtom)
+    if (user.status === STATUS.ACTIVE)
+        return (
+            <>
+                {/* Editar */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        openEditUserDialog(true)
+                        setUserSelected(user)
+                    }}
+                >
+                    <Pencil className='text-xs' />
+                </Button>
+                {/* Archivar */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setUserSelected(user)
+                        setArchiveUserDialog(true)
+                    }}
+                >
+                    <Archive className='w-xs text-xs' />
+                </Button>
+            </>
+        )
+    if (user.status === STATUS.ARCHIVED)
+        return (
+            <>
+                {/* Unarchive */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        console.log('clieck')
+
+                        setUserSelected(user)
+                        openUnarchiveDialog(true)
+                    }}
+                >
+                    <ArchiveRestore className='w-xs text-xs' />
+                </Button>
+                {/* Delete */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setUserSelected(user)
+                        setArchiveUserDialog(true)
+                    }}
+                >
+                    <Trash2 className='w-xs text-xs' />
+                </Button>
+            </>
+        )
+    return <></>
 }

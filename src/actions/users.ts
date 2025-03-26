@@ -94,6 +94,37 @@ export async function archiveUser(formData: FormData) {
     }
 }
 
+export async function unarchiveUser(formData: FormData) {
+    const id = formData.get('id') as string
+    try {
+        const user = await db.user.findFirst({
+            where: {
+                id,
+            },
+            select: {
+                status: true,
+            },
+        })
+        if (user && user.status === STATUS.DELETED)
+            return { error: 'Usuario eliminado, no se puede recuperar' }
+    } catch {
+        return { error: 'Algo sucedio mal, intente nuevamente' }
+    }
+    try {
+        await db.user.update({
+            where: {
+                id,
+            },
+            data: {
+                status: STATUS.ACTIVE,
+            },
+        })
+        return { error: null }
+    } catch {
+        return { error: 'Algo sucedio mal, intente nuevamente' }
+    }
+}
+
 // /**
 //  *
 //  * @throws Password or user incorrect

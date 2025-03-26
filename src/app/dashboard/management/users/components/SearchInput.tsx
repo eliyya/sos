@@ -3,10 +3,13 @@
 import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
 import { Search } from 'lucide-react'
-import { queryAtom } from '@/global/management-users'
+import { queryAtom, showArchivedAtom } from '@/global/management-users'
+import ToggleSwitch from '@/components/Switch'
 
-export function SearchInput() {
+export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)
+    const [archived, setArchived] = useAtom(showArchivedAtom)
+
     return (
         <div className='flex items-center gap-4'>
             <div className='relative flex-1'>
@@ -16,6 +19,13 @@ export function SearchInput() {
                     className='pl-8'
                     value={query}
                     onChange={e => setQuery(e.currentTarget.value)}
+                />
+            </div>
+            <div>
+                <ToggleSwitch
+                    label='Archivados'
+                    checked={archived}
+                    onCheckedChange={() => setArchived(v => !v)}
                 />
             </div>
         </div>

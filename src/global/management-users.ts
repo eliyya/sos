@@ -12,4 +12,6 @@ export const userToEditAtom = atom<User>({
     status: STATUS.DELETED,
 })
 export const updateUsersAtom = atom(Symbol())
-export const openArchiveUser = atom(false)
+export const openArchiveUserAtom = atom(false)
+export const showArchivedAtom = atom(false)
+export const openUnarchiveUserAtom = atom(false)
