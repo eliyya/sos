@@ -4,6 +4,8 @@
 import { db, snowflake } from '@/lib/db'
 import { STATUS } from '@prisma/client'
 import { hash } from 'bcrypt'
+import { randomUUID } from 'node:crypto'
+// import { getPaylodadUser } from './auth'
 // import { UserSchema } from '@/lib/schemas'
 // import app from '@eliyya/type-routes'
 // import { compare, hash } from 'bcrypt'
@@ -11,7 +13,20 @@ import { hash } from 'bcrypt'
 // import { cookies } from 'next/headers'
 // import * as z from 'zod'
 
-export async function getUsers() {
+export async function getUsers(not_me?: boolean) {
+    // const user = await getPaylodadUser()
+    // console.log(user)
+
+    // if (not_me && !user) return []
+    // if (not_me)
+    //     return db.user.findMany({
+    //         where: {
+    //             id: {
+    //                 not: user?.sub,
+    //             },
+    //         },
+    //     })
+    // else
     return db.user.findMany()
 }
 
@@ -124,6 +139,37 @@ export async function unarchiveUser(formData: FormData) {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
+
+export async function deleteUser(formData: FormData) {
+    const id = formData.get('id') as string
+    try {
+        await db.user.update({
+            where: {
+                id,
+            },
+            data: {
+                status: STATUS.DELETED,
+                name: randomUUID().replace(/-/g, ''),
+                username: randomUUID().replace(/-/g, ''),
+                role: 0n,
+            },
+        })
+        await db.auth.deleteMany({
+            where: {
+                user_id: id,
+            },
+        })
+        await db.session.deleteMany({
+            where: {
+                user_id: id,
+            },
+        })
+        return { error: null }
+    } catch {
+        return { error: 'Algo sucedio mal, intente nuevamente' }
+    }
+}
+// TODO: check role
 
 // /**
 //  *

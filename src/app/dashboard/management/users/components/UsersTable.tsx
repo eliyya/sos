@@ -24,9 +24,11 @@ import {
     updateUsersAtom,
     userToEditAtom,
     openUnarchiveUserAtom,
+    openDeleteUserAtom,
 } from '@/global/management-users'
-import { ArchiveUserDialog } from './DeleteUserDialog'
+import { ArchiveUserDialog } from './ArchiveUserDialog'
 import { UnarchiveUserDialog } from './UnarchiveUserDialog'
+import { DeleteUserDialog } from './DeleteUserDialog'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
@@ -34,7 +36,7 @@ export function UsersTable() {
     const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
-        getUsers().then(setUsers)
+        getUsers(true).then(setUsers)
     }, [update])
 
     return (
@@ -51,8 +53,9 @@ export function UsersTable() {
                     {users
                         .filter(
                             u =>
-                                (u.status === STATUS.ACTIVE && !archived) ||
-                                (u.status === STATUS.ARCHIVED && archived),
+                                u.id &&
+                                ((u.status === STATUS.ACTIVE && !archived) ||
+                                    (u.status === STATUS.ARCHIVED && archived)),
                         )
                         .map(user => (
                             <TableRow key={user.id}>
@@ -75,6 +78,7 @@ export function UsersTable() {
             <EditUserDialog />
             <ArchiveUserDialog />
             <UnarchiveUserDialog />
+            <DeleteUserDialog />
         </>
     )
 }
@@ -113,6 +117,7 @@ function Buttons({ user }: ButtonsProps) {
     const setUserSelected = useSetAtom(userToEditAtom)
     const setArchiveUserDialog = useSetAtom(openArchiveUserAtom)
     const openUnarchiveDialog = useSetAtom(openUnarchiveUserAtom)
+    const openDeleteDialog = useSetAtom(openDeleteUserAtom)
     if (user.status === STATUS.ACTIVE)
         return (
             <>
@@ -158,7 +163,7 @@ function Buttons({ user }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setUserSelected(user)
-                        setArchiveUserDialog(true)
+                        openDeleteDialog(true)
                     }}
                 >
                     <Trash2 className='w-xs text-xs' />

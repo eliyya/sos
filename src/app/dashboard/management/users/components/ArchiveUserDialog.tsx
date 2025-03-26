@@ -1,20 +1,20 @@
 'use client'
 
-import { deleteUser } from '@/actions/users'
+import { archiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
-    openDeleteUserAtom,
+    openArchiveUserAtom,
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
+import { Archive, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
-export function DeleteUserDialog() {
-    const [open, setOpen] = useAtom(openDeleteUserAtom)
+export function ArchiveUserDialog() {
+    const [open, setOpen] = useAtom(openArchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
     const user = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
@@ -26,16 +26,15 @@ export function DeleteUserDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Delete @{user.username}</span>
+                    <span className='text-3xl'>Archivar @{user.username}</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de eliminar a {user.name}?{' '}
-                    <span>Esta acción es irreversible</span>
+                    ¿Está seguro de archivar a {user.name}?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await deleteUser(data)
+                            const { error } = await archiveUser(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -72,8 +71,8 @@ export function DeleteUserDialog() {
                             variant={'destructive'}
                             disabled={inTransition}
                         >
-                            <Trash2 className='mr-2 h-5 w-5' />
-                            Eliminar
+                            <Archive className='mr-2 h-5 w-5' />
+                            Archivar
                         </Button>
                     </div>
                 </form>
