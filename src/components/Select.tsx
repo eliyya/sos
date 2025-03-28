@@ -249,6 +249,7 @@ export function CompletSelect<
                             backgroundColor: 'var(--color-background)',
                             borderColor: 'var(--border-secondary)',
                             borderRadius: 'var(--radius-md)',
+                            paddingLeft: children ? '2rem' : base.paddingLeft,
                         }),
                         menu: base => ({
                             ...base,
@@ -528,6 +529,8 @@ export function CompletCreatableSelect<
                             backgroundColor: 'var(--color-background)',
                             borderColor: 'var(--border-secondary)',
                             borderRadius: 'var(--radius-md)',
+                            boxShadow: 'var(--shadow-md)',
+                            paddingLeft: children ? '2rem' : base.paddingLeft,
                         }),
                         menu: base => ({
                             ...base,
