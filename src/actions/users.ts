@@ -1,5 +1,6 @@
 'use server'
 
+import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 // import { COOKIES, JWT_SECRET } from '@/lib/constants'
 import { db, snowflake } from '@/lib/db'
 import { STATUS } from '@prisma/client'
@@ -13,7 +14,8 @@ import { randomUUID } from 'node:crypto'
 // import { cookies } from 'next/headers'
 // import * as z from 'zod'
 
-export async function getUsers(not_me?: boolean) {
+export async function getUsers() {
+    // not_me?: boolean /* (param) */
     // const user = await getPaylodadUser()
     // console.log(user)
 
@@ -68,9 +70,10 @@ export async function registerAdmin(data: RegisterProps) {
 }
 
 export async function editUser(formData: FormData) {
-    let role = 0n
-    for (const rol of formData.getAll('roles').map(t => BigInt(t as string)))
-        role += rol
+    const role = formData
+        .getAll('roles')
+        .map(t => BigInt(t as string))
+        .reduce((a, b) => a + b, 0n)
     const username = formData.get('username') as string
     const name = formData.get('name') as string
     const id = formData.get('id') as string
@@ -82,7 +85,7 @@ export async function editUser(formData: FormData) {
             },
             data: {
                 name,
-                username,
+                username: username.toLowerCase(),
                 role,
             },
         })
@@ -167,6 +170,77 @@ export async function deleteUser(formData: FormData) {
         return { error: null }
     } catch {
         return { error: 'Algo sucedio mal, intente nuevamente' }
+    }
+}
+
+export async function createUser(formData: FormData) {
+    const name = formData.get('name') as string
+    const username = formData.get('username') as string
+    const role = formData
+        .getAll('roles')
+        .map(t => BigInt(t as string))
+        .reduce((a, b) => a + b, 0n)
+    const password = formData.get('password') as string
+    const confirm = formData.get('password-confirm') as string
+
+    if (!name || !username) return { error: 'Falta algun dato' }
+
+    const allRoles = new RoleBitField(
+        RoleFlags.Admin + RoleFlags.Teacher + RoleFlags.Anonymous,
+    )
+    if (role <= 0n || role > allRoles.toBigInt())
+        return { error: 'Rol fuera de rango' }
+
+    if (password) {
+        if (!/[A-Z]/.test(password))
+            return {
+                password: 'Password must contain at least one capital letter',
+            }
+        if (!/[0-9]/.test(password))
+            return { password: 'Password must contain at least one number' }
+        if (!/[!@#$%^&*]/.test(password))
+            return {
+                password:
+                    'Password must contain at least one special character like a !@#$%^&*',
+            }
+        if (password.length < 10)
+            return { password: 'Password must be at least 10 characters long' }
+    }
+
+    if (password && password !== confirm)
+        return { confirm: 'Las contraseñas no coinciden' }
+
+    console.log({
+        data: {
+            id: snowflake.generate(),
+            name,
+            username: username.toLowerCase(),
+            auths: {
+                create: {
+                    id: snowflake.generate(),
+                    password: await hash(password, 10),
+                },
+            },
+        },
+    })
+
+    try {
+        await db.user.create({
+            data: {
+                id: snowflake.generate(),
+                name,
+                username: username.toLowerCase(),
+                auths: {
+                    create: {
+                        id: snowflake.generate(),
+                        password: await hash(password, 10),
+                    },
+                },
+            },
+        })
+        return {}
+    } catch {
+        return { error: 'Algo sucedió, intenta más tarde' }
     }
 }
 // TODO: check role

@@ -95,7 +95,11 @@ export class BitField<T extends Record<string, bigint>> {
         ) as (keyof T)[]
     }
 
-    toJSON(): bigint {
+    toJSON(): string {
+        return this.bitfield.toString()
+    }
+
+    toBigInt() {
         return this.bitfield
     }
 }

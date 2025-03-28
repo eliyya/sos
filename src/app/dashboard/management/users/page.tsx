@@ -1,8 +1,8 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
-import { Button } from '@/components/Button'
-import { Plus } from 'lucide-react'
 import { Filters } from './components/SearchInput'
 import { UsersTable } from './components/UsersTable'
+import { CreateButton } from './components/CreateButton'
+import { CreateUserDialog } from './components/CreateUserDialog'
 
 export default async function UserManagementPage() {
     return (
@@ -12,10 +12,8 @@ export default async function UserManagementPage() {
                     heading='Usuarios'
                     text='Gestión de Usuarios.'
                 />
-                <Button>
-                    <Plus className='mr-3' />
-                    Crear Usuario
-                </Button>
+                <CreateButton />
+                <CreateUserDialog />
             </div>
             <Filters />
             <UsersTable />
