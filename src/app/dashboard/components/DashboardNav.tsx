@@ -50,6 +50,11 @@ const teacherNavItems: {
     {
         title: 'Gestion de Usuarios',
         href: app.dashboard.management.users(),
+        icon: UsersIcon,
+    },
+    {
+        title: 'Gestion de Materias',
+        href: app.dashboard.management.subjects(),
         icon: BeakerIcon,
     },
 ]

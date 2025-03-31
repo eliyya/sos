@@ -1,8 +1,5 @@
 'use client'
 
-import { getUsers } from '@/actions/users'
-import { RoleBitField } from '@/bitfields/RoleBitField'
-import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -12,31 +9,32 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { STATUS, User } from '@prisma/client'
+import { STATUS, Subject } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { EditUserDialog } from './EditUserDialog'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
-    EditUserDialogAtom,
-    openArchiveUserAtom,
+    editDialogAtom,
+    openArchiveAtom,
+    openDeleteAtom,
+    openUnarchiveAtom,
     showArchivedAtom,
-    updateUsersAtom,
-    userToEditAtom,
-    openUnarchiveUserAtom,
-    openDeleteUserAtom,
-} from '@/global/management-users'
-import { ArchiveUserDialog } from './ArchiveUserDialog'
-import { UnarchiveUserDialog } from './UnarchiveUserDialog'
-import { DeleteUserDialog } from './DeleteUserDialog'
+    subjectToEditAtom,
+    updateAtom,
+} from '@/global/managment-subjects'
+import { getSubjects } from '@/actions/subjects'
+import { EditDialog } from './EditDialog'
+import { ArchiveDialog } from './ArchiveDialog'
+import { UnarchiveDialog } from './UnarchiveDialog'
+import { DeleteDialog } from './DeleteDialog'
 
-export function UsersTable() {
-    const [users, setUsers] = useState<User[]>([])
-    const update = useAtomValue(updateUsersAtom)
+export function SubjectsTable() {
+    const [subjects, setSubjects] = useState<Subject[]>([])
+    const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
-        getUsers(/*true*/).then(setUsers)
+        getSubjects().then(setSubjects)
     }, [update])
 
     return (
@@ -44,13 +42,12 @@ export function UsersTable() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Rol</TableHead>
+                        <TableHead>Materia</TableHead>
                         <TableHead>Options</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {users
+                    {subjects
                         .filter(
                             u =>
                                 u.id &&
@@ -62,71 +59,41 @@ export function UsersTable() {
                                 <TableCell>
                                     <div className='flex flex-col'>
                                         <label>{user.name}</label>
-                                        <span>@{user.username}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell>
-                                    <Badges rolesBit={user.role} />
-                                </TableCell>
                                 <TableCell className='flex gap-0.5'>
-                                    <Buttons user={user} />
+                                    <Buttons subject={user} />
                                 </TableCell>
                             </TableRow>
                         ))}
                 </TableBody>
             </Table>
-            <EditUserDialog />
-            <ArchiveUserDialog />
-            <UnarchiveUserDialog />
-            <DeleteUserDialog />
-        </>
-    )
-}
-
-interface BadgesProps {
-    rolesBit: bigint
-}
-function Badges({ rolesBit }: BadgesProps) {
-    const roles = new RoleBitField(rolesBit)
-    return (
-        <>
-            {Object.entries(roles.serialize())
-                .filter(([, b]) => b)
-                .map(([f]) => (
-                    <Badge
-                        variant={
-                            f === 'Anonymous' ? 'secondary'
-                            : f === 'Admin' ?
-                                'default'
-                            :   'outline'
-                        }
-                        key={f}
-                    >
-                        {f}
-                    </Badge>
-                ))}
+            <EditDialog />
+            <ArchiveDialog />
+            <UnarchiveDialog />
+            <DeleteDialog />
         </>
     )
 }
 
 interface ButtonsProps {
-    user: User
+    subject: Subject
 }
-function Buttons({ user }: ButtonsProps) {
-    const openEditUserDialog = useSetAtom(EditUserDialogAtom)
-    const setUserSelected = useSetAtom(userToEditAtom)
-    const setArchiveUserDialog = useSetAtom(openArchiveUserAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveUserAtom)
-    const openDeleteDialog = useSetAtom(openDeleteUserAtom)
-    if (user.status === STATUS.ACTIVE)
+function Buttons({ subject }: ButtonsProps) {
+    const openEditDialog = useSetAtom(editDialogAtom)
+    const setSubjectSelected = useSetAtom(subjectToEditAtom)
+    const setArchiveDialog = useSetAtom(openArchiveAtom)
+    const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
+    const openDeleteDialog = useSetAtom(openDeleteAtom)
+    if (subject.status === STATUS.ACTIVE)
         return (
             <>
                 {/* Editar */}
                 <Button
                     size='icon'
                     onClick={() => {
-                        openEditUserDialog(true)
-                        setUserSelected(user)
+                        openEditDialog(true)
+                        setSubjectSelected(subject)
                     }}
                 >
                     <Pencil className='text-xs' />
@@ -135,24 +102,22 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setUserSelected(user)
-                        setArchiveUserDialog(true)
+                        setSubjectSelected(subject)
+                        setArchiveDialog(true)
                     }}
                 >
                     <Archive className='w-xs text-xs' />
                 </Button>
             </>
         )
-    if (user.status === STATUS.ARCHIVED)
+    if (subject.status === STATUS.ARCHIVED)
         return (
             <>
                 {/* Unarchive */}
                 <Button
                     size='icon'
                     onClick={() => {
-                        console.log('clieck')
-
-                        setUserSelected(user)
+                        setSubjectSelected(subject)
                         openUnarchiveDialog(true)
                     }}
                 >
@@ -162,7 +127,7 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setUserSelected(user)
+                        setSubjectSelected(subject)
                         openDeleteDialog(true)
                     }}
                 >

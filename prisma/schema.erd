@@ -241,7 +241,8 @@
           "GosKRiq9meDrD_QA6i3sK",
           "7ZweNCNi-fZLblAtEhxDx",
           "m-RdZpaYHxptHHoWKbJPB",
-          "lnAUHTHQcMnnRf-R9KicL"
+          "lnAUHTHQcMnnRf-R9KicL",
+          "z-CqUJEPbfUQm_kaI3ES9"
         ],
         "seqColumnIds": [
           "0UD6cGUgcTOEcH6q1hu8c",
@@ -251,7 +252,8 @@
           "aGFWVFBvCLFKo3v7tk7fT",
           "7ZweNCNi-fZLblAtEhxDx",
           "m-RdZpaYHxptHHoWKbJPB",
-          "lnAUHTHQcMnnRf-R9KicL"
+          "lnAUHTHQcMnnRf-R9KicL",
+          "z-CqUJEPbfUQm_kaI3ES9"
         ],
         "ui": {
           "x": 1351.1888,
@@ -262,7 +264,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1743087859513,
+          "updateAt": 1743439371810,
           "createAt": 1730740255813
         }
       },
@@ -3786,6 +3788,26 @@
           "updateAt": 1743088009424,
           "createAt": 1743088004261
         }
+      },
+      "z-CqUJEPbfUQm_kaI3ES9": {
+        "id": "z-CqUJEPbfUQm_kaI3ES9",
+        "tableId": "I1hjL8qBS0131Igh1LFk1",
+        "name": "status",
+        "comment": "",
+        "dataType": "STATUS",
+        "default": "ACTIVE",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1743439392218,
+          "createAt": 1743439371809
+        }
       }
     },
     "relationshipEntities": {
@@ -4276,7 +4298,7 @@
             "rL4Ya_BFciZO-tkb3J4ne"
           ],
           "x": 1351.1888,
-          "y": 145.1803,
+          "y": 157.1803,
           "direction": 1
         },
         "end": {
@@ -6600,6 +6622,17 @@
         "options(autoIncrement)": 1743088004657,
         "default": 1743088004657,
         "comment": 1743088004657
+      }
+    ],
+    "z-CqUJEPbfUQm_kaI3ES9": [
+      "tableColumnEntities",
+      1743439371808,
+      -1,
+      {
+        "name": 1743439375572,
+        "dataType": 1743439380801,
+        "options(notNull)": 1743439384417,
+        "default": 1743439392217
       }
     ]
   }
