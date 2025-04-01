@@ -8,7 +8,7 @@ import {
     editDialogAtom,
     subjectToEditAtom,
     updateAtom,
-} from '@/global/managment-subjects'
+} from '@/global/management-subjects'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'

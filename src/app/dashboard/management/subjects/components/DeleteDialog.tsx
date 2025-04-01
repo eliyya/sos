@@ -12,7 +12,7 @@ import {
     openDeleteAtom,
     subjectToEditAtom,
     updateAtom,
-} from '@/global/managment-subjects'
+} from '@/global/management-subjects'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
