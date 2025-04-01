@@ -3,7 +3,7 @@
 import { createSubject } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/managment-subjects'
+import { openCreateAtom, updateAtom } from '@/global/management-subjects'
 import {
     Dialog,
     DialogContent,

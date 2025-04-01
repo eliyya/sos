@@ -21,7 +21,7 @@ import {
     showArchivedAtom,
     subjectToEditAtom,
     updateAtom,
-} from '@/global/managment-subjects'
+} from '@/global/management-subjects'
 import { getSubjects } from '@/actions/subjects'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'

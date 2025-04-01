@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { openCreateAtom } from '@/global/managment-subjects'
+import { openCreateAtom } from '@/global/management-subjects'
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 
