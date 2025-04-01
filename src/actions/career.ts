@@ -3,18 +3,14 @@
 import { db, snowflake } from '@/lib/db'
 import { STATUS } from '@prisma/client'
 
-export async function createSubject(formData: FormData) {
+export async function createCareer(formData: FormData) {
     const name = formData.get('name') as string
-    const theory_hours = Number(formData.get('theory_hours') as string)
-    const practice_hours = Number(formData.get('practice_hours') as string)
 
     try {
-        await db.subject.create({
+        await db.career.create({
             data: {
                 id: snowflake.generate(),
                 name,
-                theory_hours,
-                practice_hours,
             },
         })
         return { error: null }
@@ -23,21 +19,17 @@ export async function createSubject(formData: FormData) {
     }
 }
 
-export async function editSubject(formData: FormData) {
+export async function editCareer(formData: FormData) {
     const id = formData.get('id') as string
     const name = formData.get('name') as string
-    const theory_hours = Number(formData.get('theory_hours') as string)
-    const practice_hours = Number(formData.get('practice_hours') as string)
 
     try {
-        await db.subject.update({
+        await db.career.update({
             where: {
                 id,
             },
             data: {
                 name,
-                theory_hours,
-                practice_hours,
             },
         })
         return { error: null }
@@ -46,14 +38,14 @@ export async function editSubject(formData: FormData) {
     }
 }
 
-export async function getSubjects() {
-    return await db.subject.findMany()
+export async function getCareers() {
+    return await db.career.findMany()
 }
 
-export async function archiveSubject(formData: FormData) {
+export async function archiveCareer(formData: FormData) {
     const id = formData.get('id') as string
     try {
-        await db.subject.update({
+        await db.career.update({
             where: {
                 id,
             },
@@ -66,10 +58,10 @@ export async function archiveSubject(formData: FormData) {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
-export async function unarchiveSubject(formData: FormData) {
+export async function unarchiveCareer(formData: FormData) {
     const id = formData.get('id') as string
     try {
-        await db.subject.update({
+        await db.career.update({
             where: {
                 id,
             },
@@ -83,18 +75,16 @@ export async function unarchiveSubject(formData: FormData) {
     }
 }
 
-export async function deleteSubject(formData: FormData) {
+export async function deleteCareer(formData: FormData) {
     const id = formData.get('id') as string
     try {
-        await db.subject.update({
+        await db.career.update({
             where: {
                 id,
             },
             data: {
                 status: STATUS.DELETED,
                 name: id,
-                theory_hours: 0,
-                practice_hours: 0,
             },
         })
         return { error: null }

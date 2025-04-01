@@ -167,6 +167,7 @@ model Career {
   name       String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+  status     STATUS   @default(ACTIVE)
 
   students Student[]
   classes  Class[]

@@ -10,6 +10,8 @@ import {
     UsersIcon,
     Settings2Icon,
     LogOutIcon,
+    BookMarkedIcon,
+    SquareUserRoundIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
 import { ComponentType } from 'react'
@@ -55,7 +57,12 @@ const teacherNavItems: {
     {
         title: 'Gestion de Materias',
         href: app.dashboard.management.subjects(),
-        icon: BeakerIcon,
+        icon: BookMarkedIcon,
+    },
+    {
+        title: 'Gestion de Carreras',
+        href: app.dashboard.management.career(),
+        icon: SquareUserRoundIcon,
     },
 ]
 
