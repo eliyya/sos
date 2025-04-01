@@ -5,12 +5,14 @@ import { STATUS } from '@prisma/client'
 
 export async function createCareer(formData: FormData) {
     const name = formData.get('name') as string
+    const alias = formData.get('alias') as string
 
     try {
         await db.career.create({
             data: {
                 id: snowflake.generate(),
                 name,
+                alias,
             },
         })
         return { error: null }
@@ -22,6 +24,7 @@ export async function createCareer(formData: FormData) {
 export async function editCareer(formData: FormData) {
     const id = formData.get('id') as string
     const name = formData.get('name') as string
+    const alias = formData.get('alias') as string
 
     try {
         await db.career.update({
@@ -30,6 +33,7 @@ export async function editCareer(formData: FormData) {
             },
             data: {
                 name,
+                alias,
             },
         })
         return { error: null }
@@ -40,6 +44,13 @@ export async function editCareer(formData: FormData) {
 
 export async function getCareers() {
     return await db.career.findMany()
+}
+export async function getActiveCareers() {
+    return await db.career.findMany({
+        where: {
+            status: STATUS.ACTIVE,
+        },
+    })
 }
 
 export async function archiveCareer(formData: FormData) {
@@ -85,6 +96,7 @@ export async function deleteCareer(formData: FormData) {
             data: {
                 status: STATUS.DELETED,
                 name: id,
+                alias: id,
             },
         })
         return { error: null }

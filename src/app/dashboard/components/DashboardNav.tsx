@@ -12,6 +12,7 @@ import {
     LogOutIcon,
     BookMarkedIcon,
     SquareUserRoundIcon,
+    CalendarCheckIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
 import { ComponentType } from 'react'
@@ -63,6 +64,11 @@ const teacherNavItems: {
         title: 'Gestion de Carreras',
         href: app.dashboard.management.career(),
         icon: SquareUserRoundIcon,
+    },
+    {
+        title: 'Gestion de Clases',
+        href: app.dashboard.management.classes(),
+        icon: CalendarCheckIcon,
     },
 ]
 

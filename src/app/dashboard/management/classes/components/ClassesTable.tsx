@@ -9,7 +9,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Career, STATUS } from '@prisma/client'
+import { Class, STATUS } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
@@ -21,20 +21,22 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
-import { getCareers } from '@/actions/career'
+} from '@/global/managment-class'
+import { getDisponibleClassesWithData } from '@/actions/class'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 
-export function CareersTable() {
-    const [entity, setEntity] = useState<Career[]>([])
+export function ClassesTable() {
+    const [entity, setEntity] = useState<
+        Awaited<ReturnType<typeof getDisponibleClassesWithData>>
+    >([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
-        getCareers().then(setEntity)
+        getDisponibleClassesWithData().then(setEntity)
     }, [update])
 
     return (
@@ -42,8 +44,9 @@ export function CareersTable() {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Materia</TableHead>
+                        <TableHead>Profesor</TableHead>
                         <TableHead>Carrera</TableHead>
-                        <TableHead>Alias</TableHead>
                         <TableHead>Options</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -57,8 +60,11 @@ export function CareersTable() {
                         )
                         .map(entity => (
                             <TableRow key={entity.id}>
-                                <TableCell>{entity.name}</TableCell>
-                                <TableCell>{entity.alias ?? ''}</TableCell>
+                                <TableCell>{entity.subject.name}</TableCell>
+                                <TableCell>{entity.teacher.name}</TableCell>
+                                <TableCell>
+                                    {entity.career.alias || entity.career.name}
+                                </TableCell>
                                 <TableCell className='flex gap-0.5'>
                                     <Buttons entity={entity} />
                                 </TableCell>
@@ -75,7 +81,7 @@ export function CareersTable() {
 }
 
 interface ButtonsProps {
-    entity: Career
+    entity: Class
 }
 function Buttons({ entity }: ButtonsProps) {
     const openEditDialog = useSetAtom(editDialogAtom)

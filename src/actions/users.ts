@@ -29,7 +29,24 @@ export async function getUsers() {
     //         },
     //     })
     // else
-    return db.user.findMany()
+    return db.user.findMany({
+        where: {
+            status: {
+                not: STATUS.DELETED,
+            },
+        },
+    })
+}
+
+export async function getTeachersActive() {
+    return db.user.findMany({
+        where: {
+            status: STATUS.ACTIVE,
+            role: {
+                in: RoleBitField.getCombinationsOf(RoleFlags.Teacher),
+            },
+        },
+    })
 }
 
 interface RegisterProps {

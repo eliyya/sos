@@ -3,18 +3,19 @@
 import { db, snowflake } from '@/lib/db'
 import { STATUS } from '@prisma/client'
 
-export async function createSubject(formData: FormData) {
-    const name = formData.get('name') as string
-    const theory_hours = Number(formData.get('theory_hours') as string)
-    const practice_hours = Number(formData.get('practice_hours') as string)
+export async function createClass(formData: FormData) {
+    const subject_id = formData.get('subject_id') as string
+    const teacher_id = formData.get('teacher_id') as string
+    const career_id = formData.get('career_id') as string
+    console.log({ subject_id, teacher_id, career_id })
 
     try {
-        await db.subject.create({
+        await db.class.create({
             data: {
                 id: snowflake.generate(),
-                name,
-                theory_hours,
-                practice_hours,
+                subject_id,
+                teacher_id,
+                career_id,
             },
         })
         return { error: null }
@@ -23,21 +24,21 @@ export async function createSubject(formData: FormData) {
     }
 }
 
-export async function editSubject(formData: FormData) {
+export async function editClass(formData: FormData) {
     const id = formData.get('id') as string
-    const name = formData.get('name') as string
-    const theory_hours = Number(formData.get('theory_hours') as string)
-    const practice_hours = Number(formData.get('practice_hours') as string)
+    const subject_id = formData.get('subject_id') as string
+    const teacher_id = formData.get('teacher_id') as string
+    const career_id = formData.get('career_id') as string
 
     try {
-        await db.subject.update({
+        await db.class.update({
             where: {
                 id,
             },
             data: {
-                name,
-                theory_hours,
-                practice_hours,
+                subject_id,
+                teacher_id,
+                career_id,
             },
         })
         return { error: null }
@@ -46,21 +47,41 @@ export async function editSubject(formData: FormData) {
     }
 }
 
-export async function getSubjects() {
-    return await db.subject.findMany()
+export async function getClasses() {
+    return await db.class.findMany()
 }
 
-export async function getSubjectsActive() {
-    return await db.subject.findMany({
+export async function getActiveClassesWithData() {
+    return await db.class.findMany({
         where: {
             status: STATUS.ACTIVE,
         },
+        include: {
+            subject: true,
+            teacher: true,
+            career: true,
+        },
     })
 }
-export async function archiveSubject(formData: FormData) {
+export async function getDisponibleClassesWithData() {
+    return await db.class.findMany({
+        where: {
+            status: {
+                not: STATUS.DELETED,
+            },
+        },
+        include: {
+            subject: true,
+            teacher: true,
+            career: true,
+        },
+    })
+}
+
+export async function archiveClass(formData: FormData) {
     const id = formData.get('id') as string
     try {
-        await db.subject.update({
+        await db.class.update({
             where: {
                 id,
             },
@@ -73,10 +94,10 @@ export async function archiveSubject(formData: FormData) {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
-export async function unarchiveSubject(formData: FormData) {
+export async function unarchiveClass(formData: FormData) {
     const id = formData.get('id') as string
     try {
-        await db.subject.update({
+        await db.class.update({
             where: {
                 id,
             },
@@ -90,18 +111,15 @@ export async function unarchiveSubject(formData: FormData) {
     }
 }
 
-export async function deleteSubject(formData: FormData) {
+export async function deleteClass(formData: FormData) {
     const id = formData.get('id') as string
     try {
-        await db.subject.update({
+        await db.class.update({
             where: {
                 id,
             },
             data: {
                 status: STATUS.DELETED,
-                name: id,
-                theory_hours: 0,
-                practice_hours: 0,
             },
         })
         return { error: null }

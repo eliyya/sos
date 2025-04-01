@@ -33,7 +33,7 @@ export class BitField<T extends Record<string, bigint>> {
      * getCombinationsOf(1n)  // [ 1n, 3n, 5n, 7n, 9n ]
      */
     static getCombinationsOf(flag: bigint): bigint[] {
-        const values = Object.values(BitField.Flags)
+        const values = Object.values(this.Flags)
         let max = 0n
         for (const value of values) {
             if (value > max) max = value
