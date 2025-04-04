@@ -184,6 +184,7 @@ model Student {
   created_at DateTime @default(now())
   career_id  String
   updated_at DateTime @default(now())
+  status     STATUS   @default(ACTIVE)
 
   career         Career           @relation(fields: [career_id], references: [id])
   visits         Visit[]

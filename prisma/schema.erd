@@ -170,7 +170,8 @@
           "-PwAx7ty5pmHREHIg8wCw",
           "RCIwuHqpTs-IVZ2iCWNHk",
           "6bjk1IxzNDjyNCFelSp-T",
-          "BGMwR-P0JmLf---LKbmyK"
+          "BGMwR-P0JmLf---LKbmyK",
+          "72pt_MCvbDsUG1DwnO-K8"
         ],
         "seqColumnIds": [
           "jRwkqTj1YK4bl7J8OAhBl",
@@ -184,7 +185,8 @@
           "30rkxE9olv_4NN08HMik5",
           "jzl-EOLoEC3tnt7Y0_BP9",
           "0QPY9JvP2hnqQiy1j8xBY",
-          "BGMwR-P0JmLf---LKbmyK"
+          "BGMwR-P0JmLf---LKbmyK",
+          "72pt_MCvbDsUG1DwnO-K8"
         ],
         "ui": {
           "x": 66.0649,
@@ -195,7 +197,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1743087865216,
+          "updateAt": 1743691768080,
           "createAt": 1730311404408
         }
       },
@@ -3830,6 +3832,26 @@
           "updateAt": 1743528508413,
           "createAt": 1743528441596
         }
+      },
+      "72pt_MCvbDsUG1DwnO-K8": {
+        "id": "72pt_MCvbDsUG1DwnO-K8",
+        "tableId": "e5UirBqrTLn5SCccmDT_p",
+        "name": "status",
+        "comment": "",
+        "dataType": "STATUS",
+        "default": "ACTIVE",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1743691788522,
+          "createAt": 1743691768080
+        }
       }
     },
     "relationshipEntities": {
@@ -3881,7 +3903,7 @@
             "6bjk1IxzNDjyNCFelSp-T"
           ],
           "x": 381.06489999999997,
-          "y": 260.3208,
+          "y": 284.3208,
           "direction": 8
         },
         "meta": {
@@ -3956,7 +3978,7 @@
             "YYP-409wpVoVtTRz2MHyK"
           ],
           "x": 171.0649,
-          "y": 260.3208,
+          "y": 284.3208,
           "direction": 8
         },
         "end": {
@@ -4460,7 +4482,7 @@
             "YYP-409wpVoVtTRz2MHyK"
           ],
           "x": 486.06489999999997,
-          "y": 148.3208,
+          "y": 160.3208,
           "direction": 2
         },
         "end": {
@@ -6665,6 +6687,17 @@
         "name": 1743528448615,
         "dataType": 1743528462647,
         "options(notNull)": 1743528508412
+      }
+    ],
+    "72pt_MCvbDsUG1DwnO-K8": [
+      "tableColumnEntities",
+      1743691768076,
+      -1,
+      {
+        "name": 1743691772185,
+        "dataType": 1743691779577,
+        "options(notNull)": 1743691781852,
+        "default": 1743691788521
       }
     ]
   }
