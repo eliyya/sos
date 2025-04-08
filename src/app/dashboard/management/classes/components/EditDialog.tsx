@@ -1,9 +1,7 @@
 'use client'
 
 import { getActiveCareers } from '@/actions/career'
-import { editClass } from '@/actions/class'
-import { getSubjectsActive } from '@/actions/subjects'
-import { getTeachersActive } from '@/actions/users'
+import { editStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { RetornableCompletSelect } from '@/components/Select'
@@ -11,8 +9,8 @@ import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-class'
-import { Career, Subject, User } from '@prisma/client'
+} from '@/global/managment-students'
+import { Career } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, UserIcon } from 'lucide-react'
@@ -24,17 +22,9 @@ export function EditDialog() {
     const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
-    const [teachers, setTeachers] = useState<User[]>([])
-    const [subjects, setSubjects] = useState<Subject[]>([])
     const [careers, setCareers] = useState<Career[]>([])
 
     useEffect(() => {
-        getTeachersActive().then(users => {
-            setTeachers(users)
-        })
-        getSubjectsActive().then(subjects => {
-            setSubjects(subjects)
-        })
         getActiveCareers().then(careers => {
             setCareers(careers)
         })
@@ -48,11 +38,13 @@ export function EditDialog() {
                 <DialogTitle>
                     <span className='text-3xl'>Editar Clase</span>
                 </DialogTitle>
-                <DialogDescription>Edita la clase {old.id}</DialogDescription>
+                <DialogDescription>
+                    Edita {old.firstname} {old.lastname}
+                </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await editClass(data)
+                            const { error } = await editStudent(data)
                             if (error) setMessage(error)
                             else {
                                 setTimeout(
@@ -70,37 +62,7 @@ export function EditDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={old.id} name='id' />
-                    <RetornableCompletSelect
-                        defaultValue={{
-                            label: teachers.find(t => t.id === old.teacher_id)
-                                ?.name,
-                            value: old.teacher_id,
-                        }}
-                        label='Profesor'
-                        name='teacher_id'
-                        options={teachers.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletSelect>
-                    <RetornableCompletSelect
-                        defaultValue={{
-                            label: subjects.find(t => t.id === old.subject_id)
-                                ?.name,
-                            value: old.subject_id,
-                        }}
-                        label='Materia'
-                        name='subject_id'
-                        options={subjects.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletSelect>
+                    <input type='hidden' value={old.nc} name='nc' />
                     <RetornableCompletSelect
                         defaultValue={{
                             label: careers.find(t => t.id === old.career_id)

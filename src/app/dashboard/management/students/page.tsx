@@ -2,7 +2,7 @@ import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'
 import { Filters } from './components/SearchInput'
-import { CareersTable } from './components/CareersTable'
+import { EntityTable } from './components/EntityTable'
 
 export default async function CareersPage() {
     return (
@@ -16,7 +16,7 @@ export default async function CareersPage() {
                 <CreateSubjectDialog />
             </div>
             <Filters />
-            <CareersTable />
+            <EntityTable />
         </>
     )
 }

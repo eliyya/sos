@@ -1,9 +1,7 @@
 'use client'
 
+import { unarchiveStudent } from '@/actions/students'
 import { getActiveCareers } from '@/actions/career'
-import { unarchiveClass } from '@/actions/class'
-import { getSubjectsActive } from '@/actions/subjects'
-import { getTeachersActive } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { CompletInput } from '@/components/Inputs'
@@ -11,8 +9,8 @@ import {
     openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-class'
-import { User, Subject, Career } from '@prisma/client'
+} from '@/global/managment-students'
+import { Career } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban, UserIcon } from 'lucide-react'
@@ -24,17 +22,9 @@ export function UnarchiveDialog() {
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
-    const [teachers, setTeachers] = useState<User[]>([])
-    const [subjects, setSubjects] = useState<Subject[]>([])
     const [careers, setCareers] = useState<Career[]>([])
 
     useEffect(() => {
-        getTeachersActive().then(users => {
-            setTeachers(users)
-        })
-        getSubjectsActive().then(subjects => {
-            setSubjects(subjects)
-        })
         getActiveCareers().then(careers => {
             setCareers(careers)
         })
@@ -46,15 +36,15 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Desarchivar Clase</span>
+                    <span className='text-3xl'>Desarchivar Estudiante</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de desarchivar esta clase?
+                    ¿Está seguro de desarchivar este estudiante?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await unarchiveClass(data)
+                            const { error } = await unarchiveStudent(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -74,27 +64,7 @@ export function UnarchiveDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={entity.id} name='id' />
-                    <CompletInput
-                        label='Profesor'
-                        name='teacher_id'
-                        disabled
-                        value={
-                            teachers.find(t => t.id === entity.teacher_id)?.name
-                        }
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
-                    <CompletInput
-                        label='Materia'
-                        name='subject_id'
-                        disabled
-                        value={
-                            subjects.find(s => s.id === entity.subject_id)?.name
-                        }
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                    <input type='hidden' value={entity.nc} name='nc' />
                     <CompletInput
                         label='Carrera'
                         name='career_id'

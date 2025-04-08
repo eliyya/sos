@@ -1,13 +1,13 @@
 'use client'
 
-import { archiveCareer } from '@/actions/career'
+import { archiveStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
     openArchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
+} from '@/global/managment-students'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
@@ -26,15 +26,16 @@ export function ArchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Archivar Carrera</span>
+                    <span className='text-3xl'>Archivar Estudiante</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de archivar a {entity.name}?
+                    ¿Está seguro de archivar a {entity.firstname}{' '}
+                    {entity.lastname}?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await archiveCareer(data)
+                            const { error } = await archiveStudent(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -54,7 +55,7 @@ export function ArchiveDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={entity.id} name='id' />
+                    <input type='hidden' value={entity.nc} name='nc' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

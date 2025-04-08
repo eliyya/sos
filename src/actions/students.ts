@@ -13,6 +13,19 @@ export async function getStudents() {
     })
 }
 
+export async function getStudentsWithCareer() {
+    return db.student.findMany({
+        where: {
+            status: {
+                not: STATUS.DELETED,
+            },
+        },
+        include: {
+            career: true,
+        },
+    })
+}
+
 export async function getStudentsActive() {
     return db.student.findMany({
         where: {

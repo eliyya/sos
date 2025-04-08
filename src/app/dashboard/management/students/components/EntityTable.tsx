@@ -9,7 +9,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Career, STATUS } from '@prisma/client'
+import { STATUS, Student } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
@@ -21,20 +21,22 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
-import { getCareers } from '@/actions/career'
+} from '@/global/managment-students'
+import { getStudentsWithCareer } from '@/actions/students'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 
-export function CareersTable() {
-    const [entity, setEntity] = useState<Career[]>([])
+export function EntityTable() {
+    const [entity, setEntity] = useState<
+        Awaited<ReturnType<typeof getStudentsWithCareer>>
+    >([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
-        getCareers().then(setEntity)
+        getStudentsWithCareer().then(setEntity)
     }, [update])
 
     return (
@@ -42,8 +44,10 @@ export function CareersTable() {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Apellido</TableHead>
                         <TableHead>Carrera</TableHead>
-                        <TableHead>Alias</TableHead>
+                        <TableHead>Semestre</TableHead>
                         <TableHead>Options</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -51,14 +55,17 @@ export function CareersTable() {
                     {entity
                         .filter(
                             u =>
-                                u.id &&
-                                ((u.status === STATUS.ACTIVE && !archived) ||
-                                    (u.status === STATUS.ARCHIVED && archived)),
+                                (u.status === STATUS.ACTIVE && !archived) ||
+                                (u.status === STATUS.ARCHIVED && archived),
                         )
                         .map(entity => (
-                            <TableRow key={entity.id}>
-                                <TableCell>{entity.name}</TableCell>
-                                <TableCell>{entity.alias ?? ''}</TableCell>
+                            <TableRow key={entity.nc}>
+                                <TableCell>{entity.firstname}</TableCell>
+                                <TableCell>{entity.lastname}</TableCell>
+                                <TableCell>
+                                    {entity.career.alias ?? entity.career.name}
+                                </TableCell>
+                                <TableCell>{entity.semester}</TableCell>
                                 <TableCell className='flex gap-0.5'>
                                     <Buttons entity={entity} />
                                 </TableCell>
@@ -75,7 +82,7 @@ export function CareersTable() {
 }
 
 interface ButtonsProps {
-    entity: Career
+    entity: Student
 }
 function Buttons({ entity }: ButtonsProps) {
     const openEditDialog = useSetAtom(editDialogAtom)

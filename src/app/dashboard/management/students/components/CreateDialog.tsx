@@ -1,41 +1,43 @@
 'use client'
 
-import { createCareer } from '@/actions/career'
+import { createStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/managment-career'
-import {
-    Dialog,
-    DialogContent,
-    // DialogDescription,
-    DialogTitle,
-} from '@/components/Dialog'
+import { openCreateAtom, updateAtom } from '@/global/managment-students'
+import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
-import { User, Save } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { User, Save, UserIcon } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+import { CompletSelect } from '@/components/Select'
+import { getActiveCareers } from '@/actions/career'
+import { Career } from '@prisma/client'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
+    const [careers, setCareers] = useState<Career[]>([])
+
+    useEffect(() => {
+        getActiveCareers().then(careers => {
+            setCareers(careers)
+        })
+    }, [])
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Crear Carrera</span>
+                    <span className='text-3xl'>Crear Estudiante</span>
                 </DialogTitle>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
                 </DialogDescription> */}
                 <form
                     action={data => {
-                        console.log(Object.fromEntries(data.entries()))
-
                         startTransition(async () => {
-                            const { error } = await createCareer(data)
-
+                            const { error } = await createStudent(data)
                             if (error) setMessage(error)
                             else {
                                 setTimeout(
@@ -58,20 +60,38 @@ export function CreateSubjectDialog() {
                     )}
                     <CompletInput
                         required
-                        label='Nombre'
+                        label='Nombres'
                         type='text'
-                        name='name'
+                        name='firstname'
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </CompletInput>
                     <CompletInput
                         required
-                        label='Alias'
+                        label='Apellidos'
                         type='text'
-                        name='alias'
+                        name='lastname'
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </CompletInput>
+                    <CompletInput
+                        required
+                        label='Semestre'
+                        type='number'
+                        name='semester'
+                    >
+                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    </CompletInput>
+                    <CompletSelect
+                        label='Carrera'
+                        name='career_id'
+                        options={careers.map(t => ({
+                            label: t.name,
+                            value: t.id,
+                        }))}
+                    >
+                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    </CompletSelect>
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

@@ -1,12 +1,15 @@
-import { Class, STATUS } from '@prisma/client'
+import { STATUS, Student } from '@prisma/client'
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')
 export const editDialogAtom = atom(false)
-export const entityToEditAtom = atom<Omit<Class, 'created_at' | 'updated_at'>>({
-    id: '',
-    subject_id: '',
-    teacher_id: '',
+export const entityToEditAtom = atom<
+    Omit<Student, 'created_at' | 'updated_at'>
+>({
+    nc: '',
+    lastname: '',
+    firstname: '',
+    semester: 0,
     career_id: '',
     status: STATUS.ACTIVE,
 })
