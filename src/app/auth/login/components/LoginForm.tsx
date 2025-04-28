@@ -14,7 +14,6 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { getMyIp } from '@/lib/ip'
 import { getDeviceInfo } from '@/lib/device'
-import { idb } from '@/lib/idb'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
@@ -49,12 +48,7 @@ export function LoginForm() {
                     } else if (status === LoginFormStatus.success) {
                         const r = await refreshTokenAction({ refreshToken })
                         if (!r.error) {
-                            // save agent in idb
-                            idb.user.clear().then(async () => {
-                                // redirect to dashboard
-                                replace(app.dashboard())
-                            })
-                            // const catFrom = await syncCategoriesFromDB()
+                            replace(app.dashboard())
                         }
                     }
                 })

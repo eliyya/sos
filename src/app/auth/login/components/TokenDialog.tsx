@@ -21,7 +21,6 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { getDeviceInfo } from '@/lib/device'
 import { getMyIp } from '@/lib/ip'
-import { idb } from '@/lib/idb'
 
 export function ResetPasswordDialog() {
     const t = useTranslations('app.auth.verify.components.VerifyForm')
@@ -63,10 +62,7 @@ export function ResetPasswordDialog() {
                                     refreshToken,
                                 })
                                 if (!r.error) {
-                                    // save agent in idb
-                                    idb.user.clear().then(async () => {
-                                        replace(app.dashboard())
-                                    })
+                                    replace(app.dashboard())
                                 }
                             }
                         })

@@ -1,4 +1,4 @@
-import { COOKIES } from '@/lib/constants'
+import { COOKIES } from '@/constants/client'
 import app from '@eliyya/type-routes'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'

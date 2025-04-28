@@ -189,15 +189,15 @@
           "72pt_MCvbDsUG1DwnO-K8"
         ],
         "ui": {
-          "x": 66.0649,
-          "y": 36.3208,
+          "x": 67.0649,
+          "y": 35.3208,
           "zIndex": 59,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1743691768080,
+          "updateAt": 1744165548291,
           "createAt": 1730311404408
         }
       },
@@ -3902,8 +3902,8 @@
           "columnIds": [
             "6bjk1IxzNDjyNCFelSp-T"
           ],
-          "x": 381.06489999999997,
-          "y": 284.3208,
+          "x": 382.06489999999997,
+          "y": 283.3208,
           "direction": 8
         },
         "meta": {
@@ -3977,8 +3977,8 @@
           "columnIds": [
             "YYP-409wpVoVtTRz2MHyK"
           ],
-          "x": 171.0649,
-          "y": 284.3208,
+          "x": 172.0649,
+          "y": 283.3208,
           "direction": 8
         },
         "end": {
@@ -4481,8 +4481,8 @@
           "columnIds": [
             "YYP-409wpVoVtTRz2MHyK"
           ],
-          "x": 486.06489999999997,
-          "y": 160.3208,
+          "x": 487.06489999999997,
+          "y": 159.3208,
           "direction": 2
         },
         "end": {

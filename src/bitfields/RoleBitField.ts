@@ -1,4 +1,4 @@
-import { BitField } from '../lib/BitField.ts'
+import { BitField } from '../classes/BitField.ts'
 
 export const RoleFlags = {
     Admin: 1n << 0n,

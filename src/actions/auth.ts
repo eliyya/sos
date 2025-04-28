@@ -1,5 +1,5 @@
 'use server'
-import { COOKIES } from '@/lib/constants'
+import { COOKIES } from '@/constants/client'
 import { cookies } from 'next/headers'
 import { ENCODED_JWT_SECRET } from '@/constants/server'
 import { db, snowflake } from '@/lib/db'
