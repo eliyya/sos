@@ -144,7 +144,6 @@ export async function refreshToken({
 export async function login(
     data: FormData,
     dinfo: {
-        ip: string
         browser: string
         device: string
         os: string
@@ -215,6 +214,7 @@ export async function login(
     const JWT_SECRET_LOGIN = randomBytes(16).toString('hex')
     const dev = await registerDevice({
         ...dinfo,
+        ip: (await cookies()).get('x-forwarded-for')?.value ?? 'unknown',
         user_id: user.id,
         secret: JWT_SECRET_LOGIN,
     })

@@ -12,7 +12,6 @@ import { useAtom, useSetAtom } from 'jotai'
 import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { getMyIp } from '@/lib/ip'
 import { getDeviceInfo } from '@/lib/device'
 
 export function LoginForm() {
@@ -30,14 +29,13 @@ export function LoginForm() {
         <form
             action={data => {
                 startTransition(async () => {
-                    const { ip } = await getMyIp()
                     const { browser, device, os, model } = getDeviceInfo()
                     const {
                         refreshToken = '',
                         status,
                         errors,
                         message,
-                    } = await login(data, { ip, browser, device, os, model })
+                    } = await login(data, { browser, device, os, model })
                     if (status === LoginFormStatus.auth) {
                         return setOpen(true)
                     } else if (status === LoginFormStatus.error) {
