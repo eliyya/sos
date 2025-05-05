@@ -1,6 +1,6 @@
 'use client'
 
-import { editCareer } from '@/actions/career'
+import { editSoftware } from '@/actions/software'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
@@ -8,7 +8,7 @@ import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
+} from '@/global/managment-software'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
@@ -27,15 +27,15 @@ export function EditDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Editar Carrera</span>
+                    <span className='text-3xl'>Editar Software</span>
                 </DialogTitle>
                 <DialogDescription>
-                    Edita la carrera {old.name}
+                    Edita el software {old.name}
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await editCareer(data)
+                            const { error } = await editSoftware(data)
                             if (error) setMessage(error)
                             else {
                                 setTimeout(
@@ -60,15 +60,6 @@ export function EditDialog() {
                         label='Name'
                         type='text'
                         name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
-                    <RetornableCompletInput
-                        defaultValue={old.alias ?? ''}
-                        required
-                        label='Alias'
-                        type='text'
-                        name='alias'
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </RetornableCompletInput>

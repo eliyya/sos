@@ -9,34 +9,26 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { STATUS, Student } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import { Software } from '@prisma/client'
+import { Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
-    openArchiveAtom,
     openDeleteAtom,
-    openUnarchiveAtom,
-    showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
-import { getStudentsWithCareer } from '@/actions/students'
+} from '@/global/managment-software'
+import { getSoftware } from '@/actions/software'
 import { EditDialog } from './EditDialog'
-import { ArchiveDialog } from './ArchiveDialog'
-import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 
 export function EntityTable() {
-    const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getStudentsWithCareer>>
-    >([])
+    const [entity, setEntity] = useState<Software[]>([])
     const update = useAtomValue(updateAtom)
-    const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
-        getStudentsWithCareer().then(setEntity)
+        getSoftware().then(setEntity)
     }, [update])
 
     return (
@@ -45,100 +37,54 @@ export function EntityTable() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Nombre</TableHead>
-                        <TableHead>Apellido</TableHead>
-                        <TableHead>Carrera</TableHead>
-                        <TableHead>Semestre</TableHead>
                         <TableHead>Options</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {entity
-                        .filter(
-                            u =>
-                                (u.status === STATUS.ACTIVE && !archived) ||
-                                (u.status === STATUS.ARCHIVED && archived),
-                        )
-                        .map(entity => (
-                            <TableRow key={entity.nc}>
-                                <TableCell>{entity.firstname}</TableCell>
-                                <TableCell>{entity.lastname}</TableCell>
-                                <TableCell>
-                                    {entity.career.alias ?? entity.career.name}
-                                </TableCell>
-                                <TableCell>{entity.semester}</TableCell>
-                                <TableCell className='flex gap-0.5'>
-                                    <Buttons entity={entity} />
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                    {entity.map(entity => (
+                        <TableRow key={entity.id}>
+                            <TableCell>{entity.name}</TableCell>
+                            <TableCell className='flex gap-0.5'>
+                                <Buttons entity={entity} />
+                            </TableCell>
+                        </TableRow>
+                    ))}
                 </TableBody>
             </Table>
             <EditDialog />
-            <ArchiveDialog />
-            <UnarchiveDialog />
             <DeleteDialog />
         </>
     )
 }
-
 interface ButtonsProps {
-    entity: Student
+    entity: Software
 }
 function Buttons({ entity }: ButtonsProps) {
     const openEditDialog = useSetAtom(editDialogAtom)
     const setSubjectSelected = useSetAtom(entityToEditAtom)
-    const setArchiveDialog = useSetAtom(openArchiveAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
     const openDeleteDialog = useSetAtom(openDeleteAtom)
-    if (entity.status === STATUS.ACTIVE)
-        return (
-            <>
-                {/* Editar */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        openEditDialog(true)
-                        setSubjectSelected(entity)
-                    }}
-                >
-                    <Pencil className='text-xs' />
-                </Button>
-                {/* Archivar */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSubjectSelected(entity)
-                        setArchiveDialog(true)
-                    }}
-                >
-                    <Archive className='w-xs text-xs' />
-                </Button>
-            </>
-        )
-    if (entity.status === STATUS.ARCHIVED)
-        return (
-            <>
-                {/* Unarchive */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSubjectSelected(entity)
-                        openUnarchiveDialog(true)
-                    }}
-                >
-                    <ArchiveRestore className='w-xs text-xs' />
-                </Button>
-                {/* Delete */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSubjectSelected(entity)
-                        openDeleteDialog(true)
-                    }}
-                >
-                    <Trash2 className='w-xs text-xs' />
-                </Button>
-            </>
-        )
-    return <></>
+    return (
+        <>
+            {/* Editar */}
+            <Button
+                size='icon'
+                onClick={() => {
+                    openEditDialog(true)
+                    setSubjectSelected(entity)
+                }}
+            >
+                <Pencil className='text-xs' />
+            </Button>
+            {/* Delete */}
+            <Button
+                size='icon'
+                onClick={() => {
+                    setSubjectSelected(entity)
+                    openDeleteDialog(true)
+                }}
+            >
+                <Trash2 className='w-xs text-xs' />
+            </Button>
+        </>
+    )
 }

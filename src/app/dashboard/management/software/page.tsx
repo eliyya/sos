@@ -9,8 +9,8 @@ export default async function CareersPage() {
         <>
             <div className='flex items-center justify-between'>
                 <DashboardHeader
-                    heading='Carreras'
-                    text='Gestión de Carreras.'
+                    heading='Software'
+                    text='Gestión de Software.'
                 />
                 <CreateButton />
                 <CreateSubjectDialog />
