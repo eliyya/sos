@@ -54,6 +54,6 @@ handler.use(/^\/admin/, async ({ next, redirect }) => {
         !user ||
         !new RoleBitField(BigInt(user.role)).has(RoleBitField.Flags.Admin)
     )
-        return redirect(app.horario())
+        return redirect(app.schedule.null())
     return next()
 })
