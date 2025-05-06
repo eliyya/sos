@@ -13,9 +13,9 @@ import {
     BookMarkedIcon,
     SquareUserRoundIcon,
     CalendarCheckIcon,
+    LucideIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
-import { ComponentType } from 'react'
 
 const adminNavItems = [
     {
@@ -39,11 +39,11 @@ const adminNavItems = [
         icon: UsersIcon,
     },
 ]
-
+const MLinks = app.dashboard.management
 const teacherNavItems: {
     title: string
     href: string
-    icon: ComponentType<{ className: string }>
+    icon: LucideIcon
 }[] = [
     {
         title: 'Dashboard',
@@ -52,22 +52,32 @@ const teacherNavItems: {
     },
     {
         title: 'Gestion de Usuarios',
-        href: app.dashboard.management.users(),
+        href: MLinks.users(),
         icon: UsersIcon,
     },
     {
         title: 'Gestion de Materias',
-        href: app.dashboard.management.subjects(),
+        href: MLinks.subjects(),
         icon: BookMarkedIcon,
     },
     {
         title: 'Gestion de Carreras',
-        href: app.dashboard.management.career(),
+        href: MLinks.career(),
         icon: SquareUserRoundIcon,
     },
     {
         title: 'Gestion de Clases',
-        href: app.dashboard.management.classes(),
+        href: MLinks.classes(),
+        icon: CalendarCheckIcon,
+    },
+    {
+        title: 'Gestion de Estudiantes',
+        href: MLinks.students(),
+        icon: CalendarCheckIcon,
+    },
+    {
+        title: 'Gestion de Maquinas',
+        href: MLinks.machines(),
         icon: CalendarCheckIcon,
     },
 ]

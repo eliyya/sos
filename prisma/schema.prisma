@@ -212,6 +212,8 @@ model Visit {
 enum MACHINE_STATUS {
   AVAILABLE
   MAINTENANCE
+  IN_USE
+  OUT_OF_SERVICE
 }
 
 enum STATUS {
