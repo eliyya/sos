@@ -60,6 +60,14 @@ export function CreateSubjectDialog() {
                     )}
                     <CompletInput
                         required
+                        label='Numero de Control'
+                        type='text'
+                        name='nc'
+                    >
+                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    </CompletInput>
+                    <CompletInput
+                        required
                         label='Nombres'
                         type='text'
                         name='firstname'

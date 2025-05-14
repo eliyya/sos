@@ -13,6 +13,10 @@ export async function getStudents() {
     })
 }
 
+export async function findStudent(nc: string) {
+    return db.student.findFirst({ where: { nc }, include: { career: true } })
+}
+
 export async function getStudentsWithCareer() {
     return db.student.findMany({
         where: {
@@ -132,7 +136,8 @@ export async function createStudent(formData: FormData) {
     const firstname = formData.get('firstname') as string
     const nc = formData.get('nc') as string
     const semester = parseInt(formData.get('semester') as string)
-    const career_id = formData.get('carrer_id') as string
+    const career_id = formData.get('career_id') as string
+    console.log({ lastname, firstname, semester, career_id, nc })
 
     if (!lastname || !firstname || !semester || !career_id || !nc)
         return { error: 'Falta algun dato' }

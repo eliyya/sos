@@ -27,6 +27,7 @@ import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { minutesToTime } from '@/lib/utils'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
@@ -60,8 +61,12 @@ export function EntityTable() {
                         .map(entity => (
                             <TableRow key={entity.id}>
                                 <TableCell>{entity.name}</TableCell>
-                                <TableCell>{entity.open_hour}</TableCell>
-                                <TableCell>{entity.close_hour}</TableCell>
+                                <TableCell>
+                                    {minutesToTime(entity.open_hour)}
+                                </TableCell>
+                                <TableCell>
+                                    {minutesToTime(entity.close_hour)}
+                                </TableCell>
                                 <TableCell>
                                     {entity.type === 'LABORATORY' ?
                                         'Laboratorio'

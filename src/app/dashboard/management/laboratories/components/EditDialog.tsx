@@ -10,6 +10,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-laboratory'
+import { minutesToTime } from '@/lib/utils'
 import { LABORATORY_TYPE } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -74,7 +75,7 @@ export function EditDialog() {
                         label='Apertura'
                         type='time'
                         name='open_hour'
-                        defaultValue={old.open_hour + ''}
+                        defaultValue={minutesToTime(old.open_hour) + ''}
                         // TODO : fix this
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
@@ -84,7 +85,7 @@ export function EditDialog() {
                         label='Cierre'
                         type='time'
                         name='close_hour'
-                        defaultValue={old.close_hour + ''}
+                        defaultValue={minutesToTime(old.close_hour) + ''}
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </RetornableCompletInput>
