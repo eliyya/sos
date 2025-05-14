@@ -14,6 +14,9 @@ import {
     SquareUserRoundIcon,
     CalendarCheckIcon,
     LucideIcon,
+    HouseWifiIcon,
+    ComputerIcon,
+    GraduationCapIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
 
@@ -73,12 +76,17 @@ const teacherNavItems: {
     {
         title: 'Gestion de Estudiantes',
         href: MLinks.students(),
-        icon: CalendarCheckIcon,
+        icon: GraduationCapIcon,
     },
     {
         title: 'Gestion de Maquinas',
         href: MLinks.machines(),
-        icon: CalendarCheckIcon,
+        icon: ComputerIcon,
+    },
+    {
+        title: 'Gestion de Laboratorios',
+        href: MLinks.laboratories(),
+        icon: HouseWifiIcon,
     },
 ]
 

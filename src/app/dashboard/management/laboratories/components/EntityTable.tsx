@@ -9,7 +9,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { STATUS, Student } from '@prisma/client'
+import { Laboratory, STATUS } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
@@ -21,8 +21,8 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
-import { getStudentsWithCareer } from '@/actions/students'
+} from '@/global/managment-laboratory'
+import { getLaboratory } from '@/actions/laboratory'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
@@ -30,13 +30,13 @@ import { DeleteDialog } from './DeleteDialog'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getStudentsWithCareer>>
+        Awaited<ReturnType<typeof getLaboratory>>
     >([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
-        getStudentsWithCareer().then(setEntity)
+        getLaboratory().then(setEntity)
     }, [update])
 
     return (
@@ -45,10 +45,9 @@ export function EntityTable() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Nombre</TableHead>
-                        <TableHead>Apellido</TableHead>
-                        <TableHead>Carrera</TableHead>
-                        <TableHead>Semestre</TableHead>
-                        <TableHead>Options</TableHead>
+                        <TableHead>Apertura</TableHead>
+                        <TableHead>Cierre</TableHead>
+                        <TableHead>Tipo</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -59,13 +58,15 @@ export function EntityTable() {
                                 (u.status === STATUS.ARCHIVED && archived),
                         )
                         .map(entity => (
-                            <TableRow key={entity.nc}>
-                                <TableCell>{entity.firstname}</TableCell>
-                                <TableCell>{entity.lastname}</TableCell>
+                            <TableRow key={entity.id}>
+                                <TableCell>{entity.name}</TableCell>
+                                <TableCell>{entity.open_hour}</TableCell>
+                                <TableCell>{entity.close_hour}</TableCell>
                                 <TableCell>
-                                    {entity.career.alias ?? entity.career.name}
+                                    {entity.type === 'LABORATORY' ?
+                                        'Laboratorio'
+                                    :   'Centro de Computo'}
                                 </TableCell>
-                                <TableCell>{entity.semester}</TableCell>
                                 <TableCell className='flex gap-0.5'>
                                     <Buttons entity={entity} />
                                 </TableCell>
@@ -82,7 +83,7 @@ export function EntityTable() {
 }
 
 interface ButtonsProps {
-    entity: Student
+    entity: Laboratory
 }
 function Buttons({ entity }: ButtonsProps) {
     const openEditDialog = useSetAtom(editDialogAtom)

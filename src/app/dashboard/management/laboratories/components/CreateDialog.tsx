@@ -1,29 +1,21 @@
 'use client'
 
-import { createStudent } from '@/actions/students'
+import { createlab } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/managment-students'
+import { openCreateAtom, updateAtom } from '@/global/managment-laboratory'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
-import { User, Save, UserIcon } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { User, Save } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { CompletSelect } from '@/components/Select'
-import { getActiveCareers } from '@/actions/career'
-import { Career } from '@prisma/client'
+import { LABORATORY_TYPE } from '@prisma/client'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
-    const [careers, setCareers] = useState<Career[]>([])
-
-    useEffect(() => {
-        getActiveCareers().then(careers => {
-            setCareers(careers)
-        })
-    }, [])
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -37,7 +29,7 @@ export function CreateSubjectDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await createStudent(data)
+                            const { error } = await createlab(data)
                             if (error) setMessage(error)
                             else {
                                 setTimeout(
@@ -60,37 +52,50 @@ export function CreateSubjectDialog() {
                     )}
                     <CompletInput
                         required
-                        label='Nombres'
+                        label='Nombre'
                         type='text'
-                        name='firstname'
+                        name='name'
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </CompletInput>
                     <CompletInput
                         required
-                        label='Apellidos'
-                        type='text'
-                        name='lastname'
+                        label='Apertura'
+                        type='time'
+                        name='open_hour'
+                        defaultValue={'08:00'}
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </CompletInput>
                     <CompletInput
                         required
-                        label='Semestre'
-                        type='number'
-                        name='semester'
+                        label='Cierre'
+                        type='time'
+                        name='close_hour'
+                        defaultValue={'20:00'}
                     >
                         <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </CompletInput>
                     <CompletSelect
-                        label='Carrera'
-                        name='career_id'
-                        options={careers.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
+                        required
+                        label='Tipo de Laboratorio'
+                        name='type'
+                        defaultValue={{
+                            value: LABORATORY_TYPE.LABORATORY,
+                            label: 'Laboratorio',
+                        }}
+                        options={[
+                            {
+                                value: LABORATORY_TYPE.LABORATORY,
+                                label: 'Laboratorio',
+                            },
+                            {
+                                value: LABORATORY_TYPE.COMPUTER_CENTER,
+                                label: 'Centro de Computo',
+                            },
+                        ]}
                     >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                        <User className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </CompletSelect>
 
                     <Button type='submit' disabled={inTransition}>

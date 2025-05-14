@@ -1,13 +1,13 @@
 'use client'
 
-import { unarchiveCareer } from '@/actions/career'
+import { unarchiveLaboratory } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
     openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
+} from '@/global/managment-laboratory'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
@@ -26,7 +26,7 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Desarchivar Carrera</span>
+                    <span className='text-3xl'>Desarchivar Laboratorio</span>
                 </DialogTitle>
                 <DialogDescription>
                     ¿Está seguro de desarchivar {entity.name}?
@@ -34,7 +34,7 @@ export function UnarchiveDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await unarchiveCareer(data)
+                            const { error } = await unarchiveLaboratory(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)

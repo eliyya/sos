@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { openCreateAtom } from '@/global/managment-students'
+import { openCreateAtom } from '@/global/managment-laboratory'
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 
@@ -11,7 +11,7 @@ export function CreateButton() {
     return (
         <Button onClick={() => openCreateUser(true)}>
             <Plus className='mr-3' />
-            Crear Estudiante
+            Crear Laboratorio
         </Button>
     )
 }

@@ -1,13 +1,13 @@
 'use client'
 
-import { archiveStudent } from '@/actions/students'
+import { archiveLaboratory } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
     openArchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
+} from '@/global/managment-laboratory'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
@@ -26,16 +26,15 @@ export function ArchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Archivar Estudiante</span>
+                    <span className='text-3xl'>Archivar Laboratorio</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de archivar a {entity.firstname}{' '}
-                    {entity.lastname}?
+                    ¿Está seguro de archivar a {entity.name}?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await archiveStudent(data)
+                            const { error } = await archiveLaboratory(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -55,7 +54,7 @@ export function ArchiveDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={entity.nc} name='nc' />
+                    <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

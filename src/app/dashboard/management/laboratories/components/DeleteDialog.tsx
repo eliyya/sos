@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteStudent } from '@/actions/students'
+import { deleteLaboratory } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -12,7 +12,7 @@ import {
     openDeleteAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
+} from '@/global/managment-laboratory'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -33,13 +33,12 @@ export function DeleteDialog() {
                     <span className='text-3xl'>Eliminar Estudiante</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de eliminar a {entity.firstname}{' '}
-                    {entity.lastname}?<span>Esta acción es irreversible</span>
+                    ¿Está seguro de eliminar a {entity.name}{' '}
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await deleteStudent(data)
+                            const { error } = await deleteLaboratory(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -59,7 +58,7 @@ export function DeleteDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={entity.nc} name='nc' />
+                    <input type='hidden' value={entity.id} name='nc' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}
