@@ -6,11 +6,16 @@ import { findStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
+import { errorAtom, updateTableAtom } from '@/global/cc'
 import { Career } from '@prisma/client'
-import { SaveIcon } from 'lucide-react'
+import { useSetAtom } from 'jotai'
+import { SquarePenIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 
-export function RegisterVisitForm() {
+interface RegisterVisitFormProps {
+    laboratory_id: string
+}
+export function RegisterVisitForm(props: RegisterVisitFormProps) {
     const [inTransition, startTransition] = useTransition()
     const [modified, setModified] = useState(true)
     const [name, setName] = useState('')
@@ -19,6 +24,8 @@ export function RegisterVisitForm() {
     const [semester, setSemester] = useState('')
     const [career_id, setCareerId] = useState('')
     const [careers, setCareers] = useState<Career[]>([])
+    const setError = useSetAtom(errorAtom)
+    const refreshTable = useSetAtom(updateTableAtom)
 
     useEffect(() => {
         async function fetchCareers() {
@@ -47,13 +54,25 @@ export function RegisterVisitForm() {
 
     return (
         <form
-            action={formData => {
-                registerVisit(formData)
+            action={async formData => {
+                const { error } = await registerVisit(formData)
+                if (error) return setError(error)
+                refreshTable(Symbol())
+                setNc('')
+                setName('')
+                setLastname('')
+                setSemester('')
+                setModified(true)
             }}
         >
-            <input type='hidden' name='laboratory_id' />
+            <input
+                type='hidden'
+                name='laboratory_id'
+                value={props.laboratory_id}
+            />
             <CompletInput
                 label='Numero de control'
+                required
                 value={nc}
                 onChange={e => {
                     setNc(e.currentTarget.value)
@@ -62,6 +81,7 @@ export function RegisterVisitForm() {
             ></CompletInput>
             <CompletInput
                 label='Nombres'
+                required
                 name='firstname'
                 value={name}
                 onChange={e => setName(e.currentTarget.value)}
@@ -69,6 +89,7 @@ export function RegisterVisitForm() {
             ></CompletInput>
             <CompletInput
                 label='Apellidos'
+                required
                 name='lastname'
                 value={lastname}
                 onChange={e => setLastname(e.currentTarget.value)}
@@ -76,6 +97,7 @@ export function RegisterVisitForm() {
             ></CompletInput>
             <CompletSelect
                 label='Carrera'
+                required
                 name='career_id'
                 value={{
                     label: careers.find(c => c.id === career_id)?.name,
@@ -93,6 +115,7 @@ export function RegisterVisitForm() {
                 options={careers.map(c => ({ label: c.name, value: c.id }))}
             ></CompletSelect>
             <CompletInput
+                required
                 label='Semestre'
                 name='semester'
                 type='number'
@@ -100,9 +123,13 @@ export function RegisterVisitForm() {
                 onChange={e => setSemester(e.currentTarget.value)}
                 disabled={!modified}
             ></CompletInput>
-            <Button type='submit' disabled={inTransition}>
-                <SaveIcon className='mr-2 h-5 w-5' />
-                Crear
+            <Button
+                type='submit'
+                className='mt-2 w-full'
+                disabled={inTransition}
+            >
+                <SquarePenIcon className='mr-2 h-5 w-5' />
+                Registrar visita
             </Button>
         </form>
     )

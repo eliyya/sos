@@ -6,6 +6,7 @@ import app from '@eliyya/type-routes'
 import { redirect } from 'next/navigation'
 import { RegisterVisitForm } from './components/RegisterVisitForm'
 import { VisitsTable } from './components/VisitsTable'
+import { ErrorDialog } from './components/ErrorDialog'
 
 const stats = [
     {
@@ -59,10 +60,11 @@ export default async function CCPage({ params }: CCPageProps) {
                 </section>
                 <div className='flex gap-4'>
                     <section className='w-1/3'>
-                        <RegisterVisitForm />
+                        <RegisterVisitForm laboratory_id={id} />
                     </section>
+                    <ErrorDialog />
                     <section className='w-2/3'>
-                        <VisitsTable />
+                        <VisitsTable laboratory_id={id} />
                     </section>
                 </div>
             </div>
