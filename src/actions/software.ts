@@ -1,6 +1,6 @@
 'use server'
 
-import { db, snowflake } from '@/lib/db'
+import { db, snowflake } from '@/prisma/db'
 
 export async function getSoftware() {
     return db.software.findMany()

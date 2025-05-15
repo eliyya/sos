@@ -1,7 +1,7 @@
 process.loadEnvFile()
-import { RoleFlags } from '../src/bitfields/RoleBitField.ts'
-import { SnowFlakeGenerator } from '../src/classes/SnowFlake.ts'
-import { PrismaClient } from '@prisma/client'
+import { RoleFlags } from '../bitfields/RoleBitField.ts'
+import { SnowFlakeGenerator } from '../classes/SnowFlake.ts'
+import { PrismaClient } from './client/client.ts'
 import { hash } from 'bcrypt'
 
 const db = new PrismaClient()

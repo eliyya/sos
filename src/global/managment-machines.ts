@@ -1,4 +1,5 @@
-import { Machine, MACHINE_STATUS } from '@prisma/client'
+import { Machine } from '@prisma/client'
+import { MACHINE_STATUS } from '@/prisma/client/enums'
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')

@@ -1,8 +1,8 @@
 'use server'
 
-import { db, snowflake } from '@/lib/db'
+import { db, snowflake } from '@/prisma/db'
 import { timeToMinutes } from '@/lib/utils'
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { LABORATORY_TYPE, STATUS } from '@/prisma/client/enums'
 
 export async function unarchiveLaboratory(formData: FormData) {
     const id = formData.get('id') as string

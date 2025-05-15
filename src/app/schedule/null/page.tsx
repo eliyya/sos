@@ -1,5 +1,5 @@
 import { Header } from '../../components/Header'
-import { db } from '@/lib/db'
+import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
 import { redirect } from 'next/navigation'
 

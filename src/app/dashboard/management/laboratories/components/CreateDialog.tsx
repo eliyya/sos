@@ -9,7 +9,7 @@ import { useAtom, useSetAtom } from 'jotai'
 import { User, Save } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { CompletSelect } from '@/components/Select'
-import { LABORATORY_TYPE } from '@prisma/client'
+import { LABORATORY_TYPE } from '@/prisma/client/enums'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)

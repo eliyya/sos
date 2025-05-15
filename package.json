@@ -12,7 +12,8 @@
     "dependencies": {
         "@eliyya/type-routes": "2.2.1",
         "@eliyya/typed-css-modules": "1.0.0",
-        "@prisma/client": "^6.7.0",
+        "@prisma/adapter-pg": "6.8.1",
+        "@prisma/client": "6.8.1",
         "@radix-ui/react-accordion": "1.2.3",
         "@radix-ui/react-alert-dialog": "1.1.6",
         "@radix-ui/react-aspect-ratio": "1.1.2",
@@ -79,13 +80,14 @@
         "postcss": "8.5.3",
         "prettier": "3.5.3",
         "prettier-plugin-tailwindcss": "0.6.11",
-        "prisma": "^6.7.0",
+        "prisma": "6.8.1",
         "prisma-docs-generator": "0.8.0",
         "tailwindcss": "4.0.14",
         "typescript": "5.8.2"
     },
     "prisma": {
-        "seed": "node --experimental-strip-types prisma/seed.ts"
+        "seed": "node --experimental-strip-types src/prisma/seed.ts",
+        "schema": "src/prisma/schema.prisma"
     },
     "overrides": {
         "@eliyya/type-routes": {
