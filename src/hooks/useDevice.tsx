@@ -1,4 +1,4 @@
-export function getDeviceInfo() {
+export function useDevice() {
     return {
         os: getOS(),
         browser: getBrowser(),

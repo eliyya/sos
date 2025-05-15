@@ -12,7 +12,7 @@ import { useAtom, useSetAtom } from 'jotai'
 import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { getDeviceInfo } from '@/lib/device'
+import { useDevice } from '@/hooks/useDevice'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
@@ -24,12 +24,12 @@ export function LoginForm() {
     const [passwordError, setPasswordError] = useState('')
     const [pending, startTransition] = useTransition()
     const { replace } = useRouter()
+    const { browser, device, os, model } = useDevice()
 
     return (
         <form
             action={data => {
                 startTransition(async () => {
-                    const { browser, device, os, model } = getDeviceInfo()
                     const {
                         refreshToken = '',
                         status,
