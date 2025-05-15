@@ -14,7 +14,7 @@ import { decodeJwt, jwtVerify, SignJWT } from 'jose'
 import { NEXT_PUBLIC_VERCEL_URL } from '@/env/client'
 import { wrapTry } from '@/lib/utils'
 import { randomBytes } from 'node:crypto'
-import { decrypt, encrypt } from '@/lib/encrypt'
+import { decrypt, encrypt } from '@/actions/encrypt'
 import { APP_NAME } from '@/constants/client'
 
 export async function getPaylodadUser() {
