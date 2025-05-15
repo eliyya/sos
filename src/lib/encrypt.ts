@@ -1,7 +1,7 @@
 'use server'
 
 import { ENCRYPTION_KEY } from '@/env/server'
-import { ALGORITHM } from './constants'
+import { ALGORITHM } from '@/constants/server'
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
 
 export async function encrypt(secret: string): Promise<string> {

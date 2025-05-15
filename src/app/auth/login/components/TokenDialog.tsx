@@ -20,8 +20,6 @@ import { LoginFormStatus } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { getDeviceInfo } from '@/lib/device'
-import { getMyIp } from '@/lib/ip'
-import { idb } from '@/lib/idb'
 
 export function ResetPasswordDialog() {
     const t = useTranslations('app.auth.verify.components.VerifyForm')
@@ -42,7 +40,6 @@ export function ResetPasswordDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { ip } = await getMyIp()
                             const { browser, device, os, model } =
                                 getDeviceInfo()
                             const {
@@ -50,7 +47,6 @@ export function ResetPasswordDialog() {
                                 status,
                                 errors,
                             } = await login(data, {
-                                ip,
                                 browser,
                                 device,
                                 os,
@@ -63,10 +59,7 @@ export function ResetPasswordDialog() {
                                     refreshToken,
                                 })
                                 if (!r.error) {
-                                    // save agent in idb
-                                    idb.user.clear().then(async () => {
-                                        replace(app.admin.dashboard())
-                                    })
+                                    replace(app.dashboard())
                                 }
                             }
                         })

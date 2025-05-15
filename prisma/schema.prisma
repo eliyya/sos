@@ -22,6 +22,7 @@ model User {
   created_at DateTime @default(now())
   username   String   @unique
   status     STATUS   @default(ACTIVE)
+  updated_at DateTime @default(now())
 
   auths              Auth[]
   practices          Practice[]
@@ -52,6 +53,8 @@ model Subject {
   created_at     DateTime @default(now())
   practice_hours Int
   theory_hours   Int
+  updated_at     DateTime @default(now())
+  status         STATUS   @default(ACTIVE)
 
   classes Class[]
 
@@ -82,6 +85,7 @@ model Class {
   career_id  String
   status     STATUS   @default(ACTIVE)
   created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
   subject        Subject          @relation(fields: [subject_id], references: [id])
   teacher        User             @relation(fields: [teacher_id], references: [id])
@@ -104,6 +108,7 @@ model Laboratory {
   close_hour Int
   type       LABORATORY_TYPE @default(LABORATORY)
   status     STATUS          @default(ACTIVE)
+  updated_at DateTime        @default(now())
 
   practices Practice[]
   machines  Machine[]
@@ -124,6 +129,7 @@ model Practice {
   observations  String?
   class_id      String
   status        STATUS   @default(ACTIVE)
+  updated_at    DateTime @default(now())
 
   user               User               @relation(fields: [user_id], references: [id])
   registered_by_user User               @relation("practice_registers", fields: [registered_by], references: [id])
@@ -134,8 +140,10 @@ model Practice {
 }
 
 model Software {
-  id   String @id
-  name String
+  id         String   @id
+  name       String
+  updated_at DateTime @default(now())
+  created_at DateTime @default(now())
 
   software_practices SoftwarePractice[]
   software_machines  SoftwareMachine[]
@@ -158,6 +166,9 @@ model Career {
   id         String   @id
   name       String   @unique
   created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  status     STATUS   @default(ACTIVE)
+  alias      String?
 
   students Student[]
   classes  Class[]
@@ -172,6 +183,8 @@ model Student {
   semester   Int      @default(1)
   created_at DateTime @default(now())
   career_id  String
+  updated_at DateTime @default(now())
+  status     STATUS   @default(ACTIVE)
 
   career         Career           @relation(fields: [career_id], references: [id])
   visits         Visit[]
@@ -187,6 +200,7 @@ model Visit {
   student_nc    String
   laboratory_id String
   machine_id    String?
+  updated_at    DateTime  @default(now())
 
   student    Student    @relation(fields: [student_nc], references: [nc])
   laboratory Laboratory @relation(fields: [laboratory_id], references: [id])
@@ -198,6 +212,8 @@ model Visit {
 enum MACHINE_STATUS {
   AVAILABLE
   MAINTENANCE
+  IN_USE
+  OUT_OF_SERVICE
 }
 
 enum STATUS {
@@ -217,6 +233,7 @@ model Machine {
   laboratory_id String?
   created_at    DateTime       @default(now())
   serie         String?
+  updated_at    DateTime       @default(now())
 
   laboratory        Laboratory?       @relation(fields: [laboratory_id], references: [id])
   issues            Issue[]
@@ -244,6 +261,7 @@ model Issue {
   machine_id String
   closed_at  DateTime?
   user_id    String
+  updated_at DateTime  @default(now())
 
   machine  Machine   @relation(fields: [machine_id], references: [id])
   user     User      @relation(fields: [user_id], references: [id])
@@ -257,8 +275,9 @@ model Comment {
   created_at DateTime @default(now())
   content    String
 
-  user_id  String
-  issue_id String
+  user_id    String
+  issue_id   String
+  updated_at DateTime @default(now())
 
   user  User  @relation(fields: [user_id], references: [id])
   issue Issue @relation(fields: [issue_id], references: [id])

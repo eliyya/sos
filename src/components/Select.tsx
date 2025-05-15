@@ -22,9 +22,22 @@ import {
     ComponentProps,
     ComponentRef,
     forwardRef,
+    ReactNode,
+    useId,
+    useRef,
+    useImperativeHandle,
+    useEffect,
 } from 'react'
-import { Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, Undo2 } from 'lucide-react'
+import ReactSelect, {
+    MultiValue,
+    OnChangeValue,
+    SelectInstance,
+    SingleValue,
+} from 'react-select'
+import ReactCreatableSelect from 'react-select/creatable'
 import { cn } from '@/lib/utils'
+import { useState } from 'react'
 
 export const Select = Root
 
@@ -54,7 +67,7 @@ export const SelectTrigger = ({
     >
         {children}
         <Icon asChild>
-            <ChevronDown className="h-4 w-4 opacity-50" />
+            <ChevronDown className='h-4 w-4 opacity-50' />
         </Icon>
     </Trigger>
 )
@@ -70,7 +83,7 @@ export const SelectScrollUpButton = ({
         )}
         {...props}
     >
-        <ChevronUp className="h-4 w-4" />
+        <ChevronUp className='h-4 w-4' />
     </ScrollUpButton>
 )
 
@@ -85,7 +98,7 @@ export const SelectScrollDownButton = ({
         )}
         {...props}
     >
-        <ChevronDown className="h-4 w-4" />
+        <ChevronDown className='h-4 w-4' />
     </ScrollDownButton>
 )
 
@@ -160,9 +173,9 @@ export const SelectItem = ({
         )}
         {...props}
     >
-        <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+        <span className='absolute left-2 flex h-3.5 w-3.5 items-center justify-center'>
             <ItemIndicator>
-                <Check className="h-4 w-4" />
+                <Check className='h-4 w-4' />
             </ItemIndicator>
         </span>
 
@@ -179,3 +192,562 @@ export const SelectSeparator = ({
         {...props}
     />
 )
+
+interface CompletSelectProps<O, IM extends boolean>
+    extends ComponentProps<typeof ReactSelect<O, IM>> {
+    label: string
+    children?: ReactNode
+    error?: string
+    containerClassName?: string
+}
+export function CompletSelect<
+    O extends object = { value: string; label: string },
+    IM extends boolean = false,
+>({
+    options,
+    children,
+    label,
+    required,
+    error,
+    id,
+    containerClassName,
+    ref,
+    ...props
+}: CompletSelectProps<O, IM>) {
+    const rid = useId()
+    const selectRef = useRef<SelectInstance<O, IM>>(null)
+
+    useImperativeHandle(ref, () => selectRef.current!)
+
+    // Manejo manual de required (ya que ReactSelect no lo soporta nativamente)
+    useEffect(() => {
+        if (!selectRef.current || !required) return
+        selectRef.current.controlRef
+            ?.querySelector('input')
+            ?.setCustomValidity(error ?? '')
+    }, [error, required])
+
+    return (
+        <div className={cn('w-full space-y-2', containerClassName)}>
+            <label
+                htmlFor={id ?? rid}
+                className='text-sm font-medium text-gray-700 dark:text-gray-300'
+            >
+                {label}
+                {required && <span className='ml-1'>*</span>}
+            </label>
+            <div className='relative'>
+                {children}
+                <ReactSelect
+                    {...props}
+                    ref={selectRef}
+                    isClearable
+                    options={options}
+                    styles={{
+                        control: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            borderColor: 'var(--border-secondary)',
+                            borderRadius: 'var(--radius-md)',
+                            paddingLeft: children ? '2rem' : base.paddingLeft,
+                        }),
+                        menu: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            color: 'var(--color-primary)',
+                        }),
+                        option: (
+                            base,
+                            {
+                                isSelected,
+                                isFocused,
+                            }: { isSelected: boolean; isFocused: boolean },
+                        ) => ({
+                            ...base,
+                            backgroundColor:
+                                isSelected ?
+                                    'color-mix(in oklab, var(--color-background) 90%, var(--color-foreground))'
+                                : isFocused ?
+                                    'color-mix(in oklab, var(--color-background) 95%, var(--color-foreground))'
+                                :   'var(--color-background)',
+                            color:
+                                isSelected || isFocused ?
+                                    'var(--color-primary)'
+                                :   'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                            ':active': {
+                                backgroundColor:
+                                    'color-mix(in oklab, var(--color-background) 85%, var(--color-foreground))',
+                            },
+                        }),
+                        placeholder: base => ({
+                            ...base,
+                            color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                        }),
+                        singleValue: base => ({
+                            ...base,
+                            color: 'var(--color-primary)',
+                        }),
+                    }}
+                    id={id ?? rid}
+                    aria-describedby={error ? `${id ?? rid}-error` : undefined}
+                />
+            </div>
+            {error && (
+                <span
+                    id={`${id ?? rid}-error`}
+                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
+                >
+                    {error}
+                </span>
+            )}
+        </div>
+    )
+}
+
+function normalizeValue<T>(
+    value: MultiValue<T> | SingleValue<T>,
+): MultiValue<T> {
+    return Array.isArray(value) ? value : ([value] as MultiValue<T>)
+}
+
+interface RetornableCompletSelectProps<O, IM extends boolean>
+    extends CompletSelectProps<O, IM> {
+    defaultValue: MultiValue<O> | SingleValue<O>
+}
+export function RetornableCompletSelect<
+    T extends object = { value: string; label: string },
+    IM extends boolean = false,
+>({
+    options,
+    children,
+    label,
+    required,
+    error,
+    id,
+    containerClassName,
+    defaultValue,
+    ref,
+    ...props
+}: RetornableCompletSelectProps<T, IM>) {
+    const rid = useId()
+    const selectRef = useRef<SelectInstance<T, IM>>(null)
+    useImperativeHandle(ref, () => selectRef.current!)
+    const [isChanged, setIsChanged] = useState(false)
+    const [currentValue, setCurrentValue] = useState<
+        MultiValue<T> | SingleValue<T>
+    >(defaultValue)
+
+    // Manejo manual de required (ya que ReactSelect no lo soporta nativamente)
+    useEffect(() => {
+        if (!selectRef.current || !required) return
+        selectRef.current.controlRef
+            ?.querySelector('input')
+            ?.setCustomValidity(error ?? '')
+    }, [error, required])
+
+    useEffect(() => {
+        if (
+            selectRef.current &&
+            JSON.stringify(normalizeValue(currentValue), (k, v) =>
+                typeof v === 'bigint' ? v.toString() : v,
+            ) !==
+                JSON.stringify(normalizeValue(defaultValue), (k, v) =>
+                    typeof v === 'bigint' ? v.toString() : v,
+                )
+        ) {
+            setIsChanged(true)
+        }
+    }, [currentValue, defaultValue])
+
+    useEffect(() => {
+        console.log('isChanged', isChanged)
+    }, [isChanged])
+
+    return (
+        <div className={cn('w-full space-y-2', containerClassName)}>
+            <label
+                htmlFor={id ?? rid}
+                className='text-sm font-medium text-gray-700 dark:text-gray-300'
+            >
+                {label}
+                {required && <span className='ml-1'>*</span>}
+            </label>
+            <div className='relative block'>
+                {children}
+                <ReactSelect
+                    {...props}
+                    ref={selectRef}
+                    isClearable
+                    options={options}
+                    defaultValue={defaultValue}
+                    value={currentValue}
+                    onChange={(option, actionMeta) => {
+                        setCurrentValue(option as OnChangeValue<T, IM>) // Guardamos el nuevo valor
+                        setIsChanged(
+                            JSON.stringify(normalizeValue(option), (k, v) =>
+                                typeof v === 'bigint' ? v.toString() : v,
+                            ) !==
+                                JSON.stringify(
+                                    normalizeValue(defaultValue),
+                                    (k, v) =>
+                                        typeof v === 'bigint' ?
+                                            v.toString()
+                                        :   v,
+                                ),
+                        )
+                        props.onChange?.(
+                            option as OnChangeValue<T, IM>,
+                            actionMeta,
+                        )
+                    }}
+                    styles={{
+                        control: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            borderColor:
+                                isChanged ?
+                                    'var(--color-yellow-500)'
+                                :   'var(--color-secondary)',
+                            borderRadius: 'var(--radius-lg)',
+                            boxShadow: 'var(--shadow-md)',
+                            paddingLeft: children ? '2rem' : base.paddingLeft,
+                        }),
+                        container: base => ({
+                            ...base,
+                            flex: '1',
+                            // paddingLeft:
+                            //     children ? '1rem' : base.paddingLeft,
+                        }),
+                        menu: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            color: 'var(--color-primary)',
+                        }),
+                        option: (base, { isSelected, isFocused }) => ({
+                            ...base,
+                            backgroundColor:
+                                isSelected ?
+                                    'color-mix(in oklab, var(--color-background) 90%, var(--color-foreground))'
+                                : isFocused ?
+                                    'color-mix(in oklab, var(--color-background) 95%, var(--color-foreground))'
+                                :   'var(--color-background)',
+                            color:
+                                isSelected || isFocused ?
+                                    'var(--color-primary)'
+                                :   'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                            ':active': {
+                                backgroundColor:
+                                    'color-mix(in oklab, var(--color-background) 85%, var(--color-foreground))',
+                            },
+                        }),
+                        placeholder: base => ({
+                            ...base,
+                            color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                        }),
+                        singleValue: base => ({
+                            ...base,
+                            color: 'var(--color-primary)',
+                        }),
+                        indicatorsContainer: base => ({
+                            ...base,
+                            paddingRight: isChanged ? '2rem' : base.paddingLeft,
+                        }),
+                    }}
+                    id={id ?? rid}
+                    aria-describedby={error ? `${id ?? rid}-error` : undefined}
+                />
+                {isChanged && (
+                    <button
+                        className='absolute top-0.5 right-1 cursor-pointer p-2'
+                        onClick={e => {
+                            e.preventDefault()
+                            setCurrentValue(defaultValue)
+                            setIsChanged(false)
+                        }}
+                    >
+                        <Undo2 className='h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    </button>
+                )}
+            </div>
+            {error && (
+                <span
+                    id={`${id ?? rid}-error`}
+                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
+                >
+                    {error}
+                </span>
+            )}
+        </div>
+    )
+}
+
+export function CompletCreatableSelect<
+    T extends object = { value: string; label: string },
+    IM extends boolean = false,
+>({
+    options,
+    children,
+    label,
+    required,
+    error,
+    id,
+    containerClassName,
+    ref,
+    ...props
+}: CompletSelectProps<T, IM>) {
+    const rid = useId()
+    const selectRef = useRef<SelectInstance<T, IM>>(null)
+
+    useImperativeHandle(ref, () => selectRef.current!)
+
+    useEffect(() => {
+        if (!selectRef.current || !required) return
+        selectRef.current.controlRef
+            ?.querySelector('input')
+            ?.setCustomValidity(error ?? '')
+    }, [error, required])
+
+    return (
+        <div className={cn('w-full space-y-2', containerClassName)}>
+            <label
+                htmlFor={id ?? rid}
+                className='text-sm font-medium text-gray-700 dark:text-gray-300'
+            >
+                {label}
+                {required && <span className='ml-1'>*</span>}
+            </label>
+            <div className='relative'>
+                {children}
+                <ReactCreatableSelect
+                    {...props}
+                    ref={selectRef}
+                    isClearable
+                    options={options}
+                    styles={{
+                        control: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            borderColor: 'var(--border-secondary)',
+                            borderRadius: 'var(--radius-md)',
+                            boxShadow: 'var(--shadow-md)',
+                            paddingLeft: children ? '2rem' : base.paddingLeft,
+                        }),
+                        menu: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            color: 'var(--color-primary)',
+                        }),
+                        option: (
+                            base,
+                            {
+                                isSelected,
+                                isFocused,
+                            }: { isSelected: boolean; isFocused: boolean },
+                        ) => ({
+                            ...base,
+                            backgroundColor:
+                                isSelected ?
+                                    'color-mix(in oklab, var(--color-background) 90%, var(--color-foreground))'
+                                : isFocused ?
+                                    'color-mix(in oklab, var(--color-background) 95%, var(--color-foreground))'
+                                :   'var(--color-background)',
+                            color:
+                                isSelected || isFocused ?
+                                    'var(--color-primary)'
+                                :   'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                            ':active': {
+                                backgroundColor:
+                                    'color-mix(in oklab, var(--color-background) 85%, var(--color-foreground))',
+                            },
+                        }),
+                        placeholder: base => ({
+                            ...base,
+                            color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                        }),
+                        singleValue: base => ({
+                            ...base,
+                            color: 'var(--color-primary)',
+                        }),
+                    }}
+                    id={id ?? rid}
+                    aria-describedby={error ? `${id ?? rid}-error` : undefined}
+                />
+            </div>
+            {error && (
+                <span
+                    id={`${id ?? rid}-error`}
+                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
+                >
+                    {error}
+                </span>
+            )}
+        </div>
+    )
+}
+
+export function RetornableCompletCreatableSelect<
+    T extends object = { value: string; label: string },
+    IM extends boolean = false,
+>({
+    options,
+    children,
+    label,
+    required,
+    error,
+    id,
+    containerClassName,
+    defaultValue,
+    ref,
+    ...props
+}: RetornableCompletSelectProps<T, IM>) {
+    const rid = useId()
+    const selectRef = useRef<SelectInstance<T, IM>>(null)
+    useImperativeHandle(ref, () => selectRef.current!)
+    const [isChanged, setIsChanged] = useState(false)
+    const [currentValue, setCurrentValue] = useState<
+        MultiValue<T> | SingleValue<T>
+    >(defaultValue)
+
+    // Manejo manual de required (ya que ReactSelect no lo soporta nativamente)
+    useEffect(() => {
+        if (!selectRef.current || !required) return
+        selectRef.current.controlRef
+            ?.querySelector('input')
+            ?.setCustomValidity(error ?? '')
+    }, [error, required])
+
+    useEffect(() => {
+        if (
+            selectRef.current &&
+            JSON.stringify(normalizeValue(currentValue), (k, v) =>
+                typeof v === 'bigint' ? v.toString() : v,
+            ) !==
+                JSON.stringify(normalizeValue(defaultValue), (k, v) =>
+                    typeof v === 'bigint' ? v.toString() : v,
+                )
+        ) {
+            setIsChanged(true)
+        }
+    }, [currentValue, defaultValue])
+
+    useEffect(() => {
+        console.log('isChanged', isChanged)
+    }, [isChanged])
+
+    return (
+        <div className={cn('w-full space-y-2', containerClassName)}>
+            <label
+                htmlFor={id ?? rid}
+                className='text-sm font-medium text-gray-700 dark:text-gray-300'
+            >
+                {label}
+                {required && <span className='ml-1'>*</span>}
+            </label>
+            <div className='relative'>
+                {children}
+                <ReactCreatableSelect
+                    {...props}
+                    ref={selectRef}
+                    isClearable
+                    options={options}
+                    defaultValue={defaultValue}
+                    value={currentValue}
+                    onChange={(option, actionMeta) => {
+                        setCurrentValue(option as OnChangeValue<T, IM>) // Guardamos el nuevo valor
+                        setIsChanged(
+                            JSON.stringify(normalizeValue(option), (k, v) =>
+                                typeof v === 'bigint' ? v.toString() : v,
+                            ) !==
+                                JSON.stringify(
+                                    normalizeValue(defaultValue),
+                                    (k, v) =>
+                                        typeof v === 'bigint' ?
+                                            v.toString()
+                                        :   v,
+                                ),
+                        )
+                        props.onChange?.(
+                            option as OnChangeValue<T, IM>,
+                            actionMeta,
+                        )
+                    }}
+                    styles={{
+                        control: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            borderColor:
+                                isChanged ?
+                                    'var(--color-yellow-500)'
+                                :   'var(--color-secondary)',
+                            borderRadius: 'var(--radius-lg)',
+                            boxShadow: 'var(--shadow-md)',
+                            paddingLeft: children ? '2rem' : base.paddingLeft,
+                        }),
+                        container: base => ({
+                            ...base,
+                            flex: '1',
+                            // paddingLeft:
+                            //     children ? '1rem' : base.paddingLeft,
+                        }),
+                        menu: base => ({
+                            ...base,
+                            backgroundColor: 'var(--color-background)',
+                            color: 'var(--color-primary)',
+                        }),
+                        option: (base, { isSelected, isFocused }) => ({
+                            ...base,
+                            backgroundColor:
+                                isSelected ?
+                                    'color-mix(in oklab, var(--color-background) 90%, var(--color-foreground))'
+                                : isFocused ?
+                                    'color-mix(in oklab, var(--color-background) 95%, var(--color-foreground))'
+                                :   'var(--color-background)',
+                            color:
+                                isSelected || isFocused ?
+                                    'var(--color-primary)'
+                                :   'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                            ':active': {
+                                backgroundColor:
+                                    'color-mix(in oklab, var(--color-background) 85%, var(--color-foreground))',
+                            },
+                        }),
+                        placeholder: base => ({
+                            ...base,
+                            color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                        }),
+                        singleValue: base => ({
+                            ...base,
+                            color: 'var(--color-primary)',
+                        }),
+                        indicatorsContainer: base => ({
+                            ...base,
+                            paddingRight: isChanged ? '2rem' : base.paddingLeft,
+                        }),
+                    }}
+                    id={id ?? rid}
+                    aria-describedby={error ? `${id ?? rid}-error` : undefined}
+                />
+                {isChanged && (
+                    <button
+                        className='absolute top-0.5 right-1 cursor-pointer p-2'
+                        onClick={e => {
+                            e.preventDefault()
+                            setCurrentValue(defaultValue)
+                            setIsChanged(false)
+                        }}
+                    >
+                        <Undo2 className='h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    </button>
+                )}
+            </div>
+            {error && (
+                <span
+                    id={`${id ?? rid}-error`}
+                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
+                >
+                    {error}
+                </span>
+            )}
+        </div>
+    )
+}

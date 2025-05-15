@@ -28,3 +28,14 @@ export function debounce<T extends (...args: any[]) => void>(
         timeout = setTimeout(() => func(...args), delay)
     }
 }
+
+export function timeToMinutes(time: string) {
+    const [hours, minutes] = time.split(':')
+    return parseInt(hours, 10) * 60 + parseInt(minutes, 10)
+}
+
+export function minutesToTime(minutes: number) {
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
+}

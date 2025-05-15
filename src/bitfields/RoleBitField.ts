@@ -1,9 +1,9 @@
-import { BitField } from '../lib/BitField'
+import { BitField } from '../classes/BitField.ts'
 
 export const RoleFlags = {
-    Anonymous: 0n,
     Admin: 1n << 0n,
     Teacher: 1n << 1n,
+    Anonymous: 1n << 2n,
 }
 
 export class RoleBitField extends BitField<typeof RoleFlags> {

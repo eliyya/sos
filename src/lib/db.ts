@@ -1,8 +1,8 @@
 import { Prisma, PrismaClient, STATUS } from '@prisma/client'
-import { SnowFlakeGenerator } from './SnowFlake.ts'
+import { SnowFlakeGenerator } from '../classes/SnowFlake.ts'
 import { compare } from 'bcrypt'
 import { totp as stotp } from 'speakeasy'
-import { ALGORITHM } from './constants.ts'
+import { ALGORITHM } from '../constants/server.ts'
 import { createDecipheriv } from 'node:crypto'
 import { ENCRYPTION_KEY } from '../env/server.ts'
 

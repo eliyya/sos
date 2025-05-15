@@ -12,9 +12,7 @@ import { useAtom, useSetAtom } from 'jotai'
 import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { getMyIp } from '@/lib/ip'
 import { getDeviceInfo } from '@/lib/device'
-import { idb } from '@/lib/idb'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
@@ -31,14 +29,13 @@ export function LoginForm() {
         <form
             action={data => {
                 startTransition(async () => {
-                    const { ip } = await getMyIp()
                     const { browser, device, os, model } = getDeviceInfo()
                     const {
                         refreshToken = '',
                         status,
                         errors,
                         message,
-                    } = await login(data, { ip, browser, device, os, model })
+                    } = await login(data, { browser, device, os, model })
                     if (status === LoginFormStatus.auth) {
                         return setOpen(true)
                     } else if (status === LoginFormStatus.error) {
@@ -49,12 +46,7 @@ export function LoginForm() {
                     } else if (status === LoginFormStatus.success) {
                         const r = await refreshTokenAction({ refreshToken })
                         if (!r.error) {
-                            // save agent in idb
-                            idb.user.clear().then(async () => {
-                                // redirect to dashboard
-                                replace(app.admin.dashboard())
-                            })
-                            // const catFrom = await syncCategoriesFromDB()
+                            replace(app.dashboard())
                         }
                     }
                 })

@@ -1,5 +1,5 @@
 'use server'
-import { COOKIES } from '@/lib/constants'
+import { COOKIES } from '@/constants/client'
 import { cookies } from 'next/headers'
 import { ENCODED_JWT_SECRET } from '@/constants/server'
 import { db, snowflake } from '@/lib/db'
@@ -144,7 +144,6 @@ export async function refreshToken({
 export async function login(
     data: FormData,
     dinfo: {
-        ip: string
         browser: string
         device: string
         os: string
@@ -215,6 +214,7 @@ export async function login(
     const JWT_SECRET_LOGIN = randomBytes(16).toString('hex')
     const dev = await registerDevice({
         ...dinfo,
+        ip: (await cookies()).get('x-forwarded-for')?.value ?? 'unknown',
         user_id: user.id,
         secret: JWT_SECRET_LOGIN,
     })
