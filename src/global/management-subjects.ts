@@ -1,5 +1,5 @@
-import { Subject } from '@/prisma/client'
-import { STATUS } from '@/prisma/client/enums'
+import { Subject } from '@prisma/client'
+import { STATUS } from '@prisma/client
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')

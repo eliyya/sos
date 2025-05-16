@@ -11,7 +11,7 @@ import {
     updateAtom,
 } from '@/global/managment-laboratory'
 import { minutesToTime } from '@/lib/utils'
-import { LABORATORY_TYPE } from '@/prisma/client/enums'
+import { LABORATORY_TYPE } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'

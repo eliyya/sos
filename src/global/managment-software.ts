@@ -1,4 +1,4 @@
-import { Software } from '@/prisma/client'
+import { Software } from '@prisma/client'
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')
