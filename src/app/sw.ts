@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 import { defaultCache } from '@serwist/next/worker'
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist'
 import { Serwist } from 'serwist'
@@ -7,7 +8,7 @@ import { Serwist } from 'serwist'
 // actual precache manifest. By default, this string is set to
 // `"self.__SW_MANIFEST"`.
 declare global {
-    interface WorkerGlobalScope extends SerwistGlobalConfig {
+    interface ServiceWorkerGlobalScope extends SerwistGlobalConfig {
         __SW_MANIFEST: (PrecacheEntry | string)[] | undefined
     }
 }

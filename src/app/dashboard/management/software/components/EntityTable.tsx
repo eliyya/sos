@@ -9,7 +9,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Software } from '@prisma/client'
+import { Software } from '@/prisma/client'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'

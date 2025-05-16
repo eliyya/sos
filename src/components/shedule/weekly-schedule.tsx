@@ -14,17 +14,36 @@ interface WeeklyScheduleProps {
     currentWeek: Date
 }
 export function WeeklySchedule({ currentWeek }: WeeklyScheduleProps) {
+    const today = new Date()
     return (
         <Card className='p-4'>
             <div className='mb-6 flex items-center justify-between'>
                 <div className='flex items-center gap-4'>
-                    <ButtonLink variant='outline' size='icon' href={app.labs()}>
+                    <ButtonLink
+                        variant='outline'
+                        size='icon'
+                        href={app.schedule.$id.$day.$month.$year(
+                            '',
+                            today.getDate().toString(),
+                            today.getMonth().toString(),
+                            today.getFullYear().toString(),
+                        )}
+                    >
                         <ChevronLeft className='h-4 w-4' />
                     </ButtonLink>
                     <span className='font-medium'>
                         Semana del {currentWeek.toLocaleDateString('es')}
                     </span>
-                    <ButtonLink variant='outline' size='icon' href={app.labs()}>
+                    <ButtonLink
+                        variant='outline'
+                        size='icon'
+                        href={app.schedule.$id.$day.$month.$year(
+                            '',
+                            today.getDate().toString(),
+                            today.getMonth().toString(),
+                            today.getFullYear().toString(),
+                        )}
+                    >
                         <ChevronRight className='h-4 w-4' />
                     </ButtonLink>
                 </div>

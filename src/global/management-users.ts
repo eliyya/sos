@@ -1,4 +1,4 @@
-import { User } from '@prisma/client'
+import { User } from '@/prisma/client'
 import { STATUS } from '@/prisma/client/enums'
 import { atom } from 'jotai'
 

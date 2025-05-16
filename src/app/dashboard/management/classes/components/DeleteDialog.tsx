@@ -17,7 +17,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-class'
-import { User, Subject, Career } from '@prisma/client'
+import { User, Subject, Career } from '@/prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

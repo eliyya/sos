@@ -9,7 +9,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Class } from '@prisma/client'
+import { Class } from '@/prisma/client'
 import { STATUS } from '@/prisma/client/enums'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
