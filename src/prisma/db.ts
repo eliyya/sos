@@ -1,15 +1,13 @@
-import { Prisma, PrismaClient, STATUS } from './client'
+import { Prisma, PrismaClient, STATUS } from '@prisma/client'
 import { SnowFlakeGenerator } from '../classes/SnowFlake.ts'
 import { compare } from 'bcrypt'
 import { totp as stotp } from 'speakeasy'
 import { ALGORITHM } from '../constants/server.ts'
 import { createDecipheriv } from 'node:crypto'
 import { ENCRYPTION_KEY } from '../env/server.ts'
-import { PrismaPg } from '@prisma/adapter-pg'
 
 function createPrismaClient() {
-    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
-    return new PrismaClient({ adapter }).$extends({
+    return new PrismaClient().$extends({
         name: 'validatePassword',
         model: {
             user: {
