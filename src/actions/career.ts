@@ -1,7 +1,7 @@
 'use server'
 
-import { db, snowflake } from '@/lib/db'
-import { STATUS } from '@prisma/client'
+import { db, snowflake } from '@/prisma/db'
+import { STATUS } from '@/prisma/client/enums'
 
 export async function createCareer(formData: FormData) {
     const name = formData.get('name') as string

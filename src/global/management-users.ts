@@ -1,9 +1,10 @@
-import { STATUS, User } from '@prisma/client'
+import { User } from '@prisma/client'
+import { STATUS } from '@/prisma/client/enums'
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')
 export const EditUserDialogAtom = atom(false)
-export const userToEditAtom = atom<User>({
+export const userToEditAtom = atom<Omit<User, 'updated_at'>>({
     name: '',
     id: '',
     role: 0n,

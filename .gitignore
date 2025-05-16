@@ -20,6 +20,7 @@
 # production
 /build
 /public/sw*
+/src/prisma/client
 
 # misc
 .DS_Store

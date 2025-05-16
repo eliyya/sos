@@ -1,7 +1,7 @@
 import { AlertCircleIcon, UsersIcon } from 'lucide-react'
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { Card } from '@/components/Card'
-import { db } from '@/lib/db'
+import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
 import { redirect } from 'next/navigation'
 import { RegisterVisitForm } from './components/RegisterVisitForm'

@@ -2,7 +2,7 @@
 CREATE TYPE "LABORATORY_TYPE" AS ENUM ('COMPUTER_CENTER', 'LABORATORY');
 
 -- CreateEnum
-CREATE TYPE "MACHINE_STATUS" AS ENUM ('AVAILABLE', 'MAINTENANCE');
+CREATE TYPE "MACHINE_STATUS" AS ENUM ('AVAILABLE', 'MAINTENANCE', 'IN_USE', 'OUT_OF_SERVICE');
 
 -- CreateEnum
 CREATE TYPE "STATUS" AS ENUM ('ACTIVE', 'ARCHIVED', 'DELETED');
@@ -15,6 +15,7 @@ CREATE TABLE "users" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "username" TEXT NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -37,6 +38,8 @@ CREATE TABLE "subjects" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "practice_hours" INTEGER NOT NULL,
     "theory_hours" INTEGER NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "subjects_pkey" PRIMARY KEY ("id")
 );
@@ -65,6 +68,7 @@ CREATE TABLE "classes" (
     "career_id" TEXT NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "classes_pkey" PRIMARY KEY ("id")
 );
@@ -78,6 +82,7 @@ CREATE TABLE "laboratories" (
     "close_hour" INTEGER NOT NULL,
     "type" "LABORATORY_TYPE" NOT NULL DEFAULT 'LABORATORY',
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "laboratories_pkey" PRIMARY KEY ("id")
 );
@@ -95,6 +100,7 @@ CREATE TABLE "practices" (
     "observations" TEXT,
     "class_id" TEXT NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "practices_pkey" PRIMARY KEY ("id")
 );
@@ -103,6 +109,8 @@ CREATE TABLE "practices" (
 CREATE TABLE "software" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "software_pkey" PRIMARY KEY ("id")
 );
@@ -120,6 +128,9 @@ CREATE TABLE "careers" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "alias" TEXT,
 
     CONSTRAINT "careers_pkey" PRIMARY KEY ("id")
 );
@@ -132,6 +143,8 @@ CREATE TABLE "students" (
     "semester" INTEGER NOT NULL DEFAULT 1,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "career_id" TEXT NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "students_pkey" PRIMARY KEY ("nc")
 );
@@ -144,6 +157,7 @@ CREATE TABLE "visits" (
     "student_nc" TEXT NOT NULL,
     "laboratory_id" TEXT NOT NULL,
     "machine_id" TEXT,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "visits_pkey" PRIMARY KEY ("id")
 );
@@ -160,6 +174,7 @@ CREATE TABLE "machines" (
     "laboratory_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "serie" TEXT,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "machines_pkey" PRIMARY KEY ("id")
 );
@@ -180,6 +195,7 @@ CREATE TABLE "issue" (
     "machine_id" TEXT NOT NULL,
     "closed_at" TIMESTAMP(3),
     "user_id" TEXT NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "issue_pkey" PRIMARY KEY ("id")
 );
@@ -191,6 +207,7 @@ CREATE TABLE "comment" (
     "content" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "issue_id" TEXT NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "comment_pkey" PRIMARY KEY ("id")
 );

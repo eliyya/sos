@@ -19,7 +19,7 @@ import { login, refreshToken as refreshTokenAction } from '@/actions/auth'
 import { LoginFormStatus } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { getDeviceInfo } from '@/lib/device'
+import { useDevice } from '@/hooks/useDevice'
 
 export function ResetPasswordDialog() {
     const t = useTranslations('app.auth.verify.components.VerifyForm')
@@ -29,6 +29,7 @@ export function ResetPasswordDialog() {
     const [error, setError] = useState('')
     const [pending, startTransition] = useTransition()
     const { replace } = useRouter()
+    const { browser, device, os, model } = useDevice()
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -40,8 +41,6 @@ export function ResetPasswordDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { browser, device, os, model } =
-                                getDeviceInfo()
                             const {
                                 refreshToken = '',
                                 status,

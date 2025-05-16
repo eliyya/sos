@@ -9,7 +9,8 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { STATUS, Subject } from '@prisma/client'
+import { Subject } from '@prisma/client'
+import { STATUS } from '@/prisma/client/enums'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'

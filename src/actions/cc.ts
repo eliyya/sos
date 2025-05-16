@@ -1,5 +1,5 @@
 'use server'
-import { db, snowflake } from '@/lib/db'
+import { db, snowflake } from '@/prisma/db'
 import { createStudent } from './students'
 
 export async function registerVisit(formData: FormData) {
