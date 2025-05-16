@@ -1,4 +1,4 @@
-import { Header } from '../../components/Header'
+// import { Header } from '../../components/Header'
 import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
 import { redirect } from 'next/navigation'
@@ -9,10 +9,19 @@ export default async function NullPage() {
             id: true,
         },
     })
-    if (lab) return redirect(app.labs.$id(lab.id))
+    const today = new Date()
+    if (lab)
+        return redirect(
+            app.schedule.$id.$day.$month.$year(
+                lab.id,
+                today.getDate().toString(),
+                today.getMonth().toString(),
+                today.getFullYear().toString(),
+            ),
+        )
     return (
         <div className='bg-background min-h-screen'>
-            <Header />
+            {/* <Header /> */}
             <main className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>
                     No existen laboratorios aun

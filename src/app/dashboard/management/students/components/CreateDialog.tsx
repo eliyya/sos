@@ -10,7 +10,7 @@ import { User, Save, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { CompletSelect } from '@/components/Select'
 import { getActiveCareers } from '@/actions/career'
-import { Career } from '@prisma/client'
+import { Career } from '@/prisma/client'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
