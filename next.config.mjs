@@ -15,7 +15,7 @@ export default withSerwistInit({
             withTypeRoute({
                 experimental: {
                     typedRoutes: false,
-                    nodeMiddleware: true,
+                    nodeMiddleware: false,
                 },
                 images: {
                     remotePatterns: [
