@@ -11,7 +11,7 @@ import {
     Table,
 } from '@/components/Table'
 import { updateTableAtom } from '@/global/cc'
-import { Visit } from '@/prisma/client'
+import { Visit } from '@prisma/client'
 import { useAtom } from 'jotai'
 import { LogOutIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'

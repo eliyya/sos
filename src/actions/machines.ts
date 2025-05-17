@@ -1,7 +1,7 @@
 'use server'
 
 import { db, snowflake } from '@/prisma/db'
-import { MACHINE_STATUS } from '@/prisma/client/enums'
+import { MACHINE_STATUS } from '@prisma/client'
 
 export async function getMachines() {
     return db.machine.findMany({

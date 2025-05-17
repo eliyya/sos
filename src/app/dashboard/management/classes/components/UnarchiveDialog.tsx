@@ -10,7 +10,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-students'
-import { Career } from '@/prisma/client'
+import { Career } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban, UserIcon } from 'lucide-react'

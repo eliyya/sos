@@ -8,7 +8,7 @@ import { Metadata } from 'next'
 import { Card } from '@/components/Card'
 import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { db } from '@/prisma/db'
-import { LABORATORY_TYPE } from '@/prisma/client/enums'
+import { LABORATORY_TYPE } from '@prisma/client'
 import Link from 'next/link'
 
 export const metadata: Metadata = {

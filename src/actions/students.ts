@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/prisma/db'
-import { STATUS } from '@/prisma/client/enums'
+import { STATUS } from '@prisma/client'
 
 export async function getStudents() {
     return db.student.findMany({

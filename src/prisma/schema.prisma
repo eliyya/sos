@@ -5,10 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-    provider        = "prisma-client"
-    output          = "./client"
-    moduleFormat    = "esm"
-    previewFeatures = ["typedSql", "queryCompiler", "driverAdapters"]
+    provider        = "prisma-client-js"
+    previewFeatures = ["typedSql"]
 }
 
 datasource db {

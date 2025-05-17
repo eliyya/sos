@@ -3,7 +3,7 @@
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 // import { COOKIES, JWT_SECRET } from '@/lib/constants'
 import { db, snowflake } from '@/prisma/db'
-import { STATUS } from '@/prisma/client/enums'
+import { STATUS } from '@prisma/client'
 import { hash } from 'bcrypt'
 import { randomUUID } from 'node:crypto'
 // import { getPaylodadUser } from './auth'

@@ -1,7 +1,7 @@
 'use server'
 
 import { db, snowflake } from '@/prisma/db'
-import { STATUS } from '@/prisma/client/enums'
+import { STATUS } from '@prisma/client'
 
 export async function createClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string

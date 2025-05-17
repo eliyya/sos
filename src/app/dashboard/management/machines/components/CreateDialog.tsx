@@ -9,7 +9,7 @@ import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { CompletSelect } from '@/components/Select'
-import { Laboratory } from '@/prisma/client'
+import { Laboratory } from '@prisma/client'
 import { getActiveLaboratories } from '@/actions/laboratory'
 
 export function CreateSubjectDialog() {
