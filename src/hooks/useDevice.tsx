@@ -10,7 +10,7 @@ export function useDevice() {
 }
 
 function getBrowser() {
-    const userAgent = globalThis.navigator.userAgent.toLowerCase()
+    const userAgent = globalThis.navigator?.userAgent.toLowerCase() ?? ''
     if (userAgent.includes('chrome') && !userAgent.includes('edg'))
         return 'Chrome'
     if (userAgent.includes('firefox')) return 'Firefox'
@@ -22,7 +22,7 @@ function getBrowser() {
 }
 
 function getOS() {
-    const userAgent = globalThis.navigator.userAgent.toLowerCase()
+    const userAgent = globalThis.navigator?.userAgent.toLowerCase() ?? ''
     if (userAgent.includes('windows')) return 'Windows'
     if (userAgent.includes('mac')) return 'MacOS'
     if (userAgent.includes('linux')) return 'Linux'
@@ -32,7 +32,7 @@ function getOS() {
 }
 
 function getDevice() {
-    const userAgent = globalThis.navigator.userAgent.toLowerCase()
+    const userAgent = globalThis.navigator?.userAgent.toLowerCase() ?? ''
 
     if (/ipad|tablet|playbook|kindle|silk|android(?!.*mobile)/i.test(userAgent))
         return 'Tablet'
@@ -42,7 +42,7 @@ function getDevice() {
 }
 
 function getModel() {
-    const userAgent = globalThis.navigator.userAgent.toLowerCase()
+    const userAgent = globalThis.navigator?.userAgent.toLowerCase() ?? ''
 
     if (/ipad/i.test(userAgent)) return 'iPad'
     if (/tablet/i.test(userAgent)) return 'Tablet'
