@@ -11,7 +11,6 @@ import {
     JWTPayload,
 } from '@/lib/types'
 import { decodeJwt, jwtVerify, SignJWT } from 'jose'
-import { NEXT_PUBLIC_VERCEL_URL } from '@/env/client'
 import { wrapTry } from '@/lib/utils'
 import { randomBytes } from 'node:crypto'
 import { decrypt, encrypt } from '@/actions/encrypt'
@@ -117,7 +116,7 @@ export async function refreshToken({
         exp: expires.getTime() / 1000,
         iat: Math.floor(Date.now() / 1000),
         nbf: Math.floor(Date.now() / 1000) - 1,
-        iss: NEXT_PUBLIC_VERCEL_URL,
+        iss: process.env.NEXT_PUBLIC_VERCEL_URL,
         aud: APP_NAME,
         sub: deviceData.user_id,
         type: AuthTypes.session,
@@ -226,7 +225,7 @@ export async function login(
         exp: expires.getTime() / 1000,
         iat: Math.floor(Date.now() / 1000),
         nbf: Math.floor(Date.now() / 1000) - 1,
-        iss: NEXT_PUBLIC_VERCEL_URL,
+        iss: process.env.NEXT_PUBLIC_VERCEL_URL,
         aud: APP_NAME,
         sub: user.id,
         type: AuthTypes.refresh,
