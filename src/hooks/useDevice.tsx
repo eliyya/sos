@@ -1,3 +1,5 @@
+'use client'
+
 export function useDevice() {
     return {
         os: getOS(),
