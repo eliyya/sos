@@ -1,6 +1,4 @@
 import { Metadata } from 'next'
-// import { WeeklySchedule } from '@/components/shedule/weekly-schedule'
-// import { Header } from '../../../../../components/Header'
 import { Calendar } from './components/Calendar'
 import { db } from '@/prisma/db'
 import { notFound } from 'next/navigation'
@@ -10,8 +8,6 @@ import { EventSourceInput } from '@fullcalendar/core/index.js'
 import { CreateDialog } from './components/CreateDialog'
 import { getPaylodadUser } from '@/actions/auth'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
-// import '@fullcalendar/core/main.css'
-// import '@fullcalendar/timegrid/main.css'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
