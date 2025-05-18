@@ -16,7 +16,7 @@ export const config = {
 }
 export const middleware = (request: NextRequest) => handler.handle(request)
 
-handler.set(/^\/schedule.*/, async ctx => {
+handler.set(/^\/(schedule.*)?$/, async ctx => {
     const actual_date = new Date()
     const now = {
         day: actual_date.getDate(),
