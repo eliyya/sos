@@ -1,19 +1,106 @@
 import { Metadata } from 'next'
-import { WeeklySchedule } from '@/components/shedule/weekly-schedule'
+// import { WeeklySchedule } from '@/components/shedule/weekly-schedule'
 // import { Header } from '../../../../../components/Header'
+import { Calendar } from './components/Calendar'
+import { db } from '@/prisma/db'
+import { notFound } from 'next/navigation'
+import { minutesToTime } from '@/lib/utils'
+import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { EventSourceInput } from '@fullcalendar/core/index.js'
+import { CreateDialog } from './components/CreateDialog'
+import { getPaylodadUser } from '@/actions/auth'
+import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
+// import '@fullcalendar/core/main.css'
+// import '@fullcalendar/timegrid/main.css'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
     description: 'Horario semanal de reservas de laboratorio',
 }
 
-export default function SchedulePage() {
+interface SchedulePageProps {
+    params: Promise<{
+        id: string
+        day: string
+        month: string
+        year: string
+    }>
+}
+export default async function SchedulePage({ params }: SchedulePageProps) {
+    const { id, day, month, year } = await params
+    const user = await getPaylodadUser()
+    let users: { id: string; name: string }[] = []
+
+    if (user && new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin))
+        users = await db.user.findMany({
+            where: {
+                status: STATUS.ACTIVE,
+                role: {
+                    in: RoleBitField.getCombinationsOf(RoleFlags.Teacher),
+                },
+                NOT: { id: user.sub },
+            },
+            select: {
+                id: true,
+                name: true,
+            },
+        })
+
+    const lab = await db.laboratory.findFirst({
+        where: {
+            id,
+            type: LABORATORY_TYPE.LABORATORY,
+            status: STATUS.ACTIVE,
+        },
+        select: {
+            id: true,
+            name: true,
+            open_hour: true,
+            close_hour: true,
+            practices: {
+                where: {
+                    starts_at: {
+                        gte: new Date(
+                            `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`,
+                        ),
+                        lte: new Date(
+                            `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T23:59:59`,
+                        ),
+                    },
+                },
+            },
+        },
+    })
+    if (!lab) notFound()
+    const events: EventSourceInput = lab.practices.map(practice => ({
+        title: practice.name,
+        start: practice.starts_at,
+        end: practice.ends_at,
+    }))
+
     return (
         <div className='bg-background min-h-screen'>
             {/* <Header /> */}
             <main className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
-                <WeeklySchedule currentWeek={new Date()} />
+                <Calendar
+                    events={events}
+                    id={id}
+                    day={new Date(`${year}-${month}-${day}`)}
+                    startHour={minutesToTime(lab.open_hour) + ':00'}
+                    endHour={minutesToTime(lab.close_hour) + ':00'}
+                />
+                <CreateDialog
+                    lab_name={lab.name}
+                    events={events}
+                    disabled={!user}
+                    endHour={lab.close_hour}
+                    startHour={lab.open_hour}
+                    users={[
+                        { id: user?.sub ?? '', name: user?.name ?? '' },
+                        ...users,
+                    ]}
+                />
             </main>
         </div>
     )

@@ -16,7 +16,7 @@ export const config = {
 }
 export const middleware = (request: NextRequest) => handler.handle(request)
 
-handler.set(/^\/schedule.*/, ctx => {
+handler.set(/^\/schedule.*/, async ctx => {
     const actual_date = new Date()
     const now = {
         day: actual_date.getDate(),
@@ -25,11 +25,20 @@ handler.set(/^\/schedule.*/, ctx => {
     }
     const [, , lab_id, day, month, year] =
         ctx.request.nextUrl.pathname.split('/')
-    console.log({ lab_id, day, month, year })
+    if (lab_id === 'null') return ctx.next()
+    let l_id = lab_id
+    if (!l_id) {
+        const req = await fetch(
+            new URL('/api/get-default-lab-id', ctx.request.nextUrl.origin),
+        )
+        const res = (await req.json()) as { lab_id: string | null }
+        if (!res.lab_id) return ctx.redirect(app.schedule.null())
+        l_id = res.lab_id
+    }
     if (!lab_id || !day || !month || !year)
         return ctx.redirect(
             app.schedule.$id.$day.$month.$year(
-                lab_id,
+                l_id,
                 day ?? now.day,
                 month ?? now.month,
                 year ?? now.year,

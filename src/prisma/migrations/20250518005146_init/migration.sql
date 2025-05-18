@@ -101,6 +101,8 @@ CREATE TABLE "practices" (
     "class_id" TEXT NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "starts_at" TIMESTAMP(3) NOT NULL,
+    "ends_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "practices_pkey" PRIMARY KEY ("id")
 );

@@ -130,6 +130,8 @@ model Practice {
     class_id      String
     status        STATUS   @default(ACTIVE)
     updated_at    DateTime @default(now())
+    starts_at     DateTime
+    ends_at       DateTime
 
     user               User               @relation(fields: [user_id], references: [id])
     registered_by_user User               @relation("practice_registers", fields: [registered_by], references: [id])

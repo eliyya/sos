@@ -10,20 +10,13 @@ interface handlerFunctionProps {
     redirect: (
         ...args: Parameters<typeof NextResponse.redirect>
     ) => NextResponse
-    next: () => never
-}
-
-class NextError extends Error {
-    constructor(message: string) {
-        super(message)
-        this.name = 'NextError'
-        this.stack = new Error().stack
-        this.cause = 'Internal for detect next() function'
-    }
+    next: () => symbol
 }
 
 interface HandlerFunction {
-    (props: handlerFunctionProps): Promise<NextResponse> | NextResponse
+    (
+        props: handlerFunctionProps,
+    ): Promise<NextResponse | symbol> | NextResponse | symbol
 }
 export class MiddlewareHandler extends Map<string | RegExp, HandlerFunction> {
     middlewares: { path: string | RegExp; handler: HandlerFunction }[] = []
@@ -69,21 +62,25 @@ export class MiddlewareHandler extends Map<string | RegExp, HandlerFunction> {
                         init,
                     ),
                 ),
-            next: () => {
-                throw new NextError('next()')
-            },
+            next: () => Symbol.for('middleware.next'),
         }
 
         for (const { handler } of middles) {
-            try {
-                return await handler(ctx)
-            } catch (error) {
-                if (error instanceof NextError) {
-                    continue
-                } else throw error
-            }
+            const result = await handler(ctx)
+            if (
+                typeof result === 'symbol' &&
+                result === Symbol.for('middleware.next')
+            )
+                continue
+            return result as NextResponse
         }
-        return this.getHandler(request.nextUrl.pathname)(ctx)
+        const result = await this.getHandler(request.nextUrl.pathname)(ctx)
+        if (
+            typeof result === 'symbol' &&
+            result === Symbol.for('middleware.next')
+        )
+            return ctx.done()
+        return result as NextResponse
     }
 
     async handlerDefault({ done }: handlerFunctionProps) {
