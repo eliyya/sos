@@ -21,7 +21,7 @@ export function SelectLaboratory({
     const { replace } = useRouter()
     return (
         <SimpleSelect
-            defaultValue={{
+            value={{
                 label: labs.find(l => l.id === lab_id)?.name ?? lab_id,
                 value: lab_id,
             }}
