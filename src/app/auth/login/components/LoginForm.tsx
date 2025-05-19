@@ -74,9 +74,8 @@ export function LoginForm() {
                     setUsernameError('')
                 }}
                 error={usernameError}
-            >
-                <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-            </CompletInput>
+                icon={User}
+            />
             <CompletInput
                 required
                 label={t('pass')}
@@ -89,9 +88,8 @@ export function LoginForm() {
                     setPasswordError('')
                 }}
                 error={passwordError}
-            >
-                <RectangleEllipsis className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-            </CompletInput>
+                icon={RectangleEllipsis}
+            />
 
             <Button
                 type='submit'

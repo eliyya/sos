@@ -80,7 +80,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                     setNc(e.currentTarget.value)
                 }}
                 name='student_nc'
-            ></CompletInput>
+            />
             <CompletInput
                 label='Nombres'
                 required
@@ -88,7 +88,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 value={name}
                 onChange={e => setName(e.currentTarget.value)}
                 disabled={!modified}
-            ></CompletInput>
+            />
             <CompletInput
                 label='Apellidos'
                 required
@@ -96,7 +96,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 value={lastname}
                 onChange={e => setLastname(e.currentTarget.value)}
                 disabled={!modified}
-            ></CompletInput>
+            />
             <CompletSelect
                 label='Carrera'
                 required
@@ -115,7 +115,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                     setCareerId(e!.value)
                 }}
                 options={careers.map(c => ({ label: c.name, value: c.id }))}
-            ></CompletSelect>
+            />
             <CompletInput
                 required
                 label='Semestre'
@@ -124,7 +124,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 value={semester}
                 onChange={e => setSemester(e.currentTarget.value)}
                 disabled={!modified}
-            ></CompletInput>
+            />
             <ToggleSwitch
                 label='El estudiante porta la credencial'
                 name='credencial'

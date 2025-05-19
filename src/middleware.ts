@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server'
 import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import app from '@eliyya/type-routes'
+import { getPaylodadUser } from './actions/middleware'
+import { RoleBitField, RoleFlags } from './bitfields/RoleBitField'
 
 const handler = new MiddlewareHandler()
 
@@ -22,9 +24,11 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
     if (lab_id === 'null') return ctx.next()
     let l_id = lab_id
     if (!l_id) {
-        const req = await fetch(
-            new URL('/api/get-default-lab-id', ctx.request.nextUrl.origin),
+        const url = new URL(
+            '/api/get-default-lab-id',
+            ctx.request.nextUrl.origin,
         )
+        const req = await fetch(url)
         const res = (await req.json()) as { lab_id: string | null }
         if (!res.lab_id) return ctx.redirect(app.schedule.null())
         l_id = res.lab_id
@@ -39,4 +43,12 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
             ),
         )
     return ctx.done()
+})
+
+handler.set(/^\/dashboard.*$/, async ctx => {
+    const payloadUser = await getPaylodadUser()
+    if (!payloadUser) return ctx.redirect(app.auth.login())
+    const roles = new RoleBitField(BigInt(payloadUser.role))
+    if (roles.has(RoleFlags.Admin)) return ctx.next()
+    return ctx.redirect(app.schedule.null())
 })

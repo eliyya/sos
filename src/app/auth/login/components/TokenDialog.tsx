@@ -74,9 +74,8 @@ export function ResetPasswordDialog() {
                         autoComplete='one-time-code webauthn'
                         placeholder='123456'
                         error={error}
-                    >
-                        <KeyRound className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={KeyRound}
+                    />
                     <DialogFooter>
                         <Button disabled={pending} type='submit'>
                             {t('submit')}

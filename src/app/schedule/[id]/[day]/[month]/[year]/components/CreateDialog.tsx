@@ -187,7 +187,7 @@ export function CreateDialog({
                                     id: o.value,
                                 })
                             }}
-                        ></CompletSelect>
+                        />
                         <CompletSelect
                             label='Clase'
                             options={classes.map(c => ({
@@ -211,7 +211,7 @@ export function CreateDialog({
                             }}
                             isClearable={false}
                             isDisabled={users.length === 1}
-                        ></CompletSelect>
+                        />
                         <CompletInput
                             required
                             label='Tema'
@@ -221,9 +221,8 @@ export function CreateDialog({
                             onChange={e => {
                                 setTitle(e.target.value)
                             }}
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </CompletInput>
+                            icon={User}
+                        />
                         <CompletInput
                             required
                             label='Inicio'
@@ -234,9 +233,8 @@ export function CreateDialog({
                                 setStartHourInputValue(e.target.value)
                             }}
                             min={minutesToTime(startHour)}
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </CompletInput>
+                            icon={User}
+                        />
                         <CompletInput
                             required
                             label='Tiempo en horas'
@@ -249,18 +247,16 @@ export function CreateDialog({
                                 const value = parseInt(e.target.value)
                                 setEndTime(value)
                             }}
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </CompletInput>
+                            icon={User}
+                        />
                         <CompletInput
                             required
                             label='Contraseña'
                             type='password'
                             name='password'
                             placeholder='* * * * * * * *'
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </CompletInput>
+                            icon={User}
+                        />
                         <Button type='submit' disabled={inTransition}>
                             <Save className='mr-2 h-5 w-5' />
                             Apartar

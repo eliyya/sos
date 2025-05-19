@@ -1,6 +1,9 @@
-// import { Header } from '../../components/Header'
+import { getPaylodadUser } from '@/actions/middleware'
+import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
+import { ButtonLink } from '@/components/Links'
 import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
+import { PlusIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
 export default async function NullPage() {
@@ -19,14 +22,25 @@ export default async function NullPage() {
                 today.getFullYear().toString(),
             ),
         )
+    const payloadUser = await getPaylodadUser()
     return (
         <div className='bg-background min-h-screen'>
-            {/* <Header /> */}
             <main className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>
                     No existen laboratorios aun
                 </h1>
-                <p>Por favor contacta con un administrador</p>
+                {(
+                    !payloadUser ||
+                    !new RoleBitField(BigInt(payloadUser.role)).has(
+                        RoleFlags.Admin,
+                    )
+                ) ?
+                    <p>Por favor contacta con un administrador</p>
+                :   <ButtonLink href={app.dashboard.management.laboratories()}>
+                        <PlusIcon className='mr-2 h-4 w-4' />
+                        Registrar nuevo laboratorio
+                    </ButtonLink>
+                }
             </main>
         </div>
     )

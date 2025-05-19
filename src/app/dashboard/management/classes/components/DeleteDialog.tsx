@@ -87,9 +87,8 @@ export function DeleteDialog() {
                         value={
                             teachers.find(t => t.id === entity.teacher_id)?.name
                         }
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={UserIcon}
+                    />
                     <CompletInput
                         label='Materia'
                         name='subject_id'
@@ -97,9 +96,8 @@ export function DeleteDialog() {
                         value={
                             subjects.find(s => s.id === entity.subject_id)?.name
                         }
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={UserIcon}
+                    />
                     <CompletInput
                         label='Carrera'
                         name='career_id'
@@ -107,9 +105,8 @@ export function DeleteDialog() {
                         value={
                             careers.find(c => c.id === entity.career_id)?.name
                         }
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={UserIcon}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

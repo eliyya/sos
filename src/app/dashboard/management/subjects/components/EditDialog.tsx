@@ -60,9 +60,8 @@ export function EditDialog() {
                         label='Name'
                         type='text'
                         name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={User}
+                    ></RetornableCompletInput>
                     <div className='flex w-full gap-4'>
                         <RetornableCompletInput
                             required
@@ -71,9 +70,8 @@ export function EditDialog() {
                             name='theory_hours'
                             min={0}
                             defaultValue={old.theory_hours.toString()}
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </RetornableCompletInput>
+                            icon={User}
+                        ></RetornableCompletInput>
                         <RetornableCompletInput
                             required
                             label='Horas de práctica'
@@ -81,9 +79,8 @@ export function EditDialog() {
                             name='practice_hours'
                             min={0}
                             defaultValue={old.practice_hours.toString()}
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </RetornableCompletInput>
+                            icon={User}
+                        ></RetornableCompletInput>
                     </div>
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

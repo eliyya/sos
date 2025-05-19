@@ -61,17 +61,15 @@ export function CreateSubjectDialog() {
                         label='Nombre'
                         type='text'
                         name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletInput
                         required
                         label='Alias'
                         type='text'
                         name='alias'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

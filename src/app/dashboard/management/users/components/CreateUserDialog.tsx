@@ -65,17 +65,20 @@ export function CreateUserDialog() {
                             {message}
                         </span>
                     )}
-                    <CompletInput required label='Name' type='text' name='name'>
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                    <CompletInput
+                        required
+                        label='Name'
+                        type='text'
+                        name='name'
+                        icon={User}
+                    />
                     <CompletInput
                         required
                         label='Ussername'
                         type='text'
                         name='username'
-                    >
-                        <AtSign className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={AtSign}
+                    />
                     <CompletSelect
                         isMulti
                         label='Roles'
@@ -86,25 +89,22 @@ export function CreateUserDialog() {
                                 value: v,
                             }),
                         )}
-                    >
-                        <Triangle className='absolute top-2.5 left-3 z-50 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletSelect>
+                        icon={Triangle}
+                    />
                     <CompletInput
                         label='Password'
                         type='password'
                         name='password'
                         error={passError}
-                    >
-                        <Key className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={Key}
+                    />
                     <CompletInput
                         label='Confirm Password'
                         type='password'
                         name='password-confirm'
                         error={passConfirmError}
-                    >
-                        <Key className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={Key}
+                    />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save

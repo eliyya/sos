@@ -6,7 +6,7 @@ import { minutesToTime } from '@/lib/utils'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { EventSourceInput } from '@fullcalendar/core/index.js'
 import { CreateDialog } from './components/CreateDialog'
-import { getPaylodadUser } from '@/actions/auth'
+import { getPaylodadUser } from '@/actions/middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
 

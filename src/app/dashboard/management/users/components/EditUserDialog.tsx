@@ -62,18 +62,16 @@ export function EditUserDialog() {
                         label='Name'
                         type='text'
                         name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={User}
+                    ></RetornableCompletInput>
                     <RetornableCompletInput
                         defaultValue={oldUser.username}
                         required
                         label='Ussername'
                         type='text'
                         name='username'
-                    >
-                        <AtSign className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={AtSign}
+                    ></RetornableCompletInput>
                     <RetornableCompletSelect
                         isMulti
                         label='Roles'
@@ -92,9 +90,8 @@ export function EditUserDialog() {
                                 value: v,
                             }),
                         )}
-                    >
-                        <Triangle className='absolute top-2.5 left-3 z-50 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletSelect>
+                        icon={Triangle}
+                    />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save

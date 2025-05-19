@@ -16,17 +16,6 @@ import { randomBytes } from 'node:crypto'
 import { decrypt, encrypt } from '@/actions/encrypt'
 import { APP_NAME } from '@/constants/client'
 
-export async function getPaylodadUser() {
-    const token = (await cookies()).get(COOKIES.SESSION)?.value
-    if (!token) return null
-    try {
-        const { payload } = await jwtVerify(token, ENCODED_JWT_SECRET)
-        return <JWTPayload>payload
-    } catch {
-        return null
-    }
-}
-
 interface RegisterDeviceProps {
     user_id: string
     ip: string

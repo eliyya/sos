@@ -75,9 +75,8 @@ export function EditDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletSelect>
+                        icon={UserIcon}
+                    />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save

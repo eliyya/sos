@@ -67,9 +67,8 @@ export function EditDialog() {
                         type='text'
                         name='name'
                         defaultValue={old.name}
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={User}
+                    ></RetornableCompletInput>
                     <RetornableCompletInput
                         required
                         label='Apertura'
@@ -77,18 +76,16 @@ export function EditDialog() {
                         name='open_hour'
                         defaultValue={minutesToTime(old.open_hour) + ''}
                         // TODO : fix this
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={User}
+                    ></RetornableCompletInput>
                     <RetornableCompletInput
                         required
                         label='Cierre'
                         type='time'
                         name='close_hour'
                         defaultValue={minutesToTime(old.close_hour) + ''}
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={User}
+                    ></RetornableCompletInput>
                     <RetornableCompletSelect
                         label='Tipo de Laboratorio'
                         name='type'
@@ -108,9 +105,8 @@ export function EditDialog() {
                                 ],
                             },
                         ]}
-                    >
-                        <User className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletSelect>
+                        icon={User}
+                    />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save
