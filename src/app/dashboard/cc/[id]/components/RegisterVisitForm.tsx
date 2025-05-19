@@ -6,6 +6,7 @@ import { findStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
+import ToggleSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
 import { Career } from '@prisma/client'
 import { useSetAtom } from 'jotai'
@@ -64,6 +65,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 setSemester('')
                 setModified(true)
             }}
+            className='flex w-full flex-col gap-2'
         >
             <input
                 type='hidden'
@@ -123,12 +125,10 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 onChange={e => setSemester(e.currentTarget.value)}
                 disabled={!modified}
             ></CompletInput>
-            <CompletInput
-                required
+            <ToggleSwitch
                 label='El estudiante porta la credencial'
                 name='credencial'
-                type='checkbox'
-            ></CompletInput>
+            />
             <Button
                 type='submit'
                 className='mt-2 w-full'
