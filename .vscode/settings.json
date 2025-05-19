@@ -5,6 +5,7 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "css.customData": [".vscode/css_custom_data.json"],
+    "tailwindCSS.experimental.configFile": "./src/app/globals.css",
     "css.lint.unknownAtRules": "ignore",
     "files.associations": {
         "*.css": "tailwindcss"

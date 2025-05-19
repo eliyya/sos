@@ -123,6 +123,12 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 onChange={e => setSemester(e.currentTarget.value)}
                 disabled={!modified}
             ></CompletInput>
+            <CompletInput
+                required
+                label='El estudiante porta la credencial'
+                name='credencial'
+                type='checkbox'
+            ></CompletInput>
             <Button
                 type='submit'
                 className='mt-2 w-full'
