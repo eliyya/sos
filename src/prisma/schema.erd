@@ -4600,15 +4600,15 @@
         "id": "9Gi9JvcEXwpmUpcH0LUc6",
         "value": "MACHINE_STATUS\n\nAVAILABLE\nMAINTENANCE\nIN_USE\nOUT_OF_SERVICE",
         "ui": {
-          "x": 621.3362,
-          "y": 170.0472,
+          "x": 507.3362,
+          "y": 223.0472,
           "zIndex": 567,
           "width": 116,
-          "height": 100,
+          "height": 107,
           "color": ""
         },
         "meta": {
-          "updateAt": 1743087859513,
+          "updateAt": 1747610320500,
           "createAt": 1739305539556
         }
       },
@@ -4616,15 +4616,15 @@
         "id": "sAaN2l-s3lhrHs14V2w-O",
         "value": "STATUS\n\nACTIVE\nARCHIVED\nDELETED",
         "ui": {
-          "x": 1080.9377,
-          "y": 168.2373,
+          "x": 666.9377,
+          "y": 188.2373,
           "zIndex": 686,
           "width": 116,
           "height": 100,
           "color": ""
         },
         "meta": {
-          "updateAt": 1743087859513,
+          "updateAt": 1747610325383,
           "createAt": 1740377471731
         }
       },
@@ -4632,15 +4632,15 @@
         "id": "CkZsJwFoD9fwoomFPuns7",
         "value": "LABORATORY_TYPE\n\nCOMPUTER_CENTER\nLABORATORY",
         "ui": {
-          "x": 799.5393,
-          "y": 168.6216,
+          "x": 831.5393,
+          "y": 162.6216,
           "zIndex": 793,
           "width": 116,
           "height": 100,
           "color": ""
         },
         "meta": {
-          "updateAt": 1743087859513,
+          "updateAt": 1747610319055,
           "createAt": 1742358159189
         }
       }

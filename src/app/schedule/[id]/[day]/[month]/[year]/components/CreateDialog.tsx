@@ -18,7 +18,12 @@ import { Button } from '@/components/Button'
 import { User, Save } from 'lucide-react'
 import { useAtom } from 'jotai'
 import { minutesToTime } from '@/lib/utils'
+import { getClassesWithDataFromUser } from '@/actions/class'
+import { STATUS } from '@prisma/client'
 
+type ClassForSelect = Awaited<
+    ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
+>[number]
 interface CreateDialogProps {
     users: {
         id: string
@@ -35,6 +40,11 @@ interface CreateDialogProps {
     endHour: number
     events: EventInput[]
     lab_name: string
+    isAdmin?: boolean
+    user: {
+        id: string
+        name: string
+    }
 }
 export function CreateDialog({
     users,
@@ -43,6 +53,8 @@ export function CreateDialog({
     endHour,
     startHour,
     lab_name,
+    isAdmin,
+    user,
 }: CreateDialogProps) {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
@@ -52,6 +64,59 @@ export function CreateDialog({
     const [startHourInputValue, setStartHourInputValue] = useState('08:00')
     const [endTime, setEndTime] = useState(1)
     const [title, setTitle] = useState('')
+    const [classes, setClasses] = useState<ClassForSelect[]>([])
+    const [selectedUser, setSelecctedUser] = useState({
+        name: user.name,
+        id: user.id,
+    })
+
+    const [selectedClass, setSelectedClass] = useState<ClassForSelect | null>(
+        null,
+    )
+
+    useEffect(() => {
+        getClassesWithDataFromUser(selectedUser.id, ['subject', 'career']).then(
+            d => {
+                const toInsert =
+                    selectedUser.id !== user.id && isAdmin ?
+                        d
+                    :   [
+                            {
+                                id: 'generic',
+                                teacher_id: user.id,
+                                subject_id: 'generic',
+                                career_id: 'generic',
+                                status: STATUS.ACTIVE,
+                                created_at: new Date(),
+                                updated_at: new Date(),
+                                subject: {
+                                    created_at: new Date(),
+                                    id: 'generic',
+                                    name: 'Especial',
+                                    status: STATUS.ACTIVE,
+                                    updated_at: new Date(),
+                                    practice_hours: 0,
+                                    theory_hours: 0,
+                                },
+                                career: {
+                                    alias: 'Ninguna',
+                                    id: 'generic',
+                                    name: 'Ninguna',
+                                    created_at: new Date(),
+                                    status: STATUS.ACTIVE,
+                                    updated_at: new Date(),
+                                },
+                            },
+                            ...d,
+                        ]
+                setClasses(toInsert)
+
+                if (toInsert.length > 0) {
+                    setSelectedClass(toInsert[0])
+                }
+            },
+        )
+    }, [selectedUser, user, isAdmin])
 
     useEffect(() => {
         setStartHourInputValue(
@@ -78,18 +143,15 @@ export function CreateDialog({
 
     return (
         <Dialog open={open && !disabled} onOpenChange={setOpen}>
-            <DialogContent className='w-full max-w-3xl'>
+            <DialogContent className='w-full max-w-4xl'>
                 <DialogTitle className='flex flex-col gap-4'>
                     <span className='w-full text-center text-3xl'>
                         Apartar el laboratorio &quot;{lab_name}&quot;
                     </span>
                 </DialogTitle>
-                {/* <DialogDescription>
-                    Edit the user&apos;s information
-                </DialogDescription> */}
                 <div className='flex gap-8'>
                     <form
-                        className='flex w-full max-w-md flex-2/5 flex-col justify-center gap-6'
+                        className='flex w-full max-w-md flex-1/2 flex-col justify-center gap-6'
                         action={data => {
                             startTransition(async () => {
                                 const { error } = await createlab(data)
@@ -108,13 +170,47 @@ export function CreateDialog({
                         )}
                         <CompletSelect
                             label='Usuario'
-                            options={users.map(u => ({
-                                value: u.id,
-                                label: u.name,
+                            options={[
+                                { value: user.id, label: user.name },
+                                ...users.map(u => ({
+                                    value: u.id,
+                                    label: u.name,
+                                })),
+                            ]}
+                            isClearable={false}
+                            isDisabled={users.length === 1}
+                            value={{
+                                label: selectedUser.name,
+                                value: selectedUser.id,
+                            }}
+                            onChange={async o => {
+                                if (!o) return
+                                setSelecctedUser({
+                                    name: o.label,
+                                    id: o.value,
+                                })
+                            }}
+                        ></CompletSelect>
+                        <CompletSelect
+                            label='Clase'
+                            options={classes.map(c => ({
+                                value: c.id,
+                                label:
+                                    c.subject?.name + ' - ' + c.career?.alias,
                             }))}
-                            defaultValue={{
-                                label: users[0].name,
-                                value: users[0].id,
+                            value={{
+                                label:
+                                    (selectedClass?.subject?.name ?? '') +
+                                    ' - ' +
+                                    (selectedClass?.career?.alias ?? ''),
+                                value: selectedClass?.id ?? '',
+                            }}
+                            onChange={async o => {
+                                if (!o) return
+                                const selected = classes.find(
+                                    c => c.id === o.value,
+                                )
+                                if (selected) setSelectedClass(selected)
                             }}
                             isClearable={false}
                             isDisabled={users.length === 1}
@@ -174,7 +270,7 @@ export function CreateDialog({
                             Apartar
                         </Button>
                     </form>
-                    <div className='flex-3/5'>
+                    <div className='flex-1/2'>
                         <FullCalendar
                             eventClassNames={'cursor-pointer'}
                             plugins={[timeGridPlugin, interactionPlugin]}

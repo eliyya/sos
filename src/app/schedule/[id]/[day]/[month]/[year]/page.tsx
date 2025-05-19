@@ -8,6 +8,7 @@ import { EventSourceInput } from '@fullcalendar/core/index.js'
 import { CreateDialog } from './components/CreateDialog'
 import { getPaylodadUser } from '@/actions/auth'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
+import { ScheduleHeader } from './components/ScheduleHeader'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -41,6 +42,10 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                 name: true,
             },
         })
+    /**
+     * Current date format YYYY-MM-DD
+     */
+    const todayString: `${string}-${string}-${string}` = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
 
     const lab = await db.laboratory.findFirst({
         where: {
@@ -56,12 +61,8 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
             practices: {
                 where: {
                     starts_at: {
-                        gte: new Date(
-                            `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00`,
-                        ),
-                        lte: new Date(
-                            `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T23:59:59`,
-                        ),
+                        gte: new Date(`${todayString}T00:00:00`),
+                        lte: new Date(`${todayString}T23:59:59`),
                     },
                 },
             },
@@ -73,10 +74,30 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
         start: practice.starts_at,
         end: practice.ends_at,
     }))
+    const labs = await db.laboratory.findMany({
+        where: {
+            type: LABORATORY_TYPE.LABORATORY,
+            status: STATUS.ACTIVE,
+        },
+        select: {
+            id: true,
+            name: true,
+        },
+    })
 
     return (
         <div className='bg-background min-h-screen'>
-            {/* <Header /> */}
+            <ScheduleHeader
+                isAdmin={
+                    !!user &&
+                    new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
+                }
+                day={day}
+                month={month}
+                year={year}
+                lab_id={id}
+                labs={labs}
+            />
             <main className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                 <Calendar
@@ -87,15 +108,17 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     endHour={minutesToTime(lab.close_hour) + ':00'}
                 />
                 <CreateDialog
+                    isAdmin={
+                        !!user &&
+                        new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
+                    }
                     lab_name={lab.name}
                     events={events}
                     disabled={!user}
                     endHour={lab.close_hour}
                     startHour={lab.open_hour}
-                    users={[
-                        { id: user?.sub ?? '', name: user?.name ?? '' },
-                        ...users,
-                    ]}
+                    user={{ id: user?.sub ?? '', name: user?.name ?? '' }}
+                    users={users}
                 />
             </main>
         </div>

@@ -1,16 +1,10 @@
 import { NextRequest } from 'next/server'
 import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import app from '@eliyya/type-routes'
-// import { getPaylodadUser } from '@/actions/auth'
-// import { RoleBitField } from '@/bitfields/RoleBitField'
-// import app from '@eliyya/type-routes'
-// import { getUser } from './actions/auth'
-// import { RoleBitField } from './lib/RoleBitField'
 
 const handler = new MiddlewareHandler()
 
 export const config = {
-    // runtime: 'nodejs',
     matcher:
         '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
 }
@@ -46,23 +40,3 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
         )
     return ctx.done()
 })
-
-// handler.set(app.login(), async ({ next, redirect }) => {
-//     console.log('asd')
-
-//     const user = await getUser()
-//     if (!user) return next()
-//     return redirect(app())
-// })
-
-// handler.set(app.labs(), ({ redirect }) => redirect(app()))
-
-// handler.use(/^\/admin/, async ({ next, redirect }) => {
-//     const user = await fetch('/api/get_payload_user').then(res => res.json())
-//     if (
-//         !user ||
-//         !new RoleBitField(BigInt(user.role)).has(RoleBitField.Flags.Admin)
-//     )
-//         return redirect(app.schedule.null())
-//     return next()
-// })

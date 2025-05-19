@@ -51,6 +51,51 @@ export async function getClasses() {
     return await db.class.findMany()
 }
 
+type ClassDataToInclude = 'subject' | 'career' | 'teacher' | 'students'
+export async function getClassesWithDataFromUser<
+    T extends ClassDataToInclude[],
+>(
+    userId: string,
+    dataToInclude?: T,
+): Promise<
+    Awaited<
+        ReturnType<
+            typeof db.class.findMany<{
+                include: {
+                    subject: 'subject' extends T[number] ? true : false
+                    career: 'career' extends T[number] ? true : false
+                    teacher: 'teacher' extends T[number] ? true : false
+                    StudentClasses: 'students' extends T[number] ?
+                        { include: { student: true } }
+                    :   false
+                }
+            }>
+        >
+    >
+> {
+    const includes = (dataToInclude ?? []) as ClassDataToInclude[]
+    // @ts-expect-error Just ignore, we know what we are doing
+    return await db.class.findMany({
+        where: {
+            teacher_id: userId,
+            status: STATUS.ACTIVE,
+        },
+        include: {
+            subject: includes.includes('subject'),
+            career: includes.includes('career'),
+            teacher: includes.includes('teacher'),
+            StudentClasses:
+                !includes.includes('students') ?
+                    false
+                :   {
+                        include: {
+                            student: true,
+                        },
+                    },
+        },
+    })
+}
+
 export async function getActiveClassesWithData() {
     return await db.class.findMany({
         where: {

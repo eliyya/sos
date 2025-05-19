@@ -241,7 +241,6 @@ export function CompletSelect<
                 <ReactSelect
                     {...props}
                     ref={selectRef}
-                    isClearable
                     options={options}
                     styles={{
                         control: base => ({
@@ -748,6 +747,75 @@ export function RetornableCompletCreatableSelect<
                     {error}
                 </span>
             )}
+        </div>
+    )
+}
+
+interface SimpleSelectProps<O, IM extends boolean>
+    extends ComponentProps<typeof ReactSelect<O, IM>> {
+    children?: ReactNode
+}
+export function SimpleSelect<
+    O extends object = { value: string; label: string },
+    IM extends boolean = false,
+>({ children, options, id, ...props }: SimpleSelectProps<O, IM>) {
+    const rid = useId()
+    const selectRef = useRef<SelectInstance<O, IM>>(null)
+
+    return (
+        <div className='relative'>
+            {children}
+            <ReactSelect
+                {...props}
+                ref={selectRef}
+                options={options}
+                styles={{
+                    control: base => ({
+                        ...base,
+                        backgroundColor: 'var(--color-background)',
+                        borderColor: 'var(--border-secondary)',
+                        borderRadius: 'var(--radius-md)',
+                        paddingLeft: children ? '2rem' : base.paddingLeft,
+                    }),
+                    menu: base => ({
+                        ...base,
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-primary)',
+                    }),
+                    option: (
+                        base,
+                        {
+                            isSelected,
+                            isFocused,
+                        }: { isSelected: boolean; isFocused: boolean },
+                    ) => ({
+                        ...base,
+                        backgroundColor:
+                            isSelected ?
+                                'color-mix(in oklab, var(--color-background) 90%, var(--color-foreground))'
+                            : isFocused ?
+                                'color-mix(in oklab, var(--color-background) 95%, var(--color-foreground))'
+                            :   'var(--color-background)',
+                        color:
+                            isSelected || isFocused ?
+                                'var(--color-primary)'
+                            :   'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                        ':active': {
+                            backgroundColor:
+                                'color-mix(in oklab, var(--color-background) 85%, var(--color-foreground))',
+                        },
+                    }),
+                    placeholder: base => ({
+                        ...base,
+                        color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                    }),
+                    singleValue: base => ({
+                        ...base,
+                        color: 'var(--color-primary)',
+                    }),
+                }}
+                id={id ?? rid}
+            />
         </div>
     )
 }
