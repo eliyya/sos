@@ -13,6 +13,7 @@ import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { useDevice } from '@/hooks/useDevice'
+import { MessageError } from '@/components/Error'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
@@ -60,11 +61,7 @@ export function LoginForm() {
                 {t('sub')}
             </p>
 
-            {error && (
-                <span className='block text-sm font-medium text-red-500'>
-                    {error}
-                </span>
-            )}
+            {error && <MessageError>{error}</MessageError>}
             <CompletInput
                 required
                 label={t('username')}

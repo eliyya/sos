@@ -20,6 +20,7 @@ import { useAtom } from 'jotai'
 import { minutesToTime } from '@/lib/utils'
 import { getClassesWithDataFromUser } from '@/actions/class'
 import { STATUS } from '@prisma/client'
+import { MessageError } from '@/components/Error'
 
 type ClassForSelect = Awaited<
     ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
@@ -152,22 +153,18 @@ export function CreateDialog({
                 <div className='flex gap-8'>
                     <form
                         className='flex w-full max-w-md flex-1/2 flex-col justify-center gap-6'
-                        action={data => {
+                        action={() => {
                             startTransition(async () => {
-                                const { error } = await createlab(data)
-                                if (error) setMessage(error)
-                                else setOpen(false)
-                                setTimeout(() => {
-                                    setMessage('')
-                                }, 5_000)
+                                // const { error } = await createlab(data)
+                                // if (error) setMessage(error)
+                                // else setOpen(false)
+                                // setTimeout(() => {
+                                //     setMessage('')
+                                // }, 5_000)
                             })
                         }}
                     >
-                        {message && (
-                            <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                                {message}
-                            </span>
-                        )}
+                        {message && <MessageError>{message}</MessageError>}
                         <CompletSelect
                             label='Usuario'
                             options={[
@@ -264,7 +261,6 @@ export function CreateDialog({
                         >
                             <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                         </CompletInput>
-
                         <Button type='submit' disabled={inTransition}>
                             <Save className='mr-2 h-5 w-5' />
                             Apartar

@@ -38,6 +38,7 @@ import ReactSelect, {
 import ReactCreatableSelect from 'react-select/creatable'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import { MessageError } from './Error'
 
 export const Select = Root
 
@@ -292,12 +293,7 @@ export function CompletSelect<
                 />
             </div>
             {error && (
-                <span
-                    id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                >
-                    {error}
-                </span>
+                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
             )}
         </div>
     )
@@ -469,12 +465,7 @@ export function RetornableCompletSelect<
                 )}
             </div>
             {error && (
-                <span
-                    id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                >
-                    {error}
-                </span>
+                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
             )}
         </div>
     )
@@ -573,12 +564,7 @@ export function CompletCreatableSelect<
                 />
             </div>
             {error && (
-                <span
-                    id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                >
-                    {error}
-                </span>
+                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
             )}
         </div>
     )
@@ -740,12 +726,7 @@ export function RetornableCompletCreatableSelect<
                 )}
             </div>
             {error && (
-                <span
-                    id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                >
-                    {error}
-                </span>
+                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
             )}
         </div>
     )

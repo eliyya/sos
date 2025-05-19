@@ -12,6 +12,7 @@ import {
 } from 'react'
 import { Undo2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { MessageError } from './Error'
 
 interface SimpleInputProps extends InputHTMLAttributes<HTMLInputElement> {
     ref?: Ref<HTMLInputElement>
@@ -84,12 +85,9 @@ export const CompletInput = forwardRef<HTMLInputElement, CompletInputProps>(
                     />
                 </div>
                 {error && (
-                    <span
-                        id={`${id ?? rid}-error`}
-                        className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                    >
+                    <MessageError id={`${id ?? rid}-error`}>
                         {error}
-                    </span>
+                    </MessageError>
                 )}
             </div>
         )
@@ -154,12 +152,7 @@ export const CompletTextarea = forwardRef<
                 />
             </div>
             {error && (
-                <span
-                    id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                >
-                    {error}
-                </span>
+                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
             )}
         </div>
     )
@@ -238,12 +231,7 @@ export const RetornableCompletInput = forwardRef<
                 )}
             </div>
             {error && (
-                <span
-                    id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                >
-                    {error}
-                </span>
+                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
             )}
         </div>
     )
@@ -326,12 +314,9 @@ export const RetornableCompletTextarea = forwardRef<
                     />
                 </div>
                 {error && (
-                    <span
-                        id={`${id ?? rid}-error`}
-                        className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
-                    >
+                    <MessageError id={`${id ?? rid}-error`}>
                         {error}
-                    </span>
+                    </MessageError>
                 )}
             </div>
         )
