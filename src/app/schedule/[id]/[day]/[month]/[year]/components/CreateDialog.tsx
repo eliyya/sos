@@ -20,6 +20,7 @@ import { minutesToTime } from '@/lib/utils'
 import { getClassesWithDataFromUser } from '@/actions/class'
 import { STATUS } from '@prisma/client'
 import { MessageError } from '@/components/Error'
+import { setAsideLaboratory } from '@/actions/laboratory'
 
 type ClassForSelect = Awaited<
     ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
@@ -155,14 +156,15 @@ export function CreateDialog({
                 <div className='flex gap-8'>
                     <form
                         className='flex w-full max-w-md flex-1/2 flex-col justify-center gap-6'
-                        action={() => {
+                        action={data => {
                             startTransition(async () => {
-                                // const { error } = await createlab(data)
-                                // if (error) setMessage(error)
+                                const { message } =
+                                    await setAsideLaboratory(data)
+                                if (message) setMessage(message)
                                 // else setOpen(false)
-                                // setTimeout(() => {
-                                //     setMessage('')
-                                // }, 5_000)
+                                setTimeout(() => {
+                                    setMessage('')
+                                }, 5_000)
                             })
                         }}
                     >

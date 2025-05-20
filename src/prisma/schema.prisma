@@ -93,6 +93,7 @@ model Class {
     teacher        User             @relation(fields: [teacher_id], references: [id])
     career         Career           @relation(fields: [career_id], references: [id])
     StudentClasses StudentClasses[]
+    Practice       Practice[]
 
     @@map("classes")
 }
@@ -129,12 +130,13 @@ model Practice {
     registered_by String
     laboratory_id String
     observations  String?
-    class_id      String
+    class_id      String?
     status        STATUS   @default(ACTIVE)
     updated_at    DateTime @default(now())
     starts_at     DateTime
     ends_at       DateTime
 
+    class              Class?             @relation(fields: [class_id], references: [id])
     user               User               @relation(fields: [user_id], references: [id])
     registered_by_user User               @relation("practice_registers", fields: [registered_by], references: [id])
     laboratory         Laboratory         @relation(fields: [laboratory_id], references: [id])
