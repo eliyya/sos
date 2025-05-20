@@ -52,9 +52,8 @@ export function CareersTable() {
                     {entity
                         .filter(
                             u =>
-                                u.id &&
-                                ((u.status === STATUS.ACTIVE && !archived) ||
-                                    (u.status === STATUS.ARCHIVED && archived)),
+                                (u.status === STATUS.ACTIVE && !archived) ||
+                                (u.status === STATUS.ARCHIVED && archived),
                         )
                         .map(entity => (
                             <TableRow key={entity.id}>

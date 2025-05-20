@@ -12,7 +12,8 @@ export function Filters() {
 
     return (
         <div className='flex items-center gap-4'>
-            <div className='relative flex-1' icon={Search}>
+            <div className='relative flex-1'>
+                <Search className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                 <SimpleInput
                     placeholder='Buscar materias...'
                     className='pl-8'

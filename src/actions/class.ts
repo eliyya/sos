@@ -7,7 +7,8 @@ export async function createClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string
     const teacher_id = formData.get('teacher_id') as string
     const career_id = formData.get('career_id') as string
-    const group = formData.get('career_id') as string
+    const group = formData.get('group') as string
+    const semester = formData.get('semester') as string
 
     try {
         await db.class.create({
@@ -17,10 +18,13 @@ export async function createClass(formData: FormData) {
                 teacher_id,
                 career_id,
                 group: parseInt(group),
+                semester: parseInt(semester),
             },
         })
         return { error: null }
-    } catch {
+    } catch (error) {
+        console.log(error)
+
         return { error: 'Error al crear la materia, intente nuevamente.' }
     }
 }

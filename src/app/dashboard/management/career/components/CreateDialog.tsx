@@ -64,7 +64,6 @@ export function CreateSubjectDialog() {
                         icon={User}
                     />
                     <CompletInput
-                        required
                         label='Alias'
                         type='text'
                         name='alias'

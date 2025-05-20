@@ -88,10 +88,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     return (
         <div className='bg-background min-h-screen'>
             <ScheduleHeader
-                isAdmin={
-                    !!user &&
-                    new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
-                }
+                user={user}
                 day={day}
                 month={month}
                 year={year}

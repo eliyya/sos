@@ -31,7 +31,7 @@ const teacherNavItems: {
         icon: LayoutDashboardIcon,
     },
     {
-        title: 'Laboratorios',
+        title: 'Horario',
         href: '/schedule',
         icon: BeakerIcon,
     },

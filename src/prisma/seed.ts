@@ -31,6 +31,15 @@ await db.user.create({
 })
 
 if (process.env.NODE_ENV !== 'production') {
+    await db.career.createMany({
+        data: [
+            {
+                id: snowflake.generate(),
+                name: 'Ingenieria en Sistemas Computacionales',
+                alias: 'ISC',
+            },
+        ],
+    })
     await db.user.createMany({
         data: [
             {

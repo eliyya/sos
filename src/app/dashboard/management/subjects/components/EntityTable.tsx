@@ -57,10 +57,10 @@ export function EntityTable() {
                     {subjects
                         .filter(
                             u =>
-                                u.id &&
-                                ((u.status === STATUS.ACTIVE && !archived) ||
-                                    (u.status === STATUS.ARCHIVED && archived)),
+                                (u.status === STATUS.ACTIVE && !archived) ||
+                                (u.status === STATUS.ARCHIVED && archived),
                         )
+                        .filter(u => u)
                         .map(user => (
                             <TableRow key={user.id}>
                                 <TableCell>
