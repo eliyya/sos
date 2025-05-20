@@ -22,6 +22,7 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
+    queryAtom,
 } from '@/global/managment-laboratory'
 import { getLaboratory } from '@/actions/laboratory'
 import { EditDialog } from './EditDialog'
@@ -36,6 +37,7 @@ export function EntityTable() {
     >([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
+    const q = useAtomValue(queryAtom)
 
     useEffect(() => {
         getLaboratory().then(setEntity)
@@ -58,6 +60,17 @@ export function EntityTable() {
                             u =>
                                 (u.status === STATUS.ACTIVE && !archived) ||
                                 (u.status === STATUS.ARCHIVED && archived),
+                        )
+                        .filter(
+                            u =>
+                                !q ||
+                                (q &&
+                                    u.name
+                                        .toLowerCase()
+                                        .replaceAll(' ', '')
+                                        .includes(
+                                            q.toLowerCase().replaceAll(' ', ''),
+                                        )),
                         )
                         .map(entity => (
                             <TableRow key={entity.id}>
