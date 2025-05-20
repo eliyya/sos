@@ -19,6 +19,7 @@ import {
     openArchiveAtom,
     openDeleteAtom,
     openUnarchiveAtom,
+    queryAtom,
     showArchivedAtom,
     subjectToEditAtom,
     updateAtom,
@@ -33,6 +34,7 @@ export function EntityTable() {
     const [subjects, setSubjects] = useState<Subject[]>([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
+    const q = useAtomValue(queryAtom)
 
     useEffect(() => {
         getSubjects().then(setSubjects)
@@ -60,7 +62,17 @@ export function EntityTable() {
                                 (u.status === STATUS.ACTIVE && !archived) ||
                                 (u.status === STATUS.ARCHIVED && archived),
                         )
-                        .filter(u => u)
+                        .filter(
+                            u =>
+                                !q ||
+                                (q &&
+                                    u.name
+                                        .toLowerCase()
+                                        .replaceAll(' ', '')
+                                        .includes(
+                                            q.toLowerCase().replaceAll(' ', ''),
+                                        )),
+                        )
                         .map(user => (
                             <TableRow key={user.id}>
                                 <TableCell>
