@@ -3,6 +3,7 @@
 import { db, snowflake } from '@/prisma/db'
 import { timeToMinutes } from '@/lib/utils'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { getPaylodadUser } from './middleware'
 
 export async function unarchiveLaboratory(formData: FormData) {
     const id = formData.get('id') as string
@@ -190,4 +191,37 @@ export async function deleteClass(formData: FormData) {
     } catch {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
+}
+
+export async function setAsideLaboratory(
+    formData: FormData,
+): Promise<{ message: string | null }> {
+    const userPayload = await getPaylodadUser()
+    if (!userPayload) return { message: 'No tienes acceso' }
+    const user_id = formData.get('user_id') as string
+    const class_id = formData.get('class_id') as string
+    const laboratory_id = formData.get('laboratory_id') as string
+    const name = formData.get('name') as string
+    const topic = formData.get('topic') as string
+    const starts_at = formData.get('starts_at') as string
+    const time = formData.get('time') as string
+    const password = formData.get('password') as string
+    const students = formData.get('students') as string
+    await db.practice.create({
+        data: {
+            id: snowflake.generate(),
+            topic,
+            name,
+            students: parseInt(students),
+            user_id,
+            class_id,
+            laboratory_id,
+            registered_by: userPayload.sub,
+            starts_at: new Date(starts_at),
+            ends_at: new Date(
+                new Date(starts_at).getTime() + parseInt(time) * 60 * 1000,
+            ),
+        },
+    })
+    return { message: null }
 }

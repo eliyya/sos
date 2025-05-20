@@ -112,7 +112,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                         !!user &&
                         new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
                     }
-                    lab_name={lab.name}
+                    lab={lab}
                     events={events}
                     disabled={!user}
                     endHour={lab.close_hour}

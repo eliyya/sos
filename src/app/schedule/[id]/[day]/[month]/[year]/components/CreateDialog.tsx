@@ -67,7 +67,10 @@ interface CreateDialogProps {
      */
     endHour: number
     events: EventInput[]
-    lab_name: string
+    lab: {
+        name: string
+        id: string
+    }
     isAdmin?: boolean
     user: {
         id: string
@@ -80,7 +83,7 @@ export function CreateDialog({
     events,
     endHour,
     startHour,
-    lab_name,
+    lab,
     isAdmin,
     user,
 }: CreateDialogProps) {
@@ -146,7 +149,7 @@ export function CreateDialog({
             <DialogContent className='w-full max-w-4xl'>
                 <DialogTitle className='flex flex-col gap-4'>
                     <span className='w-full text-center text-3xl'>
-                        Apartar el laboratorio &quot;{lab_name}&quot;
+                        Apartar el laboratorio &quot;{lab.name}&quot;
                     </span>
                 </DialogTitle>
                 <div className='flex gap-8'>
@@ -164,8 +167,14 @@ export function CreateDialog({
                         }}
                     >
                         {message && <MessageError>{message}</MessageError>}
+                        <input
+                            type='hidden'
+                            value={lab.id}
+                            name='laboratory_id'
+                        />
                         <CompletSelect
                             label='Usuario'
+                            name='user_id'
                             options={[
                                 { value: user.id, label: user.name },
                                 ...users.map(u => ({
@@ -189,6 +198,7 @@ export function CreateDialog({
                         />
                         <CompletSelect
                             label='Clase'
+                            name='class_id'
                             options={classes.map(c => ({
                                 value: c.id,
                                 label:
@@ -223,6 +233,17 @@ export function CreateDialog({
                         />
                         <CompletInput
                             required
+                            label='Practica'
+                            type='text'
+                            name='name'
+                            value={title}
+                            onChange={e => {
+                                setTitle(e.target.value)
+                            }}
+                            icon={User}
+                        />
+                        <CompletInput
+                            required
                             label='Tema'
                             type='text'
                             name='topic'
@@ -249,13 +270,21 @@ export function CreateDialog({
                             label='Tiempo en horas'
                             type='number'
                             name='time'
-                            defaultValue={1}
                             min={1}
                             value={endTime}
                             onChange={e => {
                                 const value = parseInt(e.target.value)
                                 setEndTime(value)
                             }}
+                            icon={User}
+                        />
+                        <CompletInput
+                            required
+                            label='Cantidad de estudiantes'
+                            type='number'
+                            name='students'
+                            min={1}
+                            defaultValue={1}
                             icon={User}
                         />
                         <CompletInput
