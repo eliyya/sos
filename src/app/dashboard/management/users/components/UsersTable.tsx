@@ -26,6 +26,7 @@ import {
     userToEditAtom,
     openUnarchiveUserAtom,
     openDeleteUserAtom,
+    queryAtom,
 } from '@/global/management-users'
 import { ArchiveUserDialog } from './ArchiveUserDialog'
 import { UnarchiveUserDialog } from './UnarchiveUserDialog'
@@ -35,6 +36,7 @@ export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
     const update = useAtomValue(updateUsersAtom)
     const archived = useAtomValue(showArchivedAtom)
+    const q = useAtomValue(queryAtom)
 
     useEffect(() => {
         getUsers(/*true*/).then(setUsers)
@@ -54,9 +56,31 @@ export function UsersTable() {
                     {users
                         .filter(
                             u =>
-                                u.id &&
-                                ((u.status === STATUS.ACTIVE && !archived) ||
-                                    (u.status === STATUS.ARCHIVED && archived)),
+                                (u.status === STATUS.ACTIVE && !archived) ||
+                                (u.status === STATUS.ARCHIVED && archived),
+                        )
+                        .filter(
+                            u =>
+                                !q ||
+                                (q &&
+                                    (q.startsWith('@') ?
+                                        u.username
+                                            .toLowerCase()
+                                            .replaceAll(' ', '')
+                                            .includes(
+                                                q
+                                                    .toLowerCase()
+                                                    .replaceAll(' ', '')
+                                                    .replace('@', ''),
+                                            )
+                                    :   u.name
+                                            .toLowerCase()
+                                            .replaceAll(' ', '')
+                                            .includes(
+                                                q
+                                                    .toLowerCase()
+                                                    .replaceAll(' ', ''),
+                                            ))),
                         )
                         .map(user => (
                             <TableRow key={user.id}>
