@@ -83,6 +83,8 @@ model Class {
     subject_id String
     teacher_id String
     career_id  String
+    group      Int      @default(0)
+    semester   Int      @default(0)
     status     STATUS   @default(ACTIVE)
     created_at DateTime @default(now())
     updated_at DateTime @default(now())
@@ -183,6 +185,7 @@ model Student {
     lastname   String
     firstname  String
     semester   Int      @default(1)
+    group      Int      @default(0)
     created_at DateTime @default(now())
     career_id  String
     updated_at DateTime @default(now())

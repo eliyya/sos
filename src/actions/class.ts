@@ -7,7 +7,7 @@ export async function createClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string
     const teacher_id = formData.get('teacher_id') as string
     const career_id = formData.get('career_id') as string
-    console.log({ subject_id, teacher_id, career_id })
+    const group = formData.get('career_id') as string
 
     try {
         await db.class.create({
@@ -16,6 +16,7 @@ export async function createClass(formData: FormData) {
                 subject_id,
                 teacher_id,
                 career_id,
+                group: parseInt(group),
             },
         })
         return { error: null }
@@ -29,16 +30,16 @@ export async function editClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string
     const teacher_id = formData.get('teacher_id') as string
     const career_id = formData.get('career_id') as string
+    const group = formData.get('career_id') as string
 
     try {
         await db.class.update({
-            where: {
-                id,
-            },
+            where: { id },
             data: {
                 subject_id,
                 teacher_id,
                 career_id,
+                group: parseInt(group),
             },
         })
         return { error: null }

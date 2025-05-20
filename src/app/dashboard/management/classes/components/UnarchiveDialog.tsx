@@ -36,10 +36,10 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Desarchivar Estudiante</span>
+                    <span className='text-3xl'>Desarchivar Clase</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de desarchivar este estudiante?
+                    ¿Está seguro de desarchivar esta clase?
                 </DialogDescription>
                 <form
                     action={data => {
@@ -73,6 +73,20 @@ export function UnarchiveDialog() {
                             careers.find(c => c.id === entity.career_id)?.name
                         }
                         icon={UserIcon}
+                    />
+                    <CompletInput
+                        label='Grupo'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.group}
+                    />
+                    <CompletInput
+                        label='Semestre'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.semester}
                     />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

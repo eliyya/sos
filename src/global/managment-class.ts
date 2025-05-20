@@ -9,6 +9,8 @@ export const entityToEditAtom = atom<Omit<Class, 'created_at' | 'updated_at'>>({
     subject_id: '',
     teacher_id: '',
     career_id: '',
+    group: 0,
+    semester: 0,
     status: STATUS.ACTIVE,
 })
 export const updateAtom = atom(Symbol())

@@ -82,7 +82,6 @@ export function DeleteDialog() {
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput
                         label='Profesor'
-                        name='teacher_id'
                         disabled
                         value={
                             teachers.find(t => t.id === entity.teacher_id)?.name
@@ -91,7 +90,6 @@ export function DeleteDialog() {
                     />
                     <CompletInput
                         label='Materia'
-                        name='subject_id'
                         disabled
                         value={
                             subjects.find(s => s.id === entity.subject_id)?.name
@@ -100,12 +98,25 @@ export function DeleteDialog() {
                     />
                     <CompletInput
                         label='Carrera'
-                        name='career_id'
                         disabled
                         value={
                             careers.find(c => c.id === entity.career_id)?.name
                         }
                         icon={UserIcon}
+                    />
+                    <CompletInput
+                        label='Grupo'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.group}
+                    />
+                    <CompletInput
+                        label='Semestre'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.semester}
                     />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

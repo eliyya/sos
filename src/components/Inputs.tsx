@@ -184,7 +184,7 @@ interface RetornableCompletInputProps
     extends InputHTMLAttributes<HTMLInputElement> {
     label: string
     children?: React.ReactNode
-    defaultValue: string
+    defaultValue: string | number
     error?: string
     icon?: LucideIcon
 }
@@ -252,7 +252,7 @@ export const RetornableCompletInput = forwardRef<
                             onClick={e => {
                                 e.preventDefault()
                                 if (internalRef.current) {
-                                    internalRef.current.value = defaultValue
+                                    internalRef.current.value = `${defaultValue}`
                                     setIsChanged(false)
                                 }
                             }}

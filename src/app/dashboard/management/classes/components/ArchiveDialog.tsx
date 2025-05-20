@@ -102,6 +102,20 @@ export function ArchiveDialog() {
                         }
                         icon={UserIcon}
                     />
+                    <CompletInput
+                        label='Grupo'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.group}
+                    />
+                    <CompletInput
+                        label='Semestre'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.semester}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

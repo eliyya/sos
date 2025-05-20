@@ -24,6 +24,34 @@ import { MessageError } from '@/components/Error'
 type ClassForSelect = Awaited<
     ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
 >[number]
+const createGenericClass = (user_id: string): ClassForSelect => ({
+    id: 'generic',
+    teacher_id: user_id,
+    subject_id: 'generic',
+    career_id: 'generic',
+    group: 0,
+    semester: 0,
+    status: STATUS.ACTIVE,
+    created_at: new Date(),
+    updated_at: new Date(),
+    subject: {
+        created_at: new Date(),
+        id: 'generic',
+        name: 'Especial',
+        status: STATUS.ACTIVE,
+        updated_at: new Date(),
+        practice_hours: 0,
+        theory_hours: 0,
+    },
+    career: {
+        alias: 'Ninguna',
+        id: 'generic',
+        name: 'Ninguna',
+        created_at: new Date(),
+        status: STATUS.ACTIVE,
+        updated_at: new Date(),
+    },
+})
 interface CreateDialogProps {
     users: {
         id: string
@@ -70,8 +98,8 @@ export function CreateDialog({
         id: user.id,
     })
 
-    const [selectedClass, setSelectedClass] = useState<ClassForSelect | null>(
-        null,
+    const [selectedClass, setSelectedClass] = useState<ClassForSelect>(
+        createGenericClass(user.id),
     )
 
     useEffect(() => {
@@ -80,35 +108,7 @@ export function CreateDialog({
                 const toInsert =
                     selectedUser.id !== user.id && isAdmin ?
                         d
-                    :   [
-                            {
-                                id: 'generic',
-                                teacher_id: user.id,
-                                subject_id: 'generic',
-                                career_id: 'generic',
-                                status: STATUS.ACTIVE,
-                                created_at: new Date(),
-                                updated_at: new Date(),
-                                subject: {
-                                    created_at: new Date(),
-                                    id: 'generic',
-                                    name: 'Especial',
-                                    status: STATUS.ACTIVE,
-                                    updated_at: new Date(),
-                                    practice_hours: 0,
-                                    theory_hours: 0,
-                                },
-                                career: {
-                                    alias: 'Ninguna',
-                                    id: 'generic',
-                                    name: 'Ninguna',
-                                    created_at: new Date(),
-                                    status: STATUS.ACTIVE,
-                                    updated_at: new Date(),
-                                },
-                            },
-                            ...d,
-                        ]
+                    :   [createGenericClass(user.id), ...d]
                 setClasses(toInsert)
 
                 if (toInsert.length > 0) {
@@ -192,13 +192,23 @@ export function CreateDialog({
                             options={classes.map(c => ({
                                 value: c.id,
                                 label:
-                                    c.subject?.name + ' - ' + c.career?.alias,
+                                    c.subject.name +
+                                    ' - ' +
+                                    (c.career.alias ?? c.career.name) +
+                                    c.group,
                             }))}
                             value={{
+                                /**
+                                 * @description The value of the selected class in format
+                                 * `{subject.name} - {career.name}{group}`
+                                 * @example 'Matematicas - ISC1'
+                                 */
                                 label:
-                                    (selectedClass?.subject?.name ?? '') +
+                                    selectedClass.subject.name +
                                     ' - ' +
-                                    (selectedClass?.career?.alias ?? ''),
+                                    (selectedClass.career.alias ??
+                                        selectedClass.career.name) +
+                                    selectedClass.group,
                                 value: selectedClass?.id ?? '',
                             }}
                             onChange={async o => {

@@ -12,6 +12,7 @@ import { getTeachersActive } from '@/actions/users'
 import { CompletSelect } from '@/components/Select'
 import { getSubjectsActive } from '@/actions/subjects'
 import { getActiveCareers } from '@/actions/career'
+import { CompletInput } from '@/components/Inputs'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -96,6 +97,22 @@ export function CreateSubjectDialog() {
                             value: t.id,
                         }))}
                         icon={UserIcon}
+                    />
+                    <CompletInput
+                        label='Grupo'
+                        name='group'
+                        icon={UserIcon}
+                        type='number'
+                        min={0}
+                        defaultValue={1}
+                    />
+                    <CompletInput
+                        label='Semestre'
+                        name='semester'
+                        icon={UserIcon}
+                        type='number'
+                        min={0}
+                        defaultValue={1}
                     />
 
                     <Button type='submit' disabled={inTransition}>
