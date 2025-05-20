@@ -1447,7 +1447,7 @@
       "SSnDrBo_PBVhjxzo0ErV_": {
         "id": "SSnDrBo_PBVhjxzo0ErV_",
         "tableId": "-inpPlNDJTXoHLrXCCfqT",
-        "name": "user_id",
+        "name": "teacher_id",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -1460,7 +1460,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1742357408428,
+          "updateAt": 1747712114127,
           "createAt": 1730741098851
         }
       },

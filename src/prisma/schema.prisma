@@ -122,7 +122,7 @@ model Laboratory {
 
 model Practice {
     id            String   @id
-    user_id       String
+    teacher_id    String
     topic         String
     name          String
     created_at    DateTime @default(now())
@@ -137,7 +137,7 @@ model Practice {
     ends_at       DateTime
 
     class              Class?             @relation(fields: [class_id], references: [id])
-    user               User               @relation(fields: [user_id], references: [id])
+    teacher            User               @relation(fields: [teacher_id], references: [id])
     registered_by_user User               @relation("practice_registers", fields: [registered_by], references: [id])
     laboratory         Laboratory         @relation(fields: [laboratory_id], references: [id])
     software_practices SoftwarePractice[]
