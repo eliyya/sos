@@ -161,7 +161,7 @@ export function CreateDialog({
                                 const { message } =
                                     await setAsideLaboratory(data)
                                 if (message) setMessage(message)
-                                // else setOpen(false)
+                                else setOpen(false)
                                 setTimeout(() => {
                                     setMessage('')
                                 }, 5_000)
@@ -175,8 +175,8 @@ export function CreateDialog({
                             name='laboratory_id'
                         />
                         <CompletSelect
-                            label='Usuario'
-                            name='user_id'
+                            label='Docente'
+                            name='teacher_id'
                             options={[
                                 { value: user.id, label: user.name },
                                 ...users.map(u => ({

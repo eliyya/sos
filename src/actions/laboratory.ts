@@ -198,7 +198,7 @@ export async function setAsideLaboratory(
 ): Promise<{ message: string | null }> {
     const userPayload = await getPaylodadUser()
     if (!userPayload) return { message: 'No tienes acceso' }
-    const user_id = formData.get('user_id') as string
+    const teacher_id = formData.get('teacher_id') as string
     const class_id = formData.get('class_id') as string
     const laboratory_id = formData.get('laboratory_id') as string
     const name = formData.get('name') as string
@@ -213,7 +213,7 @@ export async function setAsideLaboratory(
             topic,
             name,
             students: parseInt(students),
-            user_id,
+            teacher_id,
             class_id,
             laboratory_id,
             registered_by: userPayload.sub,

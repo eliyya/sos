@@ -95,6 +95,7 @@ model Class {
     StudentClasses StudentClasses[]
     Practice       Practice[]
 
+    @@unique([subject_id, teacher_id, group, semester, career_id], name: "unique_class")
     @@map("classes")
 }
 
