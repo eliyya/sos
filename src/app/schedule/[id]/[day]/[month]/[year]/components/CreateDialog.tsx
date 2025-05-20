@@ -67,6 +67,7 @@ export function CreateDialog({
     const [startHourInputValue, setStartHourInputValue] = useState('08:00')
     const [endTime, setEndTime] = useState(1)
     const [title, setTitle] = useState('')
+    const [topic, setTopic] = useState('')
     const [classes, setClasses] = useState<ClassForSelect[]>([])
     const [selectedUser, setSelecctedUser] = useState({
         name: user.name,
@@ -220,9 +221,9 @@ export function CreateDialog({
                             label='Tema'
                             type='text'
                             name='topic'
-                            value={title}
+                            value={topic}
                             onChange={e => {
-                                setTitle(e.target.value)
+                                setTopic(e.target.value)
                             }}
                             icon={User}
                         />
@@ -230,7 +231,6 @@ export function CreateDialog({
                             required
                             label='Inicio'
                             type='time'
-                            name='starts_at'
                             value={startHourInputValue}
                             onChange={e => {
                                 setStartHourInputValue(e.target.value)

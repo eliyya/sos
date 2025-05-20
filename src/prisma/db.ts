@@ -11,11 +11,25 @@ function createPrismaClient() {
         name: 'validatePassword',
         model: {
             user: {
-                async validatePassword(username: string, password: string) {
+                async validatePassword(
+                    query:
+                        | { username?: string; id: string }
+                        | { username: string; id?: string }
+                        | { username: string; id: string },
+                    password: string,
+                ) {
+                    console.log({
+                        ...query,
+                        status: STATUS.ACTIVE,
+                    })
+
                     const user = await Prisma.getExtensionContext(
                         this,
                     ).findFirst({
-                        where: { username, status: STATUS.ACTIVE },
+                        where: {
+                            ...query,
+                            status: STATUS.ACTIVE,
+                        },
                         select: {
                             auths: {
                                 select: {

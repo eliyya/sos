@@ -4,6 +4,7 @@ import { db, snowflake } from '@/prisma/db'
 import { timeToMinutes } from '@/lib/utils'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { getPaylodadUser } from './middleware'
+import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 
 export async function unarchiveLaboratory(formData: FormData) {
     const id = formData.get('id') as string
@@ -193,35 +194,96 @@ export async function deleteClass(formData: FormData) {
     }
 }
 
-export async function setAsideLaboratory(
-    formData: FormData,
-): Promise<{ message: string | null }> {
+export async function setAsideLaboratory(formData: FormData): Promise<{
+    message: string | null
+    errors: { class_id?: string; teacher_id?: string }
+}> {
     const userPayload = await getPaylodadUser()
-    if (!userPayload) return { message: 'No tienes acceso' }
+    if (!userPayload) return { message: 'No tienes acceso', errors: {} }
+    const roles = new RoleBitField(BigInt(userPayload.role))
     const teacher_id = formData.get('teacher_id') as string
-    const class_id = formData.get('class_id') as string
+    let class_id: string | null = formData.get('class_id') as string
     const laboratory_id = formData.get('laboratory_id') as string
     const name = formData.get('name') as string
     const topic = formData.get('topic') as string
-    const starts_at = formData.get('starts_at') as string
+    const starts_at_string = formData.get('starts_at') as string
     const time = formData.get('time') as string
     const password = formData.get('password') as string
     const students = formData.get('students') as string
-    await db.practice.create({
-        data: {
-            id: snowflake.generate(),
-            topic,
-            name,
-            students: parseInt(students),
-            teacher_id,
-            class_id,
-            laboratory_id,
-            registered_by: userPayload.sub,
-            starts_at: new Date(starts_at),
-            ends_at: new Date(
-                new Date(starts_at).getTime() + parseInt(time) * 60 * 1000,
-            ),
-        },
+    console.log({
+        id: snowflake.generate(),
+        topic,
+        name,
+        students: parseInt(students),
+        teacher_id,
+        class_id,
+        laboratory_id,
+        registered_by: userPayload.sub,
+        starts_at: starts_at_string,
+        ends_at: new Date(
+            new Date(starts_at_string).getTime() + parseInt(time) * 60 * 1000,
+        ),
+        password,
     })
-    return { message: null }
+    if (!roles.has(RoleFlags.Admin) && !class_id)
+        return {
+            message: 'Faltan datos',
+            errors: { class_id: 'Este campo es requerido' },
+        }
+    class_id ||= null
+    let registered_by = teacher_id
+    try {
+        await db.user.validatePassword({ id: teacher_id }, password)
+    } catch {
+        if (roles.has(RoleFlags.Admin) && teacher_id !== userPayload.sub) {
+            try {
+                await db.user.validatePassword(
+                    { id: userPayload.sub },
+                    password,
+                )
+                registered_by = userPayload.sub
+            } catch {
+                return {
+                    message: 'La contraseña es incorrecta',
+                    errors: { teacher_id: 'La contraseña es incorrecta' },
+                }
+            }
+        } else
+            return {
+                message: 'La contraseña es incorrecta',
+                errors: { teacher_id: 'La contraseña es incorrecta' },
+            }
+    }
+    console.log({
+        id: snowflake.generate(),
+        topic,
+        name,
+        students: parseInt(students),
+        teacher_id,
+        class_id,
+        laboratory_id,
+        registered_by,
+        starts_at: starts_at_string,
+        ends_at: new Date(
+            new Date(starts_at_string).getTime() + parseInt(time) * 60 * 1000,
+        ),
+        password,
+    })
+    // await db.practice.create({
+    //     data: {
+    //         id: snowflake.generate(),
+    //         topic,
+    //         name,
+    //         students: parseInt(students),
+    //         teacher_id,
+    //         class_id,
+    //         laboratory_id,
+    //         registered_by,
+    //         starts_at: new Date(starts_at),
+    //         ends_at: new Date(
+    //             new Date(starts_at).getTime() + parseInt(time) * 60 * 1000,
+    //         ),
+    //     },
+    // })
+    return { message: null, errors: {} }
 }

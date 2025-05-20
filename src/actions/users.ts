@@ -326,3 +326,11 @@ export async function createUser(formData: FormData) {
 //     throw new Error('Internal error', { cause: error })
 // }
 // }
+
+export async function getUser(id: string) {
+    return await db.user.findUnique({
+        where: {
+            id,
+        },
+    })
+}

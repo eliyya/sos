@@ -40,6 +40,16 @@ if (process.env.NODE_ENV !== 'production') {
             },
         ],
     })
+    await db.subject.createMany({
+        data: [
+            {
+                id: snowflake.generate(),
+                name: 'Ingeniería de Software',
+                practice_hours: 3,
+                theory_hours: 2,
+            },
+        ],
+    })
     await db.user.createMany({
         data: [
             {

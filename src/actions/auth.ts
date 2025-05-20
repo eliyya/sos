@@ -160,7 +160,7 @@ export async function login(
     }
 
     // validate email and password
-    if (!(await db.user.validatePassword(username, password))) {
+    if (!(await db.user.validatePassword({ username }, password))) {
         return {
             message: 'Email or password is incorrect',
             status: LoginFormStatus.error,
