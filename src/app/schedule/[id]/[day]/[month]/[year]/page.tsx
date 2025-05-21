@@ -9,6 +9,7 @@ import { CreateDialog } from './components/CreateDialog'
 import { getPaylodadUser } from '@/actions/middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
+import { Temporal } from '@js-temporal/polyfill'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -45,8 +46,16 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     /**
      * Current date format YYYY-MM-DD
      */
-    const todayString: `${string}-${string}-${string}` = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-
+    // const todayString: `${string}-${string}-${string}` = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    const todayStart = Temporal.ZonedDateTime.from({
+        timeZone: 'America/Monterrey',
+        year: parseInt(year),
+        month: parseInt(month),
+        day: parseInt(day),
+        hour: 0,
+        minute: 0,
+    }).toInstant()
+    const todayEnd = todayStart.add({ hours: 23, minutes: 59, seconds: 59 })
     const lab = await db.laboratory.findFirst({
         where: {
             id,
@@ -61,13 +70,21 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
             practices: {
                 where: {
                     starts_at: {
-                        gte: new Date(`${todayString}T00:00:00`),
-                        lte: new Date(`${todayString}T23:59:59`),
+                        gte: new Date(todayStart.epochMilliseconds),
+                        lte: new Date(todayEnd.epochMilliseconds),
                     },
                 },
             },
         },
     })
+    // console.log(lab)
+    // console.log({
+    //     starts_at: lab?.practices[0]?.starts_at,
+    //     ends_at: lab?.practices[0]?.ends_at,
+    //     '00:00:00': new Date(todayStart.epochMilliseconds),
+    //     '23:59:59': new Date(todayEnd.epochMilliseconds),
+    // })
+
     if (!lab) notFound()
     const events: EventSourceInput = lab.practices.map(practice => ({
         title: practice.name,

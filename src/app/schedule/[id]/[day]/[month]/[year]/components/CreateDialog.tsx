@@ -20,6 +20,7 @@ import { minutesToTime } from '@/lib/utils'
 import { getClassesWithDataFromUser } from '@/actions/class'
 import { MessageError } from '@/components/Error'
 import { setAsideLaboratory } from '@/actions/laboratory'
+import { Temporal } from '@js-temporal/polyfill'
 
 type ClassForSelect = Awaited<
     ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
@@ -62,7 +63,7 @@ export function CreateDialog({
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const [day] = useAtom(createDayAtom)
+    const [timestampStartHour, setTimestampStartHour] = useAtom(createDayAtom)
     const [actualEvent, setActualEvent] = useAtom(actualEventAtom)
     const [startHourInputValue, setStartHourInputValue] = useState('08:00')
     const [endTime, setEndTime] = useState(1)
@@ -91,14 +92,20 @@ export function CreateDialog({
 
     useEffect(() => {
         setStartHourInputValue(
-            day.getHours().toString().padStart(2, '0') +
+            new Date(timestampStartHour)
+                .getHours()
+                .toString()
+                .padStart(2, '0') +
                 ':' +
-                day.getMinutes().toString().padStart(2, '0'),
+                new Date(timestampStartHour)
+                    .getMinutes()
+                    .toString()
+                    .padStart(2, '0'),
         )
-    }, [day])
+    }, [timestampStartHour])
 
     useEffect(() => {
-        const start = new Date(day)
+        const start = new Date(timestampStartHour)
         start.setHours(
             parseInt(startHourInputValue.split(':')[0]),
             parseInt(startHourInputValue.split(':')[1]),
@@ -106,7 +113,7 @@ export function CreateDialog({
         const end = new Date(start)
         end.setHours(end.getHours() + endTime)
         setActualEvent(a => ({ ...a, start, end }))
-    }, [day, setActualEvent, startHourInputValue, endTime])
+    }, [timestampStartHour, setActualEvent, startHourInputValue, endTime])
 
     useEffect(() => {
         setActualEvent(a => ({ ...a, title }))
@@ -143,8 +150,8 @@ export function CreateDialog({
                         />
                         <input
                             type='hidden'
-                            value={day.getTime()}
-                            name='date'
+                            value={timestampStartHour}
+                            name='starts_at'
                         />
                         <CompletSelect
                             label='Docente'
@@ -236,10 +243,25 @@ export function CreateDialog({
                             required
                             label='Inicio'
                             type='time'
-                            name='starts_at'
-                            value={startHourInputValue}
+                            value={`${Temporal.Instant.fromEpochMilliseconds(
+                                timestampStartHour,
+                            )
+                                .toZonedDateTimeISO('America/Monterrey')
+                                .hour.toString()
+                                .padStart(2, '0')}:00`}
                             onChange={e => {
-                                setStartHourInputValue(e.target.value)
+                                const actual =
+                                    Temporal.Instant.fromEpochMilliseconds(
+                                        timestampStartHour,
+                                    ).toZonedDateTimeISO('America/Monterrey')
+                                const changued = actual.add({
+                                    hours:
+                                        parseInt(e.target.value.split(':')[0]) -
+                                        actual.hour,
+                                })
+                                setTimestampStartHour(
+                                    changued.epochMilliseconds,
+                                )
                             }}
                             min={minutesToTime(startHour)}
                             icon={User}
@@ -294,7 +316,7 @@ export function CreateDialog({
                             slotMinTime={minutesToTime(startHour) + ':00'}
                             slotMaxTime={minutesToTime(endHour) + ':00'}
                             height='auto'
-                            initialDate={day}
+                            initialDate={timestampStartHour}
                             events={[...events, actualEvent]}
                         />
                     </div>

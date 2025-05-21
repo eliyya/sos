@@ -83,6 +83,7 @@ export async function deleteLaboratory(formData: FormData) {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
+
 export async function createlab(formData: FormData) {
     const name = formData.get('name') as string
     const openHour = formData.get('open_hour') as string
@@ -210,12 +211,9 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
     const time = formData.get('time') as string
     const password = formData.get('password') as string
     const students = formData.get('students') as string
-    const date = Temporal.Instant.fromEpochMilliseconds(
-        parseInt(formData.get('date') as string),
+    const starts_at = Temporal.Instant.fromEpochMilliseconds(
+        parseInt(formData.get('starts_at') as string),
     )
-    const starts_at = date.add({
-        hours: parseInt((formData.get('starts_at') as string).split(':')[0]),
-    })
     const ends_at = starts_at.add({ hours: parseInt(time) })
     if (!roles.has(RoleFlags.Admin) && !class_id)
         return {

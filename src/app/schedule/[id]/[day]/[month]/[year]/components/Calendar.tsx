@@ -51,7 +51,7 @@ export function Calendar({
             }}
             dateClick={info => {
                 console.log('Date clicked:', info.date)
-                setStartHour(info.date)
+                setStartHour(info.date.getTime())
                 openCreate(true)
             }}
             customButtons={{
