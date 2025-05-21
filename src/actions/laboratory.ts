@@ -5,6 +5,7 @@ import { timeToMinutes } from '@/lib/utils'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { getPaylodadUser } from './middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
+import { Temporal } from '@js-temporal/polyfill'
 
 export async function unarchiveLaboratory(formData: FormData) {
     const id = formData.get('id') as string
@@ -206,22 +207,16 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
     const laboratory_id = formData.get('laboratory_id') as string
     const name = formData.get('name') as string
     const topic = formData.get('topic') as string
-    const starts_at_string = formData.get('starts_at') as string
     const time = formData.get('time') as string
     const password = formData.get('password') as string
     const students = formData.get('students') as string
-    const date = new Date(formData.get('date') as string)
-    const starts_at = new Date(date)
-    starts_at.setHours(parseInt(starts_at_string.split(':')[0]))
-    // const ends_at = new Date(starts_at)
-    // ends_at.setHours(ends_at.getHours() + parseInt(time))
-    console.log(
-        formData.get('date'),
-        new Date(formData.get('date') as string),
-        starts_at_string.split(':')[0],
-        parseInt(starts_at_string.split(':')[0]),
-        starts_at,
+    const date = Temporal.Instant.fromEpochMilliseconds(
+        parseInt(formData.get('date') as string),
     )
+    const starts_at = date.add({
+        hours: parseInt((formData.get('starts_at') as string).split(':')[0]),
+    })
+    const ends_at = starts_at.add({ hours: parseInt(time) })
     if (!roles.has(RoleFlags.Admin) && !class_id)
         return {
             message: 'Faltan datos',
@@ -251,34 +246,19 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
                 errors: { teacher_id: 'La contraseña es incorrecta' },
             }
     }
-    console.log({
-        id: snowflake.generate(),
-        topic,
-        name,
-        students: parseInt(students),
-        teacher_id,
-        class_id,
-        laboratory_id,
-        registered_by,
-        starts_at,
-        // ends_at,
-        password,
+    await db.practice.create({
+        data: {
+            id: snowflake.generate(),
+            topic,
+            name,
+            students: parseInt(students),
+            teacher_id,
+            class_id,
+            laboratory_id,
+            registered_by,
+            starts_at: new Date(starts_at.epochMilliseconds),
+            ends_at: new Date(ends_at.epochMilliseconds),
+        },
     })
-    // await db.practice.create({
-    //     data: {
-    //         id: snowflake.generate(),
-    //         topic,
-    //         name,
-    //         students: parseInt(students),
-    //         teacher_id,
-    //         class_id,
-    //         laboratory_id,
-    //         registered_by,
-    //         starts_at: new Date(starts_at),
-    //         ends_at: new Date(
-    //             new Date(starts_at).getTime() + parseInt(time) * 60 * 1000,
-    //         ),
-    //     },
-    // })
     return { message: null, errors: {} }
 }

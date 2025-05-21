@@ -48,7 +48,6 @@ interface CreateDialogProps {
         id: string
         name: string
     }
-    date: Date
 }
 export function CreateDialog({
     users,
@@ -59,7 +58,6 @@ export function CreateDialog({
     lab,
     isAdmin,
     user,
-    date,
 }: CreateDialogProps) {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
@@ -145,7 +143,7 @@ export function CreateDialog({
                         />
                         <input
                             type='hidden'
-                            value={date.toISOString()}
+                            value={day.getTime()}
                             name='date'
                         />
                         <CompletSelect

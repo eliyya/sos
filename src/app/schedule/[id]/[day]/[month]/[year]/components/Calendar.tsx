@@ -42,6 +42,7 @@ export function Calendar({
             hiddenDays={[0, 6]} // Hide Sunday and Saturday
             slotMinTime={startHour}
             slotMaxTime={endHour}
+            slotDuration={'01:00:00'}
             height='auto'
             initialDate={day}
             events={events}
