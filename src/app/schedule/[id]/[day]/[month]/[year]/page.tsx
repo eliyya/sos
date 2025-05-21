@@ -4,12 +4,10 @@ import { db } from '@/prisma/db'
 import { notFound } from 'next/navigation'
 import { minutesToTime } from '@/lib/utils'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
-import { EventSourceInput } from '@fullcalendar/core/index.js'
 import { CreateDialog } from './components/CreateDialog'
 import { getPaylodadUser } from '@/actions/middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
-import { Temporal } from '@js-temporal/polyfill'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -26,9 +24,9 @@ interface SchedulePageProps {
 }
 export default async function SchedulePage({ params }: SchedulePageProps) {
     const { id, day, month, year } = await params
+
     const user = await getPaylodadUser()
     let users: { id: string; name: string }[] = []
-
     if (user && new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin))
         users = await db.user.findMany({
             where: {
@@ -43,54 +41,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                 name: true,
             },
         })
-    /**
-     * Current date format YYYY-MM-DD
-     */
-    // const todayString: `${string}-${string}-${string}` = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    const todayStart = Temporal.ZonedDateTime.from({
-        timeZone: 'America/Monterrey',
-        year: parseInt(year),
-        month: parseInt(month),
-        day: parseInt(day),
-        hour: 0,
-        minute: 0,
-    }).toInstant()
-    const todayEnd = todayStart.add({ hours: 23, minutes: 59, seconds: 59 })
-    const lab = await db.laboratory.findFirst({
-        where: {
-            id,
-            type: LABORATORY_TYPE.LABORATORY,
-            status: STATUS.ACTIVE,
-        },
-        select: {
-            id: true,
-            name: true,
-            open_hour: true,
-            close_hour: true,
-            practices: {
-                where: {
-                    starts_at: {
-                        gte: new Date(todayStart.epochMilliseconds),
-                        lte: new Date(todayEnd.epochMilliseconds),
-                    },
-                },
-            },
-        },
-    })
-    // console.log(lab)
-    // console.log({
-    //     starts_at: lab?.practices[0]?.starts_at,
-    //     ends_at: lab?.practices[0]?.ends_at,
-    //     '00:00:00': new Date(todayStart.epochMilliseconds),
-    //     '23:59:59': new Date(todayEnd.epochMilliseconds),
-    // })
 
-    if (!lab) notFound()
-    const events: EventSourceInput = lab.practices.map(practice => ({
-        title: practice.name,
-        start: practice.starts_at,
-        end: practice.ends_at,
-    }))
     const labs = await db.laboratory.findMany({
         where: {
             type: LABORATORY_TYPE.LABORATORY,
@@ -99,8 +50,12 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
         select: {
             id: true,
             name: true,
+            open_hour: true,
+            close_hour: true,
         },
     })
+    const lab = labs.find(l => l.id === id)
+    if (!lab) notFound()
 
     return (
         <div className='bg-background min-h-screen'>
@@ -115,7 +70,6 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
             <main className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                 <Calendar
-                    events={events}
                     id={id}
                     day={new Date(`${year}-${month}-${day}`)}
                     startHour={minutesToTime(lab.open_hour) + ':00'}
@@ -127,7 +81,6 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                         new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
                     }
                     lab={lab}
-                    events={events}
                     disabled={!user}
                     endHour={lab.close_hour}
                     startHour={lab.open_hour}

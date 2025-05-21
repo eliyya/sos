@@ -1,32 +1,51 @@
 'use client'
 
-import { createDayAtom, openCreateAtom } from '@/global/management-practices'
+import {
+    createDayAtom,
+    eventsAtom,
+    newEventSignalAtom,
+    openCreateAtom,
+} from '@/global/management-practices'
 import interactionPlugin from '@fullcalendar/interaction'
-import { EventInput } from '@fullcalendar/core/index.js'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import FullCalendar from '@fullcalendar/react'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import './calendar.css'
+import { useEffect } from 'react'
+import { getPracticesFromWeek } from '@/actions/practices'
 
 interface CalendarProps {
     startHour: string
     endHour: string
     day: Date
     id: string
-    events: EventInput[]
 }
-export function Calendar({
-    endHour,
-    startHour,
-    day,
-    id,
-    events,
-}: CalendarProps) {
+export function Calendar({ endHour, startHour, day, id }: CalendarProps) {
     const { push } = useRouter()
     const openCreate = useSetAtom(openCreateAtom)
     const setStartHour = useSetAtom(createDayAtom)
+    const newEventSignal = useAtomValue(newEventSignalAtom)
+    const [events, setEvents] = useAtom(eventsAtom)
+    // TODO: change this to a real info
+    useEffect(() => {
+        getPracticesFromWeek({
+            day: 21,
+            month: 5,
+            year: 2025,
+            lab: '447934885395435521',
+        }).then(e =>
+            setEvents(
+                e.map(e => ({
+                    title: e.name,
+                    start: e.starts_at,
+                    end: e.ends_at,
+                })),
+            ),
+        )
+    }, [newEventSignal])
+
     return (
         <FullCalendar
             eventClassNames={'cursor-pointer'}

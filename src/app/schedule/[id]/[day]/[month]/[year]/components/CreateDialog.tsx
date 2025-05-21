@@ -3,11 +3,12 @@
 import {
     actualEventAtom,
     createDayAtom,
+    eventsAtom,
+    newEventSignalAtom,
     openCreateAtom,
 } from '@/global/management-practices'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import interactionPlugin from '@fullcalendar/interaction'
-import { EventInput } from '@fullcalendar/core/index.js'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { CompletSelect } from '@/components/Select'
 import { CompletInput } from '@/components/Inputs'
@@ -15,7 +16,7 @@ import { useEffect, useState, useTransition } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import { Button } from '@/components/Button'
 import { User, Save } from 'lucide-react'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { minutesToTime } from '@/lib/utils'
 import { getClassesWithDataFromUser } from '@/actions/class'
 import { MessageError } from '@/components/Error'
@@ -39,7 +40,6 @@ interface CreateDialogProps {
      * * The end hour of the laboratory in minutes from 00:00
      */
     endHour: number
-    events: EventInput[]
     lab: {
         name: string
         id: string
@@ -53,7 +53,6 @@ interface CreateDialogProps {
 export function CreateDialog({
     users,
     disabled,
-    events,
     endHour,
     startHour,
     lab,
@@ -74,10 +73,11 @@ export function CreateDialog({
         name: user.name,
         id: user.id,
     })
-
+    const senndEventSignal = useSetAtom(newEventSignalAtom)
     const [selectedClass, setSelectedClass] = useState<ClassForSelect | null>(
         null,
     )
+    const events = useAtomValue(eventsAtom)
 
     useEffect(() => {
         getClassesWithDataFromUser(selectedUser.id, ['subject', 'career']).then(
@@ -135,7 +135,10 @@ export function CreateDialog({
                                 const { message } =
                                     await setAsideLaboratory(data)
                                 if (message) setMessage(message)
-                                else setOpen(false)
+                                else {
+                                    setOpen(false)
+                                    senndEventSignal(Symbol())
+                                }
                                 setTimeout(() => {
                                     setMessage('')
                                 }, 5_000)
