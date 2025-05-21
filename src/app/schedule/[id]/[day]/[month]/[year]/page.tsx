@@ -105,6 +105,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     endHour={minutesToTime(lab.close_hour) + ':00'}
                 />
                 <CreateDialog
+                    date={new Date(`${year}-${month}-${day}`)}
                     isAdmin={
                         !!user &&
                         new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)

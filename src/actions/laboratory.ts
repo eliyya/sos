@@ -210,21 +210,18 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
     const time = formData.get('time') as string
     const password = formData.get('password') as string
     const students = formData.get('students') as string
-    console.log({
-        id: snowflake.generate(),
-        topic,
-        name,
-        students: parseInt(students),
-        teacher_id,
-        class_id,
-        laboratory_id,
-        registered_by: userPayload.sub,
-        starts_at: starts_at_string,
-        ends_at: new Date(
-            new Date(starts_at_string).getTime() + parseInt(time) * 60 * 1000,
-        ),
-        password,
-    })
+    const date = new Date(formData.get('date') as string)
+    const starts_at = new Date(date)
+    starts_at.setHours(parseInt(starts_at_string.split(':')[0]))
+    // const ends_at = new Date(starts_at)
+    // ends_at.setHours(ends_at.getHours() + parseInt(time))
+    console.log(
+        formData.get('date'),
+        new Date(formData.get('date') as string),
+        starts_at_string.split(':')[0],
+        parseInt(starts_at_string.split(':')[0]),
+        starts_at,
+    )
     if (!roles.has(RoleFlags.Admin) && !class_id)
         return {
             message: 'Faltan datos',
@@ -263,10 +260,8 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
         class_id,
         laboratory_id,
         registered_by,
-        starts_at: starts_at_string,
-        ends_at: new Date(
-            new Date(starts_at_string).getTime() + parseInt(time) * 60 * 1000,
-        ),
+        starts_at,
+        // ends_at,
         password,
     })
     // await db.practice.create({
