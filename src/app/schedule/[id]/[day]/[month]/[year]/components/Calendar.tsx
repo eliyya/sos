@@ -87,25 +87,22 @@ export const Calendar = ({
                 // based on the following rules:
 
                 // 1. Get the current date and time in Monterrey timezone
-                const current = Temporal.ZonedDateTime.from({
-                    timeZone: 'America/Monterrey',
-                    epochMilliseconds: timestamp,
-                })
+                const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
 
                 // 2. Normalize both dates to the start of their respective weeks (Monday at 00:00:00)
-                const currentWeek = current.subtract({
-                    days: current.dayOfWeek,
-                    hours: current.hour,
-                    minutes: current.minute,
-                    seconds: current.second,
-                    milliseconds: current.millisecond,
+                const nowWeek = now.subtract({
+                    days: now.dayOfWeek,
+                    hours: now.hour,
+                    minutes: now.minute,
+                    seconds: now.second,
+                    milliseconds: now.millisecond,
                 })
 
                 // 3. Get the clicked date and normalize it to the start of its week
-                const clicked = Temporal.ZonedDateTime.from({
-                    timeZone: 'America/Monterrey',
-                    epochMilliseconds: clicketTimestamp,
-                })
+                const clicked =
+                    Temporal.Instant.fromEpochMilliseconds(
+                        clicketTimestamp,
+                    ).toZonedDateTimeISO('America/Monterrey')
                 const clickedWeek = clicked.subtract({
                     days: clicked.dayOfWeek,
                     hours: clicked.hour,
@@ -115,23 +112,20 @@ export const Calendar = ({
                 })
 
                 // 4. Check if the clicked date is in the current week
-                if (clickedWeek.equals(currentWeek)) {
+                if (clickedWeek.equals(nowWeek)) {
                     // If in current week, allow event creation
                     setStartHour(clicketTimestamp)
                     return openCreate(true)
                 }
 
                 // 5. Check if the clicked date is in a past week
-                if (
-                    clickedWeek.epochMilliseconds <
-                    currentWeek.epochMilliseconds
-                ) {
+                if (clickedWeek.epochMilliseconds < nowWeek.epochMilliseconds) {
                     // Past weeks are not allowed
                     return
                 }
 
                 // 6. Calculate the next week
-                const futureWeek = currentWeek.add({
+                const futureWeek = nowWeek.add({
                     days: 7,
                 })
 
@@ -144,7 +138,7 @@ export const Calendar = ({
 
                 // 8. Check if the clicked date is in a future week and user has admin privileges
                 if (
-                    clickedWeek.epochMilliseconds > current.epochMilliseconds &&
+                    clickedWeek.epochMilliseconds > now.epochMilliseconds &&
                     isAdmin
                 ) {
                     // Admin users can create events in future weeks
@@ -166,10 +160,10 @@ export const Calendar = ({
                             milliseconds: now.millisecond,
                         })
 
-                        const requested = Temporal.ZonedDateTime.from({
-                            timeZone: 'America/Monterrey',
-                            epochMilliseconds: timestamp,
-                        })
+                        const requested =
+                            Temporal.Instant.fromEpochMilliseconds(
+                                timestamp,
+                            ).toZonedDateTimeISO('America/Monterrey')
                         const requestedWeek = requested.subtract({
                             days: requested.dayOfWeek,
                             hours: requested.hour,
@@ -177,14 +171,13 @@ export const Calendar = ({
                             seconds: requested.second,
                             milliseconds: requested.millisecond,
                         })
-
                         if (!requestedWeek.equals(currentWeek)) {
                             router.push(
                                 app.schedule.$id.$day.$month.$year(
                                     id,
-                                    requested.day,
-                                    requested.month,
-                                    requested.year,
+                                    currentWeek.day,
+                                    currentWeek.month,
+                                    currentWeek.year,
                                 ),
                             )
                         }
@@ -193,13 +186,14 @@ export const Calendar = ({
                 goNext: {
                     text: '>',
                     click: () => {
-                        const requested = Temporal.ZonedDateTime.from({
-                            timeZone: 'America/Monterrey',
-                            epochMilliseconds: timestamp,
-                        })
+                        const requested =
+                            Temporal.Instant.fromEpochMilliseconds(
+                                timestamp,
+                            ).toZonedDateTimeISO('America/Monterrey')
                         const nextWeek = requested.add({
                             days: 7,
                         })
+
                         return router.push(
                             app.schedule.$id.$day.$month.$year(
                                 id,
@@ -213,10 +207,10 @@ export const Calendar = ({
                 goPrev: {
                     text: '<',
                     click: () => {
-                        const requested = Temporal.ZonedDateTime.from({
-                            timeZone: 'America/Monterrey',
-                            epochMilliseconds: timestamp,
-                        })
+                        const requested =
+                            Temporal.Instant.fromEpochMilliseconds(
+                                timestamp,
+                            ).toZonedDateTimeISO('America/Monterrey')
                         const prevWeek = requested.subtract({
                             days: 7,
                         })
