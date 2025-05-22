@@ -29,7 +29,7 @@ export function CreateSubjectDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Crear Estudiante</span>
+                    <span className='text-3xl'>Crear Maquina</span>
                 </DialogTitle>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
@@ -77,13 +77,6 @@ export function CreateSubjectDialog() {
                         label='RAM'
                         type='text'
                         name='ram'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='Almacenamiento'
-                        type='text'
-                        name='storage'
                         icon={UserIcon}
                     />
                     <CompletInput

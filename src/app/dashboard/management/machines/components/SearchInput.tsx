@@ -2,8 +2,7 @@
 
 import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
-import { Search } from 'lucide-react'
-import { queryAtom, showArchivedAtom } from '@/global/managment-students'
+import { queryAtom, showArchivedAtom } from '@/global/managment-machines'
 import ToggleSwitch from '@/components/Switch'
 
 export function Filters() {
@@ -12,7 +11,7 @@ export function Filters() {
 
     return (
         <div className='flex items-center gap-4'>
-            <div className='relative flex-1' icon={Search}>
+            <div className='relative flex-1'>
                 <SimpleInput
                     placeholder='Buscar software...'
                     className='pl-8'
