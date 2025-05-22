@@ -73,7 +73,7 @@ export function CreateDialog({
         name: user.name,
         id: user.id,
     })
-    const senndEventSignal = useSetAtom(newEventSignalAtom)
+    const sendEventSignal = useSetAtom(newEventSignalAtom)
     const [selectedClass, setSelectedClass] = useState<ClassForSelect | null>(
         null,
     )
@@ -137,7 +137,7 @@ export function CreateDialog({
                                 if (message) setMessage(message)
                                 else {
                                     setOpen(false)
-                                    senndEventSignal(Symbol())
+                                    sendEventSignal(Symbol())
                                 }
                                 setTimeout(() => {
                                     setMessage('')
@@ -311,6 +311,7 @@ export function CreateDialog({
                             dayHeaderClassNames={'bg-background'}
                             initialView='timeGridDay'
                             allDaySlot={false}
+                            slotDuration={'01:00:00'}
                             headerToolbar={{
                                 left: 'title',
                                 center: '',

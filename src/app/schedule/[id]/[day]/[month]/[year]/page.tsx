@@ -8,6 +8,7 @@ import { CreateDialog } from './components/CreateDialog'
 import { getPaylodadUser } from '@/actions/middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
+import { Temporal } from '@js-temporal/polyfill'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -56,7 +57,6 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     })
     const lab = labs.find(l => l.id === id)
     if (!lab) notFound()
-
     return (
         <div className='bg-background min-h-screen'>
             <ScheduleHeader
@@ -71,7 +71,14 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                 <Calendar
                     id={id}
-                    day={new Date(`${year}-${month}-${day}`)}
+                    timestamp={
+                        Temporal.ZonedDateTime.from({
+                            timeZone: 'America/Monterrey',
+                            year: parseInt(year),
+                            month: parseInt(month),
+                            day: parseInt(day),
+                        }).epochMilliseconds
+                    }
                     startHour={minutesToTime(lab.open_hour) + ':00'}
                     endHour={minutesToTime(lab.close_hour) + ':00'}
                 />

@@ -34,7 +34,7 @@ export function timeToMinutes(time: string) {
     return parseInt(hours, 10) * 60 + parseInt(minutes, 10)
 }
 
-export function minutesToTime(minutes: number) {
+export function minutesToTime(minutes: number): `${string}:${string}` {
     const hours = Math.floor(minutes / 60)
     const mins = minutes % 60
     return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`

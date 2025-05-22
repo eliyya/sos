@@ -15,14 +15,18 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import './calendar.css'
 import { useEffect } from 'react'
 import { getPracticesFromWeek } from '@/actions/practices'
+import { Temporal } from '@js-temporal/polyfill'
 
 interface CalendarProps {
     startHour: string
     endHour: string
-    day: Date
+    /**
+     * The date to be displayed in the calendar in timestamp format
+     */
+    timestamp: number
     id: string
 }
-export function Calendar({ endHour, startHour, day, id }: CalendarProps) {
+export function Calendar({ endHour, startHour, timestamp, id }: CalendarProps) {
     const { push } = useRouter()
     const openCreate = useSetAtom(openCreateAtom)
     const setStartHour = useSetAtom(createDayAtom)
@@ -38,13 +42,14 @@ export function Calendar({ endHour, startHour, day, id }: CalendarProps) {
         }).then(e =>
             setEvents(
                 e.map(e => ({
+                    id: e.id,
                     title: e.name,
                     start: e.starts_at,
                     end: e.ends_at,
                 })),
             ),
         )
-    }, [newEventSignal])
+    }, [newEventSignal, setEvents])
 
     return (
         <FullCalendar
@@ -63,13 +68,13 @@ export function Calendar({ endHour, startHour, day, id }: CalendarProps) {
             slotMaxTime={endHour}
             slotDuration={'01:00:00'}
             height='auto'
-            initialDate={day}
+            initialDate={timestamp}
             events={events}
             eventClick={info => {
                 console.log('Event clicked:', info.event)
             }}
             dateClick={info => {
-                console.log('Date clicked:', info.date)
+                console.log('Date clicked:', info.date, { a: 2 })
                 setStartHour(info.date.getTime())
                 openCreate(true)
             }}
@@ -77,20 +82,20 @@ export function Calendar({ endHour, startHour, day, id }: CalendarProps) {
                 goToday: {
                     text: 'today',
                     click: () => {
-                        const t = new Date()
-                        if (
-                            t.getDate() !== day.getDate() ||
-                            t.getMonth() !== day.getMonth() ||
-                            t.getFullYear() !== day.getFullYear()
-                        )
-                            push(
-                                app.schedule.$id.$day.$month.$year(
-                                    id,
-                                    t.getDate(),
-                                    t.getMonth() + 1,
-                                    t.getFullYear(),
-                                ),
-                            )
+                        const requested = Temporal.ZonedDateTime.from({
+                            timeZone: 'America/Monterrey',
+                            epochMilliseconds: timestamp,
+                        })
+                        // if requested date is not in the same week as the current date do:
+                        // push(
+                        //     app.schedule.$id.$day.$month.$year(
+                        //         id,
+                        //         requested.day,
+                        //         requested.month,
+                        //         requested.year,
+                        //     ),
+                        // )
+                        // else do nothing
                     },
                 },
                 goNext: {

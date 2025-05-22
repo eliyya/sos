@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import { SelectLaboratory } from './SelectLaboratory'
 import app from '@eliyya/type-routes'
 import { JWTPayload } from '@/lib/types'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
+import { ButtonLink } from '@/components/Links'
 
 interface ScheduleHeaderProps {
     labs: { id: string; name: string }[]
@@ -35,8 +35,12 @@ export function ScheduleHeader({
                 {user ?
                     new RoleBitField(BigInt(user.role)).has(
                         RoleFlags.Admin,
-                    ) && <Link href={app.dashboard()}>Dashboard</Link>
-                :   <Link href={app.auth.login()}>Dashboard</Link>}
+                    ) && (
+                        <ButtonLink href={app.dashboard()}>
+                            Dashboard
+                        </ButtonLink>
+                    )
+                :   <ButtonLink href={app.auth.login()}>Login</ButtonLink>}
             </div>
         </div>
     )
