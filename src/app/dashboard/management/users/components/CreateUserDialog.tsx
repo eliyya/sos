@@ -74,7 +74,7 @@ export function CreateUserDialog() {
                     />
                     <CompletInput
                         required
-                        label='Ussername'
+                        label='Username'
                         type='text'
                         name='username'
                         icon={AtSign}
