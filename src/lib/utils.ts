@@ -1,3 +1,4 @@
+import type { Temporal } from '@js-temporal/polyfill'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -38,4 +39,17 @@ export function minutesToTime(minutes: number): `${string}:${string}` {
     const hours = Math.floor(minutes / 60)
     const mins = minutes % 60
     return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
+}
+
+export function startOfWeek(date: Temporal.ZonedDateTime) {
+    return date
+        .with({
+            hour: 0,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+            microsecond: 0,
+            nanosecond: 0,
+        })
+        .subtract({ days: date.dayOfWeek })
 }

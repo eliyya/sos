@@ -16,6 +16,7 @@ import './calendar.css'
 import { useEffect } from 'react'
 import { getPracticesFromWeek } from '@/actions/practices'
 import { Temporal } from '@js-temporal/polyfill'
+import { startOfWeek } from '@/lib/utils'
 
 interface CalendarProps {
     startHour: string
@@ -82,6 +83,8 @@ export const Calendar = ({
                 console.log('Event clicked:', info.event)
             }}
             dateClick={info => {
+                console.log('Click date:', info.date)
+
                 const clicketTimestamp = info.date.getTime()
                 // When a date is clicked in the calendar, this handler determines if the user can create an event
                 // based on the following rules:
@@ -90,26 +93,24 @@ export const Calendar = ({
                 const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
 
                 // 2. Normalize both dates to the start of their respective weeks (Monday at 00:00:00)
-                const nowWeek = now.subtract({
-                    days: now.dayOfWeek,
-                    hours: now.hour,
-                    minutes: now.minute,
-                    seconds: now.second,
-                    milliseconds: now.millisecond,
-                })
+                const nowWeek = startOfWeek(now)
 
                 // 3. Get the clicked date and normalize it to the start of its week
                 const clicked =
                     Temporal.Instant.fromEpochMilliseconds(
                         clicketTimestamp,
                     ).toZonedDateTimeISO('America/Monterrey')
-                const clickedWeek = clicked.subtract({
-                    days: clicked.dayOfWeek,
-                    hours: clicked.hour,
-                    minutes: clicked.minute,
-                    seconds: clicked.second,
-                    milliseconds: clicked.millisecond,
-                })
+                const clickedWeek = startOfWeek(clicked)
+                console.log(
+                    'clickedWeek.equals(nowWeek)',
+                    clickedWeek.equals(nowWeek),
+                )
+                console.log(
+                    'clickedWeek',
+                    clickedWeek.epochMilliseconds,
+                    clickedWeek,
+                )
+                console.log('nowWeek', nowWeek.epochMilliseconds, nowWeek)
 
                 // 4. Check if the clicked date is in the current week
                 if (clickedWeek.equals(nowWeek)) {
@@ -152,25 +153,23 @@ export const Calendar = ({
                     click: () => {
                         const now =
                             Temporal.Now.zonedDateTimeISO('America/Monterrey')
-                        const currentWeek = now.subtract({
-                            days: now.dayOfWeek,
-                            hours: now.hour,
-                            minutes: now.minute,
-                            seconds: now.second,
-                            milliseconds: now.millisecond,
-                        })
+                        const currentWeek = startOfWeek(now)
 
                         const requested =
                             Temporal.Instant.fromEpochMilliseconds(
                                 timestamp,
                             ).toZonedDateTimeISO('America/Monterrey')
-                        const requestedWeek = requested.subtract({
-                            days: requested.dayOfWeek,
-                            hours: requested.hour,
-                            minutes: requested.minute,
-                            seconds: requested.second,
-                            milliseconds: requested.millisecond,
-                        })
+                        const requestedWeek = startOfWeek(requested)
+                        if (!requestedWeek.equals(currentWeek)) {
+                            router.push(
+                                app.schedule.$id.$day.$month.$year(
+                                    id,
+                                    requestedWeek.day,
+                                    requestedWeek.month,
+                                    requestedWeek.year,
+                                ),
+                            )
+                        }
                         if (!requestedWeek.equals(currentWeek)) {
                             router.push(
                                 app.schedule.$id.$day.$month.$year(
