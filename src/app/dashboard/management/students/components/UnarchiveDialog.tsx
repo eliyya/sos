@@ -1,13 +1,13 @@
 'use client'
 
-import { unarchiveCareer } from '@/actions/career'
+import { unarchiveStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
     openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
+} from '@/global/managment-students'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
@@ -26,15 +26,15 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Desarchivar Carrera</span>
+                    <span className='text-3xl'>Desarchivar Estudiante</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de desarchivar {entity.name}?
+                    ¿Está seguro de desarchivar {entity.nc}?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await unarchiveCareer(data)
+                            const { error } = await unarchiveStudent(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -54,7 +54,7 @@ export function UnarchiveDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={entity.id} name='id' />
+                    <input type='hidden' value={entity.nc} name='nc' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             variant={'secondary'}

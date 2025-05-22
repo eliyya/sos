@@ -21,7 +21,7 @@ export function CreateSubjectDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Crear Estudiante</span>
+                    <span className='text-3xl'>Crear Laboratorio</span>
                 </DialogTitle>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
