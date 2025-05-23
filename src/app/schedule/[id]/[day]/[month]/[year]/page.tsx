@@ -70,7 +70,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
             <main className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                 <Calendar
-                    id={id}
+                    lab_id={id}
                     timestamp={
                         Temporal.ZonedDateTime.from({
                             timeZone: 'America/Monterrey',
