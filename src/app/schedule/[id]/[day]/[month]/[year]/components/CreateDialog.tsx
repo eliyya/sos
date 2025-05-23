@@ -98,7 +98,7 @@ export function CreateDialog({
                 timestampStartHour,
             ).toZonedDateTimeISO('America/Monterrey')
         const end = start.add({
-            minutes: endTime,
+            hours: endTime,
         })
         setActualEvent(a => ({
             ...a,
