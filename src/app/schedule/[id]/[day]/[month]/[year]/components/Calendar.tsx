@@ -101,16 +101,6 @@ export const Calendar = ({
                         clicketTimestamp,
                     ).toZonedDateTimeISO('America/Monterrey')
                 const clickedWeek = startOfWeek(clicked)
-                console.log(
-                    'clickedWeek.equals(nowWeek)',
-                    clickedWeek.equals(nowWeek),
-                )
-                console.log(
-                    'clickedWeek',
-                    clickedWeek.epochMilliseconds,
-                    clickedWeek,
-                )
-                console.log('nowWeek', nowWeek.epochMilliseconds, nowWeek)
 
                 // 4. Check if the clicked date is in the current week
                 if (clickedWeek.equals(nowWeek)) {
