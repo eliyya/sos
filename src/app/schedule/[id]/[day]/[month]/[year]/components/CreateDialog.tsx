@@ -110,9 +110,9 @@ export function CreateDialog({
             hour: Math.floor(openHour / 60),
         })
         const closeHourDate = start.with({
-            hour: Math.floor(closeHour / 60) - 1,
+            hour: Math.floor(closeHour / 60),
         })
-        const hasEmpalm = events.some(
+        const hasEmpalmInStartHour = events.some(
             e =>
                 start.epochMilliseconds >= e.start &&
                 start.epochMilliseconds < e.end,
@@ -121,15 +121,30 @@ export function CreateDialog({
             setStartHourError(
                 'La hora de inicio debe ser mayor que la de apertura.',
             )
-        else if (start.epochMilliseconds > closeHourDate.epochMilliseconds)
+        else if (
+            start.epochMilliseconds >
+            closeHourDate.subtract({ hours: 1 }).epochMilliseconds
+        )
             setStartHourError(
                 'La hora de inicio debe ser menor que la de cierre.',
             )
-        else if (hasEmpalm)
+        else if (hasEmpalmInStartHour)
             setStartHourError(
                 'El laboratorio ya tiene un evento en el mismo horario.',
             )
         else setStartHourError('')
+        // validate end hour
+        console.log('end  ', end.epochMilliseconds, end.hour)
+        console.log(
+            'close',
+            closeHourDate.epochMilliseconds,
+            closeHourDate.hour,
+        )
+        if (end.epochMilliseconds > closeHourDate.epochMilliseconds)
+            setEndHourError(
+                'La hora de cierre debe ser menor que la de cierre.',
+            )
+        else setEndHourError('')
     }, [
         timestampStartHour,
         setActualEvent,
@@ -300,6 +315,7 @@ export function CreateDialog({
                             name='time'
                             min={1}
                             value={endTime}
+                            error={endHourError}
                             onChange={e => {
                                 const value = parseInt(e.target.value)
                                 setEndTime(value)

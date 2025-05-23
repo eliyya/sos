@@ -98,19 +98,14 @@ export function CompletInput({
                     )}
                 />
             </div>
-            {
-                typeof error !== 'undefined' ?
-                    error ?
-                        <MessageError
-                            className='absolute mt-0'
-                            id={`${id ?? rid}-error`}
-                        >
-                            {error}
-                        </MessageError>
-                    :   null
-                    // :   <span className='mt-1 block py-1 text-sm'>&nbsp;</span>
-                :   null
-            }
+            {error && (
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
+            )}
         </div>
     )
 }
