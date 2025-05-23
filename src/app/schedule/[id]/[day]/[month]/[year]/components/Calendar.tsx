@@ -25,7 +25,7 @@ interface CalendarProps {
      * The date to be displayed in the calendar in timestamp format
      */
     timestamp: number
-    id: string
+    labId: string
     isAdmin?: boolean
 }
 
@@ -33,7 +33,7 @@ export const Calendar = ({
     endHour,
     startHour,
     timestamp,
-    id,
+    labId,
     isAdmin,
 }: CalendarProps) => {
     const router = useRouter()
@@ -44,10 +44,8 @@ export const Calendar = ({
 
     useEffect(() => {
         getPracticesFromWeek({
-            day: 21,
-            month: 5,
-            year: 2025,
-            lab: '447934885395435521',
+            timestamp,
+            labId,
         }).then(e =>
             setEvents(
                 e.map(e => ({
@@ -58,7 +56,7 @@ export const Calendar = ({
                 })),
             ),
         )
-    }, [newEventSignal, setEvents])
+    }, [newEventSignal, setEvents, labId, timestamp])
 
     return (
         <FullCalendar
@@ -153,7 +151,7 @@ export const Calendar = ({
                         if (!requestedWeek.equals(currentWeek)) {
                             router.push(
                                 app.schedule.$id.$day.$month.$year(
-                                    id,
+                                    labId,
                                     requestedWeek.day,
                                     requestedWeek.month,
                                     requestedWeek.year,
@@ -163,7 +161,7 @@ export const Calendar = ({
                         if (!requestedWeek.equals(currentWeek)) {
                             router.push(
                                 app.schedule.$id.$day.$month.$year(
-                                    id,
+                                    labId,
                                     currentWeek.day,
                                     currentWeek.month,
                                     currentWeek.year,
@@ -185,7 +183,7 @@ export const Calendar = ({
 
                         return router.push(
                             app.schedule.$id.$day.$month.$year(
-                                id,
+                                labId,
                                 nextWeek.day,
                                 nextWeek.month,
                                 nextWeek.year,
@@ -205,7 +203,7 @@ export const Calendar = ({
                         })
                         return router.push(
                             app.schedule.$id.$day.$month.$year(
-                                id,
+                                labId,
                                 prevWeek.day,
                                 prevWeek.month,
                                 prevWeek.year,
