@@ -310,7 +310,12 @@ export function CompletSelect<
                 />
             </div>
             {error && (
-                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
             )}
         </div>
     )
@@ -487,7 +492,12 @@ export function RetornableCompletSelect<
                 )}
             </div>
             {error && (
-                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
             )}
         </div>
     )
@@ -591,7 +601,12 @@ export function CompletCreatableSelect<
                 />
             </div>
             {error && (
-                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
             )}
         </div>
     )
@@ -758,7 +773,12 @@ export function RetornableCompletCreatableSelect<
                 )}
             </div>
             {error && (
-                <MessageError id={`${id ?? rid}-error`}>{error}</MessageError>
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
             )}
         </div>
     )
