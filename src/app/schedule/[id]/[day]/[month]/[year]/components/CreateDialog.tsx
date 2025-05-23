@@ -140,9 +140,28 @@ export function CreateDialog({
             closeHourDate.epochMilliseconds,
             closeHourDate.hour,
         )
+        const hasEmpalmInEndHour = events.some(
+            e =>
+                end.epochMilliseconds > e.start &&
+                end.epochMilliseconds <= e.end,
+        )
+        const wrapsExistingEvent = events.some(
+            e =>
+                start.epochMilliseconds <= e.start &&
+                end.epochMilliseconds >= e.end,
+        )
+
         if (end.epochMilliseconds > closeHourDate.epochMilliseconds)
             setEndHourError(
                 'La hora de cierre debe ser menor que la de cierre.',
+            )
+        else if (hasEmpalmInEndHour)
+            setEndHourError(
+                'El laboratorio ya tiene un evento en el mismo horario.',
+            )
+        else if (wrapsExistingEvent)
+            setEndHourError(
+                'El laboratorio ya tiene un evento en el mismo horario.',
             )
         else setEndHourError('')
     }, [
