@@ -35,11 +35,11 @@ interface CreateDialogProps {
     /**
      * * The start hour of the laboratory in minutes from 00:00
      */
-    startHour: number
+    openHour: number
     /**
      * * The end hour of the laboratory in minutes from 00:00
      */
-    endHour: number
+    closeHour: number
     lab: {
         name: string
         id: string
@@ -53,8 +53,8 @@ interface CreateDialogProps {
 export function CreateDialog({
     users,
     disabled,
-    endHour,
-    startHour,
+    closeHour,
+    openHour,
     lab,
     isAdmin,
     user,
@@ -64,7 +64,6 @@ export function CreateDialog({
     const [inTransition, startTransition] = useTransition()
     const [timestampStartHour, setTimestampStartHour] = useAtom(createDayAtom)
     const [actualEvent, setActualEvent] = useAtom(actualEventAtom)
-    const [startHourInputValue, setStartHourInputValue] = useState('08:00')
     const [endTime, setEndTime] = useState(1)
     const [title, setTitle] = useState('')
     const [topic, setTopic] = useState('')
@@ -77,6 +76,8 @@ export function CreateDialog({
     const [selectedClass, setSelectedClass] = useState<ClassForSelect | null>(
         null,
     )
+    const [startHourError, setStartHourError] = useState('')
+    const [endHourError, setEndHourError] = useState('')
     const events = useAtomValue(eventsAtom)
 
     useEffect(() => {
@@ -91,31 +92,55 @@ export function CreateDialog({
     }, [selectedUser, user, isAdmin])
 
     useEffect(() => {
-        setStartHourInputValue(
-            new Date(timestampStartHour)
-                .getHours()
-                .toString()
-                .padStart(2, '0') +
-                ':' +
-                new Date(timestampStartHour)
-                    .getMinutes()
-                    .toString()
-                    .padStart(2, '0'),
+        // modify actual event
+        const start =
+            Temporal.Instant.fromEpochMilliseconds(
+                timestampStartHour,
+            ).toZonedDateTimeISO('America/Monterrey')
+        const end = start.add({
+            minutes: endTime,
+        })
+        setActualEvent(a => ({
+            ...a,
+            start: start.epochMilliseconds,
+            end: end.epochMilliseconds,
+        }))
+        // validate start hour
+        const openHourDate = start.with({
+            hour: Math.floor(openHour / 60),
+        })
+        const closeHourDate = start.with({
+            hour: Math.floor(closeHour / 60) - 1,
+        })
+        const hasEmpalm = events.some(
+            e =>
+                start.epochMilliseconds >= e.start &&
+                start.epochMilliseconds < e.end,
         )
-    }, [timestampStartHour])
+        if (start.epochMilliseconds < openHourDate.epochMilliseconds)
+            setStartHourError(
+                'La hora de inicio debe ser mayor que la de apertura.',
+            )
+        else if (start.epochMilliseconds > closeHourDate.epochMilliseconds)
+            setStartHourError(
+                'La hora de inicio debe ser menor que la de cierre.',
+            )
+        else if (hasEmpalm)
+            setStartHourError(
+                'El laboratorio ya tiene un evento en el mismo horario.',
+            )
+        else setStartHourError('')
+    }, [
+        timestampStartHour,
+        setActualEvent,
+        endTime,
+        openHour,
+        closeHour,
+        events,
+    ])
 
     useEffect(() => {
-        const start = new Date(timestampStartHour)
-        start.setHours(
-            parseInt(startHourInputValue.split(':')[0]),
-            parseInt(startHourInputValue.split(':')[1]),
-        )
-        const end = new Date(start)
-        end.setHours(end.getHours() + endTime)
-        setActualEvent(a => ({ ...a, start, end }))
-    }, [timestampStartHour, setActualEvent, startHourInputValue, endTime])
-
-    useEffect(() => {
+        // modify actual event
         setActualEvent(a => ({ ...a, title }))
     }, [setActualEvent, title])
 
@@ -246,6 +271,7 @@ export function CreateDialog({
                             required
                             label='Inicio'
                             type='time'
+                            error={startHourError}
                             value={`${Temporal.Instant.fromEpochMilliseconds(
                                 timestampStartHour,
                             )
@@ -257,16 +283,14 @@ export function CreateDialog({
                                     Temporal.Instant.fromEpochMilliseconds(
                                         timestampStartHour,
                                     ).toZonedDateTimeISO('America/Monterrey')
-                                const changued = actual.add({
+                                const changed = actual.add({
                                     hours:
                                         parseInt(e.target.value.split(':')[0]) -
                                         actual.hour,
                                 })
-                                setTimestampStartHour(
-                                    changued.epochMilliseconds,
-                                )
+                                setTimestampStartHour(changed.epochMilliseconds)
                             }}
-                            min={minutesToTime(startHour)}
+                            min={minutesToTime(openHour)}
                             icon={User}
                         />
                         <CompletInput
@@ -317,8 +341,8 @@ export function CreateDialog({
                                 center: '',
                                 right: '',
                             }}
-                            slotMinTime={minutesToTime(startHour) + ':00'}
-                            slotMaxTime={minutesToTime(endHour) + ':00'}
+                            slotMinTime={minutesToTime(openHour) + ':00'}
+                            slotMaxTime={minutesToTime(closeHour) + ':00'}
                             height='auto'
                             initialDate={timestampStartHour}
                             events={[...events, actualEvent]}

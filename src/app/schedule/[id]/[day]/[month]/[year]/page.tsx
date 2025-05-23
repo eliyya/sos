@@ -77,6 +77,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                             year: parseInt(year),
                             month: parseInt(month),
                             day: parseInt(day),
+                            hour: Math.floor(lab.open_hour / 60),
                         }).epochMilliseconds
                     }
                     startHour={minutesToTime(lab.open_hour) + ':00'}
@@ -89,8 +90,8 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     }
                     lab={lab}
                     disabled={!user}
-                    endHour={lab.close_hour}
-                    startHour={lab.open_hour}
+                    closeHour={lab.close_hour}
+                    openHour={lab.open_hour}
                     user={{ id: user?.sub ?? '', name: user?.name ?? '' }}
                     users={users}
                 />

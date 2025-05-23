@@ -51,8 +51,8 @@ export const Calendar = ({
                 e.map(e => ({
                     id: e.id,
                     title: e.name,
-                    start: e.starts_at,
-                    end: e.ends_at,
+                    start: e.starts_at.getTime(),
+                    end: e.ends_at.getTime(),
                 })),
             ),
         )
