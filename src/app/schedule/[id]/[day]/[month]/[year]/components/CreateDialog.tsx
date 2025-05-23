@@ -134,12 +134,6 @@ export function CreateDialog({
             )
         else setStartHourError('')
         // validate end hour
-        console.log('end  ', end.epochMilliseconds, end.hour)
-        console.log(
-            'close',
-            closeHourDate.epochMilliseconds,
-            closeHourDate.hour,
-        )
         const hasEmpalmInEndHour = events.some(
             e =>
                 end.epochMilliseconds > e.start &&
