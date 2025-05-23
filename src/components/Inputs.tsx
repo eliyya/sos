@@ -1,7 +1,7 @@
 'use client'
+
 import {
     ForwardedRef,
-    forwardRef,
     InputHTMLAttributes,
     ReactNode,
     Ref,
@@ -116,77 +116,81 @@ interface CompletTextareaProps
     children?: ReactNode
     error?: string
     icon?: LucideIcon
+    ref?: ForwardedRef<HTMLTextAreaElement>
 }
-export const CompletTextarea = forwardRef<
-    HTMLTextAreaElement,
-    CompletTextareaProps
->(
-    (
-        { children, label, id, required, error, className, icon, ...props },
-        ref,
-    ) => {
-        const Icon = icon
-        const rid = useId()
-        const inputRef = useRef<HTMLTextAreaElement | null>(null)
-        useEffect(() => {
-            const input = inputRef.current
-            if (!input) return
-            if (error) input.setCustomValidity(error)
-            else input.setCustomValidity('')
-            const handleInput = () => input.setCustomValidity('')
-            input.addEventListener('input', handleInput)
-            return () => input.removeEventListener('input', handleInput)
-        }, [error])
-        return (
-            <div className='w-full space-y-2'>
-                <label
-                    htmlFor={id ?? rid}
-                    className='text-sm font-medium text-gray-700 dark:text-gray-300'
-                >
-                    {label}
-                    {required && <span className='ml-1'>*</span>}
-                </label>
-                <div className='relative'>
-                    {children}
-                    {Icon && (
-                        <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    )}
-                    <textarea
-                        {...props}
-                        required={required}
-                        id={id ?? rid}
-                        ref={node => {
-                            if (typeof ref === 'function') ref(node)
-                            else if (ref) ref.current = node
-                            inputRef.current = node
-                        }}
-                        aria-describedby={
-                            error ? `${id ?? rid}-error` : undefined
-                        }
-                        className={cn(
-                            'border-input ring-offset-background text-foreground flex h-fit w-full resize-y rounded-md border px-3 py-2 pl-10 text-sm',
-                            // focus-visible:
-                            'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
-                            // file:
-                            'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
-                            // disabled:
-                            'disabled:cursor-not-allowed disabled:opacity-50',
-                            // placeholder:
-                            'placeholder:text-muted-foreground',
-                            className,
-                        )}
-                    />
-                </div>
-                {error && (
-                    <MessageError id={`${id ?? rid}-error`}>
-                        {error}
-                    </MessageError>
+export function CompletTextarea({
+    children,
+    label,
+    id,
+    required,
+    error,
+    className,
+    icon,
+    ref,
+    ...props
+}: CompletTextareaProps) {
+    const Icon = icon
+    const rid = useId()
+    const inputRef = useRef<HTMLTextAreaElement | null>(null)
+
+    useEffect(() => {
+        const input = inputRef.current
+        if (!input) return
+        if (error) input.setCustomValidity(error)
+        else input.setCustomValidity('')
+        const handleInput = () => input.setCustomValidity('')
+        input.addEventListener('input', handleInput)
+        return () => input.removeEventListener('input', handleInput)
+    }, [error])
+
+    return (
+        <div className='w-full space-y-2'>
+            <label
+                htmlFor={id ?? rid}
+                className='text-sm font-medium text-gray-700 dark:text-gray-300'
+            >
+                {label}
+                {required && <span className='ml-1'>*</span>}
+            </label>
+            <div className='relative'>
+                {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                 )}
+                <textarea
+                    {...props}
+                    required={required}
+                    id={id ?? rid}
+                    ref={node => {
+                        if (typeof ref === 'function') ref(node)
+                        else if (ref) ref.current = node
+                    }}
+                    aria-describedby={error ? `${id ?? rid}-error` : undefined}
+                    className={cn(
+                        'border-input ring-offset-background text-foreground flex h-fit w-full resize-y rounded-md border px-3 py-2 pl-10 text-sm',
+                        // focus-visible:
+                        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
+                        // file:
+                        'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
+                        // disabled:
+                        'disabled:cursor-not-allowed disabled:opacity-50',
+                        // placeholder:
+                        'placeholder:text-muted-foreground',
+                        className,
+                    )}
+                />
             </div>
-        )
-    },
-)
-CompletTextarea.displayName = 'CompletTextarea'
+            {error && (
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
+            )}
+        </div>
+    )
+}
 interface RetornableCompletInputProps
     extends InputHTMLAttributes<HTMLInputElement> {
     label: string
@@ -194,90 +198,95 @@ interface RetornableCompletInputProps
     defaultValue: string | number
     error?: string
     icon?: LucideIcon
+    ref?: ForwardedRef<HTMLInputElement>
 }
 
-export const RetornableCompletInput = forwardRef<
-    HTMLInputElement,
-    RetornableCompletInputProps
->(
-    (
-        { children, label, onChange, id, error, defaultValue, icon, ...props },
-        ref,
-    ) => {
-        const Icon = icon
-        const rid = useId()
-        const [isChanged, setIsChanged] = useState(false)
-        const internalRef = useRef<HTMLInputElement>(null)
+export function RetornableCompletInput({
+    children,
+    label,
+    onChange,
+    id,
+    error,
+    defaultValue,
+    icon,
+    ref,
+    ...props
+}: RetornableCompletInputProps) {
+    const Icon = icon
+    const rid = useId()
+    const [isChanged, setIsChanged] = useState(false)
+    const internalRef = useRef<HTMLInputElement>(null)
 
-        useImperativeHandle(ref, () => internalRef.current!)
+    useImperativeHandle(ref, () => internalRef.current!)
 
-        useEffect(() => {
-            if (!internalRef.current) return
-            internalRef.current.setCustomValidity(error ?? '')
-        }, [error])
+    useEffect(() => {
+        if (!internalRef.current) return
+        internalRef.current.setCustomValidity(error ?? '')
+    }, [error])
 
-        useEffect(() => {
-            setIsChanged(internalRef.current?.value !== defaultValue)
-        }, [defaultValue])
+    useEffect(() => {
+        setIsChanged(internalRef.current?.value !== defaultValue)
+    }, [defaultValue])
 
-        return (
-            <div className='w-full space-y-2'>
-                <label
-                    htmlFor={id ?? rid}
-                    className='text-sm font-medium text-gray-700 dark:text-gray-300'
-                >
-                    {label}
-                </label>
-                <div className='relative'>
-                    {children}
-                    {Icon && (
-                        <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+    return (
+        <div className='w-full space-y-2'>
+            <label
+                htmlFor={id ?? rid}
+                className='text-sm font-medium text-gray-700 dark:text-gray-300'
+            >
+                {label}
+            </label>
+            <div className='relative'>
+                {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                )}
+                <SimpleInput
+                    {...props}
+                    ref={internalRef}
+                    id={id ?? rid}
+                    defaultValue={defaultValue}
+                    onChange={e => {
+                        onChange?.(e)
+                        setIsChanged(e.currentTarget.value !== defaultValue)
+                    }}
+                    className={cn(
+                        'border-input ring-offset-background text-foreground flex h-10 w-full rounded-md border px-3 py-2 pl-10 text-sm',
+                        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
+                        'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
+                        'disabled:cursor-not-allowed disabled:opacity-50',
+                        'placeholder:text-muted-foreground',
+                        isChanged ? 'border-yellow-500' : (
+                            'border-gray-300 dark:border-gray-600'
+                        ),
                     )}
-                    <SimpleInput
-                        {...props}
-                        ref={internalRef}
-                        id={id ?? rid}
-                        defaultValue={defaultValue}
-                        onChange={e => {
-                            onChange?.(e)
-                            setIsChanged(e.currentTarget.value !== defaultValue)
+                />
+                {isChanged && (
+                    <button
+                        className='absolute top-1 right-1 cursor-pointer p-2'
+                        onClick={e => {
+                            e.preventDefault()
+                            if (internalRef.current) {
+                                internalRef.current.value = `${defaultValue}`
+                                setIsChanged(false)
+                            }
                         }}
-                        className={cn(
-                            'border-input ring-offset-background text-foreground flex h-10 w-full rounded-md border px-3 py-2 pl-10 text-sm',
-                            'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
-                            'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
-                            'disabled:cursor-not-allowed disabled:opacity-50',
-                            'placeholder:text-muted-foreground',
-                            isChanged ? 'border-yellow-500' : (
-                                'border-gray-300 dark:border-gray-600'
-                            ),
-                        )}
-                    />
-                    {isChanged && (
-                        <button
-                            className='absolute top-1 right-1 cursor-pointer p-2'
-                            onClick={e => {
-                                e.preventDefault()
-                                if (internalRef.current) {
-                                    internalRef.current.value = `${defaultValue}`
-                                    setIsChanged(false)
-                                }
-                            }}
-                        >
-                            <Undo2 className='h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </button>
-                    )}
-                </div>
-                {error && (
-                    <MessageError id={`${id ?? rid}-error`}>
-                        {error}
-                    </MessageError>
+                    >
+                        <Undo2 className='h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    </button>
                 )}
             </div>
-        )
-    },
-)
-RetornableCompletInput.displayName = 'RetornableCompletInput'
+            {error && (
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
+            )}
+        </div>
+    )
+}
 
 interface RetornableCompletTextareaProps
     extends InputHTMLAttributes<HTMLTextAreaElement> {
@@ -286,96 +295,89 @@ interface RetornableCompletTextareaProps
     error?: string
     defaultValue: string
     icon?: LucideIcon
+    ref?: ForwardedRef<HTMLTextAreaElement>
 }
-export const RetornableCompletTextarea = forwardRef<
-    HTMLTextAreaElement,
-    RetornableCompletTextareaProps
->(
-    (
-        {
-            children,
-            label,
-            id,
-            required,
-            error,
-            className,
-            onChange,
-            icon,
-            ...props
-        },
-        ref,
-    ) => {
-        const Icon = icon
-        const rid = useId()
-        const inputRef = useRef<HTMLTextAreaElement | null>(null)
-        const [isChanged, setIsChanged] = useState(false)
-        useEffect(() => {
-            const input = inputRef.current
-            if (!input) return
-            if (error) input.setCustomValidity(error)
-            else input.setCustomValidity('')
-            const handleInput = () => input.setCustomValidity('')
-            input.addEventListener('input', handleInput)
-            return () => input.removeEventListener('input', handleInput)
-        }, [error])
-        return (
-            <div className='w-full space-y-2'>
-                <label
-                    htmlFor={id ?? rid}
-                    className='text-sm font-medium text-gray-700 dark:text-gray-300'
-                >
-                    {label}
-                    {required && <span className='ml-1'>*</span>}
-                </label>
-                <div className='relative'>
-                    {children}
-                    {Icon && (
-                        <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    )}
-                    <textarea
-                        {...props}
-                        required={required}
-                        id={id ?? rid}
-                        ref={node => {
-                            if (typeof ref === 'function') ref(node)
-                            else if (ref) ref.current = node
-                            inputRef.current = node
-                        }}
-                        onChange={e => {
-                            onChange?.(e)
-                            setIsChanged(
-                                e.currentTarget.value !== props.defaultValue,
-                            )
-                        }}
-                        aria-describedby={
-                            error ? `${id ?? rid}-error` : undefined
-                        }
-                        className={cn(
-                            'border-input ring-offset-background text-foreground flex h-fit w-full resize-y rounded-md border px-3 py-2 pl-10 text-sm',
-                            // focus-visible:
-                            'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
-                            // file:
-                            'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
-                            // disabled:
-                            'disabled:cursor-not-allowed disabled:opacity-50',
-                            // placeholder:
-                            'placeholder:text-muted-foreground',
-                            {
-                                'border-yellow-500': isChanged,
-                                'border-gray-300 dark:border-gray-600':
-                                    !isChanged,
-                            },
-                            className,
-                        )}
-                    />
-                </div>
-                {error && (
-                    <MessageError id={`${id ?? rid}-error`}>
-                        {error}
-                    </MessageError>
+export function RetornableCompletTextarea({
+    children,
+    label,
+    id,
+    required,
+    error,
+    className,
+    onChange,
+    icon,
+    ref,
+    ...props
+}: RetornableCompletTextareaProps) {
+    const Icon = icon
+    const rid = useId()
+    const inputRef = useRef<HTMLTextAreaElement | null>(null)
+    const [isChanged, setIsChanged] = useState(false)
+    useEffect(() => {
+        const input = inputRef.current
+        if (!input) return
+        if (error) input.setCustomValidity(error)
+        else input.setCustomValidity('')
+        const handleInput = () => input.setCustomValidity('')
+        input.addEventListener('input', handleInput)
+        return () => input.removeEventListener('input', handleInput)
+    }, [error])
+    return (
+        <div className='w-full space-y-2'>
+            <label
+                htmlFor={id ?? rid}
+                className='text-sm font-medium text-gray-700 dark:text-gray-300'
+            >
+                {label}
+                {required && <span className='ml-1'>*</span>}
+            </label>
+            <div className='relative'>
+                {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
                 )}
+                <textarea
+                    {...props}
+                    required={required}
+                    id={id ?? rid}
+                    ref={node => {
+                        if (typeof ref === 'function') ref(node)
+                        else if (ref) ref.current = node
+                        inputRef.current = node
+                    }}
+                    onChange={e => {
+                        onChange?.(e)
+                        setIsChanged(
+                            e.currentTarget.value !== props.defaultValue,
+                        )
+                    }}
+                    aria-describedby={error ? `${id ?? rid}-error` : undefined}
+                    className={cn(
+                        'border-input ring-offset-background text-foreground flex h-fit w-full resize-y rounded-md border px-3 py-2 pl-10 text-sm',
+                        // focus-visible:
+                        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
+                        // file:
+                        'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
+                        // disabled:
+                        'disabled:cursor-not-allowed disabled:opacity-50',
+                        // placeholder:
+                        'placeholder:text-muted-foreground',
+                        {
+                            'border-yellow-500': isChanged,
+                            'border-gray-300 dark:border-gray-600': !isChanged,
+                        },
+                        className,
+                    )}
+                />
             </div>
-        )
-    },
-)
-RetornableCompletTextarea.displayName = 'RetornableCompletTextarea'
+            {error && (
+                <MessageError
+                    className='absolute mt-0'
+                    id={`${id ?? rid}-error`}
+                >
+                    {error}
+                </MessageError>
+            )}
+        </div>
+    )
+}
