@@ -22,7 +22,7 @@ interface CalendarProps {
     startHour: string
     endHour: string
     /**
-     * The date to be displayed in the calendar in timestamp format
+     * The date to be displayed in the calendar in epoch milliseconds
      */
     timestamp: number
     labId: string
@@ -139,26 +139,24 @@ export const Calendar = ({
                 goToday: {
                     text: 'today',
                     click: () => {
+                        // Get the current date and time in Monterrey timezone
                         const now =
                             Temporal.Now.zonedDateTimeISO('America/Monterrey')
+                        // Get the start of the current week (Monday)
                         const currentWeek = startOfWeek(now)
 
-                        const requested =
+                        // Get the selected date from the timestamp prop
+                        const selectedDate =
                             Temporal.Instant.fromEpochMilliseconds(
                                 timestamp,
                             ).toZonedDateTimeISO('America/Monterrey')
-                        const requestedWeek = startOfWeek(requested)
-                        if (!requestedWeek.equals(currentWeek)) {
-                            router.push(
-                                app.schedule.$id.$day.$month.$year(
-                                    labId,
-                                    requestedWeek.day,
-                                    requestedWeek.month,
-                                    requestedWeek.year,
-                                ),
-                            )
-                        }
-                        if (!requestedWeek.equals(currentWeek)) {
+                        // Get the start of the selected week
+                        const selectedWeek = startOfWeek(selectedDate)
+
+                        // If the selected week is still not the current week
+                        // This is a redundant check that should never be true
+                        if (!selectedWeek.equals(currentWeek)) {
+                            // Navigate to the current week's view
                             router.push(
                                 app.schedule.$id.$day.$month.$year(
                                     labId,
@@ -173,11 +171,11 @@ export const Calendar = ({
                 goNext: {
                     text: '>',
                     click: () => {
-                        const requested =
+                        const selectedDay =
                             Temporal.Instant.fromEpochMilliseconds(
                                 timestamp,
                             ).toZonedDateTimeISO('America/Monterrey')
-                        const nextWeek = requested.add({
+                        const nextWeek = selectedDay.add({
                             days: 7,
                         })
 
@@ -194,11 +192,11 @@ export const Calendar = ({
                 goPrev: {
                     text: '<',
                     click: () => {
-                        const requested =
+                        const selectedDay =
                             Temporal.Instant.fromEpochMilliseconds(
                                 timestamp,
                             ).toZonedDateTimeISO('America/Monterrey')
-                        const prevWeek = requested.subtract({
+                        const prevWeek = selectedDay.subtract({
                             days: 7,
                         })
                         return router.push(
