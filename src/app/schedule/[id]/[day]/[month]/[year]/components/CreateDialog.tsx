@@ -114,7 +114,6 @@ export function CreateDialog({
     }, [selectedClass, timestampStartHour])
 
     useEffect(() => {
-        // modify actual event
         const start =
             Temporal.Instant.fromEpochMilliseconds(
                 timestampStartHour,

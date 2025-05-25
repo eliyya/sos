@@ -248,7 +248,6 @@ export function RetornableCompletInput({
                         setValue(val)
                         onChange?.(e)
                         setIsChanged(val !== `${defaultValue}`)
-                        console.log('inev', e)
                     }}
                     className={cn(
                         'border-input ring-offset-background text-foreground flex h-10 w-full rounded-md border px-3 py-2 pl-10 text-sm',
@@ -256,14 +255,15 @@ export function RetornableCompletInput({
                         'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
                         'disabled:cursor-not-allowed disabled:opacity-50',
                         'placeholder:text-muted-foreground',
-                        isChanged ? 'border-yellow-500' : (
-                            'border-gray-300 dark:border-gray-600'
-                        ),
+                        {
+                            'border-yellow-500 pr-10': isChanged,
+                            'border-gray-300 dark:border-gray-600': !isChanged,
+                        },
                     )}
                 />
                 {isChanged && (
                     <button
-                        className='absolute top-1 right-1 cursor-pointer p-2'
+                        className='absolute top-0.5 right-1 cursor-pointer p-2'
                         onClick={e => {
                             e.preventDefault()
                             const newValue = `${defaultValue}`

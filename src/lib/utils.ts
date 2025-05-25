@@ -121,3 +121,23 @@ export function getCalendarEventInfo(event: EventImpl): ScheduleEvent {
         color: event.backgroundColor,
     }
 }
+
+export function setTime(
+    dateTime: Temporal.ZonedDateTime,
+    time: string,
+): Temporal.ZonedDateTime {
+    const [hourStr, minuteStr] = time.split(':')
+    const hour = parseInt(hourStr, 10)
+    const minute = parseInt(minuteStr, 10)
+
+    const updatedPlainDateTime = dateTime.toPlainDate().toPlainDateTime({
+        hour,
+        minute,
+        second: 0,
+        millisecond: 0,
+        microsecond: 0,
+        nanosecond: 0,
+    })
+
+    return updatedPlainDateTime.toZonedDateTime(dateTime.timeZoneId)
+}

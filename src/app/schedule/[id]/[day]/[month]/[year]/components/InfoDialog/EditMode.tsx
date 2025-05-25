@@ -1,6 +1,6 @@
 'use client'
 
-import { editModeAtom } from '@/global/management-practices'
+import { editModeAtom, eventsAtom } from '@/global/management-practices'
 import interactionPlugin from '@fullcalendar/interaction'
 import { findFirstPractice } from '@/actions/practices'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -10,10 +10,10 @@ import { SaveIcon, UserIcon } from 'lucide-react'
 import { Temporal } from '@js-temporal/polyfill'
 import FullCalendar from '@fullcalendar/react'
 import { Button } from '@/components/Button'
-import { secondsToTime } from '@/lib/utils'
+import { secondsToTime, setTime } from '@/lib/utils'
 import { getClassName } from './InfoDialog'
-import { useSetAtom } from 'jotai'
-import { useState } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 
 interface EditModeProps {
     practice: Exclude<
@@ -50,6 +50,113 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
     const [message] = useState('')
     const setEditMode = useSetAtom(editModeAtom)
     const [newPracticeName, setNewPracticeName] = useState(practice.name)
+    const events = useAtomValue(eventsAtom)
+    const [startHourError, setStartHourError] = useState('')
+    const [endHourError, setEndHourError] = useState('')
+    const [disponibleHours] = useState(
+        () =>
+            remainingHours.leftHours +
+            (practice.ends_at.getTime() - practice.starts_at.getTime()) /
+                1000 /
+                60 /
+                60,
+    )
+    const [newDuration, setNewDuration] = useState(() =>
+        Temporal.Instant.fromEpochMilliseconds(practice.ends_at.getTime())
+            .since(
+                Temporal.Instant.fromEpochMilliseconds(
+                    practice.starts_at.getTime(),
+                ),
+            )
+            .total('hours'),
+    )
+    const [newStart, setNewStart] = useState(
+        () =>
+            `${Temporal.Instant.fromEpochMilliseconds(
+                practice.starts_at.getTime(),
+            )
+                .toZonedDateTimeISO('America/Monterrey')
+                .hour.toString()
+                .padStart(2, '0')}:00`,
+    )
+
+    useEffect(() => {
+        const start = setTime(
+            Temporal.Instant.fromEpochMilliseconds(
+                practice.starts_at.getTime(),
+            ).toZonedDateTimeISO('America/Monterrey'),
+            newStart,
+        )
+        const end = start.add({
+            hours: newDuration,
+        })
+        const openHourDate = setTime(
+            Temporal.Instant.fromEpochMilliseconds(
+                practice.starts_at.getTime(),
+            ).toZonedDateTimeISO('America/Monterrey'),
+            secondsToTime(lab.open_hour * 60),
+        )
+        const closeHourDate = setTime(
+            Temporal.Instant.fromEpochMilliseconds(
+                practice.starts_at.getTime(),
+            ).toZonedDateTimeISO('America/Monterrey'),
+            secondsToTime(lab.close_hour * 60),
+        )
+        const hasEmpalmInStartHour = events
+            .filter(e => e.id !== practice.id)
+            .some(
+                e =>
+                    start.epochMilliseconds >= e.start &&
+                    start.epochMilliseconds < e.end,
+            )
+        if (start.epochMilliseconds < openHourDate.epochMilliseconds)
+            setStartHourError(
+                'La hora de inicio debe ser mayor que la de apertura.',
+            )
+        else if (
+            start.epochMilliseconds >
+            closeHourDate.subtract({ hours: 1 }).epochMilliseconds
+        )
+            setStartHourError(
+                'La hora de inicio debe ser menor que la de cierre.',
+            )
+        else if (hasEmpalmInStartHour)
+            setStartHourError(
+                'El laboratorio ya tiene_ un evento en el mismo horario.',
+            )
+        else setStartHourError('')
+        // validate end hour
+        const hasEmpalmInEndHour = events
+            .filter(e => e.id !== practice.id)
+            .some(
+                e =>
+                    end.epochMilliseconds > e.start &&
+                    end.epochMilliseconds <= e.end,
+            )
+        const wrapsExistingEvent = events
+            .filter(e => e.id !== practice.id)
+            .some(
+                e =>
+                    start.epochMilliseconds <= e.start &&
+                    end.epochMilliseconds >= e.end,
+            )
+
+        if (end.epochMilliseconds > closeHourDate.epochMilliseconds)
+            setEndHourError(
+                'La hora de cierre debe ser menor que la de cierre.',
+            )
+        else if (hasEmpalmInEndHour)
+            setEndHourError(
+                'El laboratorio ya tiene un evento en el mismo horario.',
+            )
+        else if (wrapsExistingEvent)
+            setEndHourError(
+                'El laboratorio ya tiene un evento en el mismo horario.',
+            )
+        else if (disponibleHours < newDuration)
+            setEndHourError('No hay suficientes horas restantes.')
+        else setEndHourError('')
+    }, [newDuration, newStart, events, lab, practice, disponibleHours])
 
     return (
         <form className='grid grid-cols-2 gap-8' action={() => {}}>
@@ -85,10 +192,7 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                     label='Practica'
                     type='text'
                     defaultValue={practice?.name}
-                    onChange={e => {
-                        console.log('eve', e, e.target.value)
-                        setNewPracticeName(e.target.value)
-                    }}
+                    onChange={e => setNewPracticeName(e.target.value)}
                     value={newPracticeName}
                     icon={UserIcon}
                 />
@@ -98,24 +202,26 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                     defaultValue={practice?.topic}
                     icon={UserIcon}
                 />
-                <CompletInput
+                <RetornableCompletInput
                     label='Inicio'
                     type='time'
-                    disabled
-                    value={`${Temporal.Instant.fromEpochMilliseconds(
-                        practice?.starts_at.getTime() ?? 0,
+                    error={startHourError}
+                    defaultValue={`${Temporal.Instant.fromEpochMilliseconds(
+                        practice.starts_at.getTime(),
                     )
                         .toZonedDateTimeISO('America/Monterrey')
                         .hour.toString()
                         .padStart(2, '0')}:00`}
+                    value={newStart}
+                    onChange={e => setNewStart(e.currentTarget.value)}
                     icon={UserIcon}
                 />
-                <CompletInput
+                <RetornableCompletInput
                     required
                     label='Duración en horas'
                     type='number'
-                    disabled
-                    value={Temporal.Instant.fromEpochMilliseconds(
+                    error={endHourError}
+                    defaultValue={Temporal.Instant.fromEpochMilliseconds(
                         practice?.ends_at.getTime() ?? 0,
                     )
                         .since(
@@ -124,14 +230,18 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                             ),
                         )
                         .total('hours')}
+                    value={newDuration.toString()}
+                    min={1}
+                    onChange={e =>
+                        setNewDuration(parseInt(e.currentTarget.value))
+                    }
                     icon={UserIcon}
                 />
-                <CompletInput
+                <RetornableCompletInput
                     required
                     label='Cantidad de estudiantes'
                     type='number'
-                    disabled
-                    value={practice?.students ?? 1}
+                    defaultValue={practice?.students ?? 1}
                     icon={UserIcon}
                 />
                 <CompletInput
@@ -159,9 +269,23 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                     {
                         id: practice.id,
                         title: newPracticeName,
-                        start: practice.starts_at.getTime(),
-                        end: practice.ends_at.getTime(),
+                        color: '#1f086e',
+                        start: setTime(
+                            Temporal.Instant.fromEpochMilliseconds(
+                                practice.starts_at.getTime(),
+                            ).toZonedDateTimeISO('America/Monterrey'),
+                            newStart,
+                        ).epochMilliseconds,
+                        end:
+                            setTime(
+                                Temporal.Instant.fromEpochMilliseconds(
+                                    practice.starts_at.getTime(),
+                                ).toZonedDateTimeISO('America/Monterrey'),
+                                newStart,
+                            ).epochMilliseconds +
+                            newDuration * 60 * 60 * 1000,
                     },
+                    ...events.filter(e => e.id !== practice.id),
                 ]}
             />
             <Button
