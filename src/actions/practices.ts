@@ -35,7 +35,7 @@ export async function getPracticesFromWeek({
     return practices
 }
 
-export async function getPractice<T extends Prisma.PracticeFindFirstArgs>(
+export async function findFirstPractice<T extends Prisma.PracticeFindFirstArgs>(
     query: T,
 ): Promise<Awaited<ReturnType<typeof db.practice.findFirst<T>>>> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

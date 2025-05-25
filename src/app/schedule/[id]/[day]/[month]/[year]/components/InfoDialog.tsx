@@ -1,6 +1,6 @@
 'use client'
 
-import { getPractice } from '@/actions/practices'
+import { findFirstPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -10,7 +10,7 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { openInfoAtom, selectedEventAtom } from '@/global/management-practices'
-import { cn, minutesToTime } from '@/lib/utils'
+import { cn, secondsToTime } from '@/lib/utils'
 import FullCalendar from '@fullcalendar/react'
 import { useAtom } from 'jotai'
 import { Save, UserIcon } from 'lucide-react'
@@ -42,7 +42,7 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
     const [isLoadingHours, startLoadingHours] = useTransition()
     const [practice, setPractice] = useState<Awaited<
         ReturnType<
-            typeof getPractice<{
+            typeof findFirstPractice<{
                 include: {
                     teacher: true
                     class: {
@@ -78,7 +78,7 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
     }, [practice])
 
     useEffect(() => {
-        getPractice({
+        findFirstPractice({
             where: {
                 id: currentEvent?.id,
             },
@@ -263,8 +263,14 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
                                 center: '',
                                 right: '',
                             }}
-                            slotMinTime={minutesToTime(lab.open_hour) + ':00'}
-                            slotMaxTime={minutesToTime(lab.close_hour) + ':00'}
+                            slotMinTime={secondsToTime(
+                                lab.open_hour * 60,
+                                'HH:mm:ss',
+                            )}
+                            slotMaxTime={secondsToTime(
+                                lab.close_hour * 60,
+                                'HH:mm:ss',
+                            )}
                             height='auto'
                             initialDate={currentEvent?.start}
                             // events={[...events, actualEvent]}

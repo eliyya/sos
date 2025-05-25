@@ -2,7 +2,7 @@
 import { COOKIES } from '@/constants/client'
 import { cookies } from 'next/headers'
 import { ENCODED_JWT_SECRET } from '@/constants/server'
-import { JWTPayload } from '@/lib/types'
+import { UserTokenPayload } from '@/lib/types'
 import { jwtVerify } from 'jose'
 
 export async function getPaylodadUser() {
@@ -10,7 +10,7 @@ export async function getPaylodadUser() {
     if (!token) return null
     try {
         const { payload } = await jwtVerify(token, ENCODED_JWT_SECRET)
-        return <JWTPayload>payload
+        return <UserTokenPayload>payload
     } catch {
         return null
     }

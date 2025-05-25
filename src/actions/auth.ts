@@ -8,7 +8,7 @@ import {
     AuthTypes,
     LoginFormStatus,
     RefreshTokenPayload,
-    JWTPayload,
+    UserTokenPayload,
 } from '@/lib/types'
 import { decodeJwt, jwtVerify, SignJWT } from 'jose'
 import { wrapTry } from '@/lib/utils'
@@ -102,7 +102,7 @@ export async function refreshToken({
 
     const expires = new Date()
     expires.setDate(expires.getDate() + 1)
-    const npayload: JWTPayload = {
+    const npayload: UserTokenPayload = {
         exp: expires.getTime() / 1000,
         iat: Math.floor(Date.now() / 1000),
         nbf: Math.floor(Date.now() / 1000) - 1,

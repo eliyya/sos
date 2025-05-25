@@ -29,7 +29,7 @@ import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
-import { minutesToTime } from '@/lib/utils'
+import { secondsToTime } from '@/lib/utils'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
@@ -76,10 +76,10 @@ export function EntityTable() {
                             <TableRow key={entity.id}>
                                 <TableCell>{entity.name}</TableCell>
                                 <TableCell>
-                                    {minutesToTime(entity.open_hour)}
+                                    {secondsToTime(entity.open_hour * 60)}
                                 </TableCell>
                                 <TableCell>
-                                    {minutesToTime(entity.close_hour)}
+                                    {secondsToTime(entity.close_hour * 60)}
                                 </TableCell>
                                 <TableCell>
                                     {entity.type === 'LABORATORY' ?

@@ -17,11 +17,12 @@ import FullCalendar from '@fullcalendar/react'
 import { Button } from '@/components/Button'
 import { User, Save } from 'lucide-react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { minutesToTime } from '@/lib/utils'
+import { secondsToTime } from '@/lib/utils'
 import { getClassesWithDataFromUser, getRemainingHours } from '@/actions/class'
 import { MessageError } from '@/components/Error'
 import { setAsideLaboratory } from '@/actions/laboratory'
 import { Temporal } from '@js-temporal/polyfill'
+import { UserTokenPayload } from '@/lib/types'
 
 type ClassForSelect = Awaited<
     ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
@@ -45,10 +46,7 @@ interface CreateDialogProps {
         id: string
     }
     isAdmin?: boolean
-    user: {
-        id: string
-        name: string
-    }
+    user: UserTokenPayload | null
 }
 export function CreateDialog({
     users,
@@ -69,8 +67,8 @@ export function CreateDialog({
     const [topic, setTopic] = useState('')
     const [classes, setClasses] = useState<ClassForSelect[]>([])
     const [selectedUser, setSelecctedUser] = useState({
-        name: user.name,
-        id: user.id,
+        name: user?.name ?? '',
+        id: user?.sub ?? '',
     })
     const sendEventSignal = useSetAtom(newEventSignalAtom)
     const [selectedClass, setSelectedClass] = useState<ClassForSelect | null>(
@@ -89,10 +87,10 @@ export function CreateDialog({
 
     useEffect(() => {
         startLoadingClasses(async () => {
-            const classes = await getClassesWithDataFromUser(selectedUser.id, [
-                'subject',
-                'career',
-            ])
+            const classes = await getClassesWithDataFromUser(
+                selectedUser?.id ?? '',
+                ['subject', 'career'],
+            )
             setClasses(classes)
             const [firstClass] = classes
             if (firstClass) setSelectedClass(firstClass)
@@ -128,7 +126,7 @@ export function CreateDialog({
             ...a,
             start: start.epochMilliseconds,
             end: end.epochMilliseconds,
-            ownerId: selectedUser.id,
+            ownerId: selectedUser?.id ?? '',
         }))
         // validate start hour
         const openHourDate = start.with({
@@ -190,6 +188,7 @@ export function CreateDialog({
         openHour,
         closeHour,
         events,
+        selectedUser,
     ])
 
     useEffect(() => {
@@ -238,7 +237,10 @@ export function CreateDialog({
                             label='Docente'
                             name='teacher_id'
                             options={[
-                                { value: user.id, label: user.name },
+                                {
+                                    value: user?.sub ?? '',
+                                    label: user?.name ?? '',
+                                },
                                 ...users.map(u => ({
                                     value: u.id,
                                     label: u.name,
@@ -357,7 +359,7 @@ export function CreateDialog({
                                 })
                                 setTimestampStartHour(changed.epochMilliseconds)
                             }}
-                            min={minutesToTime(openHour)}
+                            min={secondsToTime(openHour * 60)}
                             icon={User}
                         />
                         <CompletInput
@@ -417,8 +419,14 @@ export function CreateDialog({
                                 center: '',
                                 right: '',
                             }}
-                            slotMinTime={minutesToTime(openHour) + ':00'}
-                            slotMaxTime={minutesToTime(closeHour) + ':00'}
+                            slotMinTime={secondsToTime(
+                                openHour * 60,
+                                'HH:mm:ss',
+                            )}
+                            slotMaxTime={secondsToTime(
+                                closeHour * 60,
+                                'HH:mm:ss',
+                            )}
                             height='auto'
                             initialDate={timestampStartHour}
                             events={[...events, actualEvent]}

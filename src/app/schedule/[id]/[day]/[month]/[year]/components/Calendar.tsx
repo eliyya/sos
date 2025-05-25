@@ -18,28 +18,28 @@ import './calendar.css'
 import { useEffect } from 'react'
 import { getPracticesFromWeek } from '@/actions/practices'
 import { Temporal } from '@js-temporal/polyfill'
-import { getCalendarEventInfo, getStartOfWeek } from '@/lib/utils'
+import {
+    getCalendarEventInfo,
+    getStartOfWeek,
+    secondsToTime,
+} from '@/lib/utils'
 
 interface CalendarProps {
-    startHour: string
-    endHour: string
     /**
      * The date to be displayed in the calendar in epoch milliseconds
      */
     timestamp: number
-    labId: string
+    lab: {
+        name: string
+        id: string
+        close_hour: number
+        open_hour: number
+    }
     isAdmin?: boolean
     userId: string
 }
 
-export function Calendar({
-    endHour,
-    startHour,
-    timestamp,
-    labId,
-    isAdmin,
-    userId,
-}: CalendarProps) {
+export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
     const router = useRouter()
     const openCreate = useSetAtom(openCreateAtom)
     const setStartHour = useSetAtom(createDayAtom)
@@ -51,7 +51,7 @@ export function Calendar({
     useEffect(() => {
         getPracticesFromWeek({
             timestamp,
-            labId,
+            labId: lab.id,
         }).then(e => {
             setEvents(
                 e.map(e => ({
@@ -63,7 +63,7 @@ export function Calendar({
                 })),
             )
         })
-    }, [newEventSignal, setEvents, labId, timestamp])
+    }, [newEventSignal, setEvents, lab, timestamp])
 
     return (
         <FullCalendar
@@ -78,8 +78,8 @@ export function Calendar({
             }}
             allDaySlot={false}
             hiddenDays={[0, 6]} // Hide Sunday and Saturday
-            slotMinTime={startHour}
-            slotMaxTime={endHour}
+            slotMinTime={secondsToTime(lab.open_hour * 60, 'HH:mm:ss')}
+            slotMaxTime={secondsToTime(lab.close_hour * 60, 'HH:mm:ss')}
             slotDuration={'01:00:00'}
             height='auto'
             initialDate={timestamp}
@@ -169,7 +169,7 @@ export function Calendar({
                             // Navigate to the current week's view
                             router.push(
                                 app.schedule.$id.$day.$month.$year(
-                                    labId,
+                                    lab.id,
                                     currentWeek.day,
                                     currentWeek.month,
                                     currentWeek.year,
@@ -191,7 +191,7 @@ export function Calendar({
 
                         return router.push(
                             app.schedule.$id.$day.$month.$year(
-                                labId,
+                                lab.id,
                                 nextWeek.day,
                                 nextWeek.month,
                                 nextWeek.year,
@@ -211,7 +211,7 @@ export function Calendar({
                         })
                         return router.push(
                             app.schedule.$id.$day.$month.$year(
-                                labId,
+                                lab.id,
                                 prevWeek.day,
                                 prevWeek.month,
                                 prevWeek.year,

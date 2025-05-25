@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import { Calendar } from './components/Calendar'
 import { db } from '@/prisma/db'
 import { notFound } from 'next/navigation'
-import { minutesToTime } from '@/lib/utils'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { CreateDialog } from './components/CreateDialog'
 import { getPaylodadUser } from '@/actions/middleware'
@@ -58,11 +57,13 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     })
     const lab = labs.find(l => l.id === id)
     if (!lab) notFound()
-    console.log(
-        'admin',
-        !!user && new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin),
-    )
-
+    const timestamp = Temporal.ZonedDateTime.from({
+        timeZone: 'America/Monterrey',
+        year: parseInt(year),
+        month: parseInt(month),
+        day: parseInt(day),
+        hour: Math.floor(lab.open_hour / 60),
+    }).epochMilliseconds
     return (
         <div className='bg-background min-h-screen'>
             <ScheduleHeader
@@ -77,18 +78,8 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                 <Calendar
                     userId={user?.sub ?? ''}
-                    labId={id}
-                    timestamp={
-                        Temporal.ZonedDateTime.from({
-                            timeZone: 'America/Monterrey',
-                            year: parseInt(year),
-                            month: parseInt(month),
-                            day: parseInt(day),
-                            hour: Math.floor(lab.open_hour / 60),
-                        }).epochMilliseconds
-                    }
-                    startHour={minutesToTime(lab.open_hour) + ':00'}
-                    endHour={minutesToTime(lab.close_hour) + ':00'}
+                    lab={lab}
+                    timestamp={timestamp}
                     isAdmin={
                         !!user &&
                         new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
@@ -103,7 +94,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     disabled={!user}
                     closeHour={lab.close_hour}
                     openHour={lab.open_hour}
-                    user={{ id: user?.sub ?? '', name: user?.name ?? '' }}
+                    user={user}
                     users={users}
                 />
                 <InfoDialog

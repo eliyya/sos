@@ -1,6 +1,6 @@
 import { SelectLaboratory } from './SelectLaboratory'
 import app from '@eliyya/type-routes'
-import { JWTPayload } from '@/lib/types'
+import { UserTokenPayload } from '@/lib/types'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ButtonLink } from '@/components/Links'
 
@@ -10,7 +10,7 @@ interface ScheduleHeaderProps {
     day: string
     month: string
     year: string
-    user: JWTPayload | null
+    user: UserTokenPayload | null
 }
 export function ScheduleHeader({
     labs,

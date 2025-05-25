@@ -37,10 +37,57 @@ export function timeToMinutes(time: string) {
     return parseInt(hours, 10) * 60 + parseInt(minutes, 10)
 }
 
-export function minutesToTime(minutes: number): `${string}:${string}` {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
+type HourFormat = 'h' | 'hh' | 'H' | 'HH'
+type MinuteFormat = 'm' | 'mm'
+type SecondFormat = 's' | 'ss'
+
+type TimeFormat =
+    | `${HourFormat}:${MinuteFormat}`
+    | `${HourFormat}:${MinuteFormat}:${SecondFormat}`
+
+export function secondsToTime<
+    F extends TimeFormat = 'HH:mm',
+    R = F extends `${HourFormat}:${MinuteFormat}:${SecondFormat}` ?
+        `${string}:${string}:${string}`
+    :   `${string}:${string}`,
+>(seconds: number, format: F = 'HH:mm' as F): R {
+    seconds = Math.max(0, seconds)
+
+    const hours = Math.floor(seconds / 3600)
+    const mins = Math.floor((seconds / 60) % 60)
+    const secs = Math.floor(seconds % 60)
+
+    const [hf, mf, sf] = format.split(':') as [
+        HourFormat,
+        MinuteFormat,
+        SecondFormat | undefined,
+    ]
+
+    const hourFormat =
+        // 24 hour format
+        hf === 'H' ? String(hours)
+            // 24 hour format with leading zero
+        : hf === 'HH' ? String(hours).padStart(2, '0')
+            // 12 hour format without leading zero
+        : hf === 'hh' ? String(hours % 12 || 12).padStart(2, '0')
+            // 12 hour format
+        : String(hours % 12 || 12)
+
+    const minuteFormat =
+        mf === 'mm' ?
+            // leading zero for minutes
+            String(mins).padStart(2, '0')
+            // no leading zero for minutes
+        :   String(mins)
+
+    const secondFormat =
+        sf === 's' ?
+            // no leading zero for seconds
+            String(secs)
+            // leading zero for seconds
+        :   String(secs).padStart(2, '0')
+
+    return `${hourFormat}:${minuteFormat}${sf ? `:${secondFormat}` : ''}` as R
 }
 
 export function getStartOfWeek(date: Temporal.ZonedDateTime) {

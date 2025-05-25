@@ -1,7 +1,7 @@
 import { getPaylodadUser } from '@/actions/middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ButtonLink } from '@/components/Links'
-import { JWTPayload } from '@/lib/types'
+import { UserTokenPayload } from '@/lib/types'
 import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
 import { PlusIcon, UserIcon } from 'lucide-react'
@@ -37,7 +37,7 @@ export default async function NullPage() {
 }
 
 interface GetContentProps {
-    user: JWTPayload | null
+    user: UserTokenPayload | null
 }
 function GetContent({ user }: GetContentProps) {
     // Si no tiene sesion iniciada
