@@ -82,7 +82,7 @@ export function CreateDialog({
     const [isLoadingClasses, startLoadingClasses] = useTransition()
     const [isLoadingHours, startLoadingHours] = useTransition()
     const [remainingHours, setRemainingHours] = useState({
-        leftHours: 0,
+        leftHours: Infinity,
         allowedHours: 0,
         usedHours: 0,
     })
@@ -103,7 +103,7 @@ export function CreateDialog({
         startLoadingHours(async () => {
             if (!selectedClass)
                 return setRemainingHours({
-                    leftHours: 0,
+                    leftHours: Infinity,
                     allowedHours: 0,
                     usedHours: 0,
                 })
@@ -304,7 +304,11 @@ export function CreateDialog({
                             label='Horas restantes'
                             type='text'
                             disabled
-                            value={`${remainingHours.leftHours}/${remainingHours.allowedHours}`}
+                            value={
+                                remainingHours.leftHours === Infinity ?
+                                    'Infinitas'
+                                :   `${remainingHours.leftHours}/${remainingHours.allowedHours}`
+                            }
                             icon={User}
                         />
                         <CompletInput
@@ -391,7 +395,8 @@ export function CreateDialog({
                             disabled={
                                 inTransition ||
                                 isLoadingHours ||
-                                isLoadingClasses
+                                isLoadingClasses ||
+                                (remainingHours.leftHours < 1 && !isAdmin)
                             }
                         >
                             <Save className='mr-2 h-5 w-5' />
