@@ -13,5 +13,5 @@ export interface ScheduleEvent extends EventInput {
     /**
      * The id of the user who created the event
      */
-    owner: string
+    ownerId: string
 }

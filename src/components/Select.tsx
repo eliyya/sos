@@ -399,7 +399,6 @@ export function RetornableCompletSelect<
                 <ReactSelect
                     {...props}
                     ref={selectRef}
-                    isClearable
                     options={options}
                     defaultValue={defaultValue}
                     value={currentValue}

@@ -9,6 +9,7 @@ import { getPaylodadUser } from '@/actions/middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
 import { Temporal } from '@js-temporal/polyfill'
+import { InfoDialog } from './components/InfoDialog'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -57,6 +58,11 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     })
     const lab = labs.find(l => l.id === id)
     if (!lab) notFound()
+    console.log(
+        'admin',
+        !!user && new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin),
+    )
+
     return (
         <div className='bg-background min-h-screen'>
             <ScheduleHeader
@@ -70,6 +76,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
             <main className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                 <Calendar
+                    userId={user?.sub ?? ''}
                     labId={id}
                     timestamp={
                         Temporal.ZonedDateTime.from({
@@ -82,6 +89,10 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     }
                     startHour={minutesToTime(lab.open_hour) + ':00'}
                     endHour={minutesToTime(lab.close_hour) + ':00'}
+                    isAdmin={
+                        !!user &&
+                        new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
+                    }
                 />
                 <CreateDialog
                     isAdmin={
@@ -94,6 +105,14 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     openHour={lab.open_hour}
                     user={{ id: user?.sub ?? '', name: user?.name ?? '' }}
                     users={users}
+                />
+                <InfoDialog
+                    user={user}
+                    lab={lab}
+                    isAdmin={
+                        !!user &&
+                        new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
+                    }
                 />
             </main>
         </div>

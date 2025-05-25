@@ -3,12 +3,13 @@
 import { getStartOfWeek } from '@/lib/utils'
 import { db } from '@/prisma/db'
 import { Temporal } from '@js-temporal/polyfill'
-import { STATUS } from '@prisma/client'
+import { Prisma, STATUS } from '@prisma/client'
 
 interface getPracticesFromWeekProps {
     labId: string
     timestamp: number
 }
+
 export async function getPracticesFromWeek({
     timestamp,
     labId: laboratory_id,
@@ -32,4 +33,12 @@ export async function getPracticesFromWeek({
         },
     })
     return practices
+}
+
+export async function getPractice<T extends Prisma.PracticeFindFirstArgs>(
+    query: T,
+): Promise<Awaited<ReturnType<typeof db.practice.findFirst<T>>>> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return await db.practice.findFirst(query)
 }

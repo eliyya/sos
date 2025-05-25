@@ -1,3 +1,5 @@
+import { ScheduleEvent } from '@/types/schedule'
+import { EventImpl } from '@fullcalendar/core/internal'
 import type { Temporal } from '@js-temporal/polyfill'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -52,4 +54,23 @@ export function getStartOfWeek(date: Temporal.ZonedDateTime) {
             nanosecond: 0,
         })
         .subtract({ days: date.dayOfWeek })
+}
+
+export function getCalendarEventInfo(event: EventImpl): ScheduleEvent {
+    return {
+        ...event,
+        ownerId: event.extendedProps?.ownerId ?? '',
+        start:
+            event.start instanceof Date ? event.start.getTime()
+            : typeof event.start === 'number' ? event.start
+            : event.start ? new Date(event.start).getTime()
+            : 0,
+        end:
+            event.end instanceof Date ? event.end.getTime()
+            : typeof event.end === 'number' ? event.end
+            : event.end ? new Date(event.end).getTime()
+            : 0,
+        id: event.id,
+        color: event.backgroundColor,
+    }
 }

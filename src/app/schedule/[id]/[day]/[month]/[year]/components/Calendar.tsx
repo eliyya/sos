@@ -5,6 +5,8 @@ import {
     eventsAtom,
     newEventSignalAtom,
     openCreateAtom,
+    openInfoAtom,
+    selectedEventAtom,
 } from '@/global/management-practices'
 import { useRouter } from 'next/navigation'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -16,7 +18,7 @@ import './calendar.css'
 import { useEffect } from 'react'
 import { getPracticesFromWeek } from '@/actions/practices'
 import { Temporal } from '@js-temporal/polyfill'
-import { getStartOfWeek } from '@/lib/utils'
+import { getCalendarEventInfo, getStartOfWeek } from '@/lib/utils'
 
 interface CalendarProps {
     startHour: string
@@ -27,20 +29,24 @@ interface CalendarProps {
     timestamp: number
     labId: string
     isAdmin?: boolean
+    userId: string
 }
 
-export const Calendar = ({
+export function Calendar({
     endHour,
     startHour,
     timestamp,
     labId,
     isAdmin,
-}: CalendarProps) => {
+    userId,
+}: CalendarProps) {
     const router = useRouter()
     const openCreate = useSetAtom(openCreateAtom)
     const setStartHour = useSetAtom(createDayAtom)
     const newEventSignal = useAtomValue(newEventSignalAtom)
     const [events, setEvents] = useAtom(eventsAtom)
+    const setClickedEvent = useSetAtom(selectedEventAtom)
+    const setOpenInfo = useSetAtom(openInfoAtom)
 
     useEffect(() => {
         getPracticesFromWeek({
@@ -53,7 +59,7 @@ export const Calendar = ({
                     title: e.name,
                     start: e.starts_at.getTime(),
                     end: e.ends_at.getTime(),
-                    owner: e.teacher_id,
+                    ownerId: e.teacher_id,
                 })),
             )
         })
@@ -78,8 +84,11 @@ export const Calendar = ({
             height='auto'
             initialDate={timestamp}
             events={events}
-            eventClick={info => {
-                console.log('Event clicked:', info.event)
+            eventClick={event => {
+                if (!userId) return
+                const info = getCalendarEventInfo(event.event)
+                setClickedEvent(info)
+                setOpenInfo(true)
             }}
             dateClick={info => {
                 console.log('Click date:', info.date)
