@@ -3,6 +3,7 @@ import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import app from '@eliyya/type-routes'
 import { getPaylodadUser } from './actions/middleware'
 import { RoleBitField, RoleFlags } from './bitfields/RoleBitField'
+import { COOKIES } from './constants/client'
 
 const handler = new MiddlewareHandler()
 
@@ -11,6 +12,17 @@ export const config = {
         '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
 }
 export const middleware = (request: NextRequest) => handler.handle(request)
+
+handler.use(/^\//, async ctx => {
+    const payloadUser = await getPaylodadUser()
+    const refresh = ctx.request.cookies.get(COOKIES.REFRESH)?.value
+    if (payloadUser || !refresh) return ctx.next()
+    const url = new URL(app.api['refresh-token'](), ctx.request.nextUrl.origin)
+    const req = await fetch(url)
+    const { accesToken } = await req.json()
+    if (accesToken) ctx.request.cookies.set(COOKIES.SESSION, accesToken)
+    return ctx.next()
+})
 
 handler.set(/^\/(schedule.*)?$/, async ctx => {
     const actual_date = new Date()

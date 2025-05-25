@@ -59,6 +59,7 @@ interface RefreshTokenProps {
     refreshToken: string
 }
 type RefreshTokenReturn = {
+    accesToken?: string
     error?:
         | 'Faltan parametros'
         | 'Refresh Token invalido'
@@ -126,7 +127,9 @@ export async function refreshToken({
         path: '/',
         httpOnly: true,
     })
-    return {}
+    return {
+        accesToken,
+    }
 }
 
 export async function login(
