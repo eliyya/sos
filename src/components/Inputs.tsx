@@ -216,6 +216,7 @@ export function RetornableCompletInput({
     const rid = useId()
     const [isChanged, setIsChanged] = useState(false)
     const internalRef = useRef<HTMLInputElement>(null)
+    const [value, setValue] = useState(() => `${defaultValue}`)
 
     useImperativeHandle(ref, () => internalRef.current!)
 
@@ -223,10 +224,6 @@ export function RetornableCompletInput({
         if (!internalRef.current) return
         internalRef.current.setCustomValidity(error ?? '')
     }, [error])
-
-    useEffect(() => {
-        setIsChanged(internalRef.current?.value !== defaultValue)
-    }, [defaultValue])
 
     return (
         <div className='w-full space-y-2'>
@@ -245,10 +242,13 @@ export function RetornableCompletInput({
                     {...props}
                     ref={internalRef}
                     id={id ?? rid}
-                    defaultValue={defaultValue}
+                    value={value}
                     onChange={e => {
+                        const val = e.currentTarget.value
+                        setValue(val)
                         onChange?.(e)
-                        setIsChanged(e.currentTarget.value !== defaultValue)
+                        setIsChanged(val !== `${defaultValue}`)
+                        console.log('inev', e)
                     }}
                     className={cn(
                         'border-input ring-offset-background text-foreground flex h-10 w-full rounded-md border px-3 py-2 pl-10 text-sm',
@@ -266,9 +266,33 @@ export function RetornableCompletInput({
                         className='absolute top-1 right-1 cursor-pointer p-2'
                         onClick={e => {
                             e.preventDefault()
-                            if (internalRef.current) {
-                                internalRef.current.value = `${defaultValue}`
-                                setIsChanged(false)
+                            const newValue = `${defaultValue}`
+                            setValue(newValue)
+                            setIsChanged(false)
+                            if (internalRef.current && onChange) {
+                                internalRef.current.value = newValue
+                                const syntheticEvent = new Event('input', {
+                                    bubbles: true,
+                                })
+                                Object.defineProperty(
+                                    syntheticEvent,
+                                    'target',
+                                    {
+                                        writable: false,
+                                        value: internalRef.current,
+                                    },
+                                )
+                                Object.defineProperty(
+                                    syntheticEvent,
+                                    'currentTarget',
+                                    {
+                                        writable: false,
+                                        value: internalRef.current,
+                                    },
+                                )
+                                onChange(
+                                    syntheticEvent as unknown as React.ChangeEvent<HTMLInputElement>,
+                                )
                             }
                         }}
                     >

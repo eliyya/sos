@@ -1,5 +1,15 @@
 'use client'
 
+import { getPracticesFromWeek } from '@/actions/practices'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import interactionPlugin from '@fullcalendar/interaction'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import { Temporal } from '@js-temporal/polyfill'
+import FullCalendar from '@fullcalendar/react'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
+import { useEffect } from 'react'
+import './calendar.css'
 import {
     createDayAtom,
     eventsAtom,
@@ -7,16 +17,6 @@ import {
     openCreateAtom,
     eventInfoAtom,
 } from '@/global/management-practices'
-import { useRouter } from 'next/navigation'
-import interactionPlugin from '@fullcalendar/interaction'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import FullCalendar from '@fullcalendar/react'
-import app from '@eliyya/type-routes'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import './calendar.css'
-import { useEffect } from 'react'
-import { getPracticesFromWeek } from '@/actions/practices'
-import { Temporal } from '@js-temporal/polyfill'
 import {
     getCalendarEventInfo,
     getStartOfWeek,

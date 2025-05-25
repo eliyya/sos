@@ -3,7 +3,7 @@
 import { editModeAtom, eventInfoAtom } from '@/global/management-practices'
 import { findFirstPractice } from '@/actions/practices'
 import { getRemainingHours } from '@/actions/class'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { EditMode } from './EditMode'
 import { InfoMode } from './InfoMode'
@@ -14,6 +14,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { cn } from '@/lib/utils'
 
 interface InfoDialogProps {
     lab: {
@@ -26,7 +27,7 @@ interface InfoDialogProps {
     isAdmin?: boolean
 }
 export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
-    const editMode = useAtomValue(editModeAtom)
+    const [editMode, setEditMode] = useAtom(editModeAtom)
     const [currentEvent, setCurrentEvent] = useAtom(eventInfoAtom)
     const [practice, setPractice] = useState<Awaited<
         ReturnType<
@@ -86,11 +87,19 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
     return (
         <Dialog
             open={!!currentEvent}
-            onOpenChange={op => op === false && setCurrentEvent(null)}
+            onOpenChange={op =>
+                (op === false && setCurrentEvent(null)) || setEditMode(false)
+            }
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Info</DialogTitle>
+            <DialogContent
+                className={cn({
+                    'w-full max-w-4xl': editMode,
+                })}
+            >
+                <DialogHeader className='flex flex-col gap-4'>
+                    <DialogTitle className='w-full text-center text-3xl'>
+                        {editMode ? 'Editar' : 'Info'}
+                    </DialogTitle>
                 </DialogHeader>
                 {!editMode ?
                     <InfoMode

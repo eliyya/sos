@@ -4,7 +4,7 @@ import { editModeAtom } from '@/global/management-practices'
 import interactionPlugin from '@fullcalendar/interaction'
 import { findFirstPractice } from '@/actions/practices'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { CompletInput } from '@/components/Inputs'
+import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { MessageError } from '@/components/Error'
 import { SaveIcon, UserIcon } from 'lucide-react'
 import { Temporal } from '@js-temporal/polyfill'
@@ -49,13 +49,11 @@ interface EditModeProps {
 export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
     const [message] = useState('')
     const setEditMode = useSetAtom(editModeAtom)
+    const [newPracticeName, setNewPracticeName] = useState(practice.name)
 
     return (
-        <div className='flex gap-8'>
-            <form
-                className='flex w-full max-w-md flex-1/2 flex-col justify-center gap-6'
-                action={() => {}}
-            >
+        <form className='grid grid-cols-2 gap-8' action={() => {}}>
+            <div className='flex w-full max-w-md flex-col justify-center gap-6'>
                 {message && <MessageError>{message}</MessageError>}
                 <input type='hidden' value={lab.id} name='laboratory_id' />
                 <CompletInput
@@ -83,18 +81,21 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                     }
                     icon={UserIcon}
                 />
-                <CompletInput
+                <RetornableCompletInput
                     label='Practica'
                     type='text'
-                    disabled
-                    value={practice?.name}
+                    defaultValue={practice?.name}
+                    onChange={e => {
+                        console.log('eve', e, e.target.value)
+                        setNewPracticeName(e.target.value)
+                    }}
+                    value={newPracticeName}
                     icon={UserIcon}
                 />
-                <CompletInput
+                <RetornableCompletInput
                     label='Tema'
                     type='text'
-                    disabled
-                    value={practice?.topic}
+                    defaultValue={practice?.topic}
                     icon={UserIcon}
                 />
                 <CompletInput
@@ -140,43 +141,43 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                     placeholder='* * * * * * * *'
                     icon={UserIcon}
                 />
-                <div className='flex gap-2'>
-                    <Button
-                        variant='outline'
-                        onClick={e => {
-                            e.preventDefault()
-                            setEditMode(false)
-                        }}
-                    >
-                        <SaveIcon className='mr-2 h-5 w-5' />
-                        Cancelar
-                    </Button>
-                    <Button type='submit'>
-                        <SaveIcon className='mr-2 h-5 w-5' />
-                        Guardar
-                    </Button>
-                </div>
-            </form>
-            <div className='flex-1/2'>
-                <FullCalendar
-                    eventClassNames={'cursor-pointer'}
-                    plugins={[timeGridPlugin, interactionPlugin]}
-                    dayHeaderClassNames={'bg-background'}
-                    initialView='timeGridDay'
-                    allDaySlot={false}
-                    slotDuration={'01:00:00'}
-                    headerToolbar={{
-                        left: 'title',
-                        center: '',
-                        right: '',
-                    }}
-                    slotMinTime={secondsToTime(lab.open_hour * 60, 'HH:mm:ss')}
-                    slotMaxTime={secondsToTime(lab.close_hour * 60, 'HH:mm:ss')}
-                    height='auto'
-                    initialDate={practice.starts_at.getTime()}
-                    // events={[...events, actualEvent]}
-                />
             </div>
-        </div>
+            <FullCalendar
+                plugins={[timeGridPlugin, interactionPlugin]}
+                initialView='timeGridDay'
+                allDaySlot={false}
+                slotDuration={'01:00:00'}
+                headerToolbar={{
+                    left: 'title',
+                    center: '',
+                    right: '',
+                }}
+                slotMinTime={secondsToTime(lab.open_hour * 60, 'HH:mm:ss')}
+                slotMaxTime={secondsToTime(lab.close_hour * 60, 'HH:mm:ss')}
+                initialDate={practice.starts_at.getTime()}
+                events={[
+                    {
+                        id: practice.id,
+                        title: newPracticeName,
+                        start: practice.starts_at.getTime(),
+                        end: practice.ends_at.getTime(),
+                    },
+                ]}
+            />
+            <Button
+                variant='outline'
+                onClick={e => {
+                    e.preventDefault()
+                    setEditMode(false)
+                }}
+            >
+                <SaveIcon className='mr-2 h-5 w-5' />
+                Cancelar
+            </Button>
+            <Button type='submit'>
+                <SaveIcon className='mr-2 h-5 w-5' />
+                Guardar
+            </Button>
+        </form>
     )
 }
