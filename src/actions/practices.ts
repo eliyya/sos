@@ -1,6 +1,6 @@
 'use server'
 
-import { startOfWeek } from '@/lib/utils'
+import { getStartOfWeek } from '@/lib/utils'
 import { db } from '@/prisma/db'
 import { Temporal } from '@js-temporal/polyfill'
 import { STATUS } from '@prisma/client'
@@ -18,7 +18,7 @@ export async function getPracticesFromWeek({
             'America/Monterrey',
         )
 
-    const start = startOfWeek(date)
+    const start = getStartOfWeek(date)
     const end = start.add({ days: 7 })
 
     const practices = await db.practice.findMany({

@@ -16,7 +16,7 @@ import './calendar.css'
 import { useEffect } from 'react'
 import { getPracticesFromWeek } from '@/actions/practices'
 import { Temporal } from '@js-temporal/polyfill'
-import { startOfWeek } from '@/lib/utils'
+import { getStartOfWeek } from '@/lib/utils'
 
 interface CalendarProps {
     startHour: string
@@ -91,14 +91,14 @@ export const Calendar = ({
                 const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
 
                 // 2. Normalize both dates to the start of their respective weeks (Monday at 00:00:00)
-                const nowWeek = startOfWeek(now)
+                const nowWeek = getStartOfWeek(now)
 
                 // 3. Get the clicked date and normalize it to the start of its week
                 const clicked =
                     Temporal.Instant.fromEpochMilliseconds(
                         clicketTimestamp,
                     ).toZonedDateTimeISO('America/Monterrey')
-                const clickedWeek = startOfWeek(clicked)
+                const clickedWeek = getStartOfWeek(clicked)
 
                 // 4. Check if the clicked date is in the current week
                 if (clickedWeek.equals(nowWeek)) {
@@ -143,7 +143,7 @@ export const Calendar = ({
                         const now =
                             Temporal.Now.zonedDateTimeISO('America/Monterrey')
                         // Get the start of the current week (Monday)
-                        const currentWeek = startOfWeek(now)
+                        const currentWeek = getStartOfWeek(now)
 
                         // Get the selected date from the timestamp prop
                         const selectedDate =
@@ -151,7 +151,7 @@ export const Calendar = ({
                                 timestamp,
                             ).toZonedDateTimeISO('America/Monterrey')
                         // Get the start of the selected week
-                        const selectedWeek = startOfWeek(selectedDate)
+                        const selectedWeek = getStartOfWeek(selectedDate)
 
                         // If the selected week is still not the current week
                         // This is a redundant check that should never be true

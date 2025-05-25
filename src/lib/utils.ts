@@ -41,7 +41,7 @@ export function minutesToTime(minutes: number): `${string}:${string}` {
     return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`
 }
 
-export function startOfWeek(date: Temporal.ZonedDateTime) {
+export function getStartOfWeek(date: Temporal.ZonedDateTime) {
     return date
         .with({
             hour: 0,

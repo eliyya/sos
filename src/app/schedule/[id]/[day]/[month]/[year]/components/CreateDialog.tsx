@@ -18,7 +18,7 @@ import { Button } from '@/components/Button'
 import { User, Save } from 'lucide-react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { minutesToTime } from '@/lib/utils'
-import { getClassesWithDataFromUser } from '@/actions/class'
+import { getClassesWithDataFromUser, getRemainingHours } from '@/actions/class'
 import { MessageError } from '@/components/Error'
 import { setAsideLaboratory } from '@/actions/laboratory'
 import { Temporal } from '@js-temporal/polyfill'
@@ -79,17 +79,41 @@ export function CreateDialog({
     const [startHourError, setStartHourError] = useState('')
     const [endHourError, setEndHourError] = useState('')
     const events = useAtomValue(eventsAtom)
+    const [isLoadingClasses, startLoadingClasses] = useTransition()
+    const [isLoadingHours, startLoadingHours] = useTransition()
+    const [remainingHours, setRemainingHours] = useState({
+        leftHours: 0,
+        allowedHours: 0,
+        usedHours: 0,
+    })
 
     useEffect(() => {
-        getClassesWithDataFromUser(selectedUser.id, ['subject', 'career']).then(
-            d => {
-                setClasses(d)
-                if (d.length > 0) {
-                    setSelectedClass(d[0])
-                }
-            },
-        )
+        startLoadingClasses(async () => {
+            const classes = await getClassesWithDataFromUser(selectedUser.id, [
+                'subject',
+                'career',
+            ])
+            setClasses(classes)
+            const [firstClass] = classes
+            if (firstClass) setSelectedClass(firstClass)
+        })
     }, [selectedUser, user, isAdmin])
+
+    useEffect(() => {
+        startLoadingHours(async () => {
+            if (!selectedClass)
+                return setRemainingHours({
+                    leftHours: 0,
+                    allowedHours: 0,
+                    usedHours: 0,
+                })
+            const remainingHours = await getRemainingHours({
+                classId: selectedClass.id,
+                day: timestampStartHour,
+            })
+            setRemainingHours(remainingHours)
+        })
+    }, [selectedClass, timestampStartHour])
 
     useEffect(() => {
         // modify actual event
@@ -238,7 +262,10 @@ export function CreateDialog({
                             name='class_id'
                             required={!isAdmin}
                             isClearable={isAdmin}
-                            isDisabled={users.length === 1 && !isAdmin}
+                            isDisabled={
+                                (users.length === 1 && !isAdmin) ||
+                                isLoadingClasses
+                            }
                             options={classes.map(c => ({
                                 value: c.id,
                                 label:
@@ -272,6 +299,13 @@ export function CreateDialog({
                                 )
                                 if (selected) setSelectedClass(selected)
                             }}
+                        />
+                        <CompletInput
+                            label='Horas restantes'
+                            type='text'
+                            disabled
+                            value={`${remainingHours.leftHours}/${remainingHours.allowedHours}`}
+                            icon={User}
                         />
                         <CompletInput
                             required
@@ -352,7 +386,14 @@ export function CreateDialog({
                             placeholder='* * * * * * * *'
                             icon={User}
                         />
-                        <Button type='submit' disabled={inTransition}>
+                        <Button
+                            type='submit'
+                            disabled={
+                                inTransition ||
+                                isLoadingHours ||
+                                isLoadingClasses
+                            }
+                        >
                             <Save className='mr-2 h-5 w-5' />
                             Apartar
                         </Button>
