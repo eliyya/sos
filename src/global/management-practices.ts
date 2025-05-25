@@ -15,5 +15,5 @@ export const actualEventAtom = atom<ScheduleEvent>({
 })
 export const newEventSignalAtom = atom(Symbol())
 export const eventsAtom = atom<ScheduleEvent[]>([])
-export const selectedEventAtom = atom<ScheduleEvent | null>(null)
-export const openInfoAtom = atom(false)
+export const eventInfoAtom = atom<ScheduleEvent | null>(null)
+export const editModeAtom = atom(false)

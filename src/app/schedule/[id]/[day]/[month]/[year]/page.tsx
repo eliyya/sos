@@ -8,7 +8,7 @@ import { getPaylodadUser } from '@/actions/middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
 import { Temporal } from '@js-temporal/polyfill'
-import { InfoDialog } from './components/InfoDialog'
+import { InfoDialog } from './components/InfoDialog/InfoDialog'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',

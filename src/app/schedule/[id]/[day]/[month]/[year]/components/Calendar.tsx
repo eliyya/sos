@@ -5,8 +5,7 @@ import {
     eventsAtom,
     newEventSignalAtom,
     openCreateAtom,
-    openInfoAtom,
-    selectedEventAtom,
+    eventInfoAtom,
 } from '@/global/management-practices'
 import { useRouter } from 'next/navigation'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -45,8 +44,7 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
     const setStartHour = useSetAtom(createDayAtom)
     const newEventSignal = useAtomValue(newEventSignalAtom)
     const [events, setEvents] = useAtom(eventsAtom)
-    const setClickedEvent = useSetAtom(selectedEventAtom)
-    const setOpenInfo = useSetAtom(openInfoAtom)
+    const openEventInfoWith = useSetAtom(eventInfoAtom)
 
     useEffect(() => {
         getPracticesFromWeek({
@@ -87,8 +85,7 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
             eventClick={event => {
                 if (!userId) return
                 const info = getCalendarEventInfo(event.event)
-                setClickedEvent(info)
-                setOpenInfo(true)
+                openEventInfoWith(info)
             }}
             dateClick={info => {
                 console.log('Click date:', info.date)
