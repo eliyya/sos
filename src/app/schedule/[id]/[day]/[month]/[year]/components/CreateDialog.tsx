@@ -128,6 +128,7 @@ export function CreateDialog({
             ...a,
             start: start.epochMilliseconds,
             end: end.epochMilliseconds,
+            owner: selectedUser.id,
         }))
         // validate start hour
         const openHourDate = start.with({

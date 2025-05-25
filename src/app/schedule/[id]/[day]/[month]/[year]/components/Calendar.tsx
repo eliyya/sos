@@ -47,20 +47,13 @@ export const Calendar = ({
             timestamp,
             labId,
         }).then(e => {
-            console.log(
-                e.map(e => ({
-                    id: e.id,
-                    title: e.name,
-                    start: e.starts_at.getTime(),
-                    end: e.ends_at.getTime(),
-                })),
-            )
             setEvents(
                 e.map(e => ({
                     id: e.id,
                     title: e.name,
                     start: e.starts_at.getTime(),
                     end: e.ends_at.getTime(),
+                    owner: e.teacher_id,
                 })),
             )
         })

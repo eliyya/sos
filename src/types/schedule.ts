@@ -10,4 +10,8 @@ export interface ScheduleEvent extends EventInput {
      */
     end: Extract<EventInput['end'], number>
     id: Extract<EventInput['id'], string>
+    /**
+     * The id of the user who created the event
+     */
+    owner: string
 }
