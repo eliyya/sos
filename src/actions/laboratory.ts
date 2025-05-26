@@ -2,7 +2,7 @@
 
 import { db, snowflake } from '@/prisma/db'
 import { timeToMinutes } from '@/lib/utils'
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { LABORATORY_TYPE, Prisma, STATUS } from '@prisma/client'
 import { getPaylodadUser } from './middleware'
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { Temporal } from '@js-temporal/polyfill'
@@ -199,4 +199,12 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
         },
     })
     return { message: null, errors: {} }
+}
+
+export async function findManyLaboratories<
+    Q extends Prisma.LaboratoryFindManyArgs,
+    R extends Awaited<ReturnType<typeof db.laboratory.findMany<Q>>>,
+>(query: Q): Promise<R> {
+    // @ts-expect-error just ignore
+    return await db.laboratory.findMany(query)
 }

@@ -79,7 +79,7 @@ export function EditDialog() {
                     )}
                     <input type='hidden' value={old.id} name='nc' />
                     <RetornableCompletSelect
-                        defaultValue={{
+                        originalValue={{
                             label: teachers.find(t => t.id === old.teacher_id)
                                 ?.name,
                             value: old.career_id,
@@ -93,7 +93,7 @@ export function EditDialog() {
                         icon={UserIcon}
                     />
                     <RetornableCompletSelect
-                        defaultValue={{
+                        originalValue={{
                             label: subjects.find(t => t.id === old.subject_id)
                                 ?.name,
                             value: old.career_id,
@@ -107,7 +107,7 @@ export function EditDialog() {
                         icon={UserIcon}
                     />
                     <RetornableCompletSelect
-                        defaultValue={{
+                        originalValue={{
                             label: careers.find(t => t.id === old.career_id)
                                 ?.name,
                             value: old.career_id,
@@ -126,7 +126,7 @@ export function EditDialog() {
                         icon={UserIcon}
                         type='number'
                         min={0}
-                        defaultValue={old.group}
+                        originalValue={old.group}
                     />
                     <RetornableCompletInput
                         label='Semestre'
@@ -134,7 +134,7 @@ export function EditDialog() {
                         icon={UserIcon}
                         type='number'
                         min={0}
-                        defaultValue={old.semester}
+                        originalValue={old.semester}
                     />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

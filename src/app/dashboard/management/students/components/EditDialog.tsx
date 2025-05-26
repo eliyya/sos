@@ -55,7 +55,7 @@ export function EditDialog() {
                     )}
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput
-                        defaultValue={old.name}
+                        originalValue={old.name}
                         required
                         label='Name'
                         type='text'
@@ -63,7 +63,7 @@ export function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={old.alias ?? ''}
+                        originalValue={old.alias ?? ''}
                         required
                         label='Alias'
                         type='text'

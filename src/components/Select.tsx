@@ -329,7 +329,7 @@ function normalizeValue<T>(
 
 interface RetornableCompletSelectProps<O, IM extends boolean>
     extends CompletSelectProps<O, IM> {
-    defaultValue: MultiValue<O> | SingleValue<O>
+    originalValue: MultiValue<O> | SingleValue<O>
 }
 export function RetornableCompletSelect<
     T extends object = { value: string; label: string },
@@ -343,7 +343,7 @@ export function RetornableCompletSelect<
     error,
     id,
     containerClassName,
-    defaultValue,
+    originalValue,
     ref,
     ...props
 }: RetornableCompletSelectProps<T, IM>) {
@@ -354,7 +354,7 @@ export function RetornableCompletSelect<
     const [isChanged, setIsChanged] = useState(false)
     const [currentValue, setCurrentValue] = useState<
         MultiValue<T> | SingleValue<T>
-    >(defaultValue)
+    >(originalValue)
 
     // Manejo manual de required (ya que ReactSelect no lo soporta nativamente)
     useEffect(() => {
@@ -370,13 +370,13 @@ export function RetornableCompletSelect<
             JSON.stringify(normalizeValue(currentValue), (k, v) =>
                 typeof v === 'bigint' ? v.toString() : v,
             ) !==
-                JSON.stringify(normalizeValue(defaultValue), (k, v) =>
+                JSON.stringify(normalizeValue(originalValue), (k, v) =>
                     typeof v === 'bigint' ? v.toString() : v,
                 )
         ) {
             setIsChanged(true)
         }
-    }, [currentValue, defaultValue])
+    }, [currentValue, originalValue])
 
     useEffect(() => {
         console.log('isChanged', isChanged)
@@ -400,7 +400,7 @@ export function RetornableCompletSelect<
                     {...props}
                     ref={selectRef}
                     options={options}
-                    defaultValue={defaultValue}
+                    originalValue={originalValue}
                     value={currentValue}
                     onChange={(option, actionMeta) => {
                         setCurrentValue(option as OnChangeValue<T, IM>) // Guardamos el nuevo valor
@@ -409,7 +409,7 @@ export function RetornableCompletSelect<
                                 typeof v === 'bigint' ? v.toString() : v,
                             ) !==
                                 JSON.stringify(
-                                    normalizeValue(defaultValue),
+                                    normalizeValue(originalValue),
                                     (k, v) =>
                                         typeof v === 'bigint' ?
                                             v.toString()
@@ -482,7 +482,7 @@ export function RetornableCompletSelect<
                         className='absolute top-0.5 right-1 cursor-pointer p-2'
                         onClick={e => {
                             e.preventDefault()
-                            setCurrentValue(defaultValue)
+                            setCurrentValue(originalValue)
                             setIsChanged(false)
                         }}
                     >
@@ -623,7 +623,7 @@ export function RetornableCompletCreatableSelect<
     error,
     id,
     containerClassName,
-    defaultValue,
+    originalValue: defaultValue,
     ref,
     ...props
 }: RetornableCompletSelectProps<T, IM>) {
@@ -681,7 +681,7 @@ export function RetornableCompletCreatableSelect<
                     ref={selectRef}
                     isClearable
                     options={options}
-                    defaultValue={defaultValue}
+                    originalValue={defaultValue}
                     value={currentValue}
                     onChange={(option, actionMeta) => {
                         setCurrentValue(option as OnChangeValue<T, IM>) // Guardamos el nuevo valor

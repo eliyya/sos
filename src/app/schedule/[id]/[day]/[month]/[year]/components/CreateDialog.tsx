@@ -381,7 +381,7 @@ export function CreateDialog({
                             type='number'
                             name='students'
                             min={1}
-                            defaultValue={1}
+                            originalValue={1}
                             icon={User}
                         />
                         <CompletInput

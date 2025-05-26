@@ -195,7 +195,7 @@ interface RetornableCompletInputProps
     extends InputHTMLAttributes<HTMLInputElement> {
     label: string
     children?: React.ReactNode
-    defaultValue: string | number
+    originalValue: string | number
     error?: string
     icon?: LucideIcon
     ref?: ForwardedRef<HTMLInputElement>
@@ -207,7 +207,7 @@ export function RetornableCompletInput({
     onChange,
     id,
     error,
-    defaultValue,
+    originalValue,
     icon,
     ref,
     ...props
@@ -216,7 +216,7 @@ export function RetornableCompletInput({
     const rid = useId()
     const [isChanged, setIsChanged] = useState(false)
     const internalRef = useRef<HTMLInputElement>(null)
-    const [value, setValue] = useState(() => `${defaultValue}`)
+    const [value, setValue] = useState(() => `${originalValue}`)
 
     useImperativeHandle(ref, () => internalRef.current!)
 
@@ -247,7 +247,7 @@ export function RetornableCompletInput({
                         const val = e.currentTarget.value
                         setValue(val)
                         onChange?.(e)
-                        setIsChanged(val !== `${defaultValue}`)
+                        setIsChanged(val !== `${originalValue}`)
                     }}
                     className={cn(
                         'border-input ring-offset-background text-foreground flex h-10 w-full rounded-md border px-3 py-2 pl-10 text-sm',
@@ -266,7 +266,7 @@ export function RetornableCompletInput({
                         className='absolute top-0.5 right-1 cursor-pointer p-2'
                         onClick={e => {
                             e.preventDefault()
-                            const newValue = `${defaultValue}`
+                            const newValue = `${originalValue}`
                             setValue(newValue)
                             setIsChanged(false)
                             if (internalRef.current && onChange) {
@@ -317,7 +317,7 @@ interface RetornableCompletTextareaProps
     label: string
     children?: ReactNode
     error?: string
-    defaultValue: string
+    originalValue: string
     icon?: LucideIcon
     ref?: ForwardedRef<HTMLTextAreaElement>
 }
@@ -372,7 +372,7 @@ export function RetornableCompletTextarea({
                     onChange={e => {
                         onChange?.(e)
                         setIsChanged(
-                            e.currentTarget.value !== props.defaultValue,
+                            e.currentTarget.value !== props.originalValue,
                         )
                     }}
                     aria-describedby={error ? `${id ?? rid}-error` : undefined}

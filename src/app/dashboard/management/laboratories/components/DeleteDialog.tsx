@@ -33,7 +33,7 @@ export function DeleteDialog() {
                     <span className='text-3xl'>Eliminar Laboratorio</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de eliminar a {entity.name}{' '}
+                    ¿Está seguro de eliminar a {entity.name}
                 </DialogDescription>
                 <form
                     action={data => {
@@ -41,7 +41,7 @@ export function DeleteDialog() {
                             const { error } = await deleteLaboratory(data)
                             if (error) {
                                 setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
+                                setTimeout(() => setMessage(''), 5_000)
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
@@ -58,7 +58,7 @@ export function DeleteDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={entity.id} name='nc' />
+                    <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

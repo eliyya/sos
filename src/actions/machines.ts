@@ -1,7 +1,7 @@
 'use server'
 
 import { db, snowflake } from '@/prisma/db'
-import { MACHINE_STATUS } from '@prisma/client'
+import { MACHINE_STATUS, Prisma } from '@prisma/client'
 export async function getMachine() {
     return await db.machine.findMany({
         where: {
@@ -19,7 +19,8 @@ export async function editMachine(formData: FormData) {
     const number = formData.get('number') as string
     const storage = formData.get('storage') as string
     const description = formData.get('description') as string
-    const laboratory_id = formData.get('laboratory_id') as string
+    let laboratory_id = formData.get('laboratory_id') as string | null
+    laboratory_id ||= null
 
     try {
         await db.machine.update({
@@ -37,7 +38,11 @@ export async function editMachine(formData: FormData) {
             },
         })
         return {}
-    } catch {
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            console.log(error)
+            console.log(error.meta)
+        }
         return { error: 'Algo sucedió, intenta más tarde' }
     }
 }

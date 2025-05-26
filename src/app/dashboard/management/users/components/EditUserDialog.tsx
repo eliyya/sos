@@ -57,7 +57,7 @@ export function EditUserDialog() {
                     )}
                     <input type='hidden' value={oldUser.id} name='id' />
                     <RetornableCompletInput
-                        defaultValue={oldUser.name}
+                        originalValue={oldUser.name}
                         required
                         label='Name'
                         type='text'
@@ -65,7 +65,7 @@ export function EditUserDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={oldUser.username}
+                        originalValue={oldUser.username}
                         required
                         label='Ussername'
                         type='text'
@@ -76,7 +76,7 @@ export function EditUserDialog() {
                         isMulti
                         label='Roles'
                         name='roles'
-                        defaultValue={Object.entries(
+                        originalValue={Object.entries(
                             new RoleBitField(oldUser.role).serialize(),
                         )
                             .filter(([, v]) => v)

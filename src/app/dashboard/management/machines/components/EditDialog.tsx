@@ -4,6 +4,7 @@ import { editMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
+import { RetornableCompletSelect } from '@/components/Select'
 import {
     editDialogAtom,
     entityToEditAtom,
@@ -12,7 +13,9 @@ import {
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
+import { findManyLaboratories } from '@/actions/laboratory'
+import { STATUS } from '@prisma/client'
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)
@@ -20,6 +23,18 @@ export function EditDialog() {
     const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const [laboratories, setLaboratories] = useState<
+        {
+            id: string
+            name: string
+        }[]
+    >([])
+
+    useEffect(() => {
+        findManyLaboratories({ where: { status: STATUS.ACTIVE } }).then(
+            laboratories => setLaboratories(laboratories),
+        )
+    }, [])
 
     if (!old) return null
 
@@ -36,8 +51,10 @@ export function EditDialog() {
                     action={data => {
                         startTransition(async () => {
                             const { error } = await editMachine(data)
-                            if (error) setMessage(error)
-                            else {
+                            if (error) {
+                                setMessage(error)
+                                setTimeout(() => setMessage(''), 5_000)
+                            } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
                                     1_000,
@@ -55,7 +72,7 @@ export function EditDialog() {
                     )}
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput
-                        defaultValue={old.number}
+                        originalValue={old.number}
                         required
                         label='Numero'
                         type='number'
@@ -63,7 +80,7 @@ export function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={old.processor}
+                        originalValue={old.processor}
                         required
                         label='Procesador'
                         type='text'
@@ -71,7 +88,7 @@ export function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={old.ram}
+                        originalValue={old.ram}
                         required
                         label='Ram'
                         type='text'
@@ -79,7 +96,7 @@ export function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={old.storage}
+                        originalValue={old.storage}
                         required
                         label='Almacenamiento'
                         type='text'
@@ -87,7 +104,7 @@ export function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={old.serie ?? ''}
+                        originalValue={old.serie ?? ''}
                         required
                         label='Serie'
                         type='text'
@@ -95,17 +112,30 @@ export function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={old.description}
+                        originalValue={old.description}
                         label='Descripcion'
                         name='description'
                         icon={User}
                     ></RetornableCompletInput>
-                    <RetornableCompletInput
-                        defaultValue={old.laboratory_id ?? ''}
+                    <RetornableCompletSelect
+                        isClearable
+                        originalValue={
+                            laboratories
+                                .map(l => ({
+                                    label: l.name,
+                                    value: l.id,
+                                }))
+                                .find(l => l.value === old.laboratory_id) ??
+                            null
+                        }
                         label='Laboratorio Asignado'
+                        options={laboratories.map(l => ({
+                            label: l.name,
+                            value: l.id,
+                        }))}
                         name='laboratory_id'
                         icon={User}
-                    ></RetornableCompletInput>
+                    ></RetornableCompletSelect>
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save

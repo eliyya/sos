@@ -66,7 +66,7 @@ export function EditDialog() {
                         label='Nombre'
                         type='text'
                         name='name'
-                        defaultValue={old.name}
+                        originalValue={old.name}
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
@@ -74,7 +74,7 @@ export function EditDialog() {
                         label='Apertura'
                         type='time'
                         name='open_hour'
-                        defaultValue={secondsToTime(old.open_hour * 60)}
+                        originalValue={secondsToTime(old.open_hour * 60)}
                         // TODO : fix this
                         icon={User}
                     ></RetornableCompletInput>
@@ -83,13 +83,13 @@ export function EditDialog() {
                         label='Cierre'
                         type='time'
                         name='close_hour'
-                        defaultValue={secondsToTime(old.close_hour * 60)}
+                        originalValue={secondsToTime(old.close_hour * 60)}
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletSelect
                         label='Tipo de Laboratorio'
                         name='type'
-                        defaultValue={{
+                        originalValue={{
                             value: old.type,
                             label: labTypeLabel[old.type],
                         }}
