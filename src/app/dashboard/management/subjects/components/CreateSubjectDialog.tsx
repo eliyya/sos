@@ -70,7 +70,7 @@ export function CreateSubjectDialog() {
                             type='number'
                             name='theory_hours'
                             min={0}
-                            defaultValue={1}
+                            originalValue={1}
                             icon={User}
                         />
                         <CompletInput
@@ -79,7 +79,7 @@ export function CreateSubjectDialog() {
                             type='number'
                             name='practice_hours'
                             min={0}
-                            defaultValue={0}
+                            originalValue={0}
                             icon={User}
                         />
                     </div>

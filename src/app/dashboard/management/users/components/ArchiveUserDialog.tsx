@@ -37,7 +37,7 @@ export function ArchiveUserDialog() {
                             const { error } = await archiveUser(data)
                             if (error) {
                                 setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
+                                setTimeout(() => setMessage(''), 5_000)
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),

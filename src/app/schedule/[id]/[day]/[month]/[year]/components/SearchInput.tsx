@@ -33,7 +33,9 @@ export function SearchInput({ lab_id, currentDay }: SearchInputProps) {
                 name='search'
                 type='date'
                 id='search'
-                defaultValue={Temporal.Instant.fromEpochMilliseconds(currentDay)
+                originalValue={Temporal.Instant.fromEpochMilliseconds(
+                    currentDay,
+                )
                     .toZonedDateTimeISO('America/Monterrey')
                     .toPlainDate()
                     .toString()}

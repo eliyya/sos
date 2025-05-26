@@ -212,7 +212,7 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                 <RetornableCompletInput
                     label='Practica'
                     type='text'
-                    defaultValue={practice?.name}
+                    originalValue={practice?.name}
                     onChange={e => setNewPracticeName(e.target.value)}
                     value={newPracticeName}
                     icon={UserIcon}
@@ -220,14 +220,14 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                 <RetornableCompletInput
                     label='Tema'
                     type='text'
-                    defaultValue={practice?.topic}
+                    originalValue={practice?.topic}
                     icon={UserIcon}
                 />
                 <RetornableCompletInput
                     label='Inicio'
                     type='time'
                     error={startHourError}
-                    defaultValue={`${Temporal.Instant.fromEpochMilliseconds(
+                    originalValue={`${Temporal.Instant.fromEpochMilliseconds(
                         practice.starts_at.getTime(),
                     )
                         .toZonedDateTimeISO('America/Monterrey')
@@ -242,7 +242,7 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                     label='Duración en horas'
                     type='number'
                     error={endHourError}
-                    defaultValue={Temporal.Instant.fromEpochMilliseconds(
+                    originalValue={Temporal.Instant.fromEpochMilliseconds(
                         practice?.ends_at.getTime() ?? 0,
                     )
                         .since(
@@ -262,7 +262,7 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                     required
                     label='Cantidad de estudiantes'
                     type='number'
-                    defaultValue={practice?.students ?? 1}
+                    originalValue={practice?.students ?? 1}
                     icon={UserIcon}
                 />
                 <CompletInput

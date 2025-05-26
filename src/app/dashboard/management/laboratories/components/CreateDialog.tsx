@@ -62,7 +62,7 @@ export function CreateSubjectDialog() {
                         label='Apertura'
                         type='time'
                         name='open_hour'
-                        defaultValue={'08:00'}
+                        originalValue={'08:00'}
                         icon={User}
                     />
                     <CompletInput
@@ -70,14 +70,14 @@ export function CreateSubjectDialog() {
                         label='Cierre'
                         type='time'
                         name='close_hour'
-                        defaultValue={'20:00'}
+                        originalValue={'20:00'}
                         icon={User}
                     />
                     <CompletSelect
                         required
                         label='Tipo de Laboratorio'
                         name='type'
-                        defaultValue={{
+                        originalValue={{
                             value: LABORATORY_TYPE.LABORATORY,
                             label: 'Laboratorio',
                         }}

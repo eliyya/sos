@@ -55,7 +55,7 @@ export function EditDialog() {
                     )}
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput
-                        defaultValue={old.name}
+                        originalValue={old.name}
                         required
                         label='Name'
                         type='text'
@@ -69,7 +69,7 @@ export function EditDialog() {
                             type='number'
                             name='theory_hours'
                             min={0}
-                            defaultValue={old.theory_hours.toString()}
+                            originalValue={old.theory_hours.toString()}
                             icon={User}
                         ></RetornableCompletInput>
                         <RetornableCompletInput
@@ -78,7 +78,7 @@ export function EditDialog() {
                             type='number'
                             name='practice_hours'
                             min={0}
-                            defaultValue={old.practice_hours.toString()}
+                            originalValue={old.practice_hours.toString()}
                             icon={User}
                         ></RetornableCompletInput>
                     </div>
