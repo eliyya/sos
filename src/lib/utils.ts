@@ -100,7 +100,7 @@ export function getStartOfWeek(date: Temporal.ZonedDateTime) {
             microsecond: 0,
             nanosecond: 0,
         })
-        .subtract({ days: date.dayOfWeek })
+        .subtract({ days: date.dayOfWeek % 7 })
 }
 
 export function getCalendarEventInfo(event: EventImpl): ScheduleEvent {
