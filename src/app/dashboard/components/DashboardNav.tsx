@@ -112,6 +112,7 @@ export function DashboardNav() {
                     </Link>
                     <Link
                         href={app.auth.logout()}
+                        prefetch={false}
                         className='text-muted-foreground hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                     >
                         <LogOutIcon className='h-4 w-4' />
