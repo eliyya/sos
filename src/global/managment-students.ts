@@ -13,6 +13,7 @@ export const entityToEditAtom = atom<
     semester: 0,
     career_id: '',
     status: STATUS.ACTIVE,
+    group: 1,
 })
 export const updateAtom = atom(Symbol())
 export const showArchivedAtom = atom(false)
