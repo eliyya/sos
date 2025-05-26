@@ -9,7 +9,6 @@ import FullCalendar from '@fullcalendar/react'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { useEffect } from 'react'
-import './calendar.css'
 import {
     createDayAtom,
     eventsAtom,
