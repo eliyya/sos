@@ -7,7 +7,7 @@ import {
 } from '@/global/management-practices'
 import { deletePractice, findFirstPractice } from '@/actions/practices'
 import { CompletInput } from '@/components/Inputs'
-import { Save, UserIcon } from 'lucide-react'
+import { SaveIcon, TrashIcon, UserIcon } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useSetAtom } from 'jotai'
 import { useState, useTransition } from 'react'
@@ -51,8 +51,10 @@ export function DeleteMode({ practice }: InfoModeProps) {
             action={data => {
                 setLoading(async () => {
                     const { error } = await deletePractice(data)
-                    if (error) setError(error)
-                    else {
+                    if (error) {
+                        setError(error)
+                        setTimeout(() => setError(null), 5000)
+                    } else {
                         setCurrentEvent(null)
                         setEditMode(DialogMode.INFO)
                     }
@@ -71,7 +73,7 @@ export function DeleteMode({ practice }: InfoModeProps) {
             />
             <div className='flex gap-2 *:flex-1'>
                 <Button disabled={loading} type='submit' variant='destructive'>
-                    <Save className='mr-2 h-5 w-5' />
+                    <TrashIcon className='mr-2 h-5 w-5' />
                     Borrar
                 </Button>
                 <Button
@@ -81,7 +83,7 @@ export function DeleteMode({ practice }: InfoModeProps) {
                         setEditMode(DialogMode.INFO)
                     }}
                 >
-                    <Save className='mr-2 h-5 w-5' />
+                    <SaveIcon className='mr-2 h-5 w-5' />
                     Cancelar
                 </Button>
             </div>

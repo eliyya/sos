@@ -1,8 +1,13 @@
 'use client'
 
-import { modeAtom, eventsAtom, DialogMode } from '@/global/management-practices'
+import {
+    modeAtom,
+    eventsAtom,
+    DialogMode,
+    eventInfoAtom,
+} from '@/global/management-practices'
 import interactionPlugin from '@fullcalendar/interaction'
-import { findFirstPractice } from '@/actions/practices'
+import { editPractice, findFirstPractice } from '@/actions/practices'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { MessageError } from '@/components/Error'
@@ -13,7 +18,7 @@ import { Button } from '@/components/Button'
 import { secondsToTime, setTime } from '@/lib/utils'
 import { getClassName } from './InfoDialog'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 interface EditModeProps {
     practice: Exclude<
@@ -47,9 +52,11 @@ interface EditModeProps {
     }
 }
 export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
-    const [message] = useState('')
     const setEditMode = useSetAtom(modeAtom)
     const [newPracticeName, setNewPracticeName] = useState(practice.name)
+    const setCurrentEvent = useSetAtom(eventInfoAtom)
+    const [transition, startTransition] = useTransition()
+    const [error, setError] = useState<string | null>(null)
     const events = useAtomValue(eventsAtom)
     const [startHourError, setStartHourError] = useState('')
     const [endHourError, setEndHourError] = useState('')
@@ -159,9 +166,23 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
     }, [newDuration, newStart, events, lab, practice, disponibleHours])
 
     return (
-        <form className='grid grid-cols-2 gap-8' action={() => {}}>
+        <form
+            className='grid grid-cols-2 gap-8'
+            action={data => {
+                startTransition(async () => {
+                    const { error } = await editPractice(data)
+                    if (error) {
+                        setError(error)
+                        setTimeout(() => setError(null), 5000)
+                    } else {
+                        setCurrentEvent(null)
+                        setEditMode(DialogMode.INFO)
+                    }
+                })
+            }}
+        >
             <div className='flex w-full max-w-md flex-col justify-center gap-6'>
-                {message && <MessageError>{message}</MessageError>}
+                {error && <MessageError>{error}</MessageError>}
                 <input type='hidden' value={lab.id} name='laboratory_id' />
                 <CompletInput
                     label='Docente'
@@ -290,6 +311,7 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
             />
             <Button
                 variant='outline'
+                disabled={transition}
                 onClick={e => {
                     e.preventDefault()
                     setEditMode(DialogMode.INFO)
@@ -298,7 +320,7 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                 <SaveIcon className='mr-2 h-5 w-5' />
                 Cancelar
             </Button>
-            <Button type='submit'>
+            <Button disabled={transition} type='submit'>
                 <SaveIcon className='mr-2 h-5 w-5' />
                 Guardar
             </Button>
