@@ -400,7 +400,7 @@ export function RetornableCompletSelect<
                     {...props}
                     ref={selectRef}
                     options={options}
-                    originalValue={originalValue}
+                    defaultValue={originalValue}
                     value={currentValue}
                     onChange={(option, actionMeta) => {
                         setCurrentValue(option as OnChangeValue<T, IM>) // Guardamos el nuevo valor
@@ -681,7 +681,7 @@ export function RetornableCompletCreatableSelect<
                     ref={selectRef}
                     isClearable
                     options={options}
-                    originalValue={defaultValue}
+                    defaultValue={defaultValue}
                     value={currentValue}
                     onChange={(option, actionMeta) => {
                         setCurrentValue(option as OnChangeValue<T, IM>) // Guardamos el nuevo valor
