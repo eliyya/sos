@@ -104,7 +104,7 @@ export function CreateSubjectDialog() {
                         icon={UserIcon}
                         type='number'
                         min={0}
-                        originalValue={1}
+                        defaultValue={1}
                     />
                     <CompletInput
                         label='Semestre'
@@ -112,7 +112,7 @@ export function CreateSubjectDialog() {
                         icon={UserIcon}
                         type='number'
                         min={0}
-                        originalValue={1}
+                        defaultValue={1}
                     />
 
                     <Button type='submit' disabled={inTransition}>
