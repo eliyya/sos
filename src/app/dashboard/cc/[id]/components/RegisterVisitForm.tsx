@@ -106,10 +106,6 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                     value: career_id,
                 }}
                 isClearable={false}
-                originalValue={{
-                    label: careers[0]?.name,
-                    value: careers[0]?.id,
-                }}
                 isDisabled={!modified}
                 onChange={e => {
                     setCareerId(e!.value)
