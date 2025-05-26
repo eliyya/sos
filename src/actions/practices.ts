@@ -42,3 +42,13 @@ export async function findFirstPractice<T extends Prisma.PracticeFindFirstArgs>(
     // @ts-ignore
     return await db.practice.findFirst(query)
 }
+
+export async function deletePractice(formData: FormData) {
+    const id = formData.get('practice_id') as string
+    try {
+        await db.practice.delete({ where: { id } })
+        return { error: null }
+    } catch {
+        return { error: 'Algo sucedio mal, intente nuevamente' }
+    }
+}

@@ -15,6 +15,7 @@ import { JWTPayload } from 'jose'
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
@@ -32,7 +33,7 @@ interface InfoDialogProps {
     isAdmin?: boolean
 }
 export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
-    const [editMode, setEditMode] = useAtom(modeAtom)
+    const [mode, setMode] = useAtom(modeAtom)
     const [currentEvent, setCurrentEvent] = useAtom(eventInfoAtom)
     const [practice, setPractice] = useState<Awaited<
         ReturnType<
@@ -94,26 +95,34 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
             open={!!currentEvent}
             onOpenChange={op =>
                 (op === false && setCurrentEvent(null)) ||
-                setEditMode(DialogMode.INFO)
+                setMode(DialogMode.INFO)
             }
         >
             <DialogContent
                 className={cn({
-                    'w-full max-w-4xl': editMode,
+                    'w-full max-w-4xl': mode === DialogMode.EDIT,
                 })}
             >
                 <DialogHeader className='flex flex-col gap-4'>
                     <DialogTitle className='w-full text-center text-3xl'>
-                        {editMode ? 'Editar' : 'Info'}
+                        {mode === DialogMode.EDIT ?
+                            'Editar'
+                        : mode === DialogMode.INFO ?
+                            'Info'
+                        :   'Eliminar'}
                     </DialogTitle>
                 </DialogHeader>
-                {editMode === DialogMode.EDIT ?
+                <DialogDescription>
+                    {mode === DialogMode.DELETE &&
+                        '¿Estas seguro de eliminar la practica? esta accion es irreversible'}
+                </DialogDescription>
+                {mode === DialogMode.EDIT ?
                     <EditMode
                         lab={lab}
                         practice={practice}
                         remainingHours={remainingHours}
                     />
-                : editMode === DialogMode.INFO ?
+                : mode === DialogMode.INFO ?
                     <InfoMode
                         lab={lab}
                         practice={practice}
@@ -126,7 +135,7 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
                             )
                         }
                     />
-                : editMode === DialogMode.DELETE ?
+                : mode === DialogMode.DELETE ?
                     <DeleteMode lab={lab} practice={practice} />
                 :   null}
             </DialogContent>

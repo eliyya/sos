@@ -132,7 +132,6 @@ model Practice {
     laboratory_id String
     observations  String?
     class_id      String?
-    status        STATUS   @default(ACTIVE)
     updated_at    DateTime @default(now())
     starts_at     DateTime
     ends_at       DateTime
@@ -162,8 +161,8 @@ model SoftwarePractice {
     software_id String
     practice_id String
 
-    software Software @relation(fields: [software_id], references: [id])
-    practice Practice @relation(fields: [practice_id], references: [id])
+    software Software @relation(fields: [software_id], references: [id], onDelete: Restrict)
+    practice Practice @relation(fields: [practice_id], references: [id], onDelete: Cascade)
 
     @@id([software_id, practice_id])
     @@map("software_practices")
