@@ -1,6 +1,10 @@
 'use client'
 
-import { editModeAtom, eventInfoAtom } from '@/global/management-practices'
+import {
+    modeAtom,
+    eventInfoAtom,
+    DialogMode,
+} from '@/global/management-practices'
 import { findFirstPractice } from '@/actions/practices'
 import { getRemainingHours } from '@/actions/class'
 import { useAtom } from 'jotai'
@@ -15,6 +19,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { cn } from '@/lib/utils'
+import { DeleteMode } from './DeleteMode'
 
 interface InfoDialogProps {
     lab: {
@@ -27,7 +32,7 @@ interface InfoDialogProps {
     isAdmin?: boolean
 }
 export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
-    const [editMode, setEditMode] = useAtom(editModeAtom)
+    const [editMode, setEditMode] = useAtom(modeAtom)
     const [currentEvent, setCurrentEvent] = useAtom(eventInfoAtom)
     const [practice, setPractice] = useState<Awaited<
         ReturnType<
@@ -88,7 +93,8 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
         <Dialog
             open={!!currentEvent}
             onOpenChange={op =>
-                (op === false && setCurrentEvent(null)) || setEditMode(false)
+                (op === false && setCurrentEvent(null)) ||
+                setEditMode(DialogMode.INFO)
             }
         >
             <DialogContent
@@ -101,7 +107,13 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
                         {editMode ? 'Editar' : 'Info'}
                     </DialogTitle>
                 </DialogHeader>
-                {!editMode ?
+                {editMode === DialogMode.EDIT ?
+                    <EditMode
+                        lab={lab}
+                        practice={practice}
+                        remainingHours={remainingHours}
+                    />
+                : editMode === DialogMode.INFO ?
                     <InfoMode
                         lab={lab}
                         practice={practice}
@@ -114,12 +126,9 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
                             )
                         }
                     />
-                :   <EditMode
-                        lab={lab}
-                        practice={practice}
-                        remainingHours={remainingHours}
-                    />
-                }
+                : editMode === DialogMode.DELETE ?
+                    <DeleteMode lab={lab} practice={practice} />
+                :   null}
             </DialogContent>
         </Dialog>
     )

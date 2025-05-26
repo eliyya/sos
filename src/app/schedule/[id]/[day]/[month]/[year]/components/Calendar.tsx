@@ -81,15 +81,16 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
             slotDuration={'01:00:00'}
             height='auto'
             initialDate={timestamp}
-            events={events}
+            events={events.map(e => {
+                console.log(e)
+                return e
+            })}
             eventClick={event => {
                 if (!userId) return
                 const info = getCalendarEventInfo(event.event)
                 openEventInfoWith(info)
             }}
             dateClick={info => {
-                console.log('Click date:', info.date)
-
                 const clicketTimestamp = info.date.getTime()
                 // When a date is clicked in the calendar, this handler determines if the user can create an event
                 // based on the following rules:

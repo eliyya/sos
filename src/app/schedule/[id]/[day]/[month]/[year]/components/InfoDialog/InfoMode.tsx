@@ -1,10 +1,10 @@
 'use client'
 
-import { editModeAtom } from '@/global/management-practices'
+import { DialogMode, modeAtom } from '@/global/management-practices'
 import { findFirstPractice } from '@/actions/practices'
 import { CompletInput } from '@/components/Inputs'
 import { Temporal } from '@js-temporal/polyfill'
-import { Save, UserIcon } from 'lucide-react'
+import { Save, Trash, UserIcon } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { getClassName } from './InfoDialog'
 import { useSetAtom } from 'jotai'
@@ -38,7 +38,7 @@ interface InfoModeProps {
     >
 }
 export function InfoMode({ lab, practice, isAdmin, isOwner }: InfoModeProps) {
-    const setEditMode = useSetAtom(editModeAtom)
+    const setEditMode = useSetAtom(modeAtom)
     return (
         <>
             <input type='hidden' value={lab.id} name='laboratory_id' />
@@ -107,10 +107,19 @@ export function InfoMode({ lab, practice, isAdmin, isOwner }: InfoModeProps) {
                 icon={UserIcon}
             />
             {(isAdmin || isOwner) && (
-                <Button onClick={() => setEditMode(true)}>
-                    <Save className='mr-2 h-5 w-5' />
-                    Editar
-                </Button>
+                <>
+                    <Button onClick={() => setEditMode(DialogMode.EDIT)}>
+                        <Save className='mr-2 h-5 w-5' />
+                        Editar
+                    </Button>
+                    <Button
+                        variant='destructive'
+                        onClick={() => setEditMode(DialogMode.DELETE)}
+                    >
+                        <Trash className='mr-2 h-5 w-5' />
+                        Borrar
+                    </Button>
+                </>
             )}
         </>
     )

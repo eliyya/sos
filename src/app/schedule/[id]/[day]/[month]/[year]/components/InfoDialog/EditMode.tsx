@@ -1,6 +1,6 @@
 'use client'
 
-import { editModeAtom, eventsAtom } from '@/global/management-practices'
+import { modeAtom, eventsAtom, DialogMode } from '@/global/management-practices'
 import interactionPlugin from '@fullcalendar/interaction'
 import { findFirstPractice } from '@/actions/practices'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -48,7 +48,7 @@ interface EditModeProps {
 }
 export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
     const [message] = useState('')
-    const setEditMode = useSetAtom(editModeAtom)
+    const setEditMode = useSetAtom(modeAtom)
     const [newPracticeName, setNewPracticeName] = useState(practice.name)
     const events = useAtomValue(eventsAtom)
     const [startHourError, setStartHourError] = useState('')
@@ -292,7 +292,7 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
                 variant='outline'
                 onClick={e => {
                     e.preventDefault()
-                    setEditMode(false)
+                    setEditMode(DialogMode.INFO)
                 }}
             >
                 <SaveIcon className='mr-2 h-5 w-5' />
