@@ -4,6 +4,7 @@ import app from '@eliyya/type-routes'
 import { getPaylodadUser } from './actions/middleware'
 import { RoleBitField, RoleFlags } from './bitfields/RoleBitField'
 import { COOKIES } from './constants/client'
+import { cookies } from 'next/headers'
 
 const handler = new MiddlewareHandler()
 
@@ -18,9 +19,24 @@ handler.use(/^\//, async ctx => {
     const refresh = ctx.request.cookies.get(COOKIES.REFRESH)?.value
     if (payloadUser || !refresh) return ctx.next()
     const url = new URL(app.api['refresh-token'](), ctx.request.nextUrl.origin)
-    const req = await fetch(url)
+    const req = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken: refresh }),
+    })
     const { accesToken } = await req.json()
-    if (accesToken) ctx.request.cookies.set(COOKIES.SESSION, accesToken)
+    if (accesToken) {
+        const cookieStore = await cookies()
+        const expires = new Date()
+        expires.setDate(expires.getDate() + 1)
+        cookieStore.set({
+            name: COOKIES.SESSION,
+            value: accesToken,
+            expires,
+            path: '/',
+            httpOnly: true,
+        })
+    }
     return ctx.next()
 })
 

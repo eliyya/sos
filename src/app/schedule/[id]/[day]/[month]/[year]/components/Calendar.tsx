@@ -82,7 +82,6 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
             height='auto'
             initialDate={timestamp}
             events={events.map(e => {
-                console.log(e)
                 return e
             })}
             eventClick={event => {
