@@ -9,6 +9,7 @@ import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
 import { Temporal } from '@js-temporal/polyfill'
 import { InfoDialog } from './components/InfoDialog/InfoDialog'
+import { SearchInput } from './components/SearchInput'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -75,7 +76,10 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                 labs={labs}
             />
             <main className='container mx-auto px-4 py-8'>
-                <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
+                <div className='flex items-center justify-between'>
+                    <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
+                    <SearchInput lab_id={id} currentDay={timestamp} />
+                </div>
                 <Calendar
                     userId={user?.sub ?? ''}
                     lab={lab}
