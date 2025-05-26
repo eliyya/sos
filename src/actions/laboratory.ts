@@ -3,6 +3,9 @@
 import { db, snowflake } from '@/prisma/db'
 import { timeToMinutes } from '@/lib/utils'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { getPaylodadUser } from './middleware'
+import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
+import { Temporal } from '@js-temporal/polyfill'
 
 export async function unarchiveLaboratory(formData: FormData) {
     const id = formData.get('id') as string
@@ -80,6 +83,7 @@ export async function deleteLaboratory(formData: FormData) {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
+
 export async function createlab(formData: FormData) {
     const name = formData.get('name') as string
     const openHour = formData.get('open_hour') as string
@@ -115,33 +119,6 @@ export async function getActiveLaboratories() {
     })
 }
 
-export async function editClass(formData: FormData) {
-    const id = formData.get('id') as string
-    const subject_id = formData.get('subject_id') as string
-    const teacher_id = formData.get('teacher_id') as string
-    const career_id = formData.get('career_id') as string
-
-    try {
-        await db.class.update({
-            where: {
-                id,
-            },
-            data: {
-                subject_id,
-                teacher_id,
-                career_id,
-            },
-        })
-        return { error: null }
-    } catch {
-        return { error: 'Ocurrio un error, intente nuevamente.' }
-    }
-}
-
-export async function getClasses() {
-    return await db.class.findMany()
-}
-
 export async function archiveLaboratory(formData: FormData) {
     const id = formData.get('id') as string
     try {
@@ -158,36 +135,68 @@ export async function archiveLaboratory(formData: FormData) {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
-export async function unarchiveClass(formData: FormData) {
-    const id = formData.get('id') as string
-    try {
-        await db.class.update({
-            where: {
-                id,
-            },
-            data: {
-                status: STATUS.ACTIVE,
-            },
-        })
-        return { error: null }
-    } catch {
-        return { error: 'Algo sucedio mal, intente nuevamente' }
-    }
-}
 
-export async function deleteClass(formData: FormData) {
-    const id = formData.get('id') as string
+export async function setAsideLaboratory(formData: FormData): Promise<{
+    message: string | null
+    errors: { class_id?: string; teacher_id?: string }
+}> {
+    const userPayload = await getPaylodadUser()
+    if (!userPayload) return { message: 'No tienes acceso', errors: {} }
+    const roles = new RoleBitField(BigInt(userPayload.role))
+    const teacher_id = formData.get('teacher_id') as string
+    let class_id: string | null = formData.get('class_id') as string
+    const laboratory_id = formData.get('laboratory_id') as string
+    const name = formData.get('name') as string
+    const topic = formData.get('topic') as string
+    const time = formData.get('time') as string
+    const password = formData.get('password') as string
+    const students = formData.get('students') as string
+    const starts_at = Temporal.Instant.fromEpochMilliseconds(
+        parseInt(formData.get('starts_at') as string),
+    )
+    const ends_at = starts_at.add({ hours: parseInt(time) })
+    if (!roles.has(RoleFlags.Admin) && !class_id)
+        return {
+            message: 'Faltan datos',
+            errors: { class_id: 'Este campo es requerido' },
+        }
+    class_id ||= null
+    let registered_by = teacher_id
     try {
-        await db.class.update({
-            where: {
-                id,
-            },
-            data: {
-                status: STATUS.DELETED,
-            },
-        })
-        return { error: null }
+        await db.user.validatePassword({ id: teacher_id }, password)
     } catch {
-        return { error: 'Algo sucedio mal, intente nuevamente' }
+        if (roles.has(RoleFlags.Admin) && teacher_id !== userPayload.sub) {
+            try {
+                await db.user.validatePassword(
+                    { id: userPayload.sub },
+                    password,
+                )
+                registered_by = userPayload.sub
+            } catch {
+                return {
+                    message: 'La contraseña es incorrecta',
+                    errors: { teacher_id: 'La contraseña es incorrecta' },
+                }
+            }
+        } else
+            return {
+                message: 'La contraseña es incorrecta',
+                errors: { teacher_id: 'La contraseña es incorrecta' },
+            }
     }
+    await db.practice.create({
+        data: {
+            id: snowflake.generate(),
+            topic,
+            name,
+            students: parseInt(students),
+            teacher_id,
+            class_id,
+            laboratory_id,
+            registered_by,
+            starts_at: new Date(starts_at.epochMilliseconds),
+            ends_at: new Date(ends_at.epochMilliseconds),
+        },
+    })
+    return { message: null, errors: {} }
 }

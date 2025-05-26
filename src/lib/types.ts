@@ -18,7 +18,7 @@ export enum LoginFormStatus {
     error,
 }
 
-export interface JWTPayload extends JoseJWTPayload {
+export interface UserTokenPayload extends JoseJWTPayload {
     /**
      * Id of the user
      */

@@ -1,6 +1,6 @@
 'use client'
 
-import { editCareer } from '@/actions/career'
+import { editMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
@@ -8,7 +8,7 @@ import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
+} from '@/global/managment-machines'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
@@ -27,15 +27,15 @@ export function EditDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Editar Carrera</span>
+                    <span className='text-3xl'>Editar Maquina</span>
                 </DialogTitle>
                 <DialogDescription>
-                    Edita la carrera {old.name}
+                    Edita la Maquina{old.number}
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await editCareer(data)
+                            const { error } = await editMachine(data)
                             if (error) setMessage(error)
                             else {
                                 setTimeout(
@@ -55,23 +55,57 @@ export function EditDialog() {
                     )}
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput
-                        defaultValue={old.name}
+                        defaultValue={old.number}
                         required
-                        label='Name'
-                        type='text'
-                        name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        label='Numero'
+                        type='number'
+                        name='number'
+                        icon={User}
+                    ></RetornableCompletInput>
                     <RetornableCompletInput
-                        defaultValue={old.alias ?? ''}
+                        defaultValue={old.processor}
                         required
-                        label='Alias'
+                        label='Procesador'
                         type='text'
-                        name='alias'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        name='processor'
+                        icon={User}
+                    ></RetornableCompletInput>
+                    <RetornableCompletInput
+                        defaultValue={old.ram}
+                        required
+                        label='Ram'
+                        type='text'
+                        name='ram'
+                        icon={User}
+                    ></RetornableCompletInput>
+                    <RetornableCompletInput
+                        defaultValue={old.storage}
+                        required
+                        label='Almacenamiento'
+                        type='text'
+                        name='storage'
+                        icon={User}
+                    ></RetornableCompletInput>
+                    <RetornableCompletInput
+                        defaultValue={old.serie ?? ''}
+                        required
+                        label='Serie'
+                        type='text'
+                        name='serie'
+                        icon={User}
+                    ></RetornableCompletInput>
+                    <RetornableCompletInput
+                        defaultValue={old.description}
+                        label='Descripcion'
+                        name='description'
+                        icon={User}
+                    ></RetornableCompletInput>
+                    <RetornableCompletInput
+                        defaultValue={old.laboratory_id ?? ''}
+                        label='Laboratorio Asignado'
+                        name='laboratory_id'
+                        icon={User}
+                    ></RetornableCompletInput>
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save

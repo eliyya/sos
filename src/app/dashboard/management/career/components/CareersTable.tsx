@@ -22,6 +22,7 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
+    queryAtom,
 } from '@/global/managment-career'
 import { getCareers } from '@/actions/career'
 import { EditDialog } from './EditDialog'
@@ -33,6 +34,7 @@ export function CareersTable() {
     const [entity, setEntity] = useState<Career[]>([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
+    const q = useAtomValue(queryAtom)
 
     useEffect(() => {
         getCareers().then(setEntity)
@@ -52,9 +54,25 @@ export function CareersTable() {
                     {entity
                         .filter(
                             u =>
-                                u.id &&
-                                ((u.status === STATUS.ACTIVE && !archived) ||
-                                    (u.status === STATUS.ARCHIVED && archived)),
+                                (u.status === STATUS.ACTIVE && !archived) ||
+                                (u.status === STATUS.ARCHIVED && archived),
+                        )
+                        .filter(
+                            u =>
+                                !q ||
+                                (q &&
+                                    u.name
+                                        .toLowerCase()
+                                        .replaceAll(' ', '')
+                                        .includes(
+                                            q.toLowerCase().replaceAll(' ', ''),
+                                        )) ||
+                                u.alias
+                                    ?.toLowerCase()
+                                    .replaceAll(' ', '')
+                                    .includes(
+                                        q.toLowerCase().replaceAll(' ', ''),
+                                    ),
                         )
                         .map(entity => (
                             <TableRow key={entity.id}>

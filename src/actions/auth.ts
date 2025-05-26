@@ -8,24 +8,13 @@ import {
     AuthTypes,
     LoginFormStatus,
     RefreshTokenPayload,
-    JWTPayload,
+    UserTokenPayload,
 } from '@/lib/types'
 import { decodeJwt, jwtVerify, SignJWT } from 'jose'
 import { wrapTry } from '@/lib/utils'
 import { randomBytes } from 'node:crypto'
 import { decrypt, encrypt } from '@/actions/encrypt'
 import { APP_NAME } from '@/constants/client'
-
-export async function getPaylodadUser() {
-    const token = (await cookies()).get(COOKIES.SESSION)?.value
-    if (!token) return null
-    try {
-        const { payload } = await jwtVerify(token, ENCODED_JWT_SECRET)
-        return <JWTPayload>payload
-    } catch {
-        return null
-    }
-}
 
 interface RegisterDeviceProps {
     user_id: string
@@ -70,6 +59,7 @@ interface RefreshTokenProps {
     refreshToken: string
 }
 type RefreshTokenReturn = {
+    accesToken?: string
     error?:
         | 'Faltan parametros'
         | 'Refresh Token invalido'
@@ -112,7 +102,7 @@ export async function refreshToken({
 
     const expires = new Date()
     expires.setDate(expires.getDate() + 1)
-    const npayload: JWTPayload = {
+    const npayload: UserTokenPayload = {
         exp: expires.getTime() / 1000,
         iat: Math.floor(Date.now() / 1000),
         nbf: Math.floor(Date.now() / 1000) - 1,
@@ -137,7 +127,9 @@ export async function refreshToken({
         path: '/',
         httpOnly: true,
     })
-    return {}
+    return {
+        accesToken,
+    }
 }
 
 export async function login(
@@ -171,7 +163,7 @@ export async function login(
     }
 
     // validate email and password
-    if (!(await db.user.validatePassword(username, password))) {
+    if (!(await db.user.validatePassword({ username }, password))) {
         return {
             message: 'Email or password is incorrect',
             status: LoginFormStatus.error,

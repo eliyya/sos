@@ -60,18 +60,16 @@ export function EditDialog() {
                         label='Name'
                         type='text'
                         name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={User}
+                    ></RetornableCompletInput>
                     <RetornableCompletInput
                         defaultValue={old.alias ?? ''}
                         required
                         label='Alias'
                         type='text'
                         name='alias'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletInput>
+                        icon={User}
+                    ></RetornableCompletInput>
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save

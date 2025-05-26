@@ -9,8 +9,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Student } from '@prisma/client'
-import { STATUS } from '@prisma/client'
+import { Machine, MACHINE_STATUS } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
@@ -22,8 +21,8 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
-import { getStudentsWithCareer } from '@/actions/students'
+} from '@/global/managment-machines'
+import { getMachine } from '@/actions/machines'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
@@ -31,13 +30,13 @@ import { DeleteDialog } from './DeleteDialog'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getStudentsWithCareer>>
+        Awaited<ReturnType<typeof getMachine>>
     >([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
 
     useEffect(() => {
-        getStudentsWithCareer().then(setEntity)
+        getMachine().then(setEntity)
     }, [update])
 
     return (
@@ -45,29 +44,30 @@ export function EntityTable() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Apellido</TableHead>
-                        <TableHead>Carrera</TableHead>
-                        <TableHead>Semestre</TableHead>
-                        <TableHead>Options</TableHead>
+                        <TableHead>Numero</TableHead>
+                        <TableHead>Ram</TableHead>
+                        <TableHead>Procesador</TableHead>
+                        <TableHead>Almacenamiento</TableHead>
+                        <TableHead>Descripcion</TableHead>
+                        <TableHead>Laboratorio Asignado</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {entity
-                        .filter(
-                            u =>
-                                (u.status === STATUS.ACTIVE && !archived) ||
-                                (u.status === STATUS.ARCHIVED && archived),
+                        .filter(u =>
+                            archived ? true : (
+                                u.status === MACHINE_STATUS.AVAILABLE
+                            ),
                         )
                         .map(entity => (
-                            <TableRow key={entity.nc}>
-                                <TableCell>{entity.firstname}</TableCell>
-                                <TableCell>{entity.lastname}</TableCell>
+                            <TableRow key={entity.id}>
+                                <TableCell>{entity.number}</TableCell>
+                                <TableCell>{entity.ram}</TableCell>
+                                <TableCell>{entity.processor}</TableCell>
+                                <TableCell>{entity.storage}</TableCell>
+                                <TableCell>{entity.description}</TableCell>
+                                <TableCell>{entity.laboratory_id}</TableCell>
                                 <TableCell>
-                                    {entity.career.alias ?? entity.career.name}
-                                </TableCell>
-                                <TableCell>{entity.semester}</TableCell>
-                                <TableCell className='flex gap-0.5'>
                                     <Buttons entity={entity} />
                                 </TableCell>
                             </TableRow>
@@ -83,7 +83,7 @@ export function EntityTable() {
 }
 
 interface ButtonsProps {
-    entity: Student
+    entity: Machine
 }
 function Buttons({ entity }: ButtonsProps) {
     const openEditDialog = useSetAtom(editDialogAtom)
@@ -91,7 +91,7 @@ function Buttons({ entity }: ButtonsProps) {
     const setArchiveDialog = useSetAtom(openArchiveAtom)
     const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
     const openDeleteDialog = useSetAtom(openDeleteAtom)
-    if (entity.status === STATUS.ACTIVE)
+    if (entity.status === MACHINE_STATUS.AVAILABLE)
         return (
             <>
                 {/* Editar */}
@@ -116,7 +116,57 @@ function Buttons({ entity }: ButtonsProps) {
                 </Button>
             </>
         )
-    if (entity.status === STATUS.ARCHIVED)
+    if (entity.status === MACHINE_STATUS.MAINTENANCE)
+        return (
+            <>
+                {/* Unarchive */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setSubjectSelected(entity)
+                        openUnarchiveDialog(true)
+                    }}
+                >
+                    <ArchiveRestore className='w-xs text-xs' />
+                </Button>
+                {/* Delete */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setSubjectSelected(entity)
+                        openDeleteDialog(true)
+                    }}
+                >
+                    <Trash2 className='w-xs text-xs' />
+                </Button>
+            </>
+        )
+    if (entity.status === MACHINE_STATUS.OUT_OF_SERVICE)
+        return (
+            <>
+                {/* Unarchive */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setSubjectSelected(entity)
+                        openUnarchiveDialog(true)
+                    }}
+                >
+                    <ArchiveRestore className='w-xs text-xs' />
+                </Button>
+                {/* Delete */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setSubjectSelected(entity)
+                        openDeleteDialog(true)
+                    }}
+                >
+                    <Trash2 className='w-xs text-xs' />
+                </Button>
+            </>
+        )
+    if (entity.status === MACHINE_STATUS.IN_USE)
         return (
             <>
                 {/* Unarchive */}

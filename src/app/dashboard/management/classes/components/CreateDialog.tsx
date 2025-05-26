@@ -12,6 +12,7 @@ import { getTeachersActive } from '@/actions/users'
 import { CompletSelect } from '@/components/Select'
 import { getSubjectsActive } from '@/actions/subjects'
 import { getActiveCareers } from '@/actions/career'
+import { CompletInput } from '@/components/Inputs'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -77,9 +78,8 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletSelect>
+                        icon={UserIcon}
+                    />
                     <CompletSelect
                         label='Materia'
                         name='subject_id'
@@ -87,9 +87,8 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletSelect>
+                        icon={UserIcon}
+                    />
                     <CompletSelect
                         label='Carrera'
                         name='career_id'
@@ -97,9 +96,24 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletSelect>
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        label='Grupo'
+                        name='group'
+                        icon={UserIcon}
+                        type='number'
+                        min={0}
+                        defaultValue={1}
+                    />
+                    <CompletInput
+                        label='Semestre'
+                        name='semester'
+                        icon={UserIcon}
+                        type='number'
+                        min={0}
+                        defaultValue={1}
+                    />
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

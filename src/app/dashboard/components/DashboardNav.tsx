@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
     BeakerIcon,
-    CalendarIcon,
     LayoutDashboardIcon,
     UsersIcon,
     Settings2Icon,
@@ -20,28 +19,6 @@ import {
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
 
-const adminNavItems = [
-    {
-        title: 'Dashboard',
-        href: '/admin/dashboard',
-        icon: LayoutDashboardIcon,
-    },
-    {
-        title: 'Laboratorios',
-        href: '/admin/labs',
-        icon: BeakerIcon,
-    },
-    {
-        title: 'Reservas',
-        href: '/admin/reservations',
-        icon: CalendarIcon,
-    },
-    {
-        title: 'Usuarios',
-        href: '/admin/users',
-        icon: UsersIcon,
-    },
-]
 const MLinks = app.dashboard.management
 const teacherNavItems: {
     title: string
@@ -52,6 +29,11 @@ const teacherNavItems: {
         title: 'Dashboard',
         href: app.dashboard(),
         icon: LayoutDashboardIcon,
+    },
+    {
+        title: 'Horario',
+        href: '/schedule',
+        icon: BeakerIcon,
     },
     {
         title: 'Gestion de Usuarios',
@@ -92,8 +74,7 @@ const teacherNavItems: {
 
 export function DashboardNav() {
     const pathname = usePathname()
-    const isAdmin = pathname.startsWith('/admin')
-    const items = isAdmin ? adminNavItems : teacherNavItems
+    const items = teacherNavItems
 
     return (
         <nav className='bg-muted/50 min-h-screen w-64 border-r px-4 py-8'>

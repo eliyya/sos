@@ -6,7 +6,7 @@ import { db, snowflake } from '@/prisma/db'
 import { STATUS } from '@prisma/client'
 import { hash } from 'bcrypt'
 import { randomUUID } from 'node:crypto'
-// import { getPaylodadUser } from './auth'
+// import { getPaylodadUser } from './middleware'
 // import { UserSchema } from '@/lib/schemas'
 // import app from '@eliyya/type-routes'
 // import { compare, hash } from 'bcrypt'
@@ -326,3 +326,11 @@ export async function createUser(formData: FormData) {
 //     throw new Error('Internal error', { cause: error })
 // }
 // }
+
+export async function getUser(id: string) {
+    return await db.user.findUnique({
+        where: {
+            id,
+        },
+    })
+}

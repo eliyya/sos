@@ -29,7 +29,7 @@ export function CreateSubjectDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Crear Estudiante</span>
+                    <span className='text-3xl'>Crear Maquina</span>
                 </DialogTitle>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
@@ -63,47 +63,41 @@ export function CreateSubjectDialog() {
                         label='Numero'
                         type='number'
                         name='number'
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={UserIcon}
+                    />
                     <CompletInput
                         required
                         label='Procesador'
                         type='text'
                         name='processor'
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
-                    <CompletInput required label='RAM' type='text' name='ram'>
-                        <UserIcon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        required
+                        label='RAM'
+                        type='text'
+                        name='ram'
+                        icon={UserIcon}
+                    />
                     <CompletInput
                         required
                         label='Almacenamiento'
                         type='text'
                         name='storage'
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
-                    <CompletInput
-                        required
-                        label='Almacenamiento'
-                        type='text'
-                        name='storage'
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={UserIcon}
+                    />
                     <CompletInput
                         required
                         label='Serie'
                         type='text'
                         name='serie'
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
-                    <CompletTextarea label='Descripcion' name='description'>
-                        <UserIcon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletTextarea>
+                        icon={UserIcon}
+                    />
+                    <CompletTextarea
+                        label='Descripcion'
+                        name='description'
+                        icon={UserIcon}
+                    ></CompletTextarea>
                     <CompletSelect
                         label='Laboratorio Asignado'
                         name='laboratory_id'
@@ -111,9 +105,8 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletSelect>
+                        icon={UserIcon}
+                    />
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

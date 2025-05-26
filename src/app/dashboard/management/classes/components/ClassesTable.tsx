@@ -47,7 +47,7 @@ export function ClassesTable() {
                     <TableRow>
                         <TableHead>Materia</TableHead>
                         <TableHead>Profesor</TableHead>
-                        <TableHead>Carrera</TableHead>
+                        <TableHead>Grupo</TableHead>
                         <TableHead>Options</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -65,6 +65,7 @@ export function ClassesTable() {
                                 <TableCell>{entity.teacher.name}</TableCell>
                                 <TableCell>
                                     {entity.career.alias || entity.career.name}
+                                    {entity.group}-{entity.semester}
                                 </TableCell>
                                 <TableCell className='flex gap-0.5'>
                                     <Buttons entity={entity} />

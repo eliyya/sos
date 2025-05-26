@@ -61,9 +61,8 @@ export function CreateSubjectDialog() {
                         label='Nombre'
                         type='text'
                         name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <div className='flex w-full gap-4'>
                         <CompletInput
                             required
@@ -72,9 +71,8 @@ export function CreateSubjectDialog() {
                             name='theory_hours'
                             min={0}
                             defaultValue={1}
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </CompletInput>
+                            icon={User}
+                        />
                         <CompletInput
                             required
                             label='Horas de práctica'
@@ -82,9 +80,8 @@ export function CreateSubjectDialog() {
                             name='practice_hours'
                             min={0}
                             defaultValue={0}
-                        >
-                            <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                        </CompletInput>
+                            icon={User}
+                        />
                     </div>
 
                     <Button type='submit' disabled={inTransition}>

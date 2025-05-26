@@ -28,7 +28,7 @@ import {
     useImperativeHandle,
     useEffect,
 } from 'react'
-import { Check, ChevronDown, ChevronUp, Undo2 } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, LucideIcon, Undo2 } from 'lucide-react'
 import ReactSelect, {
     MultiValue,
     OnChangeValue,
@@ -38,6 +38,7 @@ import ReactSelect, {
 import ReactCreatableSelect from 'react-select/creatable'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import { MessageError } from './Error'
 
 export const Select = Root
 
@@ -66,6 +67,9 @@ export const SelectTrigger = ({
         {...props}
     >
         {children}
+        {Icon && (
+            <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+        )}
         <Icon asChild>
             <ChevronDown className='h-4 w-4 opacity-50' />
         </Icon>
@@ -140,6 +144,9 @@ export const SelectContent = forwardRef<
                 })}
             >
                 {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                )}
             </Viewport>
             <SelectScrollDownButton />
         </Content>
@@ -179,7 +186,12 @@ export const SelectItem = ({
             </ItemIndicator>
         </span>
 
-        <ItemText>{children}</ItemText>
+        <ItemText>
+            {children}
+            {Icon && (
+                <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+            )}
+        </ItemText>
     </Item>
 )
 
@@ -197,6 +209,7 @@ interface CompletSelectProps<O, IM extends boolean>
     extends ComponentProps<typeof ReactSelect<O, IM>> {
     label: string
     children?: ReactNode
+    icon?: LucideIcon
     error?: string
     containerClassName?: string
 }
@@ -206,6 +219,7 @@ export function CompletSelect<
 >({
     options,
     children,
+    icon,
     label,
     required,
     error,
@@ -215,6 +229,7 @@ export function CompletSelect<
     ...props
 }: CompletSelectProps<O, IM>) {
     const rid = useId()
+    const Icon = icon
     const selectRef = useRef<SelectInstance<O, IM>>(null)
 
     useImperativeHandle(ref, () => selectRef.current!)
@@ -238,10 +253,12 @@ export function CompletSelect<
             </label>
             <div className='relative'>
                 {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                )}
                 <ReactSelect
                     {...props}
                     ref={selectRef}
-                    isClearable
                     options={options}
                     styles={{
                         control: base => ({
@@ -293,12 +310,12 @@ export function CompletSelect<
                 />
             </div>
             {error && (
-                <span
+                <MessageError
+                    className='absolute mt-0'
                     id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
                 >
                     {error}
-                </span>
+                </MessageError>
             )}
         </div>
     )
@@ -320,6 +337,7 @@ export function RetornableCompletSelect<
 >({
     options,
     children,
+    icon,
     label,
     required,
     error,
@@ -330,6 +348,7 @@ export function RetornableCompletSelect<
     ...props
 }: RetornableCompletSelectProps<T, IM>) {
     const rid = useId()
+    const Icon = icon
     const selectRef = useRef<SelectInstance<T, IM>>(null)
     useImperativeHandle(ref, () => selectRef.current!)
     const [isChanged, setIsChanged] = useState(false)
@@ -374,10 +393,12 @@ export function RetornableCompletSelect<
             </label>
             <div className='relative block'>
                 {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                )}
                 <ReactSelect
                     {...props}
                     ref={selectRef}
-                    isClearable
                     options={options}
                     defaultValue={defaultValue}
                     value={currentValue}
@@ -470,12 +491,12 @@ export function RetornableCompletSelect<
                 )}
             </div>
             {error && (
-                <span
+                <MessageError
+                    className='absolute mt-0'
                     id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
                 >
                     {error}
-                </span>
+                </MessageError>
             )}
         </div>
     )
@@ -487,6 +508,7 @@ export function CompletCreatableSelect<
 >({
     options,
     children,
+    icon,
     label,
     required,
     error,
@@ -496,6 +518,7 @@ export function CompletCreatableSelect<
     ...props
 }: CompletSelectProps<T, IM>) {
     const rid = useId()
+    const Icon = icon
     const selectRef = useRef<SelectInstance<T, IM>>(null)
 
     useImperativeHandle(ref, () => selectRef.current!)
@@ -518,6 +541,9 @@ export function CompletCreatableSelect<
             </label>
             <div className='relative'>
                 {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                )}
                 <ReactCreatableSelect
                     {...props}
                     ref={selectRef}
@@ -574,12 +600,12 @@ export function CompletCreatableSelect<
                 />
             </div>
             {error && (
-                <span
+                <MessageError
+                    className='absolute mt-0'
                     id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
                 >
                     {error}
-                </span>
+                </MessageError>
             )}
         </div>
     )
@@ -591,6 +617,7 @@ export function RetornableCompletCreatableSelect<
 >({
     options,
     children,
+    icon,
     label,
     required,
     error,
@@ -601,6 +628,7 @@ export function RetornableCompletCreatableSelect<
     ...props
 }: RetornableCompletSelectProps<T, IM>) {
     const rid = useId()
+    const Icon = icon
     const selectRef = useRef<SelectInstance<T, IM>>(null)
     useImperativeHandle(ref, () => selectRef.current!)
     const [isChanged, setIsChanged] = useState(false)
@@ -645,6 +673,9 @@ export function RetornableCompletCreatableSelect<
             </label>
             <div className='relative'>
                 {children}
+                {Icon && (
+                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                )}
                 <ReactCreatableSelect
                     {...props}
                     ref={selectRef}
@@ -741,13 +772,87 @@ export function RetornableCompletCreatableSelect<
                 )}
             </div>
             {error && (
-                <span
+                <MessageError
+                    className='absolute mt-0'
                     id={`${id ?? rid}-error`}
-                    className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'
                 >
                     {error}
-                </span>
+                </MessageError>
             )}
+        </div>
+    )
+}
+
+interface SimpleSelectProps<O, IM extends boolean>
+    extends ComponentProps<typeof ReactSelect<O, IM>> {
+    children?: ReactNode
+    icon?: LucideIcon
+}
+export function SimpleSelect<
+    O extends object = { value: string; label: string },
+    IM extends boolean = false,
+>({ children, options, icon, id, ...props }: SimpleSelectProps<O, IM>) {
+    const rid = useId()
+    const Icon = icon
+    const selectRef = useRef<SelectInstance<O, IM>>(null)
+
+    return (
+        <div className='relative'>
+            {children}
+            {Icon && (
+                <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+            )}
+            <ReactSelect
+                {...props}
+                ref={selectRef}
+                options={options}
+                styles={{
+                    control: base => ({
+                        ...base,
+                        backgroundColor: 'var(--color-background)',
+                        borderColor: 'var(--border-secondary)',
+                        borderRadius: 'var(--radius-md)',
+                        paddingLeft: children ? '2rem' : base.paddingLeft,
+                    }),
+                    menu: base => ({
+                        ...base,
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-primary)',
+                    }),
+                    option: (
+                        base,
+                        {
+                            isSelected,
+                            isFocused,
+                        }: { isSelected: boolean; isFocused: boolean },
+                    ) => ({
+                        ...base,
+                        backgroundColor:
+                            isSelected ?
+                                'color-mix(in oklab, var(--color-background) 90%, var(--color-foreground))'
+                            : isFocused ?
+                                'color-mix(in oklab, var(--color-background) 95%, var(--color-foreground))'
+                            :   'var(--color-background)',
+                        color:
+                            isSelected || isFocused ?
+                                'var(--color-primary)'
+                            :   'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                        ':active': {
+                            backgroundColor:
+                                'color-mix(in oklab, var(--color-background) 85%, var(--color-foreground))',
+                        },
+                    }),
+                    placeholder: base => ({
+                        ...base,
+                        color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                    }),
+                    singleValue: base => ({
+                        ...base,
+                        color: 'var(--color-primary)',
+                    }),
+                }}
+                id={id ?? rid}
+            />
         </div>
     )
 }

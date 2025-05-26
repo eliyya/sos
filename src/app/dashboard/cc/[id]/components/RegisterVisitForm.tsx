@@ -6,6 +6,7 @@ import { findStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
+import ToggleSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
 import { Career } from '@prisma/client'
 import { useSetAtom } from 'jotai'
@@ -64,6 +65,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 setSemester('')
                 setModified(true)
             }}
+            className='flex w-full flex-col gap-2'
         >
             <input
                 type='hidden'
@@ -78,7 +80,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                     setNc(e.currentTarget.value)
                 }}
                 name='student_nc'
-            ></CompletInput>
+            />
             <CompletInput
                 label='Nombres'
                 required
@@ -86,7 +88,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 value={name}
                 onChange={e => setName(e.currentTarget.value)}
                 disabled={!modified}
-            ></CompletInput>
+            />
             <CompletInput
                 label='Apellidos'
                 required
@@ -94,7 +96,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 value={lastname}
                 onChange={e => setLastname(e.currentTarget.value)}
                 disabled={!modified}
-            ></CompletInput>
+            />
             <CompletSelect
                 label='Carrera'
                 required
@@ -113,7 +115,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                     setCareerId(e!.value)
                 }}
                 options={careers.map(c => ({ label: c.name, value: c.id }))}
-            ></CompletSelect>
+            />
             <CompletInput
                 required
                 label='Semestre'
@@ -122,7 +124,11 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 value={semester}
                 onChange={e => setSemester(e.currentTarget.value)}
                 disabled={!modified}
-            ></CompletInput>
+            />
+            <ToggleSwitch
+                label='El estudiante porta la credencial'
+                name='credencial'
+            />
             <Button
                 type='submit'
                 className='mt-2 w-full'

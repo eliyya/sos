@@ -21,7 +21,7 @@ export function CreateSubjectDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Crear Estudiante</span>
+                    <span className='text-3xl'>Crear Laboratorio</span>
                 </DialogTitle>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
@@ -55,27 +55,24 @@ export function CreateSubjectDialog() {
                         label='Nombre'
                         type='text'
                         name='name'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletInput
                         required
                         label='Apertura'
                         type='time'
                         name='open_hour'
                         defaultValue={'08:00'}
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletInput
                         required
                         label='Cierre'
                         type='time'
                         name='close_hour'
                         defaultValue={'20:00'}
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletSelect
                         required
                         label='Tipo de Laboratorio'
@@ -94,9 +91,8 @@ export function CreateSubjectDialog() {
                                 label: 'Centro de Computo',
                             },
                         ]}
-                    >
-                        <User className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletSelect>
+                        icon={User}
+                    />
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

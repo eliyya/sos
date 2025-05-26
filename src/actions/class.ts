@@ -1,13 +1,17 @@
 'use server'
 
+import { getStartOfWeek } from '@/lib/utils'
 import { db, snowflake } from '@/prisma/db'
+import { Temporal } from '@js-temporal/polyfill'
 import { STATUS } from '@prisma/client'
+// import { getTeacherClassesWithRemainingWeekHours } from '@prisma/client/sql'
 
 export async function createClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string
     const teacher_id = formData.get('teacher_id') as string
     const career_id = formData.get('career_id') as string
-    console.log({ subject_id, teacher_id, career_id })
+    const group = formData.get('group') as string
+    const semester = formData.get('semester') as string
 
     try {
         await db.class.create({
@@ -16,11 +20,88 @@ export async function createClass(formData: FormData) {
                 subject_id,
                 teacher_id,
                 career_id,
+                group: parseInt(group),
+                semester: parseInt(semester),
             },
         })
         return { error: null }
-    } catch {
+    } catch (error) {
+        console.log(error)
+
         return { error: 'Error al crear la materia, intente nuevamente.' }
+    }
+}
+
+interface GetRemainingHoursParams {
+    classId: string
+    /**
+     * The day to query in epoch milliseconds
+     */
+    day: number
+}
+export async function getRemainingHours({
+    classId,
+    day,
+}: GetRemainingHoursParams) {
+    // Convertir timestamp a fecha en zona horaria local (America/Monterrey)
+    const dayDate =
+        Temporal.Instant.fromEpochMilliseconds(day).toZonedDateTimeISO(
+            'America/Monterrey',
+        )
+
+    // Obtener el inicio del domingo de esa semana (semana empieza en domingo)
+    const startOfWeek = getStartOfWeek(dayDate)
+    const endOfWeek = startOfWeek.add({ days: 7 })
+
+    // Obtener clase y subject
+    const classData = await db.class.findUnique({
+        where: { id: classId },
+        select: {
+            subject: {
+                select: {
+                    practice_hours: true,
+                },
+            },
+        },
+    })
+
+    if (!classData?.subject?.practice_hours) {
+        throw new Error('Clase o subject inválido')
+    }
+
+    const allowedHours = classData.subject.practice_hours
+
+    // Consultar prácticas dentro del rango de la semana
+    const practices = await db.practice.findMany({
+        where: {
+            class_id: classId,
+            starts_at: {
+                gte: startOfWeek.toInstant().toString(),
+                lte: endOfWeek.toInstant().toString(),
+            },
+        },
+        select: {
+            starts_at: true,
+            ends_at: true,
+        },
+    })
+
+    // Calcular duración total
+    const usedHours = practices.reduce((total, p) => {
+        const start = Temporal.Instant.fromEpochMilliseconds(
+            p.starts_at.getTime(),
+        )
+        const end = Temporal.Instant.fromEpochMilliseconds(p.ends_at.getTime())
+        const duration = end.since(start, { largestUnit: 'hours' })
+        return total + duration.total({ unit: 'hour' })
+    }, 0)
+
+    const leftHours = Math.max(allowedHours - usedHours, 0)
+
+    return {
+        leftHours: Math.floor(leftHours),
+        allowedHours,
+        usedHours,
     }
 }
 
@@ -29,16 +110,16 @@ export async function editClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string
     const teacher_id = formData.get('teacher_id') as string
     const career_id = formData.get('career_id') as string
+    const group = formData.get('career_id') as string
 
     try {
         await db.class.update({
-            where: {
-                id,
-            },
+            where: { id },
             data: {
                 subject_id,
                 teacher_id,
                 career_id,
+                group: parseInt(group),
             },
         })
         return { error: null }
@@ -49,6 +130,68 @@ export async function editClass(formData: FormData) {
 
 export async function getClasses() {
     return await db.class.findMany()
+}
+
+type ClassDataToInclude = 'subject' | 'career' | 'teacher'
+// | 'students'
+export async function getClassesWithDataFromUser<
+    T extends ClassDataToInclude[],
+    // W extends number | undefined,
+>(
+    userId: string,
+    dataToInclude?: T,
+    // week?: W,
+): Promise<
+    Array<
+        Awaited<
+            ReturnType<
+                typeof db.class.findMany<{
+                    include: {
+                        subject: 'subject' extends T[number] ? true : false
+                        career: 'career' extends T[number] ? true : false
+                        teacher: 'teacher' extends T[number] ? true : false
+                        StudentClasses: 'students' extends T[number] ?
+                            { include: { student: true } }
+                        :   false
+                    }
+                }>
+            >
+        >[number]
+        // &
+        //     (W extends number ? { left_hours: number } : object)
+    >
+> {
+    const includes = (dataToInclude ?? []) as ClassDataToInclude[]
+    // if (typeof week === 'number') {
+    //     const r = await db.$queryRawTyped(
+    //         getTeacherClassesWithRemainingWeekHours(week, userId),
+    //     )
+    //     console.log(r)
+
+    //     // @ts-expect-error Just ignore
+    //     return r
+    // }
+    const classes = await db.class.findMany({
+        where: {
+            teacher_id: userId,
+            status: STATUS.ACTIVE,
+        },
+        include: {
+            subject: includes.includes('subject'),
+            career: includes.includes('career'),
+            teacher: includes.includes('teacher'),
+            // StudentClasses:
+            //     !includes.includes('students') ?
+            //         false
+            //     :   {
+            //             include: {
+            //                 student: true,
+            //             },
+            //         },
+        },
+    })
+    // @ts-expect-error Just ignore
+    return classes
 }
 
 export async function getActiveClassesWithData() {

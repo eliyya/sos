@@ -1,6 +1,5 @@
 'use client'
 
-import { unarchiveStudent } from '@/actions/students'
 import { getActiveCareers } from '@/actions/career'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
@@ -9,12 +8,13 @@ import {
     openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
+} from '@/global/managment-class'
 import { Career } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
+import { unarchiveClass } from '@/actions/class'
 
 export function UnarchiveDialog() {
     const [open, setOpen] = useAtom(openUnarchiveAtom)
@@ -36,15 +36,15 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Desarchivar Estudiante</span>
+                    <span className='text-3xl'>Desarchivar Clase</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de desarchivar este estudiante?
+                    ¿Está seguro de desarchivar esta clase?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await unarchiveStudent(data)
+                            const { error } = await unarchiveClass(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -64,17 +64,29 @@ export function UnarchiveDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={entity.nc} name='nc' />
+                    <input type='hidden' value={entity.id} name='nc' />
                     <CompletInput
                         label='Carrera'
-                        name='career_id'
                         disabled
                         value={
                             careers.find(c => c.id === entity.career_id)?.name
                         }
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        label='Grupo'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.group}
+                    />
+                    <CompletInput
+                        label='Semestre'
+                        icon={UserIcon}
+                        type='number'
+                        disabled
+                        value={entity.semester}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             variant={'secondary'}

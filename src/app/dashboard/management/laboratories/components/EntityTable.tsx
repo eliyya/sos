@@ -22,13 +22,14 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
+    queryAtom,
 } from '@/global/managment-laboratory'
 import { getLaboratory } from '@/actions/laboratory'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
-import { minutesToTime } from '@/lib/utils'
+import { secondsToTime } from '@/lib/utils'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
@@ -36,6 +37,7 @@ export function EntityTable() {
     >([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
+    const q = useAtomValue(queryAtom)
 
     useEffect(() => {
         getLaboratory().then(setEntity)
@@ -59,14 +61,25 @@ export function EntityTable() {
                                 (u.status === STATUS.ACTIVE && !archived) ||
                                 (u.status === STATUS.ARCHIVED && archived),
                         )
+                        .filter(
+                            u =>
+                                !q ||
+                                (q &&
+                                    u.name
+                                        .toLowerCase()
+                                        .replaceAll(' ', '')
+                                        .includes(
+                                            q.toLowerCase().replaceAll(' ', ''),
+                                        )),
+                        )
                         .map(entity => (
                             <TableRow key={entity.id}>
                                 <TableCell>{entity.name}</TableCell>
                                 <TableCell>
-                                    {minutesToTime(entity.open_hour)}
+                                    {secondsToTime(entity.open_hour * 60)}
                                 </TableCell>
                                 <TableCell>
-                                    {minutesToTime(entity.close_hour)}
+                                    {secondsToTime(entity.close_hour * 60)}
                                 </TableCell>
                                 <TableCell>
                                     {entity.type === 'LABORATORY' ?

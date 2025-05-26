@@ -66,6 +66,8 @@ CREATE TABLE "classes" (
     "subject_id" TEXT NOT NULL,
     "teacher_id" TEXT NOT NULL,
     "career_id" TEXT NOT NULL,
+    "group" INTEGER NOT NULL DEFAULT 0,
+    "semester" INTEGER NOT NULL DEFAULT 0,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -90,7 +92,7 @@ CREATE TABLE "laboratories" (
 -- CreateTable
 CREATE TABLE "practices" (
     "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "teacher_id" TEXT NOT NULL,
     "topic" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -98,9 +100,11 @@ CREATE TABLE "practices" (
     "registered_by" TEXT NOT NULL,
     "laboratory_id" TEXT NOT NULL,
     "observations" TEXT,
-    "class_id" TEXT NOT NULL,
+    "class_id" TEXT,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "starts_at" TIMESTAMP(3) NOT NULL,
+    "ends_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "practices_pkey" PRIMARY KEY ("id")
 );
@@ -141,6 +145,7 @@ CREATE TABLE "students" (
     "lastname" TEXT NOT NULL,
     "firstname" TEXT NOT NULL,
     "semester" INTEGER NOT NULL DEFAULT 1,
+    "group" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "career_id" TEXT NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -227,6 +232,9 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 CREATE UNIQUE INDEX "sessions_secret_key" ON "sessions"("secret");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "classes_subject_id_teacher_id_group_semester_career_id_key" ON "classes"("subject_id", "teacher_id", "group", "semester", "career_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "laboratories_name_key" ON "laboratories"("name");
 
 -- CreateIndex
@@ -248,7 +256,10 @@ ALTER TABLE "classes" ADD CONSTRAINT "classes_teacher_id_fkey" FOREIGN KEY ("tea
 ALTER TABLE "classes" ADD CONSTRAINT "classes_career_id_fkey" FOREIGN KEY ("career_id") REFERENCES "careers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "practices" ADD CONSTRAINT "practices_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "practices" ADD CONSTRAINT "practices_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "practices" ADD CONSTRAINT "practices_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "practices" ADD CONSTRAINT "practices_registered_by_fkey" FOREIGN KEY ("registered_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

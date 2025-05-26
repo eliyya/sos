@@ -63,33 +63,29 @@ export function CreateSubjectDialog() {
                         label='Numero de Control'
                         type='text'
                         name='nc'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletInput
                         required
                         label='Nombres'
                         type='text'
                         name='firstname'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletInput
                         required
                         label='Apellidos'
                         type='text'
                         name='lastname'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletInput
                         required
                         label='Semestre'
                         type='number'
                         name='semester'
-                    >
-                        <User className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletInput>
+                        icon={User}
+                    />
                     <CompletSelect
                         label='Carrera'
                         name='career_id'
@@ -97,9 +93,8 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </CompletSelect>
+                        icon={UserIcon}
+                    />
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

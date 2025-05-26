@@ -1,16 +1,19 @@
 'use client'
 
 import { getActiveCareers } from '@/actions/career'
-import { editStudent } from '@/actions/students'
+import { editClass } from '@/actions/class'
+import { getSubjectsActive } from '@/actions/subjects'
+import { getTeachersActive } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
-import { Career } from '@prisma/client'
+} from '@/global/managment-class'
+import { Career, Subject, User } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, UserIcon } from 'lucide-react'
@@ -23,10 +26,18 @@ export function EditDialog() {
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
     const [careers, setCareers] = useState<Career[]>([])
+    const [teachers, setTeachers] = useState<User[]>([])
+    const [subjects, setSubjects] = useState<Subject[]>([])
 
     useEffect(() => {
         getActiveCareers().then(careers => {
             setCareers(careers)
+        })
+        getTeachersActive().then(users => {
+            setTeachers(users)
+        })
+        getSubjectsActive().then(subjects => {
+            setSubjects(subjects)
         })
     }, [])
 
@@ -39,12 +50,16 @@ export function EditDialog() {
                     <span className='text-3xl'>Editar Clase</span>
                 </DialogTitle>
                 <DialogDescription>
-                    Edita {old.firstname} {old.lastname}
+                    Edita la clase{' '}
+                    {subjects.find(s => s.id === old.subject_id)?.name}{' '}
+                    {careers.find(c => c.id === old.career_id)?.alias ??
+                        careers.find(c => c.id === old.career_id)?.name}
+                    {old.group}
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await editStudent(data)
+                            const { error } = await editClass(data)
                             if (error) setMessage(error)
                             else {
                                 setTimeout(
@@ -62,7 +77,35 @@ export function EditDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={old.nc} name='nc' />
+                    <input type='hidden' value={old.id} name='nc' />
+                    <RetornableCompletSelect
+                        defaultValue={{
+                            label: teachers.find(t => t.id === old.teacher_id)
+                                ?.name,
+                            value: old.career_id,
+                        }}
+                        label='Docente'
+                        name='teacher_id'
+                        options={teachers.map(t => ({
+                            label: t.name,
+                            value: t.id,
+                        }))}
+                        icon={UserIcon}
+                    />
+                    <RetornableCompletSelect
+                        defaultValue={{
+                            label: subjects.find(t => t.id === old.subject_id)
+                                ?.name,
+                            value: old.career_id,
+                        }}
+                        label='Materia'
+                        name='subject_id'
+                        options={subjects.map(t => ({
+                            label: t.name,
+                            value: t.id,
+                        }))}
+                        icon={UserIcon}
+                    />
                     <RetornableCompletSelect
                         defaultValue={{
                             label: careers.find(t => t.id === old.career_id)
@@ -75,9 +118,24 @@ export function EditDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                    >
-                        <UserIcon className='absolute top-2.5 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
-                    </RetornableCompletSelect>
+                        icon={UserIcon}
+                    />
+                    <RetornableCompletInput
+                        label='Grupo'
+                        name='group'
+                        icon={UserIcon}
+                        type='number'
+                        min={0}
+                        defaultValue={old.group}
+                    />
+                    <RetornableCompletInput
+                        label='Semestre'
+                        name='semester'
+                        icon={UserIcon}
+                        type='number'
+                        min={0}
+                        defaultValue={old.semester}
+                    />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save
