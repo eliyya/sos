@@ -62,7 +62,7 @@ export function CreateDialog({
     const [inTransition, startTransition] = useTransition()
     const [timestampStartHour, setTimestampStartHour] = useAtom(createDayAtom)
     const [actualEvent, setActualEvent] = useAtom(actualEventAtom)
-    const [endTime, setEndTime] = useState(1)
+    const [endTime, setEndTime] = useState('1')
     const [title, setTitle] = useState('')
     const [topic, setTopic] = useState('')
     const [classes, setClasses] = useState<ClassForSelect[]>([])
@@ -119,7 +119,7 @@ export function CreateDialog({
                 timestampStartHour,
             ).toZonedDateTimeISO('America/Monterrey')
         const end = start.add({
-            hours: endTime,
+            hours: parseInt(endTime) || 1,
         })
         setActualEvent(a => ({
             ...a,
@@ -179,6 +179,8 @@ export function CreateDialog({
             setEndHourError(
                 'El laboratorio ya tiene un evento en el mismo horario.',
             )
+        else if (remainingHours.leftHours < (parseInt(endTime) || 1))
+            setEndHourError('No hay suficientes horas restantes.')
         else setEndHourError('')
     }, [
         timestampStartHour,
@@ -188,6 +190,7 @@ export function CreateDialog({
         closeHour,
         events,
         selectedUser,
+        remainingHours,
     ])
 
     useEffect(() => {
@@ -370,8 +373,7 @@ export function CreateDialog({
                             value={endTime}
                             error={endHourError}
                             onChange={e => {
-                                const value = parseInt(e.target.value)
-                                setEndTime(value)
+                                setEndTime(e.target.value)
                             }}
                             icon={User}
                         />
