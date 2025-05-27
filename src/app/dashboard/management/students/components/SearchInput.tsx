@@ -14,7 +14,7 @@ export function Filters() {
         <div className='flex items-center gap-4'>
             <div className='relative flex-1'>
                 <SimpleInput
-                    placeholder='Buscar software...'
+                    placeholder='Buscar estudiante...'
                     className='pl-8'
                     value={query}
                     onChange={e => setQuery(e.currentTarget.value)}
