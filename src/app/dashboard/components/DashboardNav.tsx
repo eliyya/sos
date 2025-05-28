@@ -70,6 +70,11 @@ const teacherNavItems: {
         href: MLinks.laboratories(),
         icon: HouseWifiIcon,
     },
+    {
+        title: 'Reportes',
+        href: app.dashboard.reports(),
+        icon: LayoutDashboardIcon,
+    },
 ]
 
 export function DashboardNav() {
