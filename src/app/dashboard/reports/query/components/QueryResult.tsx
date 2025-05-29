@@ -1,0 +1,44 @@
+'use client'
+
+import { useAtomValue } from 'jotai'
+import { queryResultAtom } from '@/global/reports'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/Table'
+
+export function QueryResult() {
+    const queryResult = useAtomValue(queryResultAtom)
+
+    return (
+        <>
+            {/* <pre>{JSON.stringify(queryResult, null, 2)}</pre> */}
+            <div className='flex max-w-fit flex-col overflow-x-scroll'>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {Object.keys(queryResult[0] ?? {}).map(column => (
+                                <TableHead key={column}>{column}</TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {queryResult.map((row, index) => (
+                            <TableRow key={index}>
+                                {Object.values(row).map((value, index) => (
+                                    <TableCell key={index}>
+                                        {`${value}`}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </>
+    )
+}

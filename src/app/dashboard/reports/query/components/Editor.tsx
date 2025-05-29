@@ -1,9 +1,10 @@
 'use client'
 
 import getSchema from '@/actions/reports'
-import { queryAtom } from '@/global/reports'
+import { MessageError } from '@/components/Error'
+import { queryAtom, queryErrorAtom } from '@/global/reports'
 import Editor, { loader } from '@monaco-editor/react'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useState } from 'react'
 
 export function SQLEditor() {
@@ -11,14 +12,13 @@ export function SQLEditor() {
         [],
     )
     const [query, setQuery] = useAtom(queryAtom)
+    const queryError = useAtomValue(queryErrorAtom)
 
     useEffect(() => {
         getSchema().then(setSchema)
     }, [])
 
     useEffect(() => {
-        if (schema.length === 0) return
-
         loader.init().then(monaco => {
             monaco.languages.registerCompletionItemProvider('sql', {
                 provideCompletionItems: (model, position) => {
@@ -44,9 +44,10 @@ export function SQLEditor() {
                     const isAfterFrom = /\b(FROM|JOIN)\s+[A-Z0-9_]*$/.test(
                         textUntilPosition,
                     )
-                    const isSelectContext = /\bSELECT\s+[A-Z0-9_,.\s]*$/.test(
-                        textUntilPosition,
-                    )
+                    const isSelectContext =
+                        /\b(SELECT|WHERE)\s+[A-Z0-9_,.\s]*$/.test(
+                            textUntilPosition,
+                        )
 
                     console.log({
                         isAfterFrom,
@@ -129,12 +130,15 @@ export function SQLEditor() {
     }, [schema])
 
     return (
-        <Editor
-            height='300px'
-            defaultLanguage='sql'
-            value={query}
-            onChange={value => setQuery(value ?? '')}
-            theme='vs-dark'
-        />
+        <>
+            <Editor
+                height='300px'
+                defaultLanguage='sql'
+                value={query}
+                onChange={value => setQuery(value ?? '')}
+                theme='vs-dark'
+            />
+            <MessageError>{queryError}</MessageError>
+        </>
     )
 }
