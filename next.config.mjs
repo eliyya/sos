@@ -13,18 +13,7 @@ export default withSerwistInit({
     withTypeCSSModule(
         createNextIntlPlugin('./src/i18n.ts')(
             withTypeRoute({
-                experimental: {
-                    typedRoutes: false,
-                    nodeMiddleware: false,
-                },
-                images: {
-                    remotePatterns: [
-                        {
-                            protocol: 'https',
-                            hostname: 'i.pinimg.com',
-                        },
-                    ],
-                },
+                // la configuracion de nextjs
             }),
         ),
     ),

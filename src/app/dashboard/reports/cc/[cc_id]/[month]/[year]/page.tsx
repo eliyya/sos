@@ -52,7 +52,6 @@ export default async function ReportsPage({
             },
         },
     })
-    console.log(monthStart.toPlainDate())
 
     const labs = await db.laboratory.findMany({
         where: {
