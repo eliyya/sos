@@ -169,7 +169,7 @@ export function CreateDialog({
 
         if (end.epochMilliseconds > closeHourDate.epochMilliseconds)
             setEndHourError(
-                'La hora de cierre debe ser menor que la de cierre.',
+                'La hora de salida de la practica debe ser menor que la de cierre del laboratorio.',
             )
         else if (hasEmpalmInEndHour)
             setEndHourError(
