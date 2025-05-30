@@ -1,8 +1,18 @@
 import { db } from '@/prisma/db'
 import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import MonthReportOfPractices from './components/MonthReportOfPractices'
+import { SelectLaboratory } from './components/SelectLaboratory'
+import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 
-export default async function ReportsPage() {
+interface MonthReportOfPracticesProps {
+    params: Promise<{
+        lab_id: string
+    }>
+}
+export default async function ReportsPage({
+    params,
+}: MonthReportOfPracticesProps) {
+    const { lab_id } = await params
     const now = new Date()
 
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -13,6 +23,7 @@ export default async function ReportsPage() {
             starts_at: { gte: monthStart },
             ends_at: { lte: monthEnd },
             class: { isNot: null },
+            laboratory_id: lab_id,
         },
         select: {
             starts_at: true,
@@ -30,9 +41,24 @@ export default async function ReportsPage() {
         },
     })
 
+    const labs = await db.laboratory.findMany({
+        where: {
+            type: LABORATORY_TYPE.LABORATORY,
+            status: STATUS.ACTIVE,
+        },
+        select: {
+            id: true,
+            name: true,
+        },
+    })
+
     return (
         <div className='container mx-auto px-4 py-6'>
-            <DashboardHeader heading='Reportes' text='' />
+            <div className='flex max-w-full items-center justify-between'>
+                <DashboardHeader heading='Reportes' text='' />
+
+                <SelectLaboratory labs={labs} lab_id={lab_id} />
+            </div>
 
             <section className='mt-6'>
                 <MonthReportOfPractices
@@ -41,16 +67,6 @@ export default async function ReportsPage() {
                     data={practices}
                 />
             </section>
-            {/* <div className='mb-6 flex items-center justify-between'>
-                <h2 className='text-2xl font-bold'>Rubrica de Prácticas</h2>
-                <MonthSelector onMonthChange={handleMonthChange} />
-            </div> */}
-
-            {/* <RubricTable
-                students={sampleStudents}
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-            /> */}
         </div>
     )
 }

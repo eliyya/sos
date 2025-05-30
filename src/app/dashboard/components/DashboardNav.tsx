@@ -72,12 +72,12 @@ const teacherNavItems: {
     },
     {
         title: 'Reportes de Laboratorio',
-        href: app.dashboard.reports.lab(),
+        href: '/dashboard/reports/lab',
         icon: LayoutDashboardIcon,
     },
     {
         title: 'Reportes de Centro de Computo',
-        href: app.dashboard.reports.cc(),
+        href: '/dashboard/reports/cc',
         icon: LayoutDashboardIcon,
     },
     {

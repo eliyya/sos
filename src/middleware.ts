@@ -73,6 +73,34 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
     return ctx.done()
 })
 
+handler.use(/\/dashboard\/reports\/(lab|cc)\/?$/, async ctx => {
+    const [, , , l_type, lab_id] = ctx.request.nextUrl.pathname.split('/') as [
+        string,
+        string,
+        string,
+        'lab' | 'cc',
+        string,
+    ]
+    const l_id = lab_id
+    if (l_id) return ctx.next()
+    const url = new URL(
+        l_type === 'lab' ? '/api/get-default-lab-id' : '/api/get-default-cc-id',
+        ctx.request.nextUrl.origin,
+    )
+    const req = await fetch(url)
+    const res = (await req.json()) as {
+        cc_id: string | null
+        lab_id: string | null
+    }
+    if (res.cc_id || res.lab_id)
+        return ctx.redirect(
+            l_type === 'lab' ?
+                app.dashboard.reports.lab.$lab_id(`${res.lab_id}`)
+            :   app.dashboard.reports.cc.$cc_id(`${res.cc_id}`),
+        )
+    return ctx.redirect(app.schedule.null())
+})
+
 handler.set(/^\/dashboard.*$/, async ctx => {
     const payloadUser = await getPaylodadUser()
     if (!payloadUser) return ctx.redirect(app.auth.login())

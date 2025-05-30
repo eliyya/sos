@@ -1,8 +1,18 @@
 import { db } from '@/prisma/db'
-import { DashboardHeader } from '../../components/DashboardHeader'
+import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { MonthReportOfVisits } from './components/MonthReportOfVisits'
+import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { SelectLaboratory } from './components/SelectLaboratory'
 
-export default async function ReportsPage() {
+interface MonthReportOfVisitsProps {
+    params: Promise<{
+        cc_id: string
+    }>
+}
+export default async function ReportsPage({
+    params,
+}: MonthReportOfVisitsProps) {
+    const { cc_id } = await params
     const now = new Date()
 
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -11,6 +21,7 @@ export default async function ReportsPage() {
     const visits = db.visit.findMany({
         where: {
             created_at: { gte: monthStart, lte: monthEnd },
+            laboratory_id: cc_id,
             student: {
                 career: {
                     is: { id: { not: undefined } },
@@ -32,12 +43,26 @@ export default async function ReportsPage() {
         },
     })
 
+    const labs = await db.laboratory.findMany({
+        where: {
+            type: LABORATORY_TYPE.COMPUTER_CENTER,
+            status: STATUS.ACTIVE,
+        },
+        select: {
+            id: true,
+            name: true,
+        },
+    })
+
     return (
         <div className='container mx-auto px-4 py-6'>
-            <DashboardHeader
-                heading='Reportes de uso del centro de computo'
-                text=''
-            />
+            <div className='flex max-w-full items-center justify-between'>
+                <DashboardHeader
+                    heading='Reportes de uso del centro de computo'
+                    text=''
+                />
+                <SelectLaboratory labs={labs} cc_id={cc_id} />
+            </div>
 
             <section className='mt-6'>
                 <MonthReportOfVisits
