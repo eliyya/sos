@@ -43,6 +43,11 @@ export function LoginForm() {
                         if (errors?.username) setUsernameError(errors.username)
                         if (errors?.password) setPasswordError(errors.password)
                         if (message) setError(message)
+                        setTimeout(() => {
+                            setUsernameError('')
+                            setPasswordError('')
+                            setError('')
+                        }, 5000)
                         return
                     } else if (status === LoginFormStatus.success) {
                         const r = await refreshTokenAction({ refreshToken })
