@@ -16,6 +16,7 @@ import {
     HouseWifiIcon,
     ComputerIcon,
     GraduationCapIcon,
+    FileDownIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
 
@@ -84,6 +85,11 @@ const teacherNavItems: {
         title: 'Consultar Datos',
         href: app.dashboard.reports.query(),
         icon: LayoutDashboardIcon,
+    },
+    {
+        title: 'Exportar Datos',
+        href: app.dashboard.export(),
+        icon: FileDownIcon,
     },
 ]
 
