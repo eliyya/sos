@@ -71,8 +71,18 @@ const teacherNavItems: {
         icon: HouseWifiIcon,
     },
     {
-        title: 'Reportes',
-        href: app.dashboard.reports(),
+        title: 'Reportes de Laboratorio',
+        href: app.dashboard.reports.lab(),
+        icon: LayoutDashboardIcon,
+    },
+    {
+        title: 'Reportes de Centro de Computo',
+        href: app.dashboard.reports.cc(),
+        icon: LayoutDashboardIcon,
+    },
+    {
+        title: 'Consultar Datos',
+        href: app.dashboard.reports.query(),
         icon: LayoutDashboardIcon,
     },
 ]

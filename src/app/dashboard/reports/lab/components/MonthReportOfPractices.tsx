@@ -5,6 +5,7 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -102,8 +103,10 @@ export default function MonthReportOfPractices({
                 </TableHeader>
                 <TableBody>
                     {data.map(career => (
-                        <TableRow key={career.id}>
-                            <TableCell>{career.name}</TableCell>
+                        <TableRow key={career.id} className='text-center'>
+                            <TableCell className='text-left'>
+                                {career.name}
+                            </TableCell>
                             <TableCell>{career.weekly_hours[0]}</TableCell>
                             <TableCell>{career.weekly_hours[1]}</TableCell>
                             <TableCell>{career.weekly_hours[2]}</TableCell>
@@ -118,6 +121,24 @@ export default function MonthReportOfPractices({
                         </TableRow>
                     ))}
                 </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={6} className='text-right'>
+                            Total
+                        </TableCell>
+                        <TableCell className='text-center'>
+                            {data.reduce(
+                                (total, career) =>
+                                    total +
+                                    career.weekly_hours.reduce(
+                                        (total, hours) => total + hours,
+                                        0,
+                                    ),
+                                0,
+                            )}
+                        </TableCell>
+                    </TableRow>
+                </TableFooter>
             </Table>
         </Card>
     )

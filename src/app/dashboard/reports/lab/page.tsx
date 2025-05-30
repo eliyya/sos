@@ -1,5 +1,5 @@
 import { db } from '@/prisma/db'
-import { DashboardHeader } from '../components/DashboardHeader'
+import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import MonthReportOfPractices from './components/MonthReportOfPractices'
 
 export default async function ReportsPage() {
