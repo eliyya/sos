@@ -53,6 +53,9 @@ export function ResetPasswordDialog() {
                             })
                             if (status === LoginFormStatus.error) {
                                 setError(errors!.token!)
+                                setTimeout(() => {
+                                    setError('')
+                                }, 5000)
                             } else if (status === LoginFormStatus.success) {
                                 const r = await refreshTokenAction({
                                     refreshToken,
