@@ -6,7 +6,7 @@ import { RunButton } from './components/RunButton'
 export default async function QueryPage() {
     return (
         <>
-            <div className='flex items-center justify-between'>
+            <div className='flex max-w-full items-center justify-between'>
                 <DashboardHeader heading='Query' text='Ejecutar consultas' />
                 <RunButton />
             </div>

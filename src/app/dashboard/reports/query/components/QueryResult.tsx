@@ -17,7 +17,7 @@ export function QueryResult() {
     return (
         <>
             {/* <pre>{JSON.stringify(queryResult, null, 2)}</pre> */}
-            <div className='flex max-w-fit flex-col overflow-x-scroll'>
+            <div className='flex max-w-full flex-col overflow-x-scroll'>
                 <Table>
                     <TableHeader>
                         <TableRow>

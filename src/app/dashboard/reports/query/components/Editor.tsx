@@ -132,6 +132,7 @@ export function SQLEditor() {
     return (
         <>
             <Editor
+                className='max-w-full'
                 height='300px'
                 defaultLanguage='sql'
                 value={query}
