@@ -73,14 +73,27 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
     return ctx.done()
 })
 
-handler.use(/\/dashboard\/reports\/(lab|cc)\/?$/, async ctx => {
-    const [, , , l_type, lab_id] = ctx.request.nextUrl.pathname.split('/') as [
-        string,
-        string,
-        string,
-        'lab' | 'cc',
-        string,
-    ]
+handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
+    const [, , , l_type, lab_id, month, year] =
+        ctx.request.nextUrl.pathname.split('/') as [
+            string,
+            string,
+            string,
+            'lab' | 'cc',
+            string,
+            string,
+            string,
+        ]
+    let m = month
+    let y = year
+    if (!y) {
+        const actual_date = new Date()
+        y = String(actual_date.getFullYear())
+    }
+    if (!m) {
+        const actual_date = new Date()
+        m = String(actual_date.getMonth() + 1)
+    }
     const l_id = lab_id
     if (l_id) return ctx.next()
     const url = new URL(
@@ -95,8 +108,16 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?$/, async ctx => {
     if (res.cc_id || res.lab_id)
         return ctx.redirect(
             l_type === 'lab' ?
-                app.dashboard.reports.lab.$lab_id(`${res.lab_id}`)
-            :   app.dashboard.reports.cc.$cc_id(`${res.cc_id}`),
+                app.dashboard.reports.lab.$lab_id.$month.$year(
+                    `${res.lab_id}`,
+                    m,
+                    y,
+                )
+            :   app.dashboard.reports.cc.$cc_id.$month.$year(
+                    `${res.cc_id}`,
+                    m,
+                    y,
+                ),
         )
     return ctx.redirect(app.schedule.null())
 })

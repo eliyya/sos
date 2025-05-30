@@ -4,6 +4,7 @@ import { MonthReportOfVisits } from './components/MonthReportOfVisits'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { SelectLaboratory } from './components/SelectLaboratory'
 import { Temporal } from '@js-temporal/polyfill'
+import { ChangueDate } from './components/ChangueDate'
 
 interface MonthReportOfVisitsProps {
     params: Promise<{
@@ -73,7 +74,9 @@ export default async function ReportsPage({
                 />
                 <SelectLaboratory labs={labs} cc_id={cc_id} />
             </div>
-
+            <div className='mt-6 flex items-center justify-end gap-2'>
+                <ChangueDate lab_id={cc_id} />
+            </div>
             <section className='mt-6'>
                 <MonthReportOfVisits
                     selectedMonth={monthStart.toLocaleString('es-MX', {
