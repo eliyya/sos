@@ -35,10 +35,12 @@ interface MonthRepoortOfPracticesProps {
     >
     selectedMonth: string
     selectedYear: number
+    careers: string[]
 }
 export default function MonthReportOfPractices({
     selectedMonth,
     selectedYear,
+    careers,
     ...props
 }: MonthRepoortOfPracticesProps) {
     const practices = use(props.data)
@@ -81,6 +83,16 @@ export default function MonthReportOfPractices({
             .sort(([a], [b]) => Number(a) - Number(b))
             .map(([, hours]) => hours),
     }))
+
+    for (const career of careers) {
+        if (!data.find(c => c.id === career)) {
+            data.push({
+                id: career,
+                name: career,
+                weekly_hours: [0, 0, 0, 0, 0],
+            })
+        }
+    }
 
     return (
         <Card>

@@ -4,6 +4,7 @@ import { ButtonLink } from '@/components/Links'
 import { UserTokenPayload } from '@/lib/types'
 import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
+import { LABORATORY_TYPE } from '@prisma/client'
 import { PlusIcon, UserIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
@@ -11,6 +12,9 @@ export default async function NullPage() {
     const lab = await db.laboratory.findFirst({
         select: {
             id: true,
+        },
+        where: {
+            type: LABORATORY_TYPE.LABORATORY,
         },
     })
     const today = new Date()

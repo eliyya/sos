@@ -84,6 +84,11 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
             string,
             string,
         ]
+    console.log({ l_type, lab_id, month, year })
+
+    if (lab_id === 'null') return ctx.next()
+    console.log(2)
+
     let m = month
     let y = year
     if (!y) {
@@ -105,6 +110,7 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
         cc_id: string | null
         lab_id: string | null
     }
+    console.log(3)
     if (res.cc_id || res.lab_id)
         return ctx.redirect(
             l_type === 'lab' ?
@@ -119,7 +125,12 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
                     y,
                 ),
         )
-    return ctx.redirect(app.schedule.null())
+    console.log(4, { l_type })
+    return ctx.redirect(
+        l_type === 'lab' ?
+            app.schedule.null()
+        :   app.dashboard.reports.cc.null(),
+    )
 })
 
 handler.set(/^\/dashboard.*$/, async ctx => {
