@@ -70,14 +70,38 @@ const teacherNavItems: {
         href: MLinks.laboratories(),
         icon: HouseWifiIcon,
     },
+    {
+        title: 'Reportes de Laboratorio',
+        href: '/dashboard/reports/lab',
+        icon: LayoutDashboardIcon,
+    },
+    {
+        title: 'Reportes de Centro de Computo',
+        href: '/dashboard/reports/cc',
+        icon: LayoutDashboardIcon,
+    },
+    {
+        title: 'Consultar Datos',
+        href: app.dashboard.reports.query(),
+        icon: LayoutDashboardIcon,
+    },
 ]
 
-export function DashboardNav() {
+interface DashboardNavProps {
+    className?: string
+}
+
+export function DashboardNav({ className }: DashboardNavProps) {
     const pathname = usePathname()
     const items = teacherNavItems
 
     return (
-        <nav className='bg-muted/50 min-h-screen w-64 border-r px-4 py-8'>
+        <nav
+            className={cn(
+                'bg-muted/50 min-h-screen w-64 border-r px-4 py-8',
+                className,
+            )}
+        >
             <Link href={app.dashboard()}>
                 <div className='mb-8 flex items-center gap-2 px-4'>
                     <BeakerIcon className='text-primary h-6 w-6' />

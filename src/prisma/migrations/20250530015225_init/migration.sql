@@ -15,7 +15,7 @@ CREATE TABLE "users" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "username" TEXT NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -38,7 +38,7 @@ CREATE TABLE "subjects" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "practice_hours" INTEGER NOT NULL,
     "theory_hours" INTEGER NOT NULL,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "subjects_pkey" PRIMARY KEY ("id")
@@ -70,7 +70,7 @@ CREATE TABLE "classes" (
     "semester" INTEGER NOT NULL DEFAULT 0,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "classes_pkey" PRIMARY KEY ("id")
 );
@@ -84,7 +84,7 @@ CREATE TABLE "laboratories" (
     "close_hour" INTEGER NOT NULL,
     "type" "LABORATORY_TYPE" NOT NULL DEFAULT 'LABORATORY',
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "laboratories_pkey" PRIMARY KEY ("id")
 );
@@ -101,8 +101,7 @@ CREATE TABLE "practices" (
     "laboratory_id" TEXT NOT NULL,
     "observations" TEXT,
     "class_id" TEXT,
-    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "starts_at" TIMESTAMP(3) NOT NULL,
     "ends_at" TIMESTAMP(3) NOT NULL,
 
@@ -113,7 +112,7 @@ CREATE TABLE "practices" (
 CREATE TABLE "software" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "software_pkey" PRIMARY KEY ("id")
@@ -132,7 +131,7 @@ CREATE TABLE "careers" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "alias" TEXT,
 
@@ -148,7 +147,7 @@ CREATE TABLE "students" (
     "group" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "career_id" TEXT NOT NULL,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "students_pkey" PRIMARY KEY ("nc")
@@ -162,7 +161,7 @@ CREATE TABLE "visits" (
     "student_nc" TEXT NOT NULL,
     "laboratory_id" TEXT NOT NULL,
     "machine_id" TEXT,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "visits_pkey" PRIMARY KEY ("id")
 );
@@ -179,7 +178,7 @@ CREATE TABLE "machines" (
     "laboratory_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "serie" TEXT,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "machines_pkey" PRIMARY KEY ("id")
 );
@@ -200,7 +199,7 @@ CREATE TABLE "issue" (
     "machine_id" TEXT NOT NULL,
     "closed_at" TIMESTAMP(3),
     "user_id" TEXT NOT NULL,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "issue_pkey" PRIMARY KEY ("id")
 );
@@ -212,7 +211,7 @@ CREATE TABLE "comment" (
     "content" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "issue_id" TEXT NOT NULL,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "comment_pkey" PRIMARY KEY ("id")
 );
@@ -271,7 +270,7 @@ ALTER TABLE "practices" ADD CONSTRAINT "practices_laboratory_id_fkey" FOREIGN KE
 ALTER TABLE "software_practices" ADD CONSTRAINT "software_practices_software_id_fkey" FOREIGN KEY ("software_id") REFERENCES "software"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "software_practices" ADD CONSTRAINT "software_practices_practice_id_fkey" FOREIGN KEY ("practice_id") REFERENCES "practices"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "software_practices" ADD CONSTRAINT "software_practices_practice_id_fkey" FOREIGN KEY ("practice_id") REFERENCES "practices"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_career_id_fkey" FOREIGN KEY ("career_id") REFERENCES "careers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

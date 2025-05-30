@@ -6,7 +6,7 @@ export default function DashboardTemplate({
     children: React.ReactNode
 }) {
     return (
-        <div className='flex min-h-screen'>
+        <div className='flex min-h-screen max-w-screen'>
             <DashboardNav />
             <main className={'flex flex-1 flex-col gap-4 p-8'}>{children}</main>
         </div>
