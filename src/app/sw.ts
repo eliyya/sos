@@ -29,9 +29,7 @@ const serwist = new Serwist({
 self.addEventListener('fetch', async event => {
     const url = new URL(event.request.url)
     if (url.pathname.match(/^\/dashboard\/properties\/[^/]\/edit/)) {
-        console.log(event.request)
         const r = await serwist.matchPrecache('/dashboard/properties/all/edit')
-        console.log(r)
         event.respondWith(r ?? fetch(event.request))
     }
 })

@@ -239,6 +239,9 @@ CREATE UNIQUE INDEX "laboratories_name_key" ON "laboratories"("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "careers_name_key" ON "careers"("name");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "machines_serie_key" ON "machines"("serie");
+
 -- AddForeignKey
 ALTER TABLE "auths" ADD CONSTRAINT "auths_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

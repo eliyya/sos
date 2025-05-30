@@ -1,47 +1,17 @@
-import {
-    AlertCircleIcon,
-    BeakerIcon,
-    CalendarIcon,
-    UsersIcon,
-} from 'lucide-react'
+import { BeakerIcon, CalendarIcon, UsersIcon } from 'lucide-react'
 import { Metadata } from 'next'
 import { Card } from '@/components/Card'
 import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { db } from '@/prisma/db'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import Link from 'next/link'
+import { Temporal } from '@js-temporal/polyfill'
+import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 
 export const metadata: Metadata = {
     title: 'Panel de Administrador | SOS',
     description: 'gestión de laboratorios y usuarios',
 }
-
-const stats = [
-    {
-        title: 'Laboratorios',
-        value: '5',
-        icon: BeakerIcon,
-        description: 'Laboratorios activos',
-    },
-    {
-        title: 'Reservas',
-        value: '128',
-        icon: CalendarIcon,
-        description: 'Reservas este mes',
-    },
-    {
-        title: 'Usuarios',
-        value: '45',
-        icon: UsersIcon,
-        description: 'Docentes registrados',
-    },
-    {
-        title: 'Pendientes',
-        value: '3',
-        icon: AlertCircleIcon,
-        description: 'Solicitudes pendientes',
-    },
-]
 
 export default async function AdminDashboardPage() {
     const ccs = await db.laboratory.findMany({
@@ -50,6 +20,77 @@ export default async function AdminDashboardPage() {
             status: STATUS.ACTIVE,
         },
     })
+    const labs = await db.laboratory.findMany({
+        where: {
+            type: LABORATORY_TYPE.LABORATORY,
+            status: STATUS.ACTIVE,
+        },
+    })
+    const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+    const monthStart = now.subtract({
+        days: now.day,
+    })
+    const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
+
+    const practices = await db.practice.count({
+        where: {
+            created_at: {
+                gte: new Date(monthStart.epochMilliseconds),
+                lte: new Date(monthEnd.epochMilliseconds),
+            },
+            class: { isNot: null },
+        },
+    })
+    const visits = await db.visit.findMany({
+        where: {
+            created_at: {
+                gte: new Date(monthStart.epochMilliseconds),
+                lte: new Date(monthEnd.epochMilliseconds),
+            },
+            student: {
+                career: {
+                    is: { id: { not: undefined } },
+                },
+            },
+        },
+        select: {
+            laboratory_id: true,
+            created_at: true,
+        },
+    })
+    const users = await db.user.count({
+        where: {
+            role: {
+                in: RoleBitField.getCombinationsOf(RoleFlags.Teacher),
+            },
+        },
+    })
+    const stats = [
+        {
+            title: 'Laboratorios',
+            value: labs.length,
+            icon: BeakerIcon,
+            description: 'Laboratorios activos',
+        },
+        {
+            title: 'Reservas',
+            value: practices,
+            icon: CalendarIcon,
+            description: 'Reservas este mes',
+        },
+        {
+            title: 'Visitas',
+            value: visits.length,
+            icon: CalendarIcon,
+            description: 'Visitas este mes',
+        },
+        {
+            title: 'Usuarios',
+            value: users,
+            icon: UsersIcon,
+            description: 'Docentes registrados',
+        },
+    ]
     return (
         <>
             <DashboardHeader
@@ -95,7 +136,15 @@ export default async function AdminDashboardPage() {
                                             {CC.name}
                                         </p>
                                         <h3 className='text-2xl font-bold'>
-                                            24
+                                            {
+                                                visits.filter(
+                                                    visit =>
+                                                        visit.laboratory_id ===
+                                                            CC.id &&
+                                                        visit.created_at.getTime() >=
+                                                            now.epochMilliseconds,
+                                                ).length
+                                            }
                                         </h3>
                                         <p className='text-muted-foreground mt-1 text-xs'>
                                             Visitas hoy

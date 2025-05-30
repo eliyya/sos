@@ -8,7 +8,6 @@ export async function POST(req: Request) {
     const to = body.get('to') as string
     const laboratory_id = body.get('laboratory_id') as string
     const format = body.get('format') as string
-    console.log({ from, to, laboratory_id, format })
     const start_timestamp = Temporal.PlainDate.from(from).toZonedDateTime({
         timeZone: 'America/Mexico_City',
     }).epochMilliseconds

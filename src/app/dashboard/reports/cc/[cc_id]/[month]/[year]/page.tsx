@@ -52,7 +52,6 @@ export default async function ReportsPage({
             },
         },
     })
-    console.log(monthStart.toPlainDate())
 
     const labs = await db.laboratory.findMany({
         where: {
@@ -61,6 +60,11 @@ export default async function ReportsPage({
         },
         select: {
             id: true,
+            name: true,
+        },
+    })
+    const careers = await db.career.findMany({
+        select: {
             name: true,
         },
     })
@@ -89,6 +93,7 @@ export default async function ReportsPage({
                     })}
                     selectedYear={parseInt(year)}
                     data={visits}
+                    carrers={careers.map(c => c.name)}
                 />
             </section>
         </div>
