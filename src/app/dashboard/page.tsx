@@ -26,7 +26,10 @@ export default async function AdminDashboardPage() {
             status: STATUS.ACTIVE,
         },
     })
-    const monthStart = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+    const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+    const monthStart = now.subtract({
+        days: now.day,
+    })
     const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
 
     const practices = await db.practice.count({
@@ -38,7 +41,7 @@ export default async function AdminDashboardPage() {
             class: { isNot: null },
         },
     })
-    const visits = await db.visit.count({
+    const visits = await db.visit.findMany({
         where: {
             created_at: {
                 gte: new Date(monthStart.epochMilliseconds),
@@ -49,6 +52,10 @@ export default async function AdminDashboardPage() {
                     is: { id: { not: undefined } },
                 },
             },
+        },
+        select: {
+            laboratory_id: true,
+            created_at: true,
         },
     })
     const users = await db.user.count({
@@ -73,7 +80,7 @@ export default async function AdminDashboardPage() {
         },
         {
             title: 'Visitas',
-            value: visits,
+            value: visits.length,
             icon: CalendarIcon,
             description: 'Visitas este mes',
         },
@@ -129,7 +136,15 @@ export default async function AdminDashboardPage() {
                                             {CC.name}
                                         </p>
                                         <h3 className='text-2xl font-bold'>
-                                            24
+                                            {
+                                                visits.filter(
+                                                    visit =>
+                                                        visit.laboratory_id ===
+                                                            CC.id &&
+                                                        visit.created_at.getTime() >=
+                                                            now.epochMilliseconds,
+                                                ).length
+                                            }
                                         </h3>
                                         <p className='text-muted-foreground mt-1 text-xs'>
                                             Visitas hoy

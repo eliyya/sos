@@ -34,10 +34,12 @@ interface MonthReportOfVisitsProps {
     >
     selectedMonth: string
     selectedYear: number
+    carrers: string[]
 }
 export function MonthReportOfVisits({
     selectedMonth,
     selectedYear,
+    carrers,
     ...props
 }: MonthReportOfVisitsProps) {
     const visits = use(props.data)
@@ -79,8 +81,17 @@ export function MonthReportOfVisits({
         ...career,
         weekly_visits: Object.entries(career.weekly_visits)
             .sort(([a], [b]) => Number(a) - Number(b))
-            .map(([week, visits]) => ({ week: Number(week), visits })),
+            .map(([, visits]) => visits),
     }))
+    for (const career of carrers) {
+        if (!data.find(c => c.name === career)) {
+            data.push({
+                id: '',
+                name: career,
+                weekly_visits: [0, 0, 0, 0, 0],
+            })
+        }
+    }
 
     return (
         <Card>
@@ -105,24 +116,14 @@ export function MonthReportOfVisits({
                             <TableCell className='text-left'>
                                 {career.name}
                             </TableCell>
-                            <TableCell>
-                                {career.weekly_visits[0].visits}
-                            </TableCell>
-                            <TableCell>
-                                {career.weekly_visits[1].visits}
-                            </TableCell>
-                            <TableCell>
-                                {career.weekly_visits[2].visits}
-                            </TableCell>
-                            <TableCell>
-                                {career.weekly_visits[3].visits}
-                            </TableCell>
-                            <TableCell>
-                                {career.weekly_visits[4].visits}
-                            </TableCell>
+                            <TableCell>{career.weekly_visits[0]}</TableCell>
+                            <TableCell>{career.weekly_visits[1]}</TableCell>
+                            <TableCell>{career.weekly_visits[2]}</TableCell>
+                            <TableCell>{career.weekly_visits[3]}</TableCell>
+                            <TableCell>{career.weekly_visits[4]}</TableCell>
                             <TableCell>
                                 {career.weekly_visits.reduce(
-                                    (total, visit) => total + visit.visits,
+                                    (total, visits) => total + visits,
                                     0,
                                 )}
                             </TableCell>
@@ -139,7 +140,7 @@ export function MonthReportOfVisits({
                                 (total, career) =>
                                     total +
                                     career.weekly_visits.reduce(
-                                        (total, visit) => total + visit.visits,
+                                        (total, visits) => total + visits,
                                         0,
                                     ),
                                 0,

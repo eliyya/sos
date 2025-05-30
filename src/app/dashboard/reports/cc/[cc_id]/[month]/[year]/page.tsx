@@ -63,6 +63,11 @@ export default async function ReportsPage({
             name: true,
         },
     })
+    const careers = await db.career.findMany({
+        select: {
+            name: true,
+        },
+    })
 
     return (
         <div className='container mx-auto px-4 py-6'>
@@ -88,6 +93,7 @@ export default async function ReportsPage({
                     })}
                     selectedYear={parseInt(year)}
                     data={visits}
+                    carrers={careers.map(c => c.name)}
                 />
             </section>
         </div>

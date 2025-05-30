@@ -48,6 +48,11 @@ export default async function ReportsPage({
             },
         },
     })
+    const careers = await db.career.findMany({
+        select: {
+            name: true,
+        },
+    })
 
     const labs = await db.laboratory.findMany({
         where: {
@@ -82,6 +87,7 @@ export default async function ReportsPage({
                     })}
                     selectedYear={parseInt(year)}
                     data={practices}
+                    careers={careers.map(c => c.name)}
                 />
             </section>
         </div>
