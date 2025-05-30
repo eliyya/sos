@@ -108,7 +108,13 @@ export async function createlab(formData: FormData) {
             },
         })
         return { error: null }
-    } catch {
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002')
+                return { error: 'El laboratorio ya existe' }
+            console.log(error.meta)
+        }
+        console.error(error)
         return { error: 'Error al crear el laboratorio, intente nuevamente.' }
     }
 }

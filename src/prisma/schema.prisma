@@ -240,7 +240,7 @@ model Machine {
     description   String         @default("")
     laboratory_id String?
     created_at    DateTime       @default(now())
-    serie         String?
+    serie         String?        @unique
     updated_at    DateTime       @updatedAt
 
     laboratory        Laboratory?       @relation(fields: [laboratory_id], references: [id])

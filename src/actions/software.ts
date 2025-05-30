@@ -1,6 +1,7 @@
 'use server'
 
 import { db, snowflake } from '@/prisma/db'
+import { Prisma } from '@prisma/client'
 
 export async function getSoftware() {
     return db.software.findMany()
@@ -44,7 +45,13 @@ export async function createSoftware(formData: FormData) {
             },
         })
         return { error: null, data }
-    } catch {
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002')
+                return { error: 'El software ya existe' }
+            console.log(error.meta)
+        }
+        console.error(error)
         return { error: 'Algo sucedió, intenta más tarde' }
     }
 }
