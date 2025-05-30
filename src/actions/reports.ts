@@ -11,7 +11,6 @@ WHERE table_schema = 'general'
 AND table_name NOT LIKE '_prisma_%'
 ORDER BY table_name, ordinal_position;
     `
-    console.table(tables)
 
     return tables
 }
