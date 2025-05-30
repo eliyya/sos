@@ -7,8 +7,15 @@ import { useRouter } from 'next/navigation'
 interface SelectLaboratoryProps {
     labs: { id: string; name: string }[]
     lab_id: string
+    month: string
+    year: string
 }
-export function SelectLaboratory({ labs, lab_id }: SelectLaboratoryProps) {
+export function SelectLaboratory({
+    labs,
+    lab_id,
+    month,
+    year,
+}: SelectLaboratoryProps) {
     const { replace } = useRouter()
     return (
         <SimpleSelect
@@ -21,7 +28,13 @@ export function SelectLaboratory({ labs, lab_id }: SelectLaboratoryProps) {
                 value: l.id,
             }))}
             onChange={value => {
-                replace(app.dashboard.reports.lab.$lab_id(value?.value ?? ''))
+                replace(
+                    app.dashboard.reports.lab.$lab_id.$month.$year(
+                        value?.value ?? '',
+                        month,
+                        year,
+                    ),
+                )
             }}
         />
     )

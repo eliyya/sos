@@ -72,7 +72,12 @@ export default async function ReportsPage({
                     heading='Reportes de uso del centro de computo'
                     text=''
                 />
-                <SelectLaboratory labs={labs} cc_id={cc_id} />
+                <SelectLaboratory
+                    month={month}
+                    year={year}
+                    labs={labs}
+                    cc_id={cc_id}
+                />
             </div>
             <div className='mt-6 flex items-center justify-end gap-2'>
                 <ChangueDate lab_id={cc_id} />

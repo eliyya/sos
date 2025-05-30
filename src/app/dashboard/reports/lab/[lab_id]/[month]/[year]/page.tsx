@@ -65,7 +65,12 @@ export default async function ReportsPage({
             <div className='flex max-w-full items-center justify-between'>
                 <DashboardHeader heading='Reportes' text='' />
 
-                <SelectLaboratory labs={labs} lab_id={lab_id} />
+                <SelectLaboratory
+                    month={month}
+                    year={year}
+                    labs={labs}
+                    lab_id={lab_id}
+                />
             </div>
             <div className='mt-6 flex items-center justify-end gap-2'>
                 <ChangueDate lab_id={lab_id} />
