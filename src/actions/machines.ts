@@ -111,7 +111,12 @@ export async function createMachine(formData: FormData) {
             },
         })
         return {}
-    } catch {
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') return { error: 'La maquina ya existe' }
+            console.log(error.meta)
+        }
+        console.error(error)
         return { error: 'Algo sucedió, intenta más tarde' }
     }
 }

@@ -3,7 +3,7 @@
 import { getStartOfWeek } from '@/lib/utils'
 import { db, snowflake } from '@/prisma/db'
 import { Temporal } from '@js-temporal/polyfill'
-import { STATUS } from '@prisma/client'
+import { Prisma, STATUS } from '@prisma/client'
 // import { getTeacherClassesWithRemainingWeekHours } from '@prisma/client/sql'
 
 export async function createClass(formData: FormData) {
@@ -26,9 +26,13 @@ export async function createClass(formData: FormData) {
         })
         return { error: null }
     } catch (error) {
-        console.log(error)
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') return { error: 'La clase ya existe' }
+            console.log(error.meta)
+        }
+        console.error(error)
 
-        return { error: 'Error al crear la materia, intente nuevamente.' }
+        return { error: 'Error al crear la clase, intente nuevamente.' }
     }
 }
 

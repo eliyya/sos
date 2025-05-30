@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/prisma/db'
-import { STATUS } from '@prisma/client'
+import { Prisma, STATUS } from '@prisma/client'
 
 export async function getStudents() {
     return db.student.findMany({
@@ -153,7 +153,13 @@ export async function createStudent(formData: FormData) {
             },
         })
         return {}
-    } catch {
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002')
+                return { error: 'El estudiante ya existe' }
+            console.log(error.meta)
+        }
+        console.error(error)
         return { error: 'Algo sucedió, intenta más tarde' }
     }
 }

@@ -1,7 +1,7 @@
 'use server'
 
 import { db, snowflake } from '@/prisma/db'
-import { STATUS } from '@prisma/client'
+import { Prisma, STATUS } from '@prisma/client'
 
 export async function createSubject(formData: FormData) {
     const name = formData.get('name') as string
@@ -18,7 +18,12 @@ export async function createSubject(formData: FormData) {
             },
         })
         return { error: null }
-    } catch {
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') return { error: 'La materia ya existe' }
+            console.log(error.meta)
+        }
+        console.error(error)
         return { error: 'Error al crear la materia, intente nuevamente.' }
     }
 }

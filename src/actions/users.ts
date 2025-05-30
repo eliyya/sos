@@ -3,7 +3,7 @@
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 // import { COOKIES, JWT_SECRET } from '@/lib/constants'
 import { db, snowflake } from '@/prisma/db'
-import { STATUS } from '@prisma/client'
+import { Prisma, STATUS } from '@prisma/client'
 import { hash } from 'bcrypt'
 import { randomUUID } from 'node:crypto'
 // import { getPaylodadUser } from './middleware'
@@ -211,35 +211,25 @@ export async function createUser(formData: FormData) {
     if (password) {
         if (!/[A-Z]/.test(password))
             return {
-                password: 'Password must contain at least one capital letter',
+                password: 'La contraseña debe contener al menos una mayúscula',
             }
         if (!/[0-9]/.test(password))
-            return { password: 'Password must contain at least one number' }
+            return {
+                password: 'La contraseña debe contener al menos un número',
+            }
         if (!/[!@#$%^&*]/.test(password))
             return {
                 password:
-                    'Password must contain at least one special character like a !@#$%^&*',
+                    'La contraseña debe contener al menos un carácter especial como !@#$%^&*',
             }
         if (password.length < 10)
-            return { password: 'Password must be at least 10 characters long' }
+            return {
+                password: 'La contraseña debe tener al menos 10 caracteres',
+            }
     }
 
     if (password && password !== confirm)
         return { confirm: 'Las contraseñas no coinciden' }
-
-    console.log({
-        data: {
-            id: snowflake.generate(),
-            name,
-            username: username.toLowerCase(),
-            auths: {
-                create: {
-                    id: snowflake.generate(),
-                    password: await hash(password, 10),
-                },
-            },
-        },
-    })
 
     try {
         await db.user.create({
@@ -256,7 +246,12 @@ export async function createUser(formData: FormData) {
             },
         })
         return {}
-    } catch {
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') return { error: 'El usuario ya existe' }
+            console.log(error.meta)
+        }
+        console.error(error)
         return { error: 'Algo sucedió, intenta más tarde' }
     }
 }
