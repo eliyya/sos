@@ -7,7 +7,7 @@ import {
     BeakerIcon,
     LayoutDashboardIcon,
     UsersIcon,
-    Settings2Icon,
+    // Settings2Icon,
     LogOutIcon,
     BookMarkedIcon,
     SquareUserRoundIcon,
@@ -133,13 +133,13 @@ export function DashboardNav({ className }: DashboardNavProps) {
                 ))}
 
                 <div className='mt-auto border-t pt-4'>
-                    <Link
+                    {/* <Link
                         href='/settings'
                         className='text-muted-foreground hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                     >
                         <Settings2Icon className='h-4 w-4' />
                         Configuración
-                    </Link>
+                    </Link> */}
                     <Link
                         href={app.auth.logout()}
                         prefetch={false}

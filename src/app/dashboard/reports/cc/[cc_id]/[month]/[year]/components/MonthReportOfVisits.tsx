@@ -85,8 +85,7 @@ export function MonthReportOfVisits({
     return (
         <Card>
             <h2 className='p-4 text-2xl font-bold tracking-tight'>
-                Reporte de horas de prácticas del mes {selectedMonth} de{' '}
-                {selectedYear}
+                Reporte de visitas del mes {selectedMonth} de {selectedYear}
             </h2>
             <Table>
                 <TableHeader>

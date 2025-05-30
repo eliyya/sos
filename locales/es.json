@@ -9,7 +9,7 @@
                         "username": "Usuario",
                         "pass": "Contraseña",
                         "login": "Iniciar Sesión",
-                        "username-placeholder": "pacoweb"
+                        "username-placeholder": "username"
                     }
                 }
             },
