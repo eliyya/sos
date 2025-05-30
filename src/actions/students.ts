@@ -137,7 +137,6 @@ export async function createStudent(formData: FormData) {
     const nc = formData.get('nc') as string
     const semester = parseInt(formData.get('semester') as string)
     const career_id = formData.get('career_id') as string
-    console.log({ lastname, firstname, semester, career_id, nc })
 
     if (!lastname || !firstname || !semester || !career_id || !nc)
         return { error: 'Falta algun dato' }
