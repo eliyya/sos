@@ -3,25 +3,33 @@ import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import MonthReportOfPractices from './components/MonthReportOfPractices'
 import { SelectLaboratory } from './components/SelectLaboratory'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { Temporal } from '@js-temporal/polyfill'
+import { ChangueDate } from './components/ChangueDate'
 
 interface MonthReportOfPracticesProps {
     params: Promise<{
         lab_id: string
+        month: string
+        year: string
     }>
 }
 export default async function ReportsPage({
     params,
 }: MonthReportOfPracticesProps) {
-    const { lab_id } = await params
-    const now = new Date()
-
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    const { lab_id, month, year } = await params
+    const monthStart = Temporal.PlainDate.from({
+        year: parseInt(year),
+        month: parseInt(month),
+        day: 1,
+    }).toZonedDateTime('America/Monterrey')
+    const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
 
     const practices = db.practice.findMany({
         where: {
-            starts_at: { gte: monthStart },
-            ends_at: { lte: monthEnd },
+            created_at: {
+                gte: new Date(monthStart.epochMilliseconds),
+                lte: new Date(monthEnd.epochMilliseconds),
+            },
             class: { isNot: null },
             laboratory_id: lab_id,
         },
@@ -59,11 +67,15 @@ export default async function ReportsPage({
 
                 <SelectLaboratory labs={labs} lab_id={lab_id} />
             </div>
-
+            <div className='mt-6 flex items-center justify-end gap-2'>
+                <ChangueDate lab_id={lab_id} />
+            </div>
             <section className='mt-6'>
                 <MonthReportOfPractices
-                    selectedMonth={now.getMonth() + 1}
-                    selectedYear={now.getFullYear()}
+                    selectedMonth={monthStart.toLocaleString('es-MX', {
+                        month: 'long',
+                    })}
+                    selectedYear={parseInt(year)}
                     data={practices}
                 />
             </section>

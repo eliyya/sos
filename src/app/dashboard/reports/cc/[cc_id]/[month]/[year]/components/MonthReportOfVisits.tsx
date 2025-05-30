@@ -20,66 +20,66 @@ function getWeekOfMonth(date: Date) {
     return Math.ceil((dayOfMonth + adjustment) / 7)
 }
 
-interface MonthRepoortOfPracticesProps {
+interface MonthReportOfVisitsProps {
     data: Promise<
         {
-            class: {
+            student: {
                 career: {
-                    id: string
                     name: string
+                    id: string
                 }
-            } | null
-            starts_at: Date
-            ends_at: Date
+            }
+            created_at: Date
         }[]
     >
-    selectedMonth: number
+    selectedMonth: string
     selectedYear: number
 }
-export default function MonthReportOfPractices({
+export function MonthReportOfVisits({
     selectedMonth,
     selectedYear,
     ...props
-}: MonthRepoortOfPracticesProps) {
-    const practices = use(props.data)
-    type WeeklyHours = Record<
+}: MonthReportOfVisitsProps) {
+    const visits = use(props.data)
+
+    type WeeklyVisits = Record<
         string,
         {
             id: string
             name: string
-            weekly_hours: Record<number, number> // semana → horas
+            weekly_visits: Record<number, number>
         }
     >
 
-    const result: WeeklyHours = {}
+    const result: WeeklyVisits = {}
 
-    for (const p of practices) {
-        const start = new Date(p.starts_at)
-        const end = new Date(p.ends_at)
-        const week = getWeekOfMonth(start)
+    for (const v of visits) {
+        const date = new Date(v.created_at)
+        const week = getWeekOfMonth(date)
 
-        const diffMs = end.getTime() - start.getTime()
-        const hours = diffMs / (1000 * 60 * 60)
-
-        const career = p.class?.career
+        const career = v.student?.career
         if (!career) continue
 
         if (!result[career.id]) {
             result[career.id] = {
                 id: career.id,
                 name: career.name,
-                weekly_hours: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+                weekly_visits: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
             }
         }
 
-        result[career.id].weekly_hours[week] += hours
+        if (!result[career.id].weekly_visits[week]) {
+            result[career.id].weekly_visits[week] = 0
+        }
+
+        result[career.id].weekly_visits[week]++
     }
 
     const data = Object.values(result).map(career => ({
         ...career,
-        weekly_hours: Object.entries(career.weekly_hours)
+        weekly_visits: Object.entries(career.weekly_visits)
             .sort(([a], [b]) => Number(a) - Number(b))
-            .map(([, hours]) => hours),
+            .map(([week, visits]) => ({ week: Number(week), visits })),
     }))
 
     return (
@@ -106,14 +106,24 @@ export default function MonthReportOfPractices({
                             <TableCell className='text-left'>
                                 {career.name}
                             </TableCell>
-                            <TableCell>{career.weekly_hours[0]}</TableCell>
-                            <TableCell>{career.weekly_hours[1]}</TableCell>
-                            <TableCell>{career.weekly_hours[2]}</TableCell>
-                            <TableCell>{career.weekly_hours[3]}</TableCell>
-                            <TableCell>{career.weekly_hours[4]}</TableCell>
                             <TableCell>
-                                {career.weekly_hours.reduce(
-                                    (total, hours) => total + hours,
+                                {career.weekly_visits[0].visits}
+                            </TableCell>
+                            <TableCell>
+                                {career.weekly_visits[1].visits}
+                            </TableCell>
+                            <TableCell>
+                                {career.weekly_visits[2].visits}
+                            </TableCell>
+                            <TableCell>
+                                {career.weekly_visits[3].visits}
+                            </TableCell>
+                            <TableCell>
+                                {career.weekly_visits[4].visits}
+                            </TableCell>
+                            <TableCell>
+                                {career.weekly_visits.reduce(
+                                    (total, visit) => total + visit.visits,
                                     0,
                                 )}
                             </TableCell>
@@ -121,7 +131,7 @@ export default function MonthReportOfPractices({
                     ))}
                 </TableBody>
                 <TableFooter>
-                    <TableRow>
+                    <TableRow className='text-center'>
                         <TableCell colSpan={6} className='text-right'>
                             Total
                         </TableCell>
@@ -129,8 +139,8 @@ export default function MonthReportOfPractices({
                             {data.reduce(
                                 (total, career) =>
                                     total +
-                                    career.weekly_hours.reduce(
-                                        (total, hours) => total + hours,
+                                    career.weekly_visits.reduce(
+                                        (total, visit) => total + visit.visits,
                                         0,
                                     ),
                                 0,

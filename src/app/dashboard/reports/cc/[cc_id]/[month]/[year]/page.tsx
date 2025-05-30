@@ -3,24 +3,34 @@ import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { MonthReportOfVisits } from './components/MonthReportOfVisits'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { SelectLaboratory } from './components/SelectLaboratory'
+import { Temporal } from '@js-temporal/polyfill'
+import { ChangueDate } from './components/ChangueDate'
 
 interface MonthReportOfVisitsProps {
     params: Promise<{
         cc_id: string
+        month: string
+        year: string
     }>
 }
 export default async function ReportsPage({
     params,
 }: MonthReportOfVisitsProps) {
-    const { cc_id } = await params
-    const now = new Date()
+    const { cc_id, month, year } = await params
 
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    const monthStart = Temporal.PlainDate.from({
+        year: parseInt(year),
+        month: parseInt(month),
+        day: 1,
+    }).toZonedDateTime('America/Monterrey')
+    const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
 
     const visits = db.visit.findMany({
         where: {
-            created_at: { gte: monthStart, lte: monthEnd },
+            created_at: {
+                gte: new Date(monthStart.epochMilliseconds),
+                lte: new Date(monthEnd.epochMilliseconds),
+            },
             laboratory_id: cc_id,
             student: {
                 career: {
@@ -42,6 +52,7 @@ export default async function ReportsPage({
             },
         },
     })
+    console.log(monthStart.toPlainDate())
 
     const labs = await db.laboratory.findMany({
         where: {
@@ -63,11 +74,15 @@ export default async function ReportsPage({
                 />
                 <SelectLaboratory labs={labs} cc_id={cc_id} />
             </div>
-
+            <div className='mt-6 flex items-center justify-end gap-2'>
+                <ChangueDate lab_id={cc_id} />
+            </div>
             <section className='mt-6'>
                 <MonthReportOfVisits
-                    selectedMonth={now.getMonth() + 1}
-                    selectedYear={now.getFullYear()}
+                    selectedMonth={monthStart.toLocaleString('es-MX', {
+                        month: 'long',
+                    })}
+                    selectedYear={parseInt(year)}
                     data={visits}
                 />
             </section>
