@@ -136,6 +136,7 @@ export function SQLEditor() {
                 height='300px'
                 defaultLanguage='sql'
                 value={query}
+                options={{ fontSize: 20 }}
                 onChange={value => setQuery(value ?? '')}
                 theme='vs-dark'
             />
