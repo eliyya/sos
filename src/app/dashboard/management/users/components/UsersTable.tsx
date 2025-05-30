@@ -175,8 +175,6 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        console.log('clieck')
-
                         setUserSelected(user)
                         openUnarchiveDialog(true)
                     }}

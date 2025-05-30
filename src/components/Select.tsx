@@ -378,10 +378,6 @@ export function RetornableCompletSelect<
         }
     }, [currentValue, originalValue])
 
-    useEffect(() => {
-        console.log('isChanged', isChanged)
-    }, [isChanged])
-
     return (
         <div className={cn('w-full space-y-2', containerClassName)}>
             <label
@@ -657,10 +653,6 @@ export function RetornableCompletCreatableSelect<
             setIsChanged(true)
         }
     }, [currentValue, defaultValue])
-
-    useEffect(() => {
-        console.log('isChanged', isChanged)
-    }, [isChanged])
 
     return (
         <div className={cn('w-full space-y-2', containerClassName)}>

@@ -11,6 +11,8 @@ import { Provider } from 'jotai'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
     title: 'SOS',
     description: 'sistemas de reserva',

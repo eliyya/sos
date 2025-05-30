@@ -49,14 +49,6 @@ export function SQLEditor() {
                             textUntilPosition,
                         )
 
-                    console.log({
-                        isAfterFrom,
-                        isSelectContext,
-                        textUntilPosition,
-                        word,
-                        range,
-                    })
-
                     let suggestions: {
                         label: string
                         kind: number
@@ -124,8 +116,6 @@ export function SQLEditor() {
                     return { suggestions }
                 },
             })
-
-            console.log('Autocompletado contextual registrado')
         })
     }, [schema])
 

@@ -31,8 +31,6 @@ export function CreateSubjectDialog() {
                 </DialogDescription> */}
                 <form
                     action={data => {
-                        console.log(Object.fromEntries(data.entries()))
-
                         startTransition(async () => {
                             const { error } = await createCareer(data)
 

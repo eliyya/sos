@@ -18,11 +18,6 @@ function createPrismaClient() {
                         | { username: string; id: string },
                     password: string,
                 ) {
-                    console.log({
-                        ...query,
-                        status: STATUS.ACTIVE,
-                    })
-
                     const user = await Prisma.getExtensionContext(
                         this,
                     ).findFirst({
