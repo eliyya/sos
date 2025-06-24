@@ -57,6 +57,9 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
             ctx.request.nextUrl.origin,
         )
         const req = await fetch(url)
+        if (!req.ok) {
+            return ctx.redirect(app.error())
+        }
         const res = (await req.json()) as { lab_id: string | null }
         if (!res.lab_id) return ctx.redirect(app.schedule.null())
         l_id = res.lab_id
@@ -85,10 +88,7 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
             string,
         ]
     console.log({ l_type, lab_id, month, year })
-
     if (lab_id === 'null') return ctx.next()
-    console.log(2)
-
     let m = month
     let y = year
     if (!y) {
@@ -106,11 +106,13 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
         ctx.request.nextUrl.origin,
     )
     const req = await fetch(url)
+    if (!req.ok) {
+        return ctx.redirect(app.error())
+    }
     const res = (await req.json()) as {
         cc_id: string | null
         lab_id: string | null
     }
-    console.log(3)
     if (res.cc_id || res.lab_id)
         return ctx.redirect(
             l_type === 'lab' ?
@@ -125,7 +127,6 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
                     y,
                 ),
         )
-    console.log(4, { l_type })
     return ctx.redirect(
         l_type === 'lab' ?
             app.schedule.null()
