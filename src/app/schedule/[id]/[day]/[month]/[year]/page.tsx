@@ -28,7 +28,9 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     const { id, day, month, year } = await params
 
     const user = await getPaylodadUser()
+
     let users: { id: string; name: string }[] = []
+
     if (user && new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin))
         users = await db.user.findMany({
             where: {
@@ -65,16 +67,10 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
         day: parseInt(day),
         hour: Math.floor(lab.open_hour / 60),
     }).epochMilliseconds
+
     return (
         <div className='bg-background min-h-screen'>
-            <ScheduleHeader
-                user={user}
-                day={day}
-                month={month}
-                year={year}
-                lab_id={id}
-                labs={labs}
-            />
+            <ScheduleHeader user={user} lab_id={id} labs={labs} />
             <main className='container mx-auto px-4 py-8'>
                 <div className='flex items-center justify-between'>
                     <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>

@@ -2,23 +2,17 @@
 
 import { SimpleSelect } from '@/components/Select'
 import app from '@eliyya/type-routes'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 interface SelectLaboratoryProps {
     labs: { id: string; name: string }[]
     lab_id: string
-    day: string
-    month: string
-    year: string
 }
-export function SelectLaboratory({
-    labs,
-    lab_id,
-    day,
-    month,
-    year,
-}: SelectLaboratoryProps) {
-    const { replace } = useRouter()
+export function SelectLaboratory({ labs, lab_id }: SelectLaboratoryProps) {
+    const { push } = useRouter()
+    const pathname = usePathname()
+    const [year, month, day] = pathname.split('/').toReversed()
+
     return (
         <SimpleSelect
             value={{
@@ -30,7 +24,7 @@ export function SelectLaboratory({
                 value: l.id,
             }))}
             onChange={value => {
-                replace(
+                push(
                     app.schedule.$id.$day.$month.$year(
                         value?.value ?? '',
                         day,

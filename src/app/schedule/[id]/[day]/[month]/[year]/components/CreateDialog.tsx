@@ -57,6 +57,17 @@ export function CreateDialog({
     isAdmin,
     user,
 }: CreateDialogProps) {
+    console.log([
+        {
+            value: user?.sub ?? '',
+            label: user?.name ?? '',
+        },
+        ...users.map(u => ({
+            value: u.id,
+            label: u.name,
+        })),
+    ])
+
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()

@@ -11,14 +11,15 @@ export async function GET() {
         })
         return new NextResponse(JSON.stringify({ lab_id: lab_id?.id ?? null }))
     } catch (error) {
-        if (error instanceof Prisma.PrismaClientInitializationError)
+        console.error('Error fetching default lab ID:', error)
+        if (error instanceof Prisma.PrismaClientInitializationError) {
             return new NextResponse(
                 JSON.stringify({
                     error: GET_DEFAULT_LAB_ID_ERROR.DATABASE_INITIALIZATION_ERROR,
                 }),
                 { status: 500 },
             )
-        console.error('Error fetching default lab ID:', error)
+        }
         return new NextResponse(
             JSON.stringify({ error: GET_DEFAULT_LAB_ID_ERROR.GENERIC_ERROR }),
             { status: 500 },
