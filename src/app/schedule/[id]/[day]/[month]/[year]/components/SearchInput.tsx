@@ -9,7 +9,7 @@ import { usePathname, useRouter } from 'next/navigation'
 
 export function SearchInput() {
     const router = useRouter()
-    const [id, year, month, day] = usePathname().split('/').toReversed()
+    const [year, month, day, id] = usePathname().split('/').toReversed()
 
     const currentDay = Temporal.ZonedDateTime.from({
         timeZone: 'America/Monterrey',

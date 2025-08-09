@@ -83,7 +83,6 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
             label: u.name,
         })),
     ]
-    console.log('CreateDialog', usersToSelect)
 
     useEffect(() => {
         startLoadingClasses(async () => {

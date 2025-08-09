@@ -87,7 +87,6 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
             string,
             string,
         ]
-    console.log({ l_type, lab_id, month, year })
     if (lab_id === 'null') return ctx.next()
     let m = month
     let y = year
