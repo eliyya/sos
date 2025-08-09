@@ -92,25 +92,18 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
             )
             setClasses(classes)
             const [firstClass] = classes
-            if (firstClass) setSelectedClass(firstClass)
-        })
-    }, [selectedUser, user, isAdmin])
-
-    useEffect(() => {
-        startLoadingHours(async () => {
-            if (!selectedClass)
-                return setRemainingHours({
-                    leftHours: Infinity,
-                    allowedHours: 0,
-                    usedHours: 0,
+            if (firstClass) {
+                setSelectedClass(firstClass)
+                startLoadingHours(async () => {
+                    const remainingHours = await getRemainingHours({
+                        classId: firstClass.id,
+                        day: timestampStartHour,
+                    })
+                    setRemainingHours(remainingHours)
                 })
-            const remainingHours = await getRemainingHours({
-                classId: selectedClass.id,
-                day: timestampStartHour,
-            })
-            setRemainingHours(remainingHours)
+            }
         })
-    }, [selectedClass, timestampStartHour])
+    }, [selectedUser, user, isAdmin, timestampStartHour])
 
     useEffect(() => {
         const start =
@@ -263,9 +256,25 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
                     )
                 }
                 onChange={async o => {
-                    if (!o) return setSelectedClass(null)
+                    if (!o) {
+                        setSelectedClass(null)
+                        return setRemainingHours({
+                            leftHours: Infinity,
+                            allowedHours: 0,
+                            usedHours: 0,
+                        })
+                    }
                     const selected = classes.find(c => c.id === o.value)
-                    if (selected) setSelectedClass(selected)
+                    if (selected) {
+                        setSelectedClass(selected)
+                        startLoadingHours(async () => {
+                            const remainingHours = await getRemainingHours({
+                                classId: selected.id,
+                                day: timestampStartHour,
+                            })
+                            setRemainingHours(remainingHours)
+                        })
+                    }
                 }}
             />
             <CompletInput
