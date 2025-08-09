@@ -77,7 +77,7 @@ const teacherNavItems: {
         icon: LayoutDashboardIcon,
     },
     {
-        title: 'Reportes de Centro de Computo',
+        title: 'Reportes de CC',
         href: '/dashboard/reports/cc',
         icon: LayoutDashboardIcon,
     },
