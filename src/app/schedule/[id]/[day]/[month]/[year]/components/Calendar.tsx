@@ -30,10 +30,10 @@ interface CalendarProps {
         open_hour: number
     }
     isAdmin?: boolean
-    userId: string
+    canSeeInfo: boolean
 }
 
-export function Calendar({ lab, isAdmin, userId }: CalendarProps) {
+export function Calendar({ lab, isAdmin, canSeeInfo }: CalendarProps) {
     const { push } = useRouter()
     const openCreate = useSetAtom(openCreateAtom)
     const setStartHour = useSetAtom(createDayAtom)
@@ -90,7 +90,7 @@ export function Calendar({ lab, isAdmin, userId }: CalendarProps) {
                 return e
             })}
             eventClick={event => {
-                if (!userId) return
+                if (!canSeeInfo) return
                 const info = getCalendarEventInfo(event.event)
                 openEventInfoWith(info)
             }}

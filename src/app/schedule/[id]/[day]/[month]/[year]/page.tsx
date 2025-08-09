@@ -71,11 +71,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
                     <SearchInput />
                 </div>
-                <Calendar
-                    userId={user?.sub ?? ''}
-                    lab={lab}
-                    isAdmin={isAdmin}
-                />
+                <Calendar lab={lab} isAdmin={isAdmin} canSeeInfo={!!user} />
                 <CreateDialog
                     isAdmin={isAdmin}
                     lab={lab}
