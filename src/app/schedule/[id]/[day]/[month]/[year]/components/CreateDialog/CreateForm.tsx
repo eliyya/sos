@@ -6,23 +6,24 @@ import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import {
     actualEventAtom,
+    classesAtom,
     createDayAtom,
     eventsAtom,
     newEventSignalAtom,
     openCreateAtom,
+    remainingHoursAtom,
+    selectedClassAtom,
+    selectedUserAtom,
 } from '@/global/management-practices'
 import { UserTokenPayload } from '@/lib/types'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState, useTransition } from 'react'
-import { getClassesWithDataFromUser, getRemainingHours } from '@/actions/class'
+import { getRemainingHours } from '@/actions/class'
 import { Temporal } from '@js-temporal/polyfill'
 import { SaveIcon, UserIcon } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { secondsToTime } from '@/lib/utils'
-
-type ClassForSelect = Awaited<
-    ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
->[number]
+import { DocenteSelect } from './FormInputs/DocenteSelect'
 
 interface CreateFormProps {
     users: {
@@ -53,25 +54,16 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
     const [actualEvent, setActualEvent] = useAtom(actualEventAtom)
     const [endTime, setEndTime] = useState('1')
     const [topic, setTopic] = useState('')
-    const [classes, setClasses] = useState<ClassForSelect[]>([])
-    const [selectedUser, setSelecctedUser] = useState({
-        name: user?.name ?? '',
-        id: user?.sub ?? '',
-    })
+    const classes = useAtomValue(classesAtom)
+    const [selectedUser, setSelecctedUser] = useAtom(selectedUserAtom)
     const sendEventSignal = useSetAtom(newEventSignalAtom)
-    const [selectedClass, setSelectedClass] = useState<ClassForSelect | null>(
-        null,
-    )
+    const [selectedClass, setSelectedClass] = useAtom(selectedClassAtom)
     const [startHourError, setStartHourError] = useState('')
     const [endHourError, setEndHourError] = useState('')
     const events = useAtomValue(eventsAtom)
     const [isLoadingClasses, startLoadingClasses] = useTransition()
     const [isLoadingHours, startLoadingHours] = useTransition()
-    const [remainingHours, setRemainingHours] = useState({
-        leftHours: Infinity,
-        allowedHours: 0,
-        usedHours: 0,
-    })
+    const [remainingHours, setRemainingHours] = useAtom(remainingHoursAtom)
 
     const usersToSelect = [
         {
@@ -83,6 +75,14 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
             label: u.name,
         })),
     ]
+
+    useEffect(() => {
+        if (!user) return
+        setSelecctedUser({
+            name: user.name,
+            id: user.sub,
+        })
+    }, [user, setSelecctedUser])
 
     useEffect(() => {
         const start =
@@ -183,40 +183,10 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
             {message && <MessageError>{message}</MessageError>}
             <input type='hidden' value={lab.id} name='laboratory_id' />
             <input type='hidden' value={timestampStartHour} name='starts_at' />
-            <CompletSelect
-                label='Docente'
-                name='teacher_id'
+            <DocenteSelect
                 options={usersToSelect}
-                isClearable={false}
-                value={{
-                    label: selectedUser.name,
-                    value: selectedUser.id,
-                }}
-                onChange={async o => {
-                    if (!o) return
-                    setSelecctedUser({
-                        name: o.label,
-                        id: o.value,
-                    })
-                    startLoadingClasses(async () => {
-                        const classes = await getClassesWithDataFromUser(
-                            o.value,
-                            ['subject', 'career'],
-                        )
-                        setClasses(classes)
-                        const [firstClass] = classes
-                        if (firstClass) {
-                            setSelectedClass(firstClass)
-                            startLoadingHours(async () => {
-                                const remainingHours = await getRemainingHours({
-                                    classId: firstClass.id,
-                                    day: timestampStartHour,
-                                })
-                                setRemainingHours(remainingHours)
-                            })
-                        }
-                    })
-                }}
+                startLoadingClasses={startLoadingClasses}
+                startLoadingHours={startLoadingHours}
             />
             <CompletSelect
                 label='Clase'
