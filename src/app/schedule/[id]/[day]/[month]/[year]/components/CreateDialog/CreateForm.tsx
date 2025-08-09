@@ -50,9 +50,8 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const [timestampStartHour, setTimestampStartHour] = useAtom(createDayAtom)
-    const setActualEvent = useSetAtom(actualEventAtom)
+    const [actualEvent, setActualEvent] = useAtom(actualEventAtom)
     const [endTime, setEndTime] = useState('1')
-    const [title, setTitle] = useState('')
     const [topic, setTopic] = useState('')
     const [classes, setClasses] = useState<ClassForSelect[]>([])
     const [selectedUser, setSelecctedUser] = useState({
@@ -193,11 +192,6 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
         remainingHours,
     ])
 
-    useEffect(() => {
-        // modify actual event
-        setActualEvent(a => ({ ...a, title }))
-    }, [setActualEvent, title])
-
     return (
         <form
             className='flex w-full max-w-md flex-1/2 flex-col justify-center gap-6'
@@ -292,10 +286,10 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
                 label='Practica'
                 type='text'
                 name='name'
-                value={title}
-                onChange={e => {
-                    setTitle(e.target.value)
-                }}
+                value={actualEvent.title}
+                onChange={e =>
+                    setActualEvent(a => ({ ...a, title: e.target.value }))
+                }
                 icon={UserIcon}
             />
             <CompletInput

@@ -30,6 +30,18 @@ interface CreateDialogProps {
 export function CreateDialog({ users, lab, isAdmin, user }: CreateDialogProps) {
     const [open, setOpen] = useAtom(openCreateAtom)
 
+    const usersToSelect = [
+        {
+            value: user?.sub ?? '',
+            label: user?.name ?? '',
+        },
+        ...users.map(u => ({
+            value: u.id,
+            label: u.name,
+        })),
+    ]
+    console.log('CreateDialogPre', usersToSelect)
+
     return (
         <Dialog open={open && !!user} onOpenChange={setOpen}>
             <DialogContent className='w-full max-w-4xl'>
