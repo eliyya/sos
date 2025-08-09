@@ -79,7 +79,6 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                 <CreateDialog
                     isAdmin={isAdmin}
                     lab={lab}
-                    disabled={!user}
                     user={user}
                     users={users}
                 />

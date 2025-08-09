@@ -32,7 +32,6 @@ interface CreateDialogProps {
         id: string
         name: string
     }[]
-    disabled?: boolean
     lab: {
         name: string
         id: string
@@ -48,13 +47,7 @@ interface CreateDialogProps {
     isAdmin?: boolean
     user: UserTokenPayload | null
 }
-export function CreateDialog({
-    users,
-    disabled,
-    lab,
-    isAdmin,
-    user,
-}: CreateDialogProps) {
+export function CreateDialog({ users, lab, isAdmin, user }: CreateDialogProps) {
     console.log([
         {
             value: user?.sub ?? '',
@@ -207,7 +200,7 @@ export function CreateDialog({
     }, [setActualEvent, title])
 
     return (
-        <Dialog open={open && !disabled} onOpenChange={setOpen}>
+        <Dialog open={open && !!user} onOpenChange={setOpen}>
             <DialogContent className='w-full max-w-4xl'>
                 <DialogTitle className='flex flex-col gap-4'>
                     <span className='w-full text-center text-3xl'>
