@@ -217,7 +217,6 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
                 name='teacher_id'
                 options={usersToSelect}
                 isClearable={false}
-                isDisabled={users.length === 1}
                 value={{
                     label: selectedUser.name,
                     value: selectedUser.id,
