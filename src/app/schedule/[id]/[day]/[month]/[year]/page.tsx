@@ -80,8 +80,6 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     isAdmin={isAdmin}
                     lab={lab}
                     disabled={!user}
-                    closeHour={lab.close_hour}
-                    openHour={lab.open_hour}
                     user={user}
                     users={users}
                 />

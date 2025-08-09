@@ -33,17 +33,17 @@ interface CreateDialogProps {
         name: string
     }[]
     disabled?: boolean
-    /**
-     * * The start hour of the laboratory in minutes from 00:00
-     */
-    openHour: number
-    /**
-     * * The end hour of the laboratory in minutes from 00:00
-     */
-    closeHour: number
     lab: {
         name: string
         id: string
+        /**
+         * * The end hour of the laboratory in minutes from 00:00
+         */
+        close_hour: number
+        /**
+         * * The start hour of the laboratory in minutes from 00:00
+         */
+        open_hour: number
     }
     isAdmin?: boolean
     user: UserTokenPayload | null
@@ -51,8 +51,6 @@ interface CreateDialogProps {
 export function CreateDialog({
     users,
     disabled,
-    closeHour,
-    openHour,
     lab,
     isAdmin,
     user,
@@ -140,10 +138,10 @@ export function CreateDialog({
         }))
         // validate start hour
         const openHourDate = start.with({
-            hour: Math.floor(openHour / 60),
+            hour: Math.floor(lab.open_hour / 60),
         })
         const closeHourDate = start.with({
-            hour: Math.floor(closeHour / 60),
+            hour: Math.floor(lab.close_hour / 60),
         })
         const hasEmpalmInStartHour = events.some(
             e =>
@@ -197,8 +195,7 @@ export function CreateDialog({
         timestampStartHour,
         setActualEvent,
         endTime,
-        openHour,
-        closeHour,
+        lab,
         events,
         selectedUser,
         remainingHours,
@@ -372,7 +369,7 @@ export function CreateDialog({
                                 })
                                 setTimestampStartHour(changed.epochMilliseconds)
                             }}
-                            min={secondsToTime(openHour * 60)}
+                            min={secondsToTime(lab.open_hour * 60)}
                             icon={User}
                         />
                         <CompletInput
@@ -432,11 +429,11 @@ export function CreateDialog({
                                 right: '',
                             }}
                             slotMinTime={secondsToTime(
-                                openHour * 60,
+                                lab.open_hour * 60,
                                 'HH:mm:ss',
                             )}
                             slotMaxTime={secondsToTime(
-                                closeHour * 60,
+                                lab.close_hour * 60,
                                 'HH:mm:ss',
                             )}
                             height='auto'
