@@ -85,27 +85,6 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
     ]
 
     useEffect(() => {
-        startLoadingClasses(async () => {
-            const classes = await getClassesWithDataFromUser(
-                selectedUser?.id ?? '',
-                ['subject', 'career'],
-            )
-            setClasses(classes)
-            const [firstClass] = classes
-            if (firstClass) {
-                setSelectedClass(firstClass)
-                startLoadingHours(async () => {
-                    const remainingHours = await getRemainingHours({
-                        classId: firstClass.id,
-                        day: timestampStartHour,
-                    })
-                    setRemainingHours(remainingHours)
-                })
-            }
-        })
-    }, [selectedUser, user, isAdmin, timestampStartHour])
-
-    useEffect(() => {
         const start =
             Temporal.Instant.fromEpochMilliseconds(
                 timestampStartHour,
@@ -218,6 +197,24 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
                     setSelecctedUser({
                         name: o.label,
                         id: o.value,
+                    })
+                    startLoadingClasses(async () => {
+                        const classes = await getClassesWithDataFromUser(
+                            o.value,
+                            ['subject', 'career'],
+                        )
+                        setClasses(classes)
+                        const [firstClass] = classes
+                        if (firstClass) {
+                            setSelectedClass(firstClass)
+                            startLoadingHours(async () => {
+                                const remainingHours = await getRemainingHours({
+                                    classId: firstClass.id,
+                                    day: timestampStartHour,
+                                })
+                                setRemainingHours(remainingHours)
+                            })
+                        }
                     })
                 }}
             />
