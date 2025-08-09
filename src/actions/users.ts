@@ -15,20 +15,6 @@ import { randomUUID } from 'node:crypto'
 // import * as z from 'zod'
 
 export async function getUsers() {
-    // not_me?: boolean /* (param) */
-    // const user = await getPaylodadUser()
-    // console.log(user)
-
-    // if (not_me && !user) return []
-    // if (not_me)
-    //     return db.user.findMany({
-    //         where: {
-    //             id: {
-    //                 not: user?.sub,
-    //             },
-    //         },
-    //     })
-    // else
     return db.user.findMany({
         where: {
             status: {

@@ -20,25 +20,20 @@ export default async function ScheduleBody({
 }: ScheduleBodyProps) {
     const lab = labs.find(l => l.id === lab_id)
     if (!lab) return null
-    console.log(users)
 
     return (
         <main className='container mx-auto px-4 py-8'>
             <div className='flex items-center justify-between'>
                 <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
-                {/* Client Component */}
                 <SearchInput />
             </div>
-            {/* Client Component */}
             <Calendar lab={lab} isAdmin={isAdmin} canSeeInfo={!!user} />
-            {/* Client Component */}
             <CreateDialog
                 isAdmin={isAdmin}
                 lab={lab}
                 user={user}
                 users={users}
             />
-            {/* Client Component */}
             <InfoDialog user={user} lab={lab} isAdmin={isAdmin} />
         </main>
     )
