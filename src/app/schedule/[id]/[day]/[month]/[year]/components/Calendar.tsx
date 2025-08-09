@@ -6,7 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { Temporal } from '@js-temporal/polyfill'
 import FullCalendar from '@fullcalendar/react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { useEffect } from 'react'
 import {
@@ -23,10 +23,6 @@ import {
 } from '@/lib/utils'
 
 interface CalendarProps {
-    /**
-     * The date to be displayed in the calendar in epoch milliseconds
-     */
-    timestamp: number
     lab: {
         name: string
         id: string
@@ -34,16 +30,26 @@ interface CalendarProps {
         open_hour: number
     }
     isAdmin?: boolean
-    userId: string
+    canSeeInfo: boolean
 }
 
-export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
-    const router = useRouter()
+export function Calendar({ lab, isAdmin, canSeeInfo }: CalendarProps) {
+    const { push } = useRouter()
     const openCreate = useSetAtom(openCreateAtom)
     const setStartHour = useSetAtom(createDayAtom)
     const newEventSignal = useAtomValue(newEventSignalAtom)
     const [events, setEvents] = useAtom(eventsAtom)
     const openEventInfoWith = useSetAtom(eventInfoAtom)
+
+    const [year, month, day] = usePathname().split('/').toReversed()
+
+    const timestamp = Temporal.ZonedDateTime.from({
+        timeZone: 'America/Monterrey',
+        year: parseInt(year),
+        month: parseInt(month),
+        day: parseInt(day),
+        hour: Math.floor(lab.open_hour / 60),
+    }).epochMilliseconds
 
     useEffect(() => {
         getPracticesFromWeek({
@@ -84,7 +90,7 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
                 return e
             })}
             eventClick={event => {
-                if (!userId) return
+                if (!canSeeInfo) return
                 const info = getCalendarEventInfo(event.event)
                 openEventInfoWith(info)
             }}
@@ -163,7 +169,7 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
                         // This is a redundant check that should never be true
                         if (!selectedWeek.equals(currentWeek)) {
                             // Navigate to the current week's view
-                            router.push(
+                            push(
                                 app.schedule.$id.$day.$month.$year(
                                     lab.id,
                                     currentWeek.day,
@@ -185,7 +191,7 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
                             days: 7,
                         })
 
-                        return router.push(
+                        return push(
                             app.schedule.$id.$day.$month.$year(
                                 lab.id,
                                 nextWeek.day,
@@ -205,7 +211,7 @@ export function Calendar({ timestamp, lab, isAdmin, userId }: CalendarProps) {
                         const prevWeek = selectedDay.subtract({
                             days: 7,
                         })
-                        return router.push(
+                        return push(
                             app.schedule.$id.$day.$month.$year(
                                 lab.id,
                                 prevWeek.day,

@@ -1,6 +1,6 @@
 import { ScheduleEvent } from '@/types/schedule'
 import { atom } from 'jotai'
-
+import { type getClassesWithDataFromUser } from '@/actions/class'
 export enum DialogMode {
     INFO,
     EDIT,
@@ -23,3 +23,17 @@ export const newEventSignalAtom = atom(Symbol())
 export const eventsAtom = atom<ScheduleEvent[]>([])
 export const eventInfoAtom = atom<ScheduleEvent | null>(null)
 export const modeAtom = atom<DialogMode>(DialogMode.INFO)
+export const selectedUserAtom = atom({
+    name: '',
+    id: '',
+})
+export type ClassForSelect = Awaited<
+    ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
+>[number]
+export const classesAtom = atom<ClassForSelect[]>([])
+export const selectedClassAtom = atom<ClassForSelect | null>(null)
+export const remainingHoursAtom = atom({
+    leftHours: Infinity,
+    allowedHours: 0,
+    usedHours: 0,
+})
