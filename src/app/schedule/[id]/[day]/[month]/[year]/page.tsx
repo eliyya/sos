@@ -25,13 +25,15 @@ interface SchedulePageProps {
     }>
 }
 export default async function SchedulePage({ params }: SchedulePageProps) {
-    const { id, day, month, year } = await params
+    const { id } = await params
 
     const user = await getPaylodadUser()
+    const userRoles = new RoleBitField(BigInt(user?.role ?? 0n))
+    const isAdmin = !!user && userRoles.has(RoleFlags.Admin)
 
     let users: { id: string; name: string }[] = []
 
-    if (user && new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin))
+    if (isAdmin)
         users = await db.user.findMany({
             where: {
                 status: STATUS.ACTIVE,
@@ -60,13 +62,6 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     })
     const lab = labs.find(l => l.id === id)
     if (!lab) notFound()
-    const timestamp = Temporal.ZonedDateTime.from({
-        timeZone: 'America/Monterrey',
-        year: parseInt(year),
-        month: parseInt(month),
-        day: parseInt(day),
-        hour: Math.floor(lab.open_hour / 60),
-    }).epochMilliseconds
 
     return (
         <div className='bg-background min-h-screen'>
@@ -74,22 +69,15 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
             <main className='container mx-auto px-4 py-8'>
                 <div className='flex items-center justify-between'>
                     <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
-                    <SearchInput lab_id={id} currentDay={timestamp} />
+                    <SearchInput />
                 </div>
                 <Calendar
                     userId={user?.sub ?? ''}
                     lab={lab}
-                    timestamp={timestamp}
-                    isAdmin={
-                        !!user &&
-                        new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
-                    }
+                    isAdmin={isAdmin}
                 />
                 <CreateDialog
-                    isAdmin={
-                        !!user &&
-                        new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
-                    }
+                    isAdmin={isAdmin}
                     lab={lab}
                     disabled={!user}
                     closeHour={lab.close_hour}
@@ -97,14 +85,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
                     user={user}
                     users={users}
                 />
-                <InfoDialog
-                    user={user}
-                    lab={lab}
-                    isAdmin={
-                        !!user &&
-                        new RoleBitField(BigInt(user.role)).has(RoleFlags.Admin)
-                    }
-                />
+                <InfoDialog user={user} lab={lab} isAdmin={isAdmin} />
             </main>
         </div>
     )

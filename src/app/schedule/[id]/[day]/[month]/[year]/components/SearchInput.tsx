@@ -5,17 +5,19 @@ import { SimpleInput } from '@/components/Inputs'
 import app from '@eliyya/type-routes'
 import { Temporal } from '@js-temporal/polyfill'
 import { CalendarSearchIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
-interface SearchInputProps {
-    lab_id: string
-    /**
-     * The current day in epoch milliseconds
-     */
-    currentDay: number
-}
-export function SearchInput({ lab_id, currentDay }: SearchInputProps) {
+export function SearchInput() {
     const router = useRouter()
+    const [id, year, month, day] = usePathname().split('/').toReversed()
+
+    const currentDay = Temporal.ZonedDateTime.from({
+        timeZone: 'America/Monterrey',
+        year: parseInt(year),
+        month: parseInt(month),
+        day: parseInt(day),
+    })
+
     return (
         <form
             className='flex items-center gap-2'
@@ -23,7 +25,7 @@ export function SearchInput({ lab_id, currentDay }: SearchInputProps) {
                 const dateString = data.get('search')
                 if (!dateString || typeof dateString !== 'string') return
                 const [y, m, d] = dateString.split('-')
-                router.push(app.schedule.$id.$day.$month.$year(lab_id, d, m, y))
+                router.push(app.schedule.$id.$day.$month.$year(id, d, m, y))
             }}
         >
             <label htmlFor='search' className='text-nowrap'>
@@ -33,10 +35,7 @@ export function SearchInput({ lab_id, currentDay }: SearchInputProps) {
                 name='search'
                 type='date'
                 id='search'
-                defaultValue={Temporal.Instant.fromEpochMilliseconds(currentDay)
-                    .toZonedDateTimeISO('America/Monterrey')
-                    .toPlainDate()
-                    .toString()}
+                defaultValue={currentDay.toPlainDate().toString()}
             />
             <Button type='submit'>
                 <CalendarSearchIcon />
