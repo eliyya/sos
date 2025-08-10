@@ -16,7 +16,7 @@ import { useDevice } from '@/hooks/useDevice'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
 
-export function LoginForm() {
+export function SignUpForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
     const setOpen = useSetAtom(LoginDialogAtom)
     const [username, setUsername] = useAtom(usernameAtom)
@@ -32,15 +32,37 @@ export function LoginForm() {
         <form
             action={data => {
                 startTransition(async () => {
-                    const { data, error } = await authClient.signIn.username({
-                        username: username, // required
+                    const { data, error } = await authClient.signUp.email({
+                        email: `${username}@noemail.local`, // required
                         password: password, // required
-                        rememberMe: true,
+                        name: username,
+                        username,
                     })
                     console.log({ data, error })
-                    if (!error) {
-                        replace(app.dashboard())
-                    }
+                    // const {
+                    //     refreshToken = '',
+                    //     status,
+                    //     errors,
+                    //     message,
+                    // } = await login(data, { browser, device, os, model })
+                    // if (status === LoginFormStatus.auth) {
+                    //     return setOpen(true)
+                    // } else if (status === LoginFormStatus.error) {
+                    //     if (errors?.username) setUsernameError(errors.username)
+                    //     if (errors?.password) setPasswordError(errors.password)
+                    //     if (message) setError(message)
+                    //     setTimeout(() => {
+                    //         setUsernameError('')
+                    //         setPasswordError('')
+                    //         setError('')
+                    //     }, 5000)
+                    //     return
+                    // } else if (status === LoginFormStatus.success) {
+                    //     const r = await refreshTokenAction({ refreshToken })
+                    //     if (!r.error) {
+                    //         replace(app.dashboard())
+                    //     }
+                    // }
                 })
             }}
             className='flex w-full max-w-md flex-col justify-center gap-6'
