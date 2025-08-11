@@ -1,7 +1,7 @@
 'use client'
 
+import { getRoles } from '@/actions/roles'
 import { editUser } from '@/actions/users'
-import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
@@ -11,10 +11,11 @@ import {
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
+import { authClient } from '@/lib/auth-client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, User, AtSign, Triangle } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { UserIcon, TriangleIcon, AtSignIcon, SaveIcon } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)
@@ -22,6 +23,14 @@ export function EditUserDialog() {
     const oldUser = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateUsersAtom)
+    const [roles, setRoles] = useState<Awaited<ReturnType<typeof getRoles>>>([])
+
+    useEffect(() => {
+        startTransition(async () => {
+            const roles = await getRoles()
+            setRoles(roles)
+        })
+    }, [])
 
     if (!oldUser) return null
 
@@ -62,7 +71,7 @@ export function EditUserDialog() {
                         label='Name'
                         type='text'
                         name='name'
-                        icon={User}
+                        icon={UserIcon}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
                         originalValue={oldUser.username}
@@ -70,30 +79,26 @@ export function EditUserDialog() {
                         label='Ussername'
                         type='text'
                         name='username'
-                        icon={AtSign}
+                        icon={AtSignIcon}
                     ></RetornableCompletInput>
                     <RetornableCompletSelect
                         isMulti
-                        label='Roles'
-                        name='roles'
-                        originalValue={Object.entries(
-                            new RoleBitField(oldUser.role).serialize(),
-                        )
-                            .filter(([, v]) => v)
-                            .map(([k]) => ({
-                                label: k,
-                                value: RoleFlags[k as keyof typeof RoleFlags],
-                            }))}
-                        options={Object.entries(RoleBitField.Flags).map(
-                            ([k, v]) => ({
-                                label: k,
-                                value: v,
-                            }),
-                        )}
-                        icon={Triangle}
+                        label='Rol'
+                        name='role_id'
+                        originalValue={{
+                            label:
+                                roles.find(r => r.id === oldUser.role_id)
+                                    ?.name ?? oldUser.role_id,
+                            value: oldUser.role_id,
+                        }}
+                        options={roles.map(r => ({
+                            label: r.name,
+                            value: r.id,
+                        }))}
+                        icon={TriangleIcon}
                     />
                     <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
+                        <SaveIcon className='mr-2 h-5 w-5' />
                         Save
                     </Button>
                 </form>

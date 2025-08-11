@@ -55,7 +55,7 @@ model Session {
     expires_at DateTime
     token      String
     created_at DateTime
-    updated_at DateTime
+    updated_at DateTime @updatedAt
     ip_address String?
     user_agent String?
     user_id    String
@@ -79,7 +79,7 @@ model Account {
     scope                    String?
     password                 String?
     created_at               DateTime
-    updated_at               DateTime
+    updated_at               DateTime  @updatedAt
 
     @@map("account")
 }
