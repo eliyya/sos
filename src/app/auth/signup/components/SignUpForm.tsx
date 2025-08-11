@@ -1,11 +1,9 @@
 'use client'
 
-import { LogIn, RectangleEllipsis } from 'lucide-react'
-import { CompletInput } from '@/components/Inputs'
+import { LogIn } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useState, useTransition } from 'react'
 import { cn } from '@/lib/utils'
-import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { MessageError } from '@/components/Error'
@@ -17,10 +15,7 @@ import { ConfirmPasswordInput } from './inputs/ConfirmPasswordInput'
 import { NameInput } from './inputs/NameInput'
 
 export function SignUpForm() {
-    const t = useTranslations('app.auth.login.components.loginForm')
-    const [password, setPassword] = useState('')
     const [error, setError] = useState('')
-    const [passwordError, setPasswordError] = useState('')
     const [pending, startTransition] = useTransition()
     const { push } = useRouter()
 
