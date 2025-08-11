@@ -20,7 +20,6 @@ const handler = new MiddlewareHandler()
 export const middleware = (request: NextRequest) => handler.handle(request)
 
 handler.set(/^\/(schedule.*)?$/, async ctx => {
-    console.log('m', 4)
     const actual_date = new Date()
     const now = {
         day: actual_date.getDate(),
@@ -57,7 +56,6 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
 })
 
 handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
-    console.log('m', 3)
     const [, , , l_type, lab_id, month, year] =
         ctx.request.nextUrl.pathname.split('/') as [
             string,
@@ -115,7 +113,6 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
 })
 
 handler.set(/^\/dashboard.*$/, async ctx => {
-    console.log('m', 2)
     const sessionCookie = getSessionCookie(ctx.request)
     if (!sessionCookie) return ctx.redirect(app.auth.login())
     const { data: session } = await betterFetch<Session>(
