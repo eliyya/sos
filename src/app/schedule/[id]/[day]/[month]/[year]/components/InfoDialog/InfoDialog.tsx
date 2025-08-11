@@ -11,7 +11,6 @@ import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { EditMode } from './EditMode'
 import { InfoMode } from './InfoMode'
-import { JWTPayload } from 'jose'
 import {
     Dialog,
     DialogContent,
@@ -29,10 +28,10 @@ interface InfoDialogProps {
         close_hour: number
         open_hour: number
     }
-    user: JWTPayload | null
+    userId: string
     isAdmin?: boolean
 }
-export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
+export function InfoDialog({ lab, isAdmin, userId }: InfoDialogProps) {
     const [mode, setMode] = useAtom(modeAtom)
     const [currentEvent, setCurrentEvent] = useAtom(eventInfoAtom)
     const [practice, setPractice] = useState<Awaited<
@@ -129,9 +128,9 @@ export function InfoDialog({ lab, isAdmin, user }: InfoDialogProps) {
                         isAdmin={isAdmin}
                         isOwner={
                             !!(
-                                user &&
+                                userId &&
                                 currentEvent &&
-                                user.sub === currentEvent.ownerId
+                                userId === currentEvent.ownerId
                             )
                         }
                     />

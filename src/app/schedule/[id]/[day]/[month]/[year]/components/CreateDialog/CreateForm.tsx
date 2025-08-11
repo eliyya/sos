@@ -15,7 +15,6 @@ import {
     selectedClassAtom,
     selectedUserAtom,
 } from '@/global/management-practices'
-import { UserTokenPayload } from '@/lib/types'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState, useTransition } from 'react'
 import { getRemainingHours } from '@/actions/class'
@@ -43,7 +42,10 @@ interface CreateFormProps {
         open_hour: number
     }
     isAdmin?: boolean
-    user: UserTokenPayload | null
+    user: {
+        id: string
+        name: string
+    } | null
 }
 
 export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
@@ -67,7 +69,7 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
 
     const usersToSelect = [
         {
-            value: user?.sub ?? '',
+            value: user?.id ?? '',
             label: user?.name ?? '',
         },
         ...users.map(u => ({
@@ -80,7 +82,7 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
         if (!user) return
         setSelecctedUser({
             name: user.name,
-            id: user.sub,
+            id: user.id,
         })
     }, [user, setSelecctedUser])
 

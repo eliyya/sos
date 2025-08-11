@@ -101,4 +101,7 @@ export const auth = betterAuth({
             updatedAt: 'updated_at',
         },
     },
+    advanced: {
+        cookiePrefix: 'sos',
+    },
 })

@@ -2,10 +2,14 @@ import { Metadata } from 'next'
 import { db } from '@/prisma/db'
 import { notFound } from 'next/navigation'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
-import { getPaylodadUser } from '@/actions/middleware'
-import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { ScheduleHeader } from './components/ScheduleHeader'
 import ScheduleBody from './components/ScheduleBody'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+import {
+    PermissionsBitField,
+    PermissionsFlags,
+} from '@/bitfields/PermissionsBitField'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -23,26 +27,28 @@ interface SchedulePageProps {
 export default async function SchedulePage({ params }: SchedulePageProps) {
     const { id } = await params
 
-    const user = await getPaylodadUser()
-    const userRoles = new RoleBitField(BigInt(user?.role ?? 0n))
-    const isAdmin = !!user && userRoles.has(RoleFlags.Admin)
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    })
+    const permissions = new PermissionsBitField(
+        BigInt(session?.user.permissions ?? 0n),
+    )
+    const isAdmin = !!session && permissions.has(PermissionsFlags.ADMIN)
 
     let users: { id: string; name: string }[] = []
 
-    // if (isAdmin)
     users = await db.user.findMany({
         where: {
             status: STATUS.ACTIVE,
-            role: {
-                in: RoleBitField.getCombinationsOf(RoleFlags.Teacher),
-            },
-            NOT: { id: user?.sub },
         },
         select: {
             id: true,
             name: true,
         },
     })
+    const { user, others = [] } = Object.groupBy(users, u =>
+        u.id === session?.user.id ? 'user' : 'others',
+    )
 
     const labs = await db.laboratory.findMany({
         where: {
@@ -61,13 +67,13 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
 
     return (
         <div className='bg-background min-h-screen'>
-            <ScheduleHeader user={user} lab_id={id} labs={labs} />
+            <ScheduleHeader permissions={permissions} lab_id={id} labs={labs} />
             <ScheduleBody
-                user={user}
+                user={user?.[0] ?? null}
                 lab_id={id}
                 labs={labs}
                 isAdmin={isAdmin}
-                users={users}
+                users={others}
             />
         </div>
     )
