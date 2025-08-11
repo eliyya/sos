@@ -1,6 +1,5 @@
 'use client'
 
-import { getUserRole } from '@/actions/roles'
 import { deleteUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
@@ -9,11 +8,10 @@ import {
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
-import { authClient } from '@/lib/auth-client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
 export function DeleteUserDialog() {
     const [open, setOpen] = useAtom(openDeleteUserAtom)
@@ -21,14 +19,6 @@ export function DeleteUserDialog() {
     const user = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateUsersAtom)
-    const [userRoleId, setUserRoleId] = useState('')
-
-    useEffect(() => {
-        startTransition(async () => {
-            const userRole = await getUserRole()
-            setUserRoleId(userRole.id)
-        })
-    }, [])
 
     if (!user) return null
 

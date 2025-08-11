@@ -11,7 +11,6 @@ import {
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
-import { authClient } from '@/lib/auth-client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { UserIcon, TriangleIcon, AtSignIcon, SaveIcon } from 'lucide-react'

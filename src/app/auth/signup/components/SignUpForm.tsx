@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
-import { getAdminRole } from '@/actions/users'
+import { getAdminRole } from '@/actions/roles'
 
 export function SignUpForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
