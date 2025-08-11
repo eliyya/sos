@@ -7,7 +7,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
 import { Temporal } from '@js-temporal/polyfill'
-import { LABORATORY_TYPE } from '@prisma/client'
+import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { PlusIcon, UserIcon } from 'lucide-react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -31,14 +31,23 @@ export default async function NullPage() {
     const permissions = new PermissionsBitField(
         BigInt(session?.user.permissions ?? 0n),
     )
+    const usersCount = await db.user.count({
+        where: {
+            status: STATUS.ACTIVE,
+        },
+    })
 
     return (
-        <div className='bg-background min-h-screen'>
-            <main className='container mx-auto px-4 py-8'>
+        <div className='bg-background flex min-h-screen items-center justify-center'>
+            <main className='container mx-auto flex flex-col items-center px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>
                     No existen laboratorios aun
                 </h1>
-                <GetContent permissions={permissions} hasSession={!!session} />
+                <GetContent
+                    permissions={permissions}
+                    hasSession={!!session}
+                    hasUsers={usersCount > 0}
+                />
             </main>
         </div>
     )
@@ -47,12 +56,29 @@ export default async function NullPage() {
 interface GetContentProps {
     permissions: PermissionsBitField
     hasSession: boolean
+    hasUsers: boolean
 }
-function GetContent({ permissions, hasSession }: GetContentProps) {
+function GetContent({ permissions, hasSession, hasUsers }: GetContentProps) {
+    if (!hasUsers)
+        return (
+            <>
+                <h2 className='mb-8 text-2xl font-bold'>Bienvenido a SOS</h2>
+                <p className='mb-8 text-lg'>
+                    Para que la plataforma funcione correctamente, debes
+                    registrar al menos un administrador
+                </p>
+                <ButtonLink href={app.auth.signup()}>
+                    <UserIcon className='mr-2 h-4 w-4' />
+                    Registrar el Primer Administrador
+                </ButtonLink>
+            </>
+        )
     if (!hasSession)
         return (
             <>
-                <p>Inicia sesion o contacta a un administrador</p>
+                <p className='mb-8 text-lg'>
+                    Inicia sesion o contacta a un administrador
+                </p>
                 <ButtonLink href={app.dashboard.management.laboratories()}>
                     <UserIcon className='mr-2 h-4 w-4' />
                     Iniciar sesion

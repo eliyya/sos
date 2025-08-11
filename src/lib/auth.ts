@@ -18,6 +18,7 @@ export const auth = betterAuth({
                     },
                 },
             },
+            minUsernameLength: 3,
         }),
         customSession(async ({ session, user }) => {
             const perm = await db.role.findUnique({

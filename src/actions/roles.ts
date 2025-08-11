@@ -6,7 +6,7 @@ export async function getAdminRole() {
     const role = await db.role.findFirst({
         where: { name: 'admin' },
     })
-    return role
+    return role!
 }
 
 export async function getUserRole() {
