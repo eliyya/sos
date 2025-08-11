@@ -176,25 +176,36 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
         }
     class_id ||= null
     let registered_by = teacher_id
-    try {
-        await db.user.validatePassword({ id: teacher_id }, password)
-    } catch {
+    const authContext = await auth.$context
+    const teacher = await db.account.findFirst({
+        where: { user_id: teacher_id },
+        select: { password: true },
+    })
+    if (!teacher) return { message: 'El usuario no existe', errors: {} }
+    let passVerified = authContext.password.verify({
+        password,
+        hash: teacher.password ?? '',
+    })
+    if (!passVerified) {
         if (
             permissions.has(PermissionsFlags.ADMIN) &&
             teacher_id !== session.user.id
         ) {
-            try {
-                await db.user.validatePassword(
-                    { id: session.user.id },
-                    password,
-                )
-                registered_by = session.user.id
-            } catch {
+            const user = await db.account.findFirst({
+                where: { user_id: teacher_id },
+                select: { password: true },
+            })
+            if (!user) return { message: 'El usuario no existe', errors: {} }
+            passVerified = authContext.password.verify({
+                password,
+                hash: user.password ?? '',
+            })
+            registered_by = session.user.id
+            if (!passVerified)
                 return {
                     message: 'La contraseña es incorrecta',
                     errors: { teacher_id: 'La contraseña es incorrecta' },
                 }
-            }
         } else
             return {
                 message: 'La contraseña es incorrecta',
