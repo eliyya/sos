@@ -1,18 +1,10 @@
 'use server'
 
 import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
-// import { COOKIES, JWT_SECRET } from '@/lib/constants'
 import { db, snowflake } from '@/prisma/db'
 import { Prisma, STATUS } from '@prisma/client'
 import { hash } from 'bcrypt'
 import { randomUUID } from 'node:crypto'
-// import { getPaylodadUser } from './middleware'
-// import { UserSchema } from '@/lib/schemas'
-// import app from '@eliyya/type-routes'
-// import { compare, hash } from 'bcrypt'
-// import { SignJWT } from 'jose'
-// import { cookies } from 'next/headers'
-// import * as z from 'zod'
 
 export async function getUsers() {
     return db.user.findMany({
@@ -28,7 +20,13 @@ export async function getAdminRole() {
     const role = await db.role.findFirst({
         where: { name: 'admin' },
     })
-    if (!role) return null
+    return role
+}
+
+export async function getTeacherRole() {
+    const role = await db.role.findFirst({
+        where: { name: 'teacher' },
+    })
     return role
 }
 

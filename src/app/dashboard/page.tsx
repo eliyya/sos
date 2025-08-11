@@ -6,7 +6,6 @@ import { db } from '@/prisma/db'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import Link from 'next/link'
 import { Temporal } from '@js-temporal/polyfill'
-import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 
 export const metadata: Metadata = {
     title: 'Panel de Administrador | SOS',
@@ -27,9 +26,7 @@ export default async function AdminDashboardPage() {
         },
     })
     const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
-    const monthStart = now.subtract({
-        days: now.day,
-    })
+    const monthStart = now.subtract({ days: now.day })
     const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
 
     const practices = await db.practice.count({
@@ -58,13 +55,7 @@ export default async function AdminDashboardPage() {
             created_at: true,
         },
     })
-    const users = await db.user.count({
-        where: {
-            role: {
-                in: RoleBitField.getCombinationsOf(RoleFlags.Teacher),
-            },
-        },
-    })
+    const users = await db.user.count()
     const stats = [
         {
             title: 'Laboratorios',
@@ -88,7 +79,7 @@ export default async function AdminDashboardPage() {
             title: 'Usuarios',
             value: users,
             icon: UsersIcon,
-            description: 'Docentes registrados',
+            description: 'Usuarios registrados',
         },
     ]
     return (

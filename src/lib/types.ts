@@ -1,4 +1,5 @@
 import type { JWTPayload as JoseJWTPayload } from 'jose'
+import { auth } from '@/lib/auth'
 
 export type LoginFormState = {
     errors?: {
@@ -18,6 +19,8 @@ export enum LoginFormStatus {
     error,
 }
 
+export type CompleteSession = typeof auth.$Infer.Session
+export type UserSession = CompleteSession['user']
 export interface UserTokenPayload extends JoseJWTPayload {
     /**
      * Id of the user

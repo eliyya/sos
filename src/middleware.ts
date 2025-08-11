@@ -125,7 +125,6 @@ handler.set(/^\/dashboard.*$/, async ctx => {
             headers: { cookie: ctx.request.headers.get('cookie') || '' },
         },
     )
-    console.log(session)
     if (!session) return ctx.redirect(app.auth.login())
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),
