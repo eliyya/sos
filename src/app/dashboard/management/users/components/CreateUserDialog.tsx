@@ -1,28 +1,28 @@
 'use client'
 
-import { createUser } from '@/actions/users'
-import { RoleBitField } from '@/bitfields/RoleBitField'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { openCreateUserAtom, updateUsersAtom } from '@/global/management-users'
-import {
-    Dialog,
-    DialogContent,
-    // DialogDescription,
-    DialogTitle,
-} from '@/components/Dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { User, AtSign, Triangle, Save, Key } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
+import { authClient } from '@/lib/auth-client'
+import { getRoles } from '@/actions/roles'
+import { Role } from '@prisma/client'
 
 export function CreateUserDialog() {
     const [open, setOpen] = useAtom(openCreateUserAtom)
     const [message, setMessage] = useState('')
-    const [passError, setPassError] = useState('')
-    const [passConfirmError, setPassConfirmError] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateUsersAtom)
+    const [roles, setRoles] = useState<Role[]>([])
+    // TODO: Add validation
+
+    useEffect(() => {
+        getRoles().then(setRoles)
+    }, [])
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -30,18 +30,22 @@ export function CreateUserDialog() {
                 <DialogTitle>
                     <span className='text-3xl'>Crear Usuario</span>
                 </DialogTitle>
-                {/* <DialogDescription>
-                    Edit the user&apos;s information
-                </DialogDescription> */}
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error, password, confirm } =
-                                await createUser(data)
+                            const name = data.get('name') as string
+                            const username = data.get('username') as string
+                            const password = data.get('password') as string
+                            const role_id = data.get('role_id') as string
+                            const { error } = await authClient.signUp.email({
+                                email: `${username}@noemail.local`,
+                                password,
+                                name,
+                                username,
+                                role_id,
+                            })
 
-                            if (error) setMessage(error)
-                            else if (password) setPassError(password)
-                            else if (confirm) setPassConfirmError(confirm)
+                            if (error) setMessage('Algo salio mal')
                             else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
@@ -51,8 +55,6 @@ export function CreateUserDialog() {
                             }
                             setTimeout(() => {
                                 setMessage('')
-                                setPassError('')
-                                setPassConfirmError('')
                             }, 5_000)
                         })
                     }}
@@ -78,29 +80,24 @@ export function CreateUserDialog() {
                         icon={AtSign}
                     />
                     <CompletSelect
-                        isMulti
                         label='Roles'
-                        name='roles'
-                        options={Object.entries(RoleBitField.Flags).map(
-                            ([k, v]) => ({
-                                label: k,
-                                value: v,
-                            }),
-                        )}
+                        name='role_id'
+                        options={roles.map(r => ({
+                            label: r.name,
+                            value: r.id,
+                        }))}
                         icon={Triangle}
                     />
                     <CompletInput
                         label='Password'
                         type='password'
                         name='password'
-                        error={passError}
                         icon={Key}
                     />
                     <CompletInput
                         label='Confirm Password'
                         type='password'
                         name='password-confirm'
-                        error={passConfirmError}
                         icon={Key}
                     />
                     <Button type='submit' disabled={inTransition}>
