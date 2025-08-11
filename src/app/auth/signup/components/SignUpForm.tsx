@@ -3,68 +3,44 @@
 import { LogIn, RectangleEllipsis, User } from 'lucide-react'
 import { CompletInput } from '@/components/Inputs'
 import { Button } from '@/components/Button'
-import { login, refreshToken as refreshTokenAction } from '@/actions/auth'
 import { useState, useTransition } from 'react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
-import { LoginFormStatus } from '@/lib/types'
-import { useAtom, useSetAtom } from 'jotai'
-import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useDevice } from '@/hooks/useDevice'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
+import { getAdminRole } from '@/actions/users'
 
 export function SignUpForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
-    const setOpen = useSetAtom(LoginDialogAtom)
-    const [username, setUsername] = useAtom(usernameAtom)
-    const [password, setPassword] = useAtom(passwordAtom)
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [usernameError, setUsernameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
     const [pending, startTransition] = useTransition()
-    const { replace } = useRouter()
-    const { browser, device, os, model } = useDevice()
+    const { push } = useRouter()
 
     return (
         <form
-            action={data => {
+            action={() =>
                 startTransition(async () => {
-                    const { data, error } = await authClient.signUp.email({
-                        email: `${username}@noemail.local`, // required
-                        password: password, // required
+                    const role = await getAdminRole()
+                    if (!role) return setError('Something went wrong')
+
+                    const { error } = await authClient.signUp.email({
+                        email: `${username}@noemail.local`,
+                        password: password,
                         name: username,
                         username,
+                        role_id: role.id,
                     })
-                    console.log({ data, error })
-                    // const {
-                    //     refreshToken = '',
-                    //     status,
-                    //     errors,
-                    //     message,
-                    // } = await login(data, { browser, device, os, model })
-                    // if (status === LoginFormStatus.auth) {
-                    //     return setOpen(true)
-                    // } else if (status === LoginFormStatus.error) {
-                    //     if (errors?.username) setUsernameError(errors.username)
-                    //     if (errors?.password) setPasswordError(errors.password)
-                    //     if (message) setError(message)
-                    //     setTimeout(() => {
-                    //         setUsernameError('')
-                    //         setPasswordError('')
-                    //         setError('')
-                    //     }, 5000)
-                    //     return
-                    // } else if (status === LoginFormStatus.success) {
-                    //     const r = await refreshTokenAction({ refreshToken })
-                    //     if (!r.error) {
-                    //         replace(app.dashboard())
-                    //     }
-                    // }
+                    if (!error) return push(app.auth.login())
+                    setError('Something went wrong')
+                    console.log(error)
                 })
-            }}
+            }
             className='flex w-full max-w-md flex-col justify-center gap-6'
         >
             <h2 className='text-3xl font-bold text-gray-800 md:text-4xl dark:text-gray-100'>

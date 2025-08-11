@@ -24,13 +24,18 @@ export async function getUsers() {
     })
 }
 
+export async function getAdminRole() {
+    const role = await db.role.findFirst({
+        where: { name: 'admin' },
+    })
+    if (!role) return null
+    return role
+}
+
 export async function getTeachersActive() {
     return db.user.findMany({
         where: {
             status: STATUS.ACTIVE,
-            role: {
-                in: RoleBitField.getCombinationsOf(RoleFlags.Teacher),
-            },
         },
     })
 }

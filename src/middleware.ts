@@ -1,46 +1,26 @@
 import { NextRequest } from 'next/server'
 import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import app from '@eliyya/type-routes'
-import { getPaylodadUser } from './actions/middleware'
-import { RoleBitField, RoleFlags } from './bitfields/RoleBitField'
-import { COOKIES } from './constants/client'
-import { cookies } from 'next/headers'
+import { getSessionCookie } from 'better-auth/cookies'
+import { betterFetch } from '@better-fetch/fetch'
 
-const handler = new MiddlewareHandler()
+import { auth } from './lib/auth'
+import {
+    PermissionsBitField,
+    PermissionsFlags,
+} from './bitfields/PermissionsBitField'
+type Session = typeof auth.$Infer.Session
 
 export const config = {
     matcher:
         '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
 }
+
+const handler = new MiddlewareHandler()
 export const middleware = (request: NextRequest) => handler.handle(request)
 
-handler.use(/^\//, async ctx => {
-    const payloadUser = await getPaylodadUser()
-    const refresh = ctx.request.cookies.get(COOKIES.REFRESH)?.value
-    if (payloadUser || !refresh) return ctx.next()
-    const url = new URL(app.api['refresh-token'](), ctx.request.nextUrl.origin)
-    const req = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken: refresh }),
-    })
-    const { accesToken } = await req.json()
-    if (accesToken) {
-        const cookieStore = await cookies()
-        const expires = new Date()
-        expires.setDate(expires.getDate() + 1)
-        cookieStore.set({
-            name: COOKIES.SESSION,
-            value: accesToken,
-            expires,
-            path: '/',
-            httpOnly: true,
-        })
-    }
-    return ctx.next()
-})
-
 handler.set(/^\/(schedule.*)?$/, async ctx => {
+    console.log('m', 4)
     const actual_date = new Date()
     const now = {
         day: actual_date.getDate(),
@@ -77,6 +57,7 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
 })
 
 handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
+    console.log('m', 3)
     const [, , , l_type, lab_id, month, year] =
         ctx.request.nextUrl.pathname.split('/') as [
             string,
@@ -134,9 +115,21 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
 })
 
 handler.set(/^\/dashboard.*$/, async ctx => {
-    const payloadUser = await getPaylodadUser()
-    if (!payloadUser) return ctx.redirect(app.auth.login())
-    const roles = new RoleBitField(BigInt(payloadUser.role))
-    if (roles.has(RoleFlags.Admin)) return ctx.next()
+    console.log('m', 2)
+    const sessionCookie = getSessionCookie(ctx.request)
+    if (!sessionCookie) return ctx.redirect(app.auth.login())
+    const { data: session } = await betterFetch<Session>(
+        '/api/auth/get-session',
+        {
+            baseURL: ctx.request.nextUrl.origin,
+            headers: { cookie: ctx.request.headers.get('cookie') || '' },
+        },
+    )
+    console.log(session)
+    if (!session) return ctx.redirect(app.auth.login())
+    const permissions = new PermissionsBitField(
+        BigInt(session.user.permissions),
+    )
+    if (permissions.has(PermissionsFlags.ADMIN)) return ctx.next()
     return ctx.redirect(app.schedule.null())
 })

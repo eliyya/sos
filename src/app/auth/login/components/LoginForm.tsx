@@ -6,8 +6,8 @@ import { Button } from '@/components/Button'
 import { useState, useTransition } from 'react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
-import { useAtom, useSetAtom } from 'jotai'
-import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
+import { useAtom } from 'jotai'
+import { usernameAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { MessageError } from '@/components/Error'
@@ -21,23 +21,22 @@ export function LoginForm() {
     const [usernameError, setUsernameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
     const [pending, startTransition] = useTransition()
-    const { replace } = useRouter()
+    const { push } = useRouter()
 
     return (
         <form
-            action={data => {
+            action={() =>
                 startTransition(async () => {
-                    const { data, error } = await authClient.signIn.username({
+                    const { error } = await authClient.signIn.username({
                         username: username,
                         password: password,
-                        rememberMe: true,
                     })
-                    console.log({ data, error })
-                    if (!error) {
-                        replace(app.dashboard())
-                    }
+                    if (!error) return push(app.dashboard())
+                    if (error.code === 'invalid username or password')
+                        setError(error.message!)
+                    else setError('Something went wrong')
                 })
-            }}
+            }
             className='flex w-full max-w-md flex-col justify-center gap-6'
         >
             <h2 className='text-3xl font-bold text-gray-800 md:text-4xl dark:text-gray-100'>
@@ -58,6 +57,7 @@ export function LoginForm() {
                 onChange={e => {
                     setUsername(e.target.value)
                     setUsernameError('')
+                    setError('')
                 }}
                 error={usernameError}
                 icon={User}
@@ -72,6 +72,7 @@ export function LoginForm() {
                 onChange={e => {
                     setPassword(e.target.value)
                     setPasswordError('')
+                    setError('')
                 }}
                 error={passwordError}
                 icon={RectangleEllipsis}

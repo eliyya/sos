@@ -17,10 +17,10 @@ datasource db {
 }
 
 model Role {
-    id          String      @id
-    name        String      @unique
+    id          String @id
+    name        String @unique
     permissions BigInt
-    UserRoles   UserRoles[]
+    User        User[]
 }
 
 model User {
@@ -34,29 +34,20 @@ model User {
     status           STATUS   @default(ACTIVE)
     updated_at       DateTime @updatedAt
     display_username String?
+    role_id          String
+
+    role Role @relation(fields: [role_id], references: [id])
 
     practices          Practice[]
-    practice_registers Practice[]  @relation("practice_registers")
+    practice_registers Practice[] @relation("practice_registers")
     classes            Class[]
     issues             Issue[]
     comments           Comment[]
     sessions           Session[]
     accounts           Account[]
-    UserRoles          UserRoles[]
 
     @@unique([email])
     @@map("users")
-}
-
-model UserRoles {
-    id      String @id
-    user_id String
-    role_id String
-
-    user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    role Role @relation(fields: [role_id], references: [id], onDelete: Cascade)
-
-    @@map("user_roles")
 }
 
 model Session {
@@ -67,8 +58,8 @@ model Session {
     updated_at DateTime
     ip_address String?
     user_agent String?
-    userId     String
-    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user_id    String
+    user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     @@unique([token])
     @@map("session")

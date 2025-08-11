@@ -1,13 +1,15 @@
 import { db } from '../prisma/db.ts'
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
-import { username } from 'better-auth/plugins'
+import { customSession, username } from 'better-auth/plugins'
+import { nextCookies } from 'better-auth/next-js'
 
 export const auth = betterAuth({
     database: prismaAdapter(db, {
         provider: 'postgresql',
     }),
     plugins: [
+        nextCookies(),
         username({
             schema: {
                 user: {
@@ -16,6 +18,19 @@ export const auth = betterAuth({
                     },
                 },
             },
+        }),
+        customSession(async ({ session, user }) => {
+            const perm = await db.role.findUnique({
+                // @ts-expect-error role_id is a string
+                where: { id: user.role_id },
+            })
+            return {
+                ...session,
+                user: {
+                    ...user,
+                    permissions: (perm?.permissions ?? 0n).toString(),
+                },
+            }
         }),
     ],
     emailAndPassword: {
@@ -27,6 +42,9 @@ export const auth = betterAuth({
         sendOnSignUp: false,
     },
     session: {
+        cookieCache: {
+            enabled: true,
+        },
         fields: {
             createdAt: 'created_at',
             expiresAt: 'expires_at',
@@ -42,6 +60,17 @@ export const auth = betterAuth({
             createdAt: 'created_at',
             emailVerified: 'email_verified',
             updatedAt: 'updated_at',
+        },
+        additionalFields: {
+            role_id: {
+                type: 'string',
+                input: true,
+            },
+            // Only for session
+            permissions: {
+                type: 'string',
+                input: false,
+            },
         },
     },
     account: {
