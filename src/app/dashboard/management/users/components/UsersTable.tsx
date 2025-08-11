@@ -1,7 +1,6 @@
 'use client'
 
 import { getUsers } from '@/actions/users'
-import { RoleBitField } from '@/bitfields/RoleBitField'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {
@@ -12,7 +11,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { User } from '@prisma/client'
+import { Role, User } from '@prisma/client'
 import { STATUS } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -31,16 +30,22 @@ import {
 import { ArchiveUserDialog } from './ArchiveUserDialog'
 import { UnarchiveUserDialog } from './UnarchiveUserDialog'
 import { DeleteUserDialog } from './DeleteUserDialog'
+import { getRoles } from '@/actions/roles'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
     const update = useAtomValue(updateUsersAtom)
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
+    const [roles, setRoles] = useState<Role[]>([])
 
     useEffect(() => {
         getUsers(/*true*/).then(setUsers)
     }, [update])
+
+    useEffect(() => {
+        getRoles().then(setRoles)
+    }, [])
 
     return (
         <>
@@ -91,7 +96,13 @@ export function UsersTable() {
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Badges rolesBit={user.role} />
+                                    <Badge variant='outline'>
+                                        {
+                                            roles.find(
+                                                r => r.id === user.role_id,
+                                            )?.name
+                                        }
+                                    </Badge>
                                 </TableCell>
                                 <TableCell className='flex gap-0.5'>
                                     <Buttons user={user} />
@@ -104,32 +115,6 @@ export function UsersTable() {
             <ArchiveUserDialog />
             <UnarchiveUserDialog />
             <DeleteUserDialog />
-        </>
-    )
-}
-
-interface BadgesProps {
-    rolesBit: bigint
-}
-function Badges({ rolesBit }: BadgesProps) {
-    const roles = new RoleBitField(rolesBit)
-    return (
-        <>
-            {Object.entries(roles.serialize())
-                .filter(([, b]) => b)
-                .map(([f]) => (
-                    <Badge
-                        variant={
-                            f === 'Anonymous' ? 'secondary'
-                            : f === 'Admin' ?
-                                'default'
-                            :   'outline'
-                        }
-                        key={f}
-                    >
-                        {f}
-                    </Badge>
-                ))}
         </>
     )
 }
