@@ -3,22 +3,18 @@
 import { LogIn, RectangleEllipsis, User } from 'lucide-react'
 import { CompletInput } from '@/components/Inputs'
 import { Button } from '@/components/Button'
-import { login, refreshToken as refreshTokenAction } from '@/actions/auth'
 import { useState, useTransition } from 'react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
-import { LoginFormStatus } from '@/lib/types'
 import { useAtom, useSetAtom } from 'jotai'
 import { usernameAtom, LoginDialogAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useDevice } from '@/hooks/useDevice'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
-    const setOpen = useSetAtom(LoginDialogAtom)
     const [username, setUsername] = useAtom(usernameAtom)
     const [password, setPassword] = useAtom(passwordAtom)
     const [error, setError] = useState('')
@@ -26,15 +22,14 @@ export function LoginForm() {
     const [passwordError, setPasswordError] = useState('')
     const [pending, startTransition] = useTransition()
     const { replace } = useRouter()
-    const { browser, device, os, model } = useDevice()
 
     return (
         <form
             action={data => {
                 startTransition(async () => {
                     const { data, error } = await authClient.signIn.username({
-                        username: username, // required
-                        password: password, // required
+                        username: username,
+                        password: password,
                         rememberMe: true,
                     })
                     console.log({ data, error })
