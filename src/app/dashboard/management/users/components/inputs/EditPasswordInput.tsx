@@ -1,6 +1,5 @@
 import { KeyIcon } from 'lucide-react'
 import { RetornableCompletInput } from '@/components/Inputs'
-import { useState } from 'react'
 import { useAtom } from 'jotai'
 import {
     editPasswordAtom,

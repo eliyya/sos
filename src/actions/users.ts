@@ -3,7 +3,7 @@
 import { db } from '@/prisma/db'
 import { STATUS } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
-import { getDeletedRole, getUserRole } from './roles'
+import { getDeletedRole } from './roles'
 import { capitalize } from '@/lib/utils'
 
 export async function getUsers() {
