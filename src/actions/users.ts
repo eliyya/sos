@@ -3,7 +3,7 @@
 import { db } from '@/prisma/db'
 import { STATUS } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
-import { getUserRole } from './roles'
+import { getDeletedRole, getUserRole } from './roles'
 import { capitalize } from '@/lib/utils'
 
 export async function getUsers() {
@@ -54,7 +54,7 @@ export async function unarchiveUser(formData: FormData) {
 
 export async function deleteUser(formData: FormData) {
     const id = formData.get('user_id') as string
-    const userRole = await getUserRole()
+    const userRole = await getDeletedRole()
     try {
         await db.user.update({
             where: { id },
