@@ -78,7 +78,7 @@ export function CareersTable() {
                             <TableRow key={entity.id}>
                                 <TableCell>{entity.name}</TableCell>
                                 <TableCell>{entity.alias ?? ''}</TableCell>
-                                <TableCell className='flex gap-0.5'>
+                                <TableCell className='flex gap-1'>
                                     <Buttons entity={entity} />
                                 </TableCell>
                             </TableRow>

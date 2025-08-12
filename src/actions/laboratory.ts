@@ -40,7 +40,7 @@ export async function getLaboratory() {
 
 export async function editLaboratory(formData: FormData) {
     const id = formData.get('id') as string
-    const name = formData.get('name') as string
+    const name = (formData.get('name') as string).trim()
     const type = formData.get('type') as LABORATORY_TYPE
     const openHour = formData.get('open_hour') as string
     const closeHour = formData.get('close_hour') as string
@@ -89,7 +89,7 @@ export async function deleteLaboratory(formData: FormData) {
 }
 
 export async function createlab(formData: FormData) {
-    const name = formData.get('name') as string
+    const name = (formData.get('name') as string).trim()
     const openHour = formData.get('open_hour') as string
     const closeHour = formData.get('close_hour') as string
     const type = formData.get('type') as LABORATORY_TYPE

@@ -16,20 +16,23 @@ import { useState, useTransition } from 'react'
 export function ArchiveUserDialog() {
     const [open, setOpen] = useAtom(openArchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
-    const user = useAtomValue(userToEditAtom)
+    const entity = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateUsersAtom)
 
-    if (!user) return null
+    if (!entity) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Archivar @{user.username}</span>
+                    <span className='text-3xl'>
+                        Archivar @{entity.username}
+                    </span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de archivar a {user.name}?
+                    ¿Está seguro de archivar{' '}
+                    <span className='font-bold'>{entity.name}</span>?
                 </DialogDescription>
                 <form
                     action={data => {
@@ -54,7 +57,7 @@ export function ArchiveUserDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={user.id} name='id' />
+                    <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

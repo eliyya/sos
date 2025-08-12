@@ -29,7 +29,8 @@ export function ArchiveDialog() {
                     <span className='text-3xl'>Archivar Laboratorio</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de archivar a {entity.name}?
+                    ¿Está seguro de archivar{' '}
+                    <span className='font-bold'>{entity.name}</span>?
                 </DialogDescription>
                 <form
                     action={data => {

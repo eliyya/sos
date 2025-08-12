@@ -30,6 +30,7 @@ import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { secondsToTime } from '@/lib/utils'
+import { Badge } from '@/components/Badge'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
@@ -52,6 +53,7 @@ export function EntityTable() {
                         <TableHead>Apertura</TableHead>
                         <TableHead>Cierre</TableHead>
                         <TableHead>Tipo</TableHead>
+                        <TableHead>Opciones</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -82,11 +84,19 @@ export function EntityTable() {
                                     {secondsToTime(entity.close_hour * 60)}
                                 </TableCell>
                                 <TableCell>
-                                    {entity.type === 'LABORATORY' ?
-                                        'Laboratorio'
-                                    :   'Centro de Computo'}
+                                    <Badge
+                                        variant={
+                                            entity.type === 'LABORATORY' ?
+                                                'default'
+                                            :   'outline'
+                                        }
+                                    >
+                                        {entity.type === 'LABORATORY' ?
+                                            'Laboratorio'
+                                        :   'Centro de Computo'}
+                                    </Badge>
                                 </TableCell>
-                                <TableCell className='flex gap-0.5'>
+                                <TableCell className='flex gap-1'>
                                     <Buttons entity={entity} />
                                 </TableCell>
                             </TableRow>

@@ -104,7 +104,7 @@ export function UsersTable() {
                                         }
                                     </Badge>
                                 </TableCell>
-                                <TableCell className='flex gap-0.5'>
+                                <TableCell className='flex gap-1'>
                                     <Buttons user={user} />
                                 </TableCell>
                             </TableRow>

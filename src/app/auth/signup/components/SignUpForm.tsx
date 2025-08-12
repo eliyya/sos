@@ -23,9 +23,9 @@ export function SignUpForm() {
         <form
             action={(formData: FormData) =>
                 startTransition(async () => {
-                    const username = formData.get('username') as string
-                    const password = formData.get('password') as string
-                    const name = formData.get('name') as string
+                    const username = (formData.get('username') as string).trim()
+                    const password = (formData.get('password') as string).trim()
+                    const name = (formData.get('name') as string).trim()
 
                     const { id: role_id } = await getAdminRole()
                     if (!role_id) return setError('Something went wrong')

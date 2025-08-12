@@ -33,8 +33,11 @@ export function DeleteDialog() {
                     <span className='text-3xl'>Eliminar Estudiante</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de eliminar a {entity.firstname}{' '}
-                    {entity.lastname}?<span>Esta acción es irreversible</span>
+                    ¿Está seguro de eliminar{' '}
+                    <span className='font-bold'>
+                        {entity.firstname} {entity.lastname}
+                    </span>
+                    ?<span>Esta acción es irreversible</span>
                 </DialogDescription>
                 <form
                     action={data => {
