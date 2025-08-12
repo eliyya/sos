@@ -21,6 +21,7 @@ export function UsernameInput() {
 
     useEffect(() => {
         const handler = setTimeout(async () => {
+            if (!username) return
             const isAv = await authClient.isUsernameAvailable({ username })
             if (!isAv) setError('El usuario no esta disponible')
         }, 500)
