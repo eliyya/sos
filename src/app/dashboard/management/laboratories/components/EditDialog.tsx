@@ -75,7 +75,6 @@ export function EditDialog() {
                         type='time'
                         name='open_hour'
                         originalValue={secondsToTime(old.open_hour * 60)}
-                        // TODO : fix this
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
