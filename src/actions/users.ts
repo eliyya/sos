@@ -5,6 +5,7 @@ import { STATUS } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
 import { getDeletedRole } from './roles'
 import { capitalize } from '@/lib/utils'
+import { auth } from '@/lib/auth'
 
 export async function getUsers() {
     return db.user.findMany({
@@ -84,12 +85,18 @@ export async function editUser(formData: FormData) {
     const username = (formData.get('username') as string).trim()
     const role_id = formData.get('role_id') as string
     const password = formData.get('password') as string
-    // TODO: Update password
+    const ctx = await auth.$context
+
     try {
         await db.user.update({
             where: { id },
             data: { name, username, role_id },
         })
+        await db.account.updateMany({
+            where: { user_id: id },
+            data: { password: await ctx.password.hash(password) },
+        })
+        await db.session.deleteMany({ where: { user_id: id } })
         return { error: null }
     } catch (error) {
         console.log(error)
