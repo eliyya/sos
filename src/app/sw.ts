@@ -16,22 +16,11 @@ declare global {
 declare const self: ServiceWorkerGlobalScope
 
 const serwist = new Serwist({
-    precacheEntries: [
-        ...(self.__SW_MANIFEST ?? []),
-        '/dashboard/properties/all/edit',
-    ],
+    precacheEntries: [...(self.__SW_MANIFEST ?? [])],
     skipWaiting: true,
     clientsClaim: true,
     navigationPreload: true,
     runtimeCaching: [...defaultCache],
-})
-
-self.addEventListener('fetch', async event => {
-    const url = new URL(event.request.url)
-    if (url.pathname.match(/^\/dashboard\/properties\/[^/]\/edit/)) {
-        const r = await serwist.matchPrecache('/dashboard/properties/all/edit')
-        event.respondWith(r ?? fetch(event.request))
-    }
 })
 
 serwist.addEventListeners()
