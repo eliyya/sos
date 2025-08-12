@@ -89,7 +89,8 @@ export async function editUser(formData: FormData) {
             data: { name, username, role_id },
         })
         return { error: null }
-    } catch {
+    } catch (error) {
+        console.log(error)
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }

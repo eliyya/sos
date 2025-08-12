@@ -4,6 +4,7 @@ import { getRoles } from '@/actions/roles'
 import { editUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
@@ -37,9 +38,7 @@ export function EditUserDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>
-                        Edit User @{oldUser.username}
-                    </span>
+                    <span className='text-3xl'>Edit @{oldUser.username}</span>
                 </DialogTitle>
                 <DialogDescription>
                     Edit the user&apos;s information
@@ -48,8 +47,12 @@ export function EditUserDialog() {
                     action={data => {
                         startTransition(async () => {
                             const { error } = await editUser(data)
-                            if (error) setMessage(error)
-                            else {
+                            if (error) {
+                                setMessage(error)
+                                setTimeout(() => {
+                                    setMessage('')
+                                }, 5_000)
+                            } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
                                     500,
@@ -60,12 +63,8 @@ export function EditUserDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
-                    <input type='hidden' value={oldUser.id} name='id' />
+                    {message && <MessageError>{message}</MessageError>}
+                    <input type='hidden' value={oldUser.id} name='user_id' />
                     <RetornableCompletInput
                         originalValue={oldUser.name}
                         required
@@ -83,7 +82,6 @@ export function EditUserDialog() {
                         icon={AtSignIcon}
                     ></RetornableCompletInput>
                     <RetornableCompletSelect
-                        isMulti
                         label='Rol'
                         name='role_id'
                         originalValue={{
