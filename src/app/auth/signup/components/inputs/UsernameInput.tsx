@@ -5,7 +5,7 @@ import {
     usernameAtom,
     usernameErrorAtom,
     canSuggestUsernameAtom,
-} from '../../global/login'
+} from '@/global/signup'
 import { useAtom, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { authClient } from '@/lib/auth-client'

@@ -12,7 +12,7 @@ import { authClient } from '@/lib/auth-client'
 import { UsernameInput } from './inputs/UsernameInput'
 import { PasswordInput } from './inputs/PasswordInput'
 import { useSetAtom } from 'jotai'
-import { usernameAtom, passwordAtom } from '../global/login'
+import { usernameAtom, passwordAtom } from '@/global/login'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')

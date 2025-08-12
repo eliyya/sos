@@ -4,7 +4,7 @@ import { UserIcon } from 'lucide-react'
 import { CompletInput } from '@/components/Inputs'
 import { useTranslations } from 'next-intl'
 import { useAtom } from 'jotai'
-import { usernameAtom } from '../../global/login'
+import { usernameAtom } from '@/global/login'
 
 export function UsernameInput() {
     const t = useTranslations('app.auth.login.components.loginForm')

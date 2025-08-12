@@ -6,7 +6,7 @@ import {
     nameAtom,
     nameErrorAtom,
     usernameAtom,
-} from '../../global/login'
+} from '@/global/signup'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { UserIcon } from 'lucide-react'
 

@@ -4,7 +4,7 @@ import { RectangleEllipsisIcon } from 'lucide-react'
 import { CompletInput } from '@/components/Inputs'
 import { useTranslations } from 'next-intl'
 import { useAtom } from 'jotai'
-import { passwordAtom } from '../../global/login'
+import { passwordAtom } from '@/global/login'
 
 export function PasswordInput() {
     const t = useTranslations('app.auth.login.components.loginForm')

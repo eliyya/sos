@@ -5,7 +5,7 @@ import {
     passwordAtom,
     passwordErrorAtom,
     passwordFocusAtom,
-} from '../../global/login'
+} from '@/global/signup'
 import { useAtom, useSetAtom } from 'jotai'
 import { RectangleEllipsisIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
