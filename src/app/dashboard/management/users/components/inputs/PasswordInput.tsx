@@ -8,7 +8,7 @@ import {
 } from '@/global/management-users'
 
 export function PasswordInput() {
-    const [pass, setUsername] = useAtom(passwordAtom)
+    const [pass, setPassword] = useAtom(passwordAtom)
     const [error, setError] = useAtom(passwordErrorAtom)
     const setFocus = useSetAtom(passwordFocusAtom)
 
@@ -24,29 +24,25 @@ export function PasswordInput() {
             error={error}
             onChange={e => {
                 const password = e.target.value
-                setUsername(e.target.value)
+                setPassword(e.target.value)
                 setError('')
                 if (!password) return
                 if (!/[A-Z]/.test(password))
-                    return {
-                        password:
-                            'La contraseña debe contener al menos una mayúscula',
-                    }
+                    return setError(
+                        'La contraseña debe contener al menos una mayúscula',
+                    )
                 if (!/[0-9]/.test(password))
-                    return {
-                        password:
-                            'La contraseña debe contener al menos un número',
-                    }
+                    return setError(
+                        'La contraseña debe contener al menos un número',
+                    )
                 if (!/[!@#$%^&*]/.test(password))
-                    return {
-                        password:
-                            'La contraseña debe contener al menos un carácter especial como !@#$%^&*',
-                    }
+                    return setError(
+                        'La contraseña debe contener al menos un carácter especial como !@#$%^&*',
+                    )
                 if (password.length < 10)
-                    return {
-                        password:
-                            'La contraseña debe tener al menos 10 caracteres',
-                    }
+                    return setError(
+                        'La contraseña debe tener al menos 10 caracteres',
+                    )
             }}
         />
     )

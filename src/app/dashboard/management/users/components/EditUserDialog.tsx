@@ -1,12 +1,9 @@
 'use client'
 
-import { getRoles } from '@/actions/roles'
 import { editUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { RetornableCompletInput } from '@/components/Inputs'
-import { RetornableCompletSelect } from '@/components/Select'
 import {
     EditUserDialogAtom,
     updateUsersAtom,
@@ -14,8 +11,13 @@ import {
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { UserIcon, TriangleIcon, AtSignIcon, SaveIcon } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { SaveIcon } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { EditNameInput } from './inputs/EditNameInput'
+import { EditRoleSelect } from './inputs/EditRoleSelect'
+import { EditUsernameInput } from './inputs/EditUsernameInput'
+import { EditPasswordInput } from './inputs/EditPasswordInput'
+import { ConfirmEditPasswordInput } from './inputs/ConfirmEditPasswordInput'
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)
@@ -23,14 +25,6 @@ export function EditUserDialog() {
     const oldUser = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateUsersAtom)
-    const [roles, setRoles] = useState<Awaited<ReturnType<typeof getRoles>>>([])
-
-    useEffect(() => {
-        startTransition(async () => {
-            const roles = await getRoles()
-            setRoles(roles)
-        })
-    }, [])
 
     if (!oldUser) return null
 
@@ -64,38 +58,14 @@ export function EditUserDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}
+
                     <input type='hidden' value={oldUser.id} name='user_id' />
-                    <RetornableCompletInput
-                        originalValue={oldUser.name}
-                        required
-                        label='Name'
-                        type='text'
-                        name='name'
-                        icon={UserIcon}
-                    ></RetornableCompletInput>
-                    <RetornableCompletInput
-                        originalValue={oldUser.username}
-                        required
-                        label='Ussername'
-                        type='text'
-                        name='username'
-                        icon={AtSignIcon}
-                    ></RetornableCompletInput>
-                    <RetornableCompletSelect
-                        label='Rol'
-                        name='role_id'
-                        originalValue={{
-                            label:
-                                roles.find(r => r.id === oldUser.role_id)
-                                    ?.name ?? oldUser.role_id,
-                            value: oldUser.role_id,
-                        }}
-                        options={roles.map(r => ({
-                            label: r.name,
-                            value: r.id,
-                        }))}
-                        icon={TriangleIcon}
-                    />
+                    <EditNameInput />
+                    <EditUsernameInput />
+                    <EditRoleSelect />
+                    <EditPasswordInput />
+                    <ConfirmEditPasswordInput />
+
                     <Button type='submit' disabled={inTransition}>
                         <SaveIcon className='mr-2 h-5 w-5' />
                         Save

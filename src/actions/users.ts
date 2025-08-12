@@ -83,6 +83,8 @@ export async function editUser(formData: FormData) {
     const name = capitalize((formData.get('name') as string).trim())
     const username = (formData.get('username') as string).trim()
     const role_id = formData.get('role_id') as string
+    const password = formData.get('password') as string
+    // TODO: Update password
     try {
         await db.user.update({
             where: { id },
