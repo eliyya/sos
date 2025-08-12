@@ -37,7 +37,9 @@ export function EditUserDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Edit User</span>
+                    <span className='text-3xl'>
+                        Edit User @{oldUser.username}
+                    </span>
                 </DialogTitle>
                 <DialogDescription>
                     Edit the user&apos;s information
@@ -50,7 +52,7 @@ export function EditUserDialog() {
                             else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
-                                    1_000,
+                                    500,
                                 )
                                 setOpen(false)
                             }

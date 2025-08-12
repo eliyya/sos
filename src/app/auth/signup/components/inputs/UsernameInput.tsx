@@ -9,7 +9,7 @@ import {
 import { useAtom, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
-import { UserIcon } from 'lucide-react'
+import { AtSignIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export function UsernameInput() {
@@ -63,7 +63,7 @@ export function UsernameInput() {
                 if (username.includes(' '))
                     setError('El nombre de usuario no debe contener espacios')
             }}
-            icon={UserIcon}
+            icon={AtSignIcon}
         />
     )
 }

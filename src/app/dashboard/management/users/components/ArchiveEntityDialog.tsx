@@ -13,7 +13,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
-export function ArchiveUserDialog() {
+export function ArchiveEntityDialog() {
     const [open, setOpen] = useAtom(openArchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(userToEditAtom)
@@ -44,7 +44,7 @@ export function ArchiveUserDialog() {
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
-                                    1_000,
+                                    500,
                                 )
                                 setOpen(false)
                             }

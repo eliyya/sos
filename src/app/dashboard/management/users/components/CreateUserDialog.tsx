@@ -6,7 +6,13 @@ import { CompletSelect } from '@/components/Select'
 import { openCreateUserAtom, updateUsersAtom } from '@/global/management-users'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
-import { User, AtSign, Triangle, Save, Key } from 'lucide-react'
+import {
+    SaveIcon,
+    KeyIcon,
+    TriangleIcon,
+    AtSignIcon,
+    UserIcon,
+} from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { authClient } from '@/lib/auth-client'
 import { getRoles } from '@/actions/roles'
@@ -70,38 +76,39 @@ export function CreateUserDialog() {
                         label='Name'
                         type='text'
                         name='name'
-                        icon={User}
+                        icon={UserIcon}
                     />
                     <CompletInput
                         required
                         label='Username'
                         type='text'
                         name='username'
-                        icon={AtSign}
+                        icon={AtSignIcon}
                     />
                     <CompletSelect
-                        label='Roles'
+                        required
+                        label='Rol'
                         name='role_id'
                         options={roles.map(r => ({
                             label: r.name,
                             value: r.id,
                         }))}
-                        icon={Triangle}
+                        icon={TriangleIcon}
                     />
                     <CompletInput
                         label='Password'
                         type='password'
                         name='password'
-                        icon={Key}
+                        icon={KeyIcon}
                     />
                     <CompletInput
                         label='Confirm Password'
                         type='password'
                         name='password-confirm'
-                        icon={Key}
+                        icon={KeyIcon}
                     />
                     <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
+                        <SaveIcon className='mr-2 h-5 w-5' />
                         Save
                     </Button>
                 </form>

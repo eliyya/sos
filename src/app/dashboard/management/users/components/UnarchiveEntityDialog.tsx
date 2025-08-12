@@ -1,51 +1,49 @@
 'use client'
 
-import { deleteUser } from '@/actions/users'
+import { unarchiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
-    openDeleteUserAtom,
+    openUnarchiveUserAtom,
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
+import { ArchiveRestore, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
-export function DeleteUserDialog() {
-    const [open, setOpen] = useAtom(openDeleteUserAtom)
+export function UnarchiveEntityDialog() {
+    const [open, setOpen] = useAtom(openUnarchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
-    const user = useAtomValue(userToEditAtom)
+    const entity = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateUsersAtom)
 
-    if (!user) return null
+    if (!entity) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Delete @{user.username}</span>
+                    <span className='text-3xl'>
+                        Desarchivar @{entity.username}
+                    </span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de eliminar{' '}
-                    <span className='font-bold'>{user.name}</span>?{' '}
-                    <span>Esta acción es irreversible</span>
+                    ¿Está seguro de desarchivar a {entity.name}?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await deleteUser(data)
+                            const { error } = await unarchiveUser(data)
                             if (error) {
-                                setMessage(
-                                    'Algo sucedio mal, intente nuevamente',
-                                )
-                                setTimeout(() => setMessage(''), 5_000)
+                                setMessage(error)
+                                setTimeout(() => setMessage('error'), 5_000)
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
-                                    1_000,
+                                    500,
                                 )
                                 setOpen(false)
                             }
@@ -58,9 +56,10 @@ export function DeleteUserDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={user.id} name='user_id' />
+                    <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
+                            variant={'secondary'}
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
@@ -72,11 +71,11 @@ export function DeleteUserDialog() {
                         </Button>
                         <Button
                             type='submit'
-                            variant={'destructive'}
+                            variant={'default'}
                             disabled={inTransition}
                         >
-                            <Trash2 className='mr-2 h-5 w-5' />
-                            Eliminar
+                            <ArchiveRestore className='mr-2 h-5 w-5' />
+                            Desarchivar
                         </Button>
                     </div>
                 </form>

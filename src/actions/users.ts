@@ -4,6 +4,7 @@ import { db } from '@/prisma/db'
 import { STATUS } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
 import { getUserRole } from './roles'
+import { capitalize } from '@/lib/utils'
 
 export async function getUsers() {
     return db.user.findMany({
@@ -79,8 +80,8 @@ export async function deleteUser(formData: FormData) {
 
 export async function editUser(formData: FormData) {
     const id = formData.get('user_id') as string
-    const name = formData.get('name') as string
-    const username = formData.get('username') as string
+    const name = capitalize((formData.get('name') as string).trim())
+    const username = (formData.get('username') as string).trim()
     const role_id = formData.get('role_id') as string
     try {
         await db.user.update({

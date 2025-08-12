@@ -1,6 +1,6 @@
 'use client'
 
-import { UserIcon } from 'lucide-react'
+import { AtSignIcon } from 'lucide-react'
 import { CompletInput } from '@/components/Inputs'
 import { useTranslations } from 'next-intl'
 import { useAtom } from 'jotai'
@@ -16,7 +16,7 @@ export function UsernameInput() {
             type='text'
             name='username'
             placeholder={t('username-placeholder')}
-            icon={UserIcon}
+            icon={AtSignIcon}
             value={username}
             onChange={e => setUsername(e.target.value)}
         />

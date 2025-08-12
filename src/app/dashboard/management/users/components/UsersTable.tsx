@@ -27,9 +27,9 @@ import {
     openDeleteUserAtom,
     queryAtom,
 } from '@/global/management-users'
-import { ArchiveUserDialog } from './ArchiveUserDialog'
-import { UnarchiveUserDialog } from './UnarchiveUserDialog'
-import { DeleteUserDialog } from './DeleteUserDialog'
+import { ArchiveEntityDialog } from './ArchiveEntityDialog'
+import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
+import { DeleteEntityDialog } from './DeleteEntityDialog'
 import { getRoles } from '@/actions/roles'
 
 export function UsersTable() {
@@ -112,9 +112,9 @@ export function UsersTable() {
                 </TableBody>
             </Table>
             <EditUserDialog />
-            <ArchiveUserDialog />
-            <UnarchiveUserDialog />
-            <DeleteUserDialog />
+            <ArchiveEntityDialog />
+            <UnarchiveEntityDialog />
+            <DeleteEntityDialog />
         </>
     )
 }
