@@ -93,7 +93,7 @@ export function EntityTable() {
                                     >
                                         {entity.type === 'LABORATORY' ?
                                             'Laboratorio'
-                                        :   'Centro de Computo'}
+                                        :   'Centro de Cómputo'}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className='flex gap-1'>
