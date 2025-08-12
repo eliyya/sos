@@ -1,15 +1,13 @@
-'use client'
-
+import { UserIcon } from 'lucide-react'
 import { CompletInput } from '@/components/Inputs'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     canSuggestUsernameAtom,
     nameAtom,
     nameErrorAtom,
     usernameAtom,
-} from '@/global/signup'
+} from '@/global/management-users'
 import { truncateByUnderscore } from '@/lib/utils'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { UserIcon } from 'lucide-react'
 
 export function NameInput() {
     const [name, setName] = useAtom(nameAtom)
@@ -23,7 +21,7 @@ export function NameInput() {
             label='Nombre'
             type='text'
             name='name'
-            placeholder='Nombre'
+            icon={UserIcon}
             value={name}
             error={error}
             onChange={e => {
@@ -38,7 +36,6 @@ export function NameInput() {
                     ),
                 )
             }}
-            icon={UserIcon}
         />
     )
 }

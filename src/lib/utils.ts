@@ -148,3 +148,23 @@ export function capitalize(str: string) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ')
 }
+
+export function truncateByUnderscore(str: string, maxLength = 30) {
+    const parts = str.split('_')
+    let result = ''
+
+    for (const part of parts) {
+        if (result.length === 0) {
+            if (part.length > maxLength) {
+                return part.slice(0, maxLength)
+            }
+            result = part
+        } else {
+            if (result.length + 1 + part.length <= maxLength)
+                result += '_' + part
+            else break
+        }
+    }
+
+    return result
+}
