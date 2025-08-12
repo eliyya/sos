@@ -1,37 +1,42 @@
 'use client'
 
-import { LogIn, RectangleEllipsis, User } from 'lucide-react'
-import { CompletInput } from '@/components/Inputs'
+import { LogIn } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useState, useTransition } from 'react'
 import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
-import { useAtom } from 'jotai'
-import { usernameAtom, passwordAtom } from '../global/login'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
+import { UsernameInput } from './inputs/UsernameInput'
+import { PasswordInput } from './inputs/PasswordInput'
+import { useSetAtom } from 'jotai'
+import { usernameAtom, passwordAtom } from '../global/login'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
-    const [username, setUsername] = useAtom(usernameAtom)
-    const [password, setPassword] = useAtom(passwordAtom)
     const [error, setError] = useState('')
-    const [usernameError, setUsernameError] = useState('')
-    const [passwordError, setPasswordError] = useState('')
     const [pending, startTransition] = useTransition()
     const { push } = useRouter()
+    const setUsername = useSetAtom(usernameAtom)
+    const setPassword = useSetAtom(passwordAtom)
 
     return (
         <form
-            action={() =>
+            action={formData =>
                 startTransition(async () => {
+                    const username = formData.get('username') as string
+                    const password = formData.get('password') as string
                     const { error } = await authClient.signIn.username({
-                        username: username,
-                        password: password,
+                        username,
+                        password,
                     })
-                    if (!error) return push(app.dashboard())
+                    if (!error) {
+                        setUsername('')
+                        setPassword('')
+                        return push(app.dashboard())
+                    }
                     if (error.code === 'invalid username or password')
                         setError(error.message!)
                     else setError('Something went wrong')
@@ -47,36 +52,9 @@ export function LoginForm() {
             </p>
 
             {error && <MessageError>{error}</MessageError>}
-            <CompletInput
-                required
-                label={t('username')}
-                type='text'
-                name='username'
-                placeholder={t('username-placeholder')}
-                value={username}
-                onChange={e => {
-                    setUsername(e.target.value)
-                    setUsernameError('')
-                    setError('')
-                }}
-                error={usernameError}
-                icon={User}
-            />
-            <CompletInput
-                required
-                label={t('pass')}
-                type='password'
-                name='password'
-                placeholder='* * * * * * * *'
-                value={password}
-                onChange={e => {
-                    setPassword(e.target.value)
-                    setPasswordError('')
-                    setError('')
-                }}
-                error={passwordError}
-                icon={RectangleEllipsis}
-            />
+
+            <UsernameInput />
+            <PasswordInput />
 
             <Button
                 type='submit'
