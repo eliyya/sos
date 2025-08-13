@@ -1,7 +1,7 @@
 'use server'
 
 import { getStartOfWeek } from '@/lib/utils'
-import { db, snowflake } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import { Temporal } from '@js-temporal/polyfill'
 import { Prisma, STATUS } from '@prisma/client'
 // import { getTeacherClassesWithRemainingWeekHours } from '@prisma/client/sql'
@@ -16,7 +16,6 @@ export async function createClass(formData: FormData) {
     try {
         await db.class.create({
             data: {
-                id: snowflake.generate(),
                 subject_id,
                 teacher_id,
                 career_id,

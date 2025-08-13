@@ -1,6 +1,6 @@
 'use server'
 
-import { db, snowflake } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import { Prisma } from '@prisma/client'
 
 export async function getSoftware() {
@@ -41,7 +41,6 @@ export async function createSoftware(formData: FormData) {
         const data = await db.software.create({
             data: {
                 name,
-                id: snowflake.generate(),
             },
         })
         return { error: null, data }

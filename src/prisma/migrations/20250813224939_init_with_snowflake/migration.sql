@@ -1,3 +1,40 @@
+-- ! Migration customized for snowflake
+-- ! This migration is not compatible with the default migration
+-- ! You need to run this migration first
+
+-- Fecha base: 01/06/2025
+CREATE OR REPLACE FUNCTION snowflake(node_id int DEFAULT 0)
+RETURNS text AS $$
+DECLARE
+    our_epoch bigint := 1748736000000; -- milisegundos desde 01/06/2025
+    seq_id bigint;
+    now_millis bigint;
+    safe_node_id int;
+    snowflake_id bigint;
+BEGIN
+    -- Asegurar que node_id esté entre 0 y 1023 (10 bits)
+    safe_node_id := GREATEST(0, LEAST(node_id, 1023));
+
+    -- Usar la secuencia para obtener un número siempre único
+    SELECT nextval('snowflake_seq') % 4096 INTO seq_id; -- 12 bits
+    SELECT FLOOR(EXTRACT(EPOCH FROM clock_timestamp()) * 1000) INTO now_millis;
+
+    snowflake_id := ((now_millis - our_epoch) << 22)  -- timestamp (41 bits)
+                  | ((safe_node_id & 1023) << 12)     -- node id (10 bits)
+                  | (seq_id & 4095);                  -- secuencia (12 bits)
+
+    RETURN snowflake_id::text; -- Convertir a string
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear secuencia si no existe
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'snowflake_seq') THEN
+        CREATE SEQUENCE snowflake_seq;
+    END IF;
+END$$;
+
 -- CreateEnum
 CREATE TYPE "public"."LABORATORY_TYPE" AS ENUM ('COMPUTER_CENTER', 'LABORATORY');
 
@@ -9,7 +46,7 @@ CREATE TYPE "public"."STATUS" AS ENUM ('ACTIVE', 'ARCHIVED', 'DELETED');
 
 -- CreateTable
 CREATE TABLE "public"."Role" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "permissions" BIGINT NOT NULL,
 
@@ -18,7 +55,7 @@ CREATE TABLE "public"."Role" (
 
 -- CreateTable
 CREATE TABLE "public"."users" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "email_verified" BOOLEAN NOT NULL DEFAULT true,
@@ -35,7 +72,7 @@ CREATE TABLE "public"."users" (
 
 -- CreateTable
 CREATE TABLE "public"."session" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "expires_at" TIMESTAMP(3) NOT NULL,
     "token" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
@@ -49,7 +86,7 @@ CREATE TABLE "public"."session" (
 
 -- CreateTable
 CREATE TABLE "public"."account" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "account_id" TEXT NOT NULL,
     "provider_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
@@ -68,7 +105,7 @@ CREATE TABLE "public"."account" (
 
 -- CreateTable
 CREATE TABLE "public"."verification" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "identifier" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "expires_at" TIMESTAMP(3) NOT NULL,
@@ -80,7 +117,7 @@ CREATE TABLE "public"."verification" (
 
 -- CreateTable
 CREATE TABLE "public"."subjects" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "practice_hours" INTEGER NOT NULL,
@@ -93,7 +130,7 @@ CREATE TABLE "public"."subjects" (
 
 -- CreateTable
 CREATE TABLE "public"."classes" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "subject_id" TEXT NOT NULL,
     "teacher_id" TEXT NOT NULL,
     "career_id" TEXT NOT NULL,
@@ -108,7 +145,7 @@ CREATE TABLE "public"."classes" (
 
 -- CreateTable
 CREATE TABLE "public"."laboratories" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "name" TEXT NOT NULL,
     "open_hour" INTEGER NOT NULL,
@@ -122,7 +159,7 @@ CREATE TABLE "public"."laboratories" (
 
 -- CreateTable
 CREATE TABLE "public"."practices" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "teacher_id" TEXT NOT NULL,
     "topic" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -141,7 +178,7 @@ CREATE TABLE "public"."practices" (
 
 -- CreateTable
 CREATE TABLE "public"."software" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -159,7 +196,7 @@ CREATE TABLE "public"."software_practices" (
 
 -- CreateTable
 CREATE TABLE "public"."careers" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -186,7 +223,7 @@ CREATE TABLE "public"."students" (
 
 -- CreateTable
 CREATE TABLE "public"."visits" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "exit_at" TIMESTAMP(3),
     "student_nc" TEXT NOT NULL,
@@ -199,7 +236,7 @@ CREATE TABLE "public"."visits" (
 
 -- CreateTable
 CREATE TABLE "public"."machines" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "number" INTEGER NOT NULL,
     "status" "public"."MACHINE_STATUS" NOT NULL DEFAULT 'AVAILABLE',
     "processor" TEXT NOT NULL,
@@ -224,7 +261,7 @@ CREATE TABLE "public"."software_machines" (
 
 -- CreateTable
 CREATE TABLE "public"."issue" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "comment" TEXT NOT NULL,
     "machine_id" TEXT NOT NULL,
@@ -237,7 +274,7 @@ CREATE TABLE "public"."issue" (
 
 -- CreateTable
 CREATE TABLE "public"."comment" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "content" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,

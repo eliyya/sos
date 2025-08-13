@@ -1,5 +1,5 @@
 'use server'
-import { db, snowflake } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import { createStudent } from './students'
 
 export async function registerVisit(formData: FormData) {
@@ -40,7 +40,6 @@ export async function registerVisit(formData: FormData) {
             data: {
                 student_nc: nc,
                 laboratory_id,
-                id: snowflake.generate(),
             },
         })
     } catch (error) {

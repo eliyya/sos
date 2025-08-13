@@ -1,6 +1,6 @@
 'use server'
 
-import { db, snowflake } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import { Prisma, STATUS } from '@prisma/client'
 
 export async function createCareer(formData: FormData) {
@@ -10,7 +10,6 @@ export async function createCareer(formData: FormData) {
     try {
         await db.career.create({
             data: {
-                id: snowflake.generate(),
                 name,
                 alias,
             },

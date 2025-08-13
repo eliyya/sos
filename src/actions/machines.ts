@@ -1,6 +1,6 @@
 'use server'
 
-import { db, snowflake } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import { MACHINE_STATUS, Prisma } from '@prisma/client'
 export async function getMachine() {
     return await db.machine.findMany({
@@ -100,7 +100,6 @@ export async function createMachine(formData: FormData) {
     try {
         await db.machine.create({
             data: {
-                id: snowflake.generate(),
                 number: Number(number),
                 processor,
                 ram,

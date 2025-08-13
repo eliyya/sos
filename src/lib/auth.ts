@@ -103,5 +103,8 @@ export const auth = betterAuth({
     },
     advanced: {
         cookiePrefix: 'sos',
+        database: {
+            generateId: false,
+        },
     },
 })
