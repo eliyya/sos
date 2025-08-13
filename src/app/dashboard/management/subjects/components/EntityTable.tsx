@@ -86,7 +86,7 @@ export function EntityTable() {
                                 <TableCell className='text-center'>
                                     <label>{user.practice_hours}</label>
                                 </TableCell>
-                                <TableCell className='flex gap-0.5'>
+                                <TableCell className='flex gap-1'>
                                     <Buttons subject={user} />
                                 </TableCell>
                             </TableRow>

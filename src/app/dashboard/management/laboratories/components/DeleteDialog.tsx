@@ -33,8 +33,10 @@ export function DeleteDialog() {
                     <span className='text-3xl'>Eliminar Laboratorio</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de eliminar a {entity.name}
+                    ¿Está seguro de eliminar{' '}
+                    <span className='font-bold'>{entity.name}</span>?
                 </DialogDescription>
+                <span>Esta acción es irreversible</span>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -45,7 +47,7 @@ export function DeleteDialog() {
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
-                                    1_000,
+                                    500,
                                 )
                                 setOpen(false)
                             }

@@ -73,9 +73,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     - [ ] Base de Datos
         - [ ] Exportar Datos
         - [ ] Importar Específicos
-    - [ ] Centro de Computo
-        - [ ] Registro de Visitas de Estudiantes
-        - [ ] Registro de Alumnos
+    - [x] Centro de Computo
+        - [x] Registro de Visitas de Estudiantes
+        - [x] Registro de Alumnos
     - [ ] Informes
         - [ ] Cantidad de usuarios
         - [ ] Horarios mas usados

@@ -67,7 +67,7 @@ export function EntityTable() {
                                     {entity.career.alias ?? entity.career.name}
                                 </TableCell>
                                 <TableCell>{entity.semester}</TableCell>
-                                <TableCell className='flex gap-0.5'>
+                                <TableCell className='flex gap-1'>
                                     <Buttons entity={entity} />
                                 </TableCell>
                             </TableRow>

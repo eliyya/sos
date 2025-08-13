@@ -16,36 +16,83 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
-model User {
-    id         String   @id
-    name       String
-    role       BigInt   @default(2)
-    created_at DateTime @default(now())
-    username   String   @unique
-    status     STATUS   @default(ACTIVE)
-    updated_at DateTime @updatedAt
+model Role {
+    id          String @id
+    name        String @unique
+    permissions BigInt
+    User        User[]
+}
 
-    auths              Auth[]
+model User {
+    id               String   @id
+    name             String
+    email            String
+    email_verified   Boolean  @default(true)
+    image            String?
+    created_at       DateTime @default(now())
+    username         String   @unique
+    status           STATUS   @default(ACTIVE)
+    updated_at       DateTime @updatedAt
+    display_username String?
+    role_id          String
+
+    role Role @relation(fields: [role_id], references: [id])
+
     practices          Practice[]
     practice_registers Practice[] @relation("practice_registers")
     classes            Class[]
-    sessions           Session[]
     issues             Issue[]
     comments           Comment[]
+    sessions           Session[]
+    accounts           Account[]
 
+    @@unique([email])
     @@map("users")
 }
 
-model Auth {
+model Session {
     id         String   @id
+    expires_at DateTime
+    token      String
+    created_at DateTime
+    updated_at DateTime @updatedAt
+    ip_address String?
+    user_agent String?
     user_id    String
-    password   String
-    created_at DateTime @default(now())
-    totp       String?
+    user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    user User @relation(fields: [user_id], references: [id])
+    @@unique([token])
+    @@map("session")
+}
 
-    @@map("auths")
+model Account {
+    id                       String    @id
+    account_id               String
+    provider_id              String
+    user_id                  String
+    user                     User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    access_token             String?
+    refresh_token            String?
+    id_token                 String?
+    access_token_expires_at  DateTime?
+    refresh_token_expires_at DateTime?
+    scope                    String?
+    password                 String?
+    created_at               DateTime
+    updated_at               DateTime  @updatedAt
+
+    @@map("account")
+}
+
+model Verification {
+    id         String    @id
+    identifier String
+    value      String
+    expires_at DateTime
+    created_at DateTime?
+    updated_at DateTime?
+
+    @@map("verification")
 }
 
 model Subject {
@@ -60,23 +107,6 @@ model Subject {
     classes Class[]
 
     @@map("subjects")
-}
-
-model Session {
-    id         String   @id
-    user_id    String
-    ip         String
-    expires_at DateTime
-    created_at DateTime @default(now())
-    browser    String
-    os         String
-    device     String
-    model      String
-    secret     String   @unique
-
-    user User @relation(fields: [user_id], references: [id])
-
-    @@map("sessions")
 }
 
 model Class {

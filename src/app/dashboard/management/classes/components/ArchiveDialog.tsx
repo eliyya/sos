@@ -49,7 +49,7 @@ export function ArchiveDialog() {
                     <span className='text-3xl'>Archivar Clase</span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de archivar a esta clase?
+                    ¿Está seguro de archivar esta clase?
                 </DialogDescription>
                 <form
                     action={data => {

@@ -37,6 +37,11 @@ const teacherNavItems: {
         icon: BeakerIcon,
     },
     {
+        title: 'Gestion de Laboratorios',
+        href: MLinks.laboratories(),
+        icon: HouseWifiIcon,
+    },
+    {
         title: 'Gestion de Usuarios',
         href: MLinks.users(),
         icon: UsersIcon,
@@ -65,11 +70,6 @@ const teacherNavItems: {
         title: 'Gestion de Maquinas',
         href: MLinks.machines(),
         icon: ComputerIcon,
-    },
-    {
-        title: 'Gestion de Laboratorios',
-        href: MLinks.laboratories(),
-        icon: HouseWifiIcon,
     },
     {
         title: 'Reportes de Laboratorio',

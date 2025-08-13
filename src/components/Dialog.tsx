@@ -127,7 +127,7 @@ export const DialogDescription = ({
     ...props
 }: ComponentProps<typeof Description>) => (
     <Description
-        className={cn('text-muted-foreground text-sm', className)}
+        className={cn('text-muted-foreground text-base', className)}
         {...props}
     />
 )

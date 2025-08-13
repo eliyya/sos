@@ -108,7 +108,7 @@ export default async function ExportPage() {
                                 />
                             </div>
                             <CompletSelect
-                                label='Centro de Computo'
+                                label='Centro de Cómputo'
                                 name='laboratory_id'
                                 required
                                 value={

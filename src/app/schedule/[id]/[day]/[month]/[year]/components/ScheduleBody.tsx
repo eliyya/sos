@@ -2,12 +2,14 @@ import { CreateDialog } from './CreateDialog/CreateDialog'
 import { Calendar } from './Calendar'
 import { InfoDialog } from './InfoDialog/InfoDialog'
 import { SearchInput } from './SearchInput'
-import { UserTokenPayload } from '@/lib/types'
 
 interface ScheduleBodyProps {
     labs: { id: string; name: string; open_hour: number; close_hour: number }[]
     lab_id: string
-    user: UserTokenPayload | null
+    user: {
+        id: string
+        name: string
+    } | null
     isAdmin: boolean
     users: { id: string; name: string }[]
 }
@@ -34,7 +36,7 @@ export default async function ScheduleBody({
                 user={user}
                 users={users}
             />
-            <InfoDialog user={user} lab={lab} isAdmin={isAdmin} />
+            <InfoDialog userId={user?.id ?? ''} lab={lab} isAdmin={isAdmin} />
         </main>
     )
 }

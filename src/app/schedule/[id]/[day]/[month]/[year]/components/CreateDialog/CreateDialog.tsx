@@ -2,7 +2,6 @@
 
 import { openCreateAtom } from '@/global/management-practices'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
-import { UserTokenPayload } from '@/lib/types'
 import { CalendarDialog } from './CalendarDialog'
 import { CreateForm } from './CreateForm'
 import { useAtom } from 'jotai'
@@ -25,7 +24,10 @@ interface CreateDialogProps {
         open_hour: number
     }
     isAdmin?: boolean
-    user: UserTokenPayload | null
+    user: {
+        id: string
+        name: string
+    } | null
 }
 export function CreateDialog({ users, lab, isAdmin, user }: CreateDialogProps) {
     const [open, setOpen] = useAtom(openCreateAtom)

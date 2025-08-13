@@ -44,7 +44,7 @@ export function EntityTable() {
                     {entity.map(entity => (
                         <TableRow key={entity.id}>
                             <TableCell>{entity.name}</TableCell>
-                            <TableCell className='flex gap-0.5'>
+                            <TableCell className='flex gap-1'>
                                 <Buttons entity={entity} />
                             </TableCell>
                         </TableRow>

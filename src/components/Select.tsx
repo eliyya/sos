@@ -254,7 +254,7 @@ export function CompletSelect<
             <div className='relative'>
                 {children}
                 {Icon && (
-                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    <Icon className='absolute top-2 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
                 )}
                 <ReactSelect
                     {...props}
@@ -299,10 +299,16 @@ export function CompletSelect<
                         placeholder: base => ({
                             ...base,
                             color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                            marginLeft: icon ? '2rem' : base.marginLeft,
                         }),
                         singleValue: base => ({
                             ...base,
                             color: 'var(--color-primary)',
+                            marginLeft: icon ? '2rem' : base.marginLeft,
+                        }),
+                        input: base => ({
+                            ...base,
+                            marginLeft: icon ? '2rem' : base.marginLeft,
                         }),
                     }}
                     id={id ?? rid}
@@ -390,7 +396,7 @@ export function RetornableCompletSelect<
             <div className='relative block'>
                 {children}
                 {Icon && (
-                    <Icon className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+                    <Icon className='absolute top-2 left-3 z-10 h-5 w-5 text-gray-500 dark:text-gray-400' />
                 )}
                 <ReactSelect
                     {...props}
@@ -460,10 +466,12 @@ export function RetornableCompletSelect<
                         placeholder: base => ({
                             ...base,
                             color: 'color-mix(in oklab, var(--color-primary) 75%, var(--color-secondary))',
+                            marginLeft: icon ? '2rem' : base.marginLeft,
                         }),
                         singleValue: base => ({
                             ...base,
                             color: 'var(--color-primary)',
+                            marginLeft: icon ? '2rem' : base.marginLeft,
                         }),
                         indicatorsContainer: base => ({
                             ...base,

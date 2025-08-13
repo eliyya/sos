@@ -1,48 +1,50 @@
 'use client'
 
-import { deleteUser } from '@/actions/users'
+import { archiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
-    openDeleteUserAtom,
+    openArchiveUserAtom,
     updateUsersAtom,
     userToEditAtom,
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
+import { Archive, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
-export function DeleteUserDialog() {
-    const [open, setOpen] = useAtom(openDeleteUserAtom)
+export function ArchiveEntityDialog() {
+    const [open, setOpen] = useAtom(openArchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
-    const user = useAtomValue(userToEditAtom)
+    const entity = useAtomValue(userToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateUsersAtom)
 
-    if (!user) return null
+    if (!entity) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Delete @{user.username}</span>
+                    <span className='text-3xl'>
+                        Archivar @{entity.username}
+                    </span>
                 </DialogTitle>
                 <DialogDescription>
-                    ¿Está seguro de eliminar a {user.name}?{' '}
-                    <span>Esta acción es irreversible</span>
+                    ¿Está seguro de archivar{' '}
+                    <span className='font-bold'>{entity.name}</span>?
                 </DialogDescription>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await deleteUser(data)
+                            const { error } = await archiveUser(data)
                             if (error) {
                                 setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
+                                setTimeout(() => setMessage(''), 5_000)
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
-                                    1_000,
+                                    500,
                                 )
                                 setOpen(false)
                             }
@@ -55,7 +57,7 @@ export function DeleteUserDialog() {
                             {message}
                         </span>
                     )}
-                    <input type='hidden' value={user.id} name='id' />
+                    <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}
@@ -72,8 +74,8 @@ export function DeleteUserDialog() {
                             variant={'destructive'}
                             disabled={inTransition}
                         >
-                            <Trash2 className='mr-2 h-5 w-5' />
-                            Eliminar
+                            <Archive className='mr-2 h-5 w-5' />
+                            Archivar
                         </Button>
                     </div>
                 </form>

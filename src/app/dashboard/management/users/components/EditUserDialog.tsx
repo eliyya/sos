@@ -1,11 +1,9 @@
 'use client'
 
 import { editUser } from '@/actions/users'
-import { RoleBitField, RoleFlags } from '@/bitfields/RoleBitField'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
-import { RetornableCompletInput } from '@/components/Inputs'
-import { RetornableCompletSelect } from '@/components/Select'
+import { MessageError } from '@/components/Error'
 import {
     EditUserDialogAtom,
     updateUsersAtom,
@@ -13,8 +11,13 @@ import {
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, User, AtSign, Triangle } from 'lucide-react'
+import { SaveIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { EditNameInput } from './inputs/EditNameInput'
+import { EditRoleSelect } from './inputs/EditRoleSelect'
+import { EditUsernameInput } from './inputs/EditUsernameInput'
+import { EditPasswordInput } from './inputs/EditPasswordInput'
+import { ConfirmEditPasswordInput } from './inputs/ConfirmEditPasswordInput'
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)
@@ -29,7 +32,7 @@ export function EditUserDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>
-                    <span className='text-3xl'>Edit User</span>
+                    <span className='text-3xl'>Edit @{oldUser.username}</span>
                 </DialogTitle>
                 <DialogDescription>
                     Edit the user&apos;s information
@@ -38,11 +41,15 @@ export function EditUserDialog() {
                     action={data => {
                         startTransition(async () => {
                             const { error } = await editUser(data)
-                            if (error) setMessage(error)
-                            else {
+                            if (error) {
+                                setMessage(error)
+                                setTimeout(() => {
+                                    setMessage('')
+                                }, 5_000)
+                            } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
-                                    1_000,
+                                    500,
                                 )
                                 setOpen(false)
                             }
@@ -50,50 +57,17 @@ export function EditUserDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
-                    <input type='hidden' value={oldUser.id} name='id' />
-                    <RetornableCompletInput
-                        originalValue={oldUser.name}
-                        required
-                        label='Name'
-                        type='text'
-                        name='name'
-                        icon={User}
-                    ></RetornableCompletInput>
-                    <RetornableCompletInput
-                        originalValue={oldUser.username}
-                        required
-                        label='Ussername'
-                        type='text'
-                        name='username'
-                        icon={AtSign}
-                    ></RetornableCompletInput>
-                    <RetornableCompletSelect
-                        isMulti
-                        label='Roles'
-                        name='roles'
-                        originalValue={Object.entries(
-                            new RoleBitField(oldUser.role).serialize(),
-                        )
-                            .filter(([, v]) => v)
-                            .map(([k]) => ({
-                                label: k,
-                                value: RoleFlags[k as keyof typeof RoleFlags],
-                            }))}
-                        options={Object.entries(RoleBitField.Flags).map(
-                            ([k, v]) => ({
-                                label: k,
-                                value: v,
-                            }),
-                        )}
-                        icon={Triangle}
-                    />
+                    {message && <MessageError>{message}</MessageError>}
+
+                    <input type='hidden' value={oldUser.id} name='user_id' />
+                    <EditNameInput />
+                    <EditUsernameInput />
+                    <EditRoleSelect />
+                    <EditPasswordInput />
+                    <ConfirmEditPasswordInput />
+
                     <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
+                        <SaveIcon className='mr-2 h-5 w-5' />
                         Save
                     </Button>
                 </form>

@@ -18,7 +18,7 @@ import { Save, User } from 'lucide-react'
 import { useState, useTransition } from 'react'
 const labTypeLabel = {
     [LABORATORY_TYPE.LABORATORY]: 'Laboratorio',
-    [LABORATORY_TYPE.COMPUTER_CENTER]: 'Centro de Computo',
+    [LABORATORY_TYPE.COMPUTER_CENTER]: 'Centro de Cómputo',
 }
 
 export function EditDialog() {
@@ -75,7 +75,6 @@ export function EditDialog() {
                         type='time'
                         name='open_hour'
                         originalValue={secondsToTime(old.open_hour * 60)}
-                        // TODO : fix this
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
