@@ -1,4 +1,3 @@
-process.loadEnvFile()
 import { DEFAULT_ROLES } from '../constants/client.ts'
 import { PermissionsFlags } from '../bitfields/PermissionsBitField.ts'
 import { SnowFlakeGenerator } from '../classes/SnowFlake.ts'
