@@ -39,7 +39,7 @@ export function SignUpForm() {
                         username,
                         role_id,
                     })
-                    if (!error) return push(app.auth.login())
+                    if (!error) return push(app.dashboard())
                     setError('Something went wrong')
                     console.log(error)
                 })
