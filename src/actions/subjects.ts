@@ -1,6 +1,6 @@
 'use server'
 
-import { db, snowflake } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import { Prisma, STATUS } from '@prisma/client'
 
 export async function createSubject(formData: FormData) {
@@ -11,7 +11,6 @@ export async function createSubject(formData: FormData) {
     try {
         await db.subject.create({
             data: {
-                id: snowflake.generate(),
                 name,
                 theory_hours,
                 practice_hours,

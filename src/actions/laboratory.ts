@@ -1,6 +1,6 @@
 'use server'
 
-import { db, snowflake } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import { timeToMinutes } from '@/lib/utils'
 import { LABORATORY_TYPE, Prisma, STATUS } from '@prisma/client'
 import { Temporal } from '@js-temporal/polyfill'
@@ -104,7 +104,6 @@ export async function createlab(formData: FormData) {
     try {
         await db.laboratory.create({
             data: {
-                id: snowflake.generate(),
                 open_hour,
                 close_hour,
                 type,
@@ -214,7 +213,6 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
     }
     await db.practice.create({
         data: {
-            id: snowflake.generate(),
             topic,
             name,
             students: parseInt(students),

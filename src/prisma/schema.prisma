@@ -17,14 +17,14 @@ datasource db {
 }
 
 model Role {
-    id          String @id
+    id          String @id @default(dbgenerated("snowflake()"))
     name        String @unique
-    permissions BigInt
+    permissions BigInt 
     User        User[]
 }
 
 model User {
-    id               String   @id
+    id               String   @id @default(dbgenerated("snowflake()"))
     name             String
     email            String
     email_verified   Boolean  @default(true)
@@ -51,7 +51,7 @@ model User {
 }
 
 model Session {
-    id         String   @id
+    id         String   @id @default(dbgenerated("snowflake()"))
     expires_at DateTime
     token      String
     created_at DateTime
@@ -66,7 +66,7 @@ model Session {
 }
 
 model Account {
-    id                       String    @id
+    id                       String    @id @default(dbgenerated("snowflake()"))
     account_id               String
     provider_id              String
     user_id                  String
@@ -85,7 +85,7 @@ model Account {
 }
 
 model Verification {
-    id         String    @id
+    id         String    @id @default(dbgenerated("snowflake()"))
     identifier String
     value      String
     expires_at DateTime
@@ -96,7 +96,7 @@ model Verification {
 }
 
 model Subject {
-    id             String   @id
+    id             String   @id @default(dbgenerated("snowflake()"))
     name           String
     created_at     DateTime @default(now())
     practice_hours Int
@@ -110,7 +110,7 @@ model Subject {
 }
 
 model Class {
-    id         String   @id
+    id         String   @id @default(dbgenerated("snowflake()"))
     subject_id String
     teacher_id String
     career_id  String
@@ -136,7 +136,7 @@ enum LABORATORY_TYPE {
 }
 
 model Laboratory {
-    id         String          @id
+    id         String          @id @default(dbgenerated("snowflake()"))
     created_at DateTime        @default(now())
     name       String          @unique
     open_hour  Int
@@ -153,7 +153,7 @@ model Laboratory {
 }
 
 model Practice {
-    id            String   @id
+    id            String   @id @default(dbgenerated("snowflake()"))
     teacher_id    String
     topic         String
     name          String
@@ -177,7 +177,7 @@ model Practice {
 }
 
 model Software {
-    id         String   @id
+    id         String   @id @default(dbgenerated("snowflake()"))
     name       String
     updated_at DateTime @updatedAt
     created_at DateTime @default(now())
@@ -200,7 +200,7 @@ model SoftwarePractice {
 }
 
 model Career {
-    id         String   @id
+    id         String   @id @default(dbgenerated("snowflake()"))
     name       String   @unique
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
@@ -232,7 +232,7 @@ model Student {
 }
 
 model Visit {
-    id            String    @id
+    id            String    @id @default(dbgenerated("snowflake()"))
     created_at    DateTime  @default(now())
     exit_at       DateTime?
     student_nc    String
@@ -261,7 +261,7 @@ enum STATUS {
 }
 
 model Machine {
-    id            String         @id
+    id            String         @id @default(dbgenerated("snowflake()"))
     number        Int
     status        MACHINE_STATUS @default(AVAILABLE)
     processor     String
@@ -293,7 +293,7 @@ model SoftwareMachine {
 }
 
 model Issue {
-    id         String    @id
+    id         String    @id @default(dbgenerated("snowflake()"))
     created_at DateTime  @default(now())
     comment    String
     machine_id String
@@ -309,7 +309,7 @@ model Issue {
 }
 
 model Comment {
-    id         String   @id
+    id         String   @id @default(dbgenerated("snowflake()"))
     created_at DateTime @default(now())
     content    String
 
