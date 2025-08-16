@@ -37,9 +37,11 @@ export function LoginForm() {
                         setPassword('')
                         return push(app.dashboard())
                     }
-                    if (error.code === 'invalid username or password')
+                    console.log(error)
+                    if (error.code === 'INVALID_USERNAME_OR_PASSWORD') {
                         setError(error.message!)
-                    else setError('Something went wrong')
+                        setTimeout(() => setError(''), 5000)
+                    } else setError('Something went wrong')
                 })
             }
             className='flex w-full max-w-md flex-col justify-center gap-6'
@@ -56,14 +58,7 @@ export function LoginForm() {
             <UsernameInput />
             <PasswordInput />
 
-            <Button
-                type='submit'
-                disabled={pending}
-                className={cn(
-                    'w-full rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 py-3 font-semibold text-white',
-                    'hover:from-yellow-600 hover:to-yellow-700 focus:ring-4 focus:ring-yellow-400',
-                )}
-            >
+            <Button type='submit' disabled={pending}>
                 <LogIn className='mr-2 h-5 w-5' />
                 {t('login')}
             </Button>
