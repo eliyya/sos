@@ -34,7 +34,7 @@ export function CreateSubjectDialog() {
                             else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
-                                    1_000,
+                                    500,
                                 )
                                 setOpen(false)
                             }
