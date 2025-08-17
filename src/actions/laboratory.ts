@@ -88,7 +88,21 @@ export async function deleteLaboratory(formData: FormData) {
     }
 }
 
-export async function createlab(formData: FormData) {
+export async function createlab(formData: FormData): Promise<
+    | { error: null }
+    | {
+          error: 'Por favor complete todos los campos'
+      }
+    | {
+          error: 'La hora de apertura debe ser menor a la de cierre'
+      }
+    | {
+          error: 'El laboratorio ya existe'
+      }
+    | {
+          error: 'Error al crear el laboratorio, intente nuevamente.'
+      }
+> {
     const name = (formData.get('name') as string).trim()
     const openHour = formData.get('open_hour') as string
     const closeHour = formData.get('close_hour') as string
