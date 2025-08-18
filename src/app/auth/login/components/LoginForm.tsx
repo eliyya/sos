@@ -18,7 +18,7 @@ export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')
     const [error, setError] = useState('')
     const [pending, startTransition] = useTransition()
-    const { push } = useRouter()
+    const { replace } = useRouter()
     const setUsername = useSetAtom(usernameAtom)
     const setPassword = useSetAtom(passwordAtom)
 
@@ -28,14 +28,17 @@ export function LoginForm() {
                 startTransition(async () => {
                     const username = formData.get('username') as string
                     const password = formData.get('password') as string
-                    const { error } = await authClient.signIn.username({
+                    const { error, data } = await authClient.signIn.username({
                         username,
                         password,
+                        rememberMe: true,
                     })
+                    console.log({ error, data })
                     if (!error) {
                         setUsername('')
                         setPassword('')
-                        return push(app.dashboard())
+                        replace(app.dashboard())
+                        return
                     }
                     console.log(error)
                     if (error.code === 'INVALID_USERNAME_OR_PASSWORD') {

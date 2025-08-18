@@ -113,8 +113,7 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
 })
 
 handler.set(/^\/dashboard.*$/, async ctx => {
-    const sessionCookie = getSessionCookie(ctx.request)
-    if (!sessionCookie) return ctx.redirect(app.auth.login())
+    console.time('middleware')
     const { data: session } = await betterFetch<Session>(
         '/api/auth/get-session',
         {
@@ -122,6 +121,7 @@ handler.set(/^\/dashboard.*$/, async ctx => {
             headers: { cookie: ctx.request.headers.get('cookie') || '' },
         },
     )
+    console.timeEnd('middleware')
     if (!session) return ctx.redirect(app.auth.login())
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),

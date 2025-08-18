@@ -3,9 +3,13 @@
 import { createlab } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
 import {
+    closeHourAtom,
     errorNameAtom,
     errorOpenHourAtom,
+    nameAtom,
     openCreateAtom,
+    openHourAtom,
+    openUnarchiveOrDeleteAtom,
     updateAtom,
 } from '@/global/managment-laboratory'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
@@ -18,13 +22,17 @@ import { CloseHourInput } from './CloseHourInput'
 import { LaboratoryTypeSelect } from './LaboratoryTypeSelect'
 import { MessageError } from '@/components/Error'
 
-export function CreateSubjectDialog() {
+export function CreateLaboratoryDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
     const setNameError = useSetAtom(errorNameAtom)
     const setOpenError = useSetAtom(errorOpenHourAtom)
+    const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
+    const setName = useSetAtom(nameAtom)
+    const setOpenHour = useSetAtom(openHourAtom)
+    const setCloseHour = useSetAtom(closeHourAtom)
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -35,20 +43,31 @@ export function CreateSubjectDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await createlab(data)
+                            const { error, message } = await createlab(data)
                             if (!error) {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
                                     500,
                                 )
+                                setName('')
+                                setOpenHour('')
+                                setCloseHour('')
                                 return setOpen(false)
                             }
-                            if (error === 'El laboratorio ya existe') {
-                                setNameError(error)
-                            } else if (
-                                error ===
-                                'La hora de apertura debe ser menor a la de cierre'
-                            ) {
+                            if (error === 'ALREADY_EXISTS') {
+                                if (
+                                    message ===
+                                    'El laboratorio se encuentra archivado'
+                                ) {
+                                    setOpen(false)
+                                    setOpenUnarchiveOrDelete(true)
+                                    setName('')
+                                    setOpenHour('')
+                                    setCloseHour('')
+                                } else {
+                                    setNameError(error)
+                                }
+                            } else if (error === 'DATA_ERROR') {
                                 setOpenError(error)
                             } else {
                                 setMessage(error)

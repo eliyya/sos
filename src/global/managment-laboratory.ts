@@ -34,6 +34,7 @@ export const openArchiveAtom = atom(false)
 export const openUnarchiveAtom = atom(false)
 export const openDeleteAtom = atom(false)
 export const openCreateAtom = atom(false)
+export const openUnarchiveOrDeleteAtom = atom(false)
 
 // create
 export const nameAtom = atom('')
