@@ -65,12 +65,12 @@ export function CreateLaboratoryDialog() {
                                     setOpenHour('08:00')
                                     setCloseHour('20:00')
                                 } else {
-                                    setNameError(error)
+                                    setNameError(message)
                                 }
                             } else if (error === 'DATA_ERROR') {
-                                setOpenError(error)
+                                setOpenError(message)
                             } else {
-                                setMessage(error)
+                                setMessage(message)
                                 setTimeout(() => {
                                     setMessage('')
                                 }, 5_000)
