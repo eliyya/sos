@@ -102,8 +102,6 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
 handler.set(/^\/dashboard.*$/, async ctx => {
     console.time('middleware')
     const session = await auth.api.getSession(ctx.request)
-    console.log(session)
-
     console.timeEnd('middleware')
     if (!session) return ctx.redirect(app.auth.login())
     const permissions = new PermissionsBitField(
