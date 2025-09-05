@@ -50,8 +50,8 @@ export function CreateLaboratoryDialog() {
                                     500,
                                 )
                                 setName('')
-                                setOpenHour('')
-                                setCloseHour('')
+                                setOpenHour('08:00')
+                                setCloseHour('20:00')
                                 return setOpen(false)
                             }
                             if (error === 'ALREADY_EXISTS') {
@@ -62,15 +62,15 @@ export function CreateLaboratoryDialog() {
                                     setOpen(false)
                                     setOpenUnarchiveOrDelete(true)
                                     setName('')
-                                    setOpenHour('')
-                                    setCloseHour('')
+                                    setOpenHour('08:00')
+                                    setCloseHour('20:00')
                                 } else {
-                                    setNameError(error)
+                                    setNameError(message)
                                 }
                             } else if (error === 'DATA_ERROR') {
-                                setOpenError(error)
+                                setOpenError(message)
                             } else {
-                                setMessage(error)
+                                setMessage(message)
                                 setTimeout(() => {
                                     setMessage('')
                                 }, 5_000)
