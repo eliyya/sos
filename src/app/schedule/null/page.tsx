@@ -3,6 +3,7 @@ import {
     PermissionsFlags,
 } from '@/bitfields/PermissionsBitField'
 import { ButtonLink } from '@/components/Links'
+import { APP_NAME } from '@/constants/client'
 import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
@@ -62,7 +63,9 @@ function GetContent({ permissions, hasSession, hasUsers }: GetContentProps) {
     if (!hasUsers)
         return (
             <>
-                <h2 className='mb-8 text-2xl font-bold'>Bienvenido a SOS</h2>
+                <h2 className='mb-8 text-2xl font-bold'>
+                    Bienvenido a {APP_NAME}
+                </h2>
                 <p className='mb-8 text-lg'>
                     Para que la plataforma funcione correctamente, debes
                     registrar al menos un administrador

@@ -19,6 +19,7 @@ import {
     FileDownIcon,
 } from 'lucide-react'
 import app from '@eliyya/type-routes'
+import { APP_NAME } from '@/constants/client'
 
 const MLinks = app.dashboard.management
 const teacherNavItems: {
@@ -111,7 +112,7 @@ export function DashboardNav({ className }: DashboardNavProps) {
             <Link href={app.dashboard()}>
                 <div className='mb-8 flex items-center gap-2 px-4'>
                     <BeakerIcon className='text-primary h-6 w-6' />
-                    <span className='text-lg font-semibold'>SOS</span>
+                    <span className='text-lg font-semibold'>{APP_NAME}</span>
                 </div>
             </Link>
 
@@ -133,7 +134,7 @@ export function DashboardNav({ className }: DashboardNavProps) {
                 ))}
 
                 <div className='mt-auto border-t pt-4'>
-                    {/* <Link
+                    {/*  <Link
                         href='/settings'
                         className='text-muted-foreground hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                     >

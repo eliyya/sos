@@ -6,9 +6,10 @@ import { db } from '@/prisma/db'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import Link from 'next/link'
 import { Temporal } from '@js-temporal/polyfill'
+import { APP_NAME } from '@/constants/client'
 
 export const metadata: Metadata = {
-    title: 'Panel de Administrador | SOS',
+    title: 'Panel de Administrador | ' + APP_NAME,
     description: 'gestión de laboratorios y usuarios',
 }
 
