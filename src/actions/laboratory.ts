@@ -88,7 +88,27 @@ export async function deleteLaboratory(formData: FormData) {
     }
 }
 
-export async function createlab(formData: FormData) {
+export async function createlab(formData: FormData): Promise<
+    | { error: null; message: null }
+    | {
+          error: 'MISSING_FIELDS'
+          message: 'Por favor complete todos los campos'
+      }
+    | {
+          error: 'DATA_ERROR'
+          message: 'La hora de apertura debe ser menor a la de cierre'
+      }
+    | {
+          error: 'ALREADY_EXISTS'
+          message:
+              | 'El laboratorio ya existe'
+              | 'El laboratorio se encuentra archivado'
+      }
+    | {
+          error: 'SERVER_ERROR'
+          message: 'Error al crear el laboratorio, intente nuevamente.'
+      }
+> {
     const name = (formData.get('name') as string).trim()
     const openHour = formData.get('open_hour') as string
     const closeHour = formData.get('close_hour') as string
@@ -96,10 +116,29 @@ export async function createlab(formData: FormData) {
     const open_hour = timeToMinutes(openHour)
     const close_hour = timeToMinutes(closeHour)
 
-    if (!name) return { error: 'Por favor complete todos los campos' }
+    if (!name)
+        return {
+            error: 'MISSING_FIELDS',
+            message: 'Por favor complete todos los campos',
+        }
 
     if (open_hour >= close_hour)
-        return { error: 'La hora de apertura debe ser menor a la de cierre' }
+        return {
+            error: 'DATA_ERROR',
+            message: 'La hora de apertura debe ser menor a la de cierre',
+        }
+
+    // CHECK IF EXISTS
+    const exists = await db.laboratory.findFirst({ where: { name } })
+    if (exists?.status === STATUS.ARCHIVED) {
+        // dar opcion de reactivar
+        return {
+            error: 'ALREADY_EXISTS',
+            message: 'El laboratorio se encuentra archivado',
+        }
+    }
+    if (exists)
+        return { error: 'ALREADY_EXISTS', message: 'El laboratorio ya existe' }
 
     try {
         await db.laboratory.create({
@@ -110,15 +149,21 @@ export async function createlab(formData: FormData) {
                 name,
             },
         })
-        return { error: null }
+        return { error: null, message: null }
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2002')
-                return { error: 'El laboratorio ya existe' }
+                return {
+                    error: 'ALREADY_EXISTS',
+                    message: 'El laboratorio ya existe',
+                }
             console.log(error.meta)
         }
         console.error(error)
-        return { error: 'Error al crear el laboratorio, intente nuevamente.' }
+        return {
+            error: 'SERVER_ERROR',
+            message: 'Error al crear el laboratorio, intente nuevamente.',
+        }
     }
 }
 
@@ -139,9 +184,12 @@ export async function archiveLaboratory(formData: FormData) {
                 status: STATUS.ARCHIVED,
             },
         })
-        return { error: null }
+        return { error: null, message: null }
     } catch {
-        return { error: 'Algo sucedio mal, intente nuevamente' }
+        return {
+            error: 'SERVER_ERROR',
+            message: 'Algo sucedio mal, intente nuevamente',
+        }
     }
 }
 

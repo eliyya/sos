@@ -31,6 +31,7 @@ import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { secondsToTime } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
@@ -107,6 +108,7 @@ export function EntityTable() {
             <ArchiveDialog />
             <UnarchiveDialog />
             <DeleteDialog />
+            <UnarchiveOrDeleteDialog />
         </>
     )
 }

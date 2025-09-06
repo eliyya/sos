@@ -8,13 +8,14 @@ import { ToastProvider } from '@/components/Toast'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Provider } from 'jotai'
+import { APP_NAME } from '@/constants/client'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-    title: 'SOS',
+    title: APP_NAME,
     description: 'sistemas de reserva',
 }
 

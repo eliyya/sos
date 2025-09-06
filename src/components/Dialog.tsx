@@ -115,7 +115,7 @@ export const DialogTitle = ({
 }: ComponentProps<typeof Title>) => (
     <Title
         className={cn(
-            'text-xl leading-none font-semibold tracking-tight',
+            'text-3xl leading-none font-semibold tracking-tight',
             className,
         )}
         {...props}

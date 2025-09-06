@@ -12,7 +12,7 @@ export function Filters() {
             <div className='relative flex-1'>
                 <SimpleInput
                     placeholder='Buscar software...'
-                    className='pl-8'
+                    className='pl-10'
                     value={query}
                     onChange={e => setQuery(e.currentTarget.value)}
                 />

@@ -1,17 +1,16 @@
 import { NextRequest } from 'next/server'
 import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import app from '@eliyya/type-routes'
-import { getSessionCookie } from 'better-auth/cookies'
-import { betterFetch } from '@better-fetch/fetch'
-
 import { auth } from './lib/auth'
 import {
     PermissionsBitField,
     PermissionsFlags,
 } from './bitfields/PermissionsBitField'
-type Session = typeof auth.$Infer.Session
+import { db } from './prisma/db'
+import { LABORATORY_TYPE } from '@prisma/client'
 
 export const config = {
+    runtime: 'nodejs',
     matcher:
         '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
 }
@@ -31,17 +30,12 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
     if (lab_id === 'null') return ctx.next()
     let l_id = lab_id
     if (!l_id) {
-        const url = new URL(
-            '/api/get-default-lab-id',
-            ctx.request.nextUrl.origin,
-        )
-        const req = await fetch(url)
-        if (!req.ok) {
-            return ctx.redirect(app.error())
-        }
-        const res = (await req.json()) as { lab_id: string | null }
-        if (!res.lab_id) return ctx.redirect(app.schedule.null())
-        l_id = res.lab_id
+        const did = await db.laboratory.findFirst({
+            select: { id: true },
+            where: { type: LABORATORY_TYPE.LABORATORY },
+        })
+        if (!did?.id) return ctx.redirect(app.schedule.null())
+        l_id = did.id
     }
     if (!lab_id || !day || !month || !year)
         return ctx.redirect(
@@ -79,31 +73,24 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
     }
     const l_id = lab_id
     if (l_id) return ctx.next()
-    const url = new URL(
-        l_type === 'lab' ? '/api/get-default-lab-id' : '/api/get-default-cc-id',
-        ctx.request.nextUrl.origin,
-    )
-    const req = await fetch(url)
-    if (!req.ok) {
-        return ctx.redirect(app.error())
-    }
-    const res = (await req.json()) as {
-        cc_id: string | null
-        lab_id: string | null
-    }
-    if (res.cc_id || res.lab_id)
+    const did = await db.laboratory.findFirst({
+        select: { id: true },
+        where: {
+            type:
+                l_type === 'lab' ?
+                    LABORATORY_TYPE.LABORATORY
+                :   LABORATORY_TYPE.COMPUTER_CENTER,
+        },
+    })
+    if (did?.id)
         return ctx.redirect(
             l_type === 'lab' ?
                 app.dashboard.reports.lab.$lab_id.$month.$year(
-                    `${res.lab_id}`,
+                    `${did.id}`,
                     m,
                     y,
                 )
-            :   app.dashboard.reports.cc.$cc_id.$month.$year(
-                    `${res.cc_id}`,
-                    m,
-                    y,
-                ),
+            :   app.dashboard.reports.cc.$cc_id.$month.$year(`${did.id}`, m, y),
         )
     return ctx.redirect(
         l_type === 'lab' ?
@@ -113,15 +100,9 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
 })
 
 handler.set(/^\/dashboard.*$/, async ctx => {
-    const sessionCookie = getSessionCookie(ctx.request)
-    if (!sessionCookie) return ctx.redirect(app.auth.login())
-    const { data: session } = await betterFetch<Session>(
-        '/api/auth/get-session',
-        {
-            baseURL: ctx.request.nextUrl.origin,
-            headers: { cookie: ctx.request.headers.get('cookie') || '' },
-        },
-    )
+    console.time('middleware')
+    const session = await auth.api.getSession(ctx.request)
+    console.timeEnd('middleware')
     if (!session) return ctx.redirect(app.auth.login())
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),
