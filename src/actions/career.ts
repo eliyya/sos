@@ -47,8 +47,15 @@ export async function editCareer(formData: FormData) {
 }
 
 export async function getCareers() {
-    return await db.career.findMany()
+    return await db.career.findMany({
+        where: {
+            status: {
+                not: STATUS.DELETED,
+            },
+        },
+    })
 }
+
 export async function getActiveCareers() {
     return await db.career.findMany({
         where: {

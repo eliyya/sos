@@ -3,7 +3,40 @@
 import { getStartOfWeek } from '@/lib/utils'
 import { db } from '@/prisma/db'
 import { Temporal } from '@js-temporal/polyfill'
-import { Prisma, STATUS } from '@prisma/client'
+import { Class, Prisma, STATUS } from '@prisma/client'
+
+export async function checkClassDisponibility({
+    subject_id,
+    teacher_id,
+    group,
+    semester,
+    career_id,
+}: {
+    subject_id: string
+    teacher_id: string
+    group: number
+    semester: number
+    career_id: string
+}): Promise<
+    | { status: 'available'; clase: null }
+    | { status: 'taken' | 'archived'; clase: Class }
+> {
+    const clase = await db.class.findFirst({
+        where: {
+            subject_id,
+            teacher_id,
+            group,
+            semester,
+            career_id,
+        },
+    })
+
+    if (clase?.status === STATUS.ACTIVE)
+        return { status: 'taken', clase: clase }
+    if (clase?.status === STATUS.ARCHIVED)
+        return { status: 'archived', clase: clase }
+    return { status: 'available', clase: null }
+}
 
 export async function createClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string

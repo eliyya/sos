@@ -1,6 +1,18 @@
 'use client'
 
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import { getDisponibleClassesWithData } from '@/actions/class'
+import { UnarchiveDialog } from './UnarchiveDialog'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { getSubjects } from '@/actions/subjects'
+import { ArchiveDialog } from './ArchiveDialog'
+import { DeleteDialog } from './DeleteDialog'
+import { getCareers } from '@/actions/career'
 import { Button } from '@/components/Button'
+import { useEffect, useState } from 'react'
+import { EditDialog } from './EditDialog'
+import { STATUS } from '@prisma/client'
+import { Class } from '@prisma/client'
 import {
     TableHeader,
     TableRow,
@@ -9,11 +21,6 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Class } from '@prisma/client'
-import { STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openArchiveAtom,
@@ -22,23 +29,33 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-class'
-import { getDisponibleClassesWithData } from '@/actions/class'
-import { EditDialog } from './EditDialog'
-import { ArchiveDialog } from './ArchiveDialog'
-import { UnarchiveDialog } from './UnarchiveDialog'
-import { DeleteDialog } from './DeleteDialog'
+    careersAtom,
+    subjectsAtom,
+    usersAtom,
+} from '@/global/management-class'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { getUsers } from '@/actions/users'
 
 export function ClassesTable() {
     const [entity, setEntity] = useState<
         Awaited<ReturnType<typeof getDisponibleClassesWithData>>
     >([])
-    const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
 
+    const update = useAtomValue(updateAtom)
     useEffect(() => {
         getDisponibleClassesWithData().then(setEntity)
     }, [update])
+
+    // las carreras, materias y usuarios se usan en varios componentes
+    const setCareers = useSetAtom(careersAtom)
+    const setSubjects = useSetAtom(subjectsAtom)
+    const setUsers = useSetAtom(usersAtom)
+    useEffect(() => {
+        getCareers().then(setCareers)
+        getSubjects().then(setSubjects)
+        getUsers().then(setUsers)
+    }, [setCareers, setSubjects, setUsers])
 
     return (
         <>
@@ -55,9 +72,8 @@ export function ClassesTable() {
                     {entity
                         .filter(
                             u =>
-                                u.id &&
-                                ((u.status === STATUS.ACTIVE && !archived) ||
-                                    (u.status === STATUS.ARCHIVED && archived)),
+                                (u.status === STATUS.ACTIVE && !archived) ||
+                                (u.status === STATUS.ARCHIVED && archived),
                         )
                         .map(entity => (
                             <TableRow key={entity.id}>
@@ -78,6 +94,7 @@ export function ClassesTable() {
             <ArchiveDialog />
             <UnarchiveDialog />
             <DeleteDialog />
+            <UnarchiveOrDeleteDialog />
         </>
     )
 }

@@ -3,7 +3,7 @@
 import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
 import { Search } from 'lucide-react'
-import { queryAtom, showArchivedAtom } from '@/global/managment-class'
+import { queryAtom, showArchivedAtom } from '@/global/management-class'
 import ToggleSwitch from '@/components/Switch'
 
 export function Filters() {

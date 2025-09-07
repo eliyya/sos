@@ -11,7 +11,7 @@ import {
     openArchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-class'
+} from '@/global/management-class'
 import { User, Subject, Career } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'

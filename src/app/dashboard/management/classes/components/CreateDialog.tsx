@@ -1,43 +1,45 @@
 'use client'
 
-import { createClass } from '@/actions/class'
-import { Button } from '@/components/Button'
-import { openCreateAtom, updateAtom } from '@/global/managment-class'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
-import { useAtom, useSetAtom } from 'jotai'
-import { UserIcon, Save } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { Career, Subject, User } from '@prisma/client'
-import { getTeachersActive } from '@/actions/users'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { CompletSelect } from '@/components/Select'
-import { getSubjectsActive } from '@/actions/subjects'
-import { getActiveCareers } from '@/actions/career'
 import { CompletInput } from '@/components/Inputs'
+import { useState, useTransition } from 'react'
+import { UserIcon, Save } from 'lucide-react'
+import { checkClassDisponibility, createClass } from '@/actions/class'
+import { Button } from '@/components/Button'
+import { STATUS } from '@prisma/client'
+import {
+    careersAtom,
+    entityToEditAtom,
+    openCreateAtom,
+    openUnarchiveOrDeleteAtom,
+    subjectsAtom,
+    updateAtom,
+    usersAtom,
+} from '@/global/management-class'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
-    const [teachers, setTeachers] = useState<User[]>([])
-    const [subjects, setSubjects] = useState<Subject[]>([])
-    const [careers, setCareers] = useState<Career[]>([])
-
-    useEffect(() => {
-        getTeachersActive().then(users => {
-            setTeachers(users)
-        })
-        getSubjectsActive().then(subjects => {
-            setSubjects(subjects)
-        })
-        getActiveCareers().then(careers => {
-            setCareers(careers)
-        })
-    }, [])
+    const setEntityToEdit = useSetAtom(entityToEditAtom)
+    const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
+    const users = useAtomValue(usersAtom).filter(
+        c => c.status === STATUS.ACTIVE,
+    )
+    const subjects = useAtomValue(subjectsAtom).filter(
+        c => c.status === STATUS.ACTIVE,
+    )
+    const careers = useAtomValue(careersAtom).filter(
+        c => c.status === STATUS.ACTIVE,
+    )
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
+                {/* TODO: DialogHeader */}
                 <DialogTitle>
                     <span className='text-3xl'>Crear Clase</span>
                 </DialogTitle>
@@ -47,6 +49,32 @@ export function CreateSubjectDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
+                            // check if the class already exists
+                            const career_id = data.get('career_id') as string
+                            const group = Number(data.get('group'))
+                            const semester = Number(data.get('semester'))
+                            const subject_id = data.get('subject_id') as string
+                            const teacher_id = data.get('teacher_id') as string
+                            const { clase, status } =
+                                await checkClassDisponibility({
+                                    career_id,
+                                    group,
+                                    semester,
+                                    subject_id,
+                                    teacher_id,
+                                })
+                            if (status === 'archived') {
+                                // show message
+                                setEntityToEdit(clase)
+                                setOpen(false)
+                                setOpenUnarchiveOrDelete(true)
+                                return
+                            }
+                            if (status === 'taken') {
+                                // show message
+                                setMessage('La clase ya existe')
+                                return
+                            }
                             const { error } = await createClass(data)
 
                             if (error) setMessage(error)
@@ -65,6 +93,7 @@ export function CreateSubjectDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
+                        // TODO: MessageError
                         <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
                             {message}
                         </span>
@@ -72,7 +101,7 @@ export function CreateSubjectDialog() {
                     <CompletSelect
                         label='Profesor'
                         name='teacher_id'
-                        options={teachers.map(t => ({
+                        options={users.map(t => ({
                             label: t.name,
                             value: t.id,
                         }))}

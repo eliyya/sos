@@ -74,7 +74,13 @@ export async function editSubject(formData: FormData) {
 }
 
 export async function getSubjects() {
-    return await db.subject.findMany()
+    return await db.subject.findMany({
+        where: {
+            status: {
+                not: STATUS.DELETED,
+            },
+        },
+    })
 }
 
 export async function getSubjectsActive() {
