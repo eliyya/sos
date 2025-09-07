@@ -6,6 +6,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import {
@@ -33,14 +34,14 @@ export function DeleteEntityDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Delete @{entity.username}</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de eliminar{' '}
-                    <span className='font-bold'>{entity.name}</span>?
-                </DialogDescription>
-                <span>Esta acción es irreversible</span>
+                <DialogHeader>
+                    <DialogTitle>Eliminar Usuario</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de eliminar el usuario{' '}
+                        <span className='font-bold'>{entity.name}</span>?
+                        <span>Esta acción es irreversible</span>
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

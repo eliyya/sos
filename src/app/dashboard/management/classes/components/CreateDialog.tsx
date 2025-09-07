@@ -1,6 +1,11 @@
 'use client'
 
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { CompletSelect } from '@/components/Select'
 import { CompletInput } from '@/components/Inputs'
@@ -39,13 +44,12 @@ export function CreateSubjectDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                {/* TODO: DialogHeader */}
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Clase</span>
-                </DialogTitle>
-                {/* <DialogDescription>
-                    Edit the user&apos;s information
-                </DialogDescription> */}
+                <DialogHeader>
+                    <DialogTitle>Crear Clase</DialogTitle>
+                    {/* <DialogDescription>
+                        Edit the user&apos;s information
+                    </DialogDescription> */}
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

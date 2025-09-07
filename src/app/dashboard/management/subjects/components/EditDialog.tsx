@@ -6,6 +6,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
@@ -30,12 +31,12 @@ export function EditDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Editar Materia</span>
-                </DialogTitle>
-                <DialogDescription>
-                    Edita la información de la materia {old.name}
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Editar Asignatura</DialogTitle>
+                    <DialogDescription>
+                        Edita la asignatura {old.name}
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { openCreateAtom } from '@/global/management-practices'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
 import { CalendarDialog } from './CalendarDialog'
 import { CreateForm } from './CreateForm'
 import { useAtom } from 'jotai'
@@ -35,11 +35,11 @@ export function CreateDialog({ users, lab, isAdmin, user }: CreateDialogProps) {
     return (
         <Dialog open={open && !!user} onOpenChange={setOpen}>
             <DialogContent className='w-full max-w-4xl'>
-                <DialogTitle className='flex flex-col gap-4'>
-                    <span className='w-full text-center text-3xl'>
+                <DialogHeader>
+                    <DialogTitle className='w-full text-center text-3xl'>
                         Apartar el laboratorio &quot;{lab.name}&quot;
-                    </span>
-                </DialogTitle>
+                    </DialogTitle>
+                </DialogHeader>
                 <div className='flex gap-8'>
                     <CreateForm
                         lab={lab}

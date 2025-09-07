@@ -5,8 +5,9 @@ import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
-    DialogTitle,
     DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from '@/components/Dialog'
 import {
     openDeleteAtom,
@@ -29,20 +30,17 @@ export function DeleteDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Eliminar Software</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de eliminar{' '}
-                    <span className='font-bold'>
-                        {entity.name} {entity.name}
-                    </span>
-                    ?
-                    <span className='text-destructive'>
-                        Esta acción es irreversible
-                    </span>
-                    {/* TODO: if has machines, show it*/}
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Eliminar Software</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de eliminar el software{' '}
+                        <span className='font-bold'>{entity.name}</span>?
+                        <span className='text-destructive'>
+                            Esta acción es irreversible
+                        </span>
+                    </DialogDescription>
+                </DialogHeader>
+                {/* TODO: if has machines, show it*/}
                 <form
                     action={data => {
                         startTransition(async () => {

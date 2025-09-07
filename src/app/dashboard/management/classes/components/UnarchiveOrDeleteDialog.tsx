@@ -6,6 +6,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
@@ -43,15 +44,13 @@ export function UnarchiveOrDeleteDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>La clase se encuentra archivada</DialogTitle>
-                <DialogDescription>
-                    Que quieres hacer con la clase{' '}
-                    <span className='font-bold'>
-                        {subject?.name} - {career?.alias ?? career?.name}
-                        {entity.group}-{entity.semester}
-                    </span>{' '}
-                    de {teacher?.name}?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Clase archivada</DialogTitle>
+                    <DialogDescription>
+                        La clase {subject?.name} - {career?.alias ?? career?.name}
+                        {entity.group}-{entity.semester} de {teacher?.name} está archivada. ¿Qué desea hacer con ella?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

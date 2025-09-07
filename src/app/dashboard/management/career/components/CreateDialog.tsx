@@ -7,7 +7,7 @@ import { openCreateAtom, updateAtom } from '@/global/managment-career'
 import {
     Dialog,
     DialogContent,
-    // DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
@@ -23,12 +23,12 @@ export function CreateSubjectDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Carrera</span>
-                </DialogTitle>
-                {/* <DialogDescription>
-                    Edit the user&apos;s information
-                </DialogDescription> */}
+                <DialogHeader>
+                    <DialogTitle>Crear Carrera</DialogTitle>
+                    {/* <DialogDescription>
+                        Edit the user&apos;s information
+                    </DialogDescription> */}
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

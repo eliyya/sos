@@ -4,7 +4,7 @@ import { createStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { openCreateAtom, updateAtom } from '@/global/managment-students'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { User, Save, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -28,9 +28,9 @@ export function CreateSubjectDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Estudiante</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Estudiante</DialogTitle>
+                </DialogHeader>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
                 </DialogDescription> */}

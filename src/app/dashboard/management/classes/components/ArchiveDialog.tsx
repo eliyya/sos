@@ -9,6 +9,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { CompletInput } from '@/components/Inputs'
@@ -49,12 +50,12 @@ export function ArchiveDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Archivar Clase</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de archivar esta clase?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Archivar Clase</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de archivar esta clase?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

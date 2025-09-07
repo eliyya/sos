@@ -8,8 +8,9 @@ import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
-    DialogTitle,
     DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from '@/components/Dialog'
 import { CompletInput } from '@/components/Inputs'
 import {
@@ -46,16 +47,19 @@ export function DeleteDialog() {
 
     if (!entity) return null
 
+    const subjectName = subjects.find(s => s.id === entity.subject_id)?.name
+    const teacherName = teachers.find(t => t.id === entity.teacher_id)?.name
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Eliminar Clase</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de eliminar esta clase?{' '}
-                    <span>Esta acción es irreversible</span>
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Eliminar Clase</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de eliminar la clase {subjectName} - {teacherName}?
+                        <span className='block'>Esta acción es irreversible</span>
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

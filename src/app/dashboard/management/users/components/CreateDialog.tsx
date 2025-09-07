@@ -1,6 +1,11 @@
 'use client'
 
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
 import { useEffect, useState, useTransition } from 'react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -62,9 +67,9 @@ export function CreateUserDialog() {
             }}
         >
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Usuario</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Usuario</DialogTitle>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

@@ -6,6 +6,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import {
@@ -29,16 +30,14 @@ export function ArchiveDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Archivar Estudiante</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de archivar{' '}
-                    <span className='font-bold'>
-                        {entity.firstname} {entity.lastname}
-                    </span>
-                    ?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Archivar Estudiante</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de archivar al estudiante{' '}
+                        <span className='font-bold'>{entity.firstname} {entity.lastname}</span>?
+                        <span>Esta acción es reversible</span>
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

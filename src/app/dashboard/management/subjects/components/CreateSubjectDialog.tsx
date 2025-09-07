@@ -14,7 +14,7 @@ import {
 import {
     Dialog,
     DialogContent,
-    // DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
@@ -44,9 +44,9 @@ export function CreateSubjectDialog() {
             }}
         >
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Materia</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Asignatura</DialogTitle>
+                </DialogHeader>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
                 </DialogDescription> */}

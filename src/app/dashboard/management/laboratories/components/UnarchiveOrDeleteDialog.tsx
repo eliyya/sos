@@ -6,6 +6,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
@@ -32,11 +33,13 @@ export function UnarchiveOrDeleteDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>El laboratorio se encuentra archivado</DialogTitle>
-                <DialogDescription>
-                    Que quieres hacer con{' '}
-                    <span className='font-bold'>{entity.name}</span>?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Laboratorio archivado</DialogTitle>
+                    <DialogDescription>
+                        El laboratorio {entity.name} está archivado. ¿Qué desea hacer? con{' '}
+                        <span className='font-bold'>{entity.name}</span>?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

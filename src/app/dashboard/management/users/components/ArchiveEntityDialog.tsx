@@ -6,6 +6,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import {
@@ -33,15 +34,13 @@ export function ArchiveEntityDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>
-                        Archivar @{entity.username}
-                    </span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de archivar{' '}
-                    <span className='font-bold'>{entity.name}</span>?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Archivar Usuario</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de archivar al usuario{' '}
+                        <span className='font-bold'>{entity.name}</span>?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

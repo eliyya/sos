@@ -4,7 +4,7 @@ import { createSoftware } from '@/actions/software'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { openCreateAtom, updateAtom } from '@/global/managment-software'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { User, Save } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -18,9 +18,9 @@ export function CreateSubjectDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Software</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Software</DialogTitle>
+                </DialogHeader>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
                 </DialogDescription> */}

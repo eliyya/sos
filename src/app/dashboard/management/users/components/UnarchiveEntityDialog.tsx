@@ -6,6 +6,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import {
@@ -29,14 +30,12 @@ export function UnarchiveEntityDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>
-                        Desarchivar @{entity.username}
-                    </span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de desarchivar a {entity.name}?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Desarchivar Usuario</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de desarchivar al usuario {entity.name}?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

@@ -9,6 +9,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
@@ -50,16 +51,16 @@ export function EditDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Editar Clase</span>
-                </DialogTitle>
-                <DialogDescription>
-                    Edita la clase{' '}
-                    {subjects.find(s => s.id === old.subject_id)?.name}{' '}
-                    {careers.find(c => c.id === old.career_id)?.alias ??
-                        careers.find(c => c.id === old.career_id)?.name}
-                    {old.group}
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Editar Clase</DialogTitle>
+                    <DialogDescription>
+                        Edita la clase{' '}
+                        {subjects.find(s => s.id === old.subject_id)?.name}{' '}
+                        {careers.find(c => c.id === old.career_id)?.alias ??
+                            careers.find(c => c.id === old.career_id)?.name}
+                        {old.group}
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
