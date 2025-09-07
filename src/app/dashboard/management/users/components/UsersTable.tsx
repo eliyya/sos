@@ -11,7 +11,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Role, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import { STATUS } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'

@@ -3,7 +3,6 @@
 import { LogIn } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { useState, useTransition } from 'react'
-import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
