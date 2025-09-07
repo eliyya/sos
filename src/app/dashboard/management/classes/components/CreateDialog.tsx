@@ -11,6 +11,7 @@ import { CompletSelect } from '@/components/Select'
 import { CompletInput } from '@/components/Inputs'
 import { useState, useTransition } from 'react'
 import { UserIcon, Save } from 'lucide-react'
+import { MessageError } from '@/components/Error'
 import { checkClassDisponibility, createClass } from '@/actions/class'
 import { Button } from '@/components/Button'
 import { STATUS } from '@prisma/client'
@@ -97,10 +98,7 @@ export function CreateSubjectDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        // TODO: MessageError
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <CompletSelect
                         label='Profesor'

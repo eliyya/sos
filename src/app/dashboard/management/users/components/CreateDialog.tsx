@@ -13,6 +13,14 @@ import { CompletSelect } from '@/components/Select'
 import { CompletInput } from '@/components/Inputs'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/Button'
+import { MessageError } from '@/components/Error'
+import {
+    AtSignIcon,
+    KeyIcon,
+    SaveIcon,
+    TriangleIcon,
+    UserIcon,
+} from 'lucide-react'
 import {
     canSuggestUsernameAtom,
     confirmPasswordAtom,
@@ -123,11 +131,7 @@ export function CreateUserDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <NameInput />
                     <UsernameInput />
                     <RoleSelect />

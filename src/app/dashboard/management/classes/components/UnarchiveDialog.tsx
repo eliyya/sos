@@ -1,6 +1,5 @@
 'use client'
 
-import { getActiveCareers } from '@/actions/career'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -9,7 +8,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { CompletInput } from '@/components/Inputs'
+import { MessageError } from '@/components/Error'
 import {
     openUnarchiveAtom,
     entityToEditAtom,
@@ -70,11 +69,7 @@ export function UnarchiveDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={entity.id} name='nc' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

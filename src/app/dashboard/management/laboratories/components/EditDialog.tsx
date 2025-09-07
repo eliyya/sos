@@ -21,6 +21,7 @@ import { LABORATORY_TYPE } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 const labTypeLabel = {
     [LABORATORY_TYPE.LABORATORY]: 'Laboratorio',
     [LABORATORY_TYPE.COMPUTER_CENTER]: 'Centro de Cómputo',
@@ -61,9 +62,7 @@ export function EditDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput

@@ -17,6 +17,7 @@ import {
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -56,11 +57,7 @@ export function DeleteDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={user.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

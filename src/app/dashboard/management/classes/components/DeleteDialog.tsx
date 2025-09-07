@@ -20,8 +20,9 @@ import {
 } from '@/global/management-class'
 import { User, Subject, Career } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2, UserIcon } from 'lucide-react'
+import { Ban, Trash2, User as UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -80,9 +81,7 @@ export function DeleteDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput
