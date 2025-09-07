@@ -33,8 +33,7 @@ export function ArchiveDialog() {
                 <DialogHeader>
                     <DialogTitle>Archivar Carrera</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de archivar{' '}
-                        <span className='font-bold'>{entity.name}</span>?
+                        ¿Está seguro de archivar <strong>{entity.name}</strong>?
                     </DialogDescription>
                 </DialogHeader>
                 <form

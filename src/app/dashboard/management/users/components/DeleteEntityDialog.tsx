@@ -38,8 +38,8 @@ export function DeleteEntityDialog() {
                     <DialogTitle>Eliminar Usuario</DialogTitle>
                     <DialogDescription>
                         ¿Está seguro de eliminar el usuario{' '}
-                        <span className='font-bold'>{entity.name}</span>?
-                        <span>Esta acción es irreversible</span>
+                        <strong>{entity.name}</strong>?
+                        <strong>Esta acción es irreversible</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <form

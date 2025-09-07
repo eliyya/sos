@@ -34,8 +34,8 @@ export function ArchiveDialog() {
                     <DialogTitle>Archivar Estudiante</DialogTitle>
                     <DialogDescription>
                         ¿Está seguro de archivar al estudiante{' '}
-                        <span className='font-bold'>{entity.firstname} {entity.lastname}</span>?
-                        <span>Esta acción es reversible</span>
+                        {entity.firstname} {entity.lastname}?{' '}
+                        <strong>Esta acción es reversible</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <form

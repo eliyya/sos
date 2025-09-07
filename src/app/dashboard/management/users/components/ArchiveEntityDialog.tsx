@@ -38,7 +38,7 @@ export function ArchiveEntityDialog() {
                     <DialogTitle>Archivar Usuario</DialogTitle>
                     <DialogDescription>
                         ¿Está seguro de archivar al usuario{' '}
-                        <span className='font-bold'>{entity.name}</span>?
+                        <strong>{entity.name}</strong>?
                     </DialogDescription>
                 </DialogHeader>
                 <form

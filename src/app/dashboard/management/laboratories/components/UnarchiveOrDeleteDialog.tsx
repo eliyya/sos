@@ -36,8 +36,8 @@ export function UnarchiveOrDeleteDialog() {
                 <DialogHeader>
                     <DialogTitle>Laboratorio archivado</DialogTitle>
                     <DialogDescription>
-                        El laboratorio {entity.name} está archivado. ¿Qué desea hacer? con{' '}
-                        <span className='font-bold'>{entity.name}</span>?
+                        El laboratorio {entity.name} está archivado. ¿Qué desea
+                        hacer? con <strong>{entity.name}</strong>?
                     </DialogDescription>
                 </DialogHeader>
                 <form

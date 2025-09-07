@@ -34,7 +34,7 @@ export function DeleteDialog() {
                     <DialogTitle>Eliminar Software</DialogTitle>
                     <DialogDescription>
                         ¿Está seguro de eliminar el software{' '}
-                        <span className='font-bold'>{entity.name}</span>?
+                        <strong>{entity.name}</strong>?
                         <span className='text-destructive'>
                             Esta acción es irreversible
                         </span>

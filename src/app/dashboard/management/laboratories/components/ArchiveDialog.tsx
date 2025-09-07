@@ -34,7 +34,7 @@ export function ArchiveDialog() {
                     <DialogTitle>Archivar Laboratorio</DialogTitle>
                     <DialogDescription>
                         ¿Está seguro de archivar {entity.name}?
-                        <span>Esta acción es reversible</span>
+                        <strong>Esta acción es reversible</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <form

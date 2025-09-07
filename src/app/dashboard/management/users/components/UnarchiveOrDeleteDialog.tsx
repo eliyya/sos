@@ -36,8 +36,8 @@ export function UnarchiveOrDeleteDialog() {
                 <DialogHeader>
                     <DialogTitle>Usuario archivado</DialogTitle>
                     <DialogDescription>
-                        El usuario {entity.name} está archivado. ¿Qué desea hacer con él?{' '}
-                        <span className='font-bold'>{entity.name}</span>?
+                        El usuario {entity.name} está archivado. ¿Qué desea
+                        hacer con él? <strong>{entity.name}</strong>?
                     </DialogDescription>
                 </DialogHeader>
                 <form
