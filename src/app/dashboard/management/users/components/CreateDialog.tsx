@@ -38,13 +38,6 @@ import {
     usernameAtom,
     usernameErrorAtom,
 } from '@/global/management-users'
-import {
-    AtSignIcon,
-    KeyIcon,
-    SaveIcon,
-    TriangleIcon,
-    UserIcon,
-} from 'lucide-react'
 import { usernameIsTaken } from '@/actions/users'
 
 export function CreateUserDialog() {
