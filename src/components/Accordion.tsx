@@ -26,12 +26,12 @@ export function AccordionSection({
     return (
         <Item {...props}>
             <Header>
-                <Trigger className='hover:bg-accent text-muted-foreground flex w-full items-center justify-between px-4 py-3 text-left font-medium transition'>
+                <Trigger className='hover:bg-accent group text-muted-foreground flex w-full items-center justify-between px-4 py-3 text-left font-medium transition'>
                     {name}
-                    <ChevronDownIcon className='h-4 w-4 transition-transform data-[state=open]:rotate-180' />
+                    <ChevronDownIcon className='h-4 w-4 transition-transform group-data-[state=open]:-rotate-180' />
                 </Trigger>
             </Header>
-            <Content className='data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down text-muted-foreground px-4 pb-4 text-sm'>
+            <Content className='data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down text-muted-foreground pb-3 pl-3 text-sm'>
                 {children}
             </Content>
         </Item>
