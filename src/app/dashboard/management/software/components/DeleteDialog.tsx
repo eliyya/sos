@@ -41,7 +41,6 @@ export function DeleteDialog() {
                         </span>
                     </DialogDescription>
                 </DialogHeader>
-                {/* TODO: if has machines, show it*/}
                 <form
                     action={data => {
                         startTransition(async () => {

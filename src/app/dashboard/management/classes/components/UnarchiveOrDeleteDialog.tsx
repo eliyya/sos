@@ -19,7 +19,6 @@ import {
     subjectsAtom,
     usersAtom,
 } from '@/global/management-class'
-// TODO: DialogDescription
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -47,8 +46,10 @@ export function UnarchiveOrDeleteDialog() {
                 <DialogHeader>
                     <DialogTitle>Clase archivada</DialogTitle>
                     <DialogDescription>
-                        La clase {subject?.name} - {career?.alias ?? career?.name}
-                        {entity.group}-{entity.semester} de {teacher?.name} está archivada. ¿Qué desea hacer con ella?
+                        La clase {subject?.name} -{' '}
+                        {career?.alias ?? career?.name}
+                        {entity.group}-{entity.semester} de {teacher?.name} está
+                        archivada. ¿Qué desea hacer con ella?
                     </DialogDescription>
                 </DialogHeader>
                 <form
