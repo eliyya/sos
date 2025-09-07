@@ -7,7 +7,6 @@ import {
     BeakerIcon,
     LayoutDashboardIcon,
     UsersIcon,
-    // Settings2Icon,
     LogOutIcon,
     BookMarkedIcon,
     SquareUserRoundIcon,
@@ -18,6 +17,7 @@ import {
     GraduationCapIcon,
     FileDownIcon,
 } from 'lucide-react'
+import { Accordion, AccordionSection } from '@/components/Accordion'
 import app from '@eliyya/type-routes'
 import { APP_NAME } from '@/constants/client'
 
@@ -37,48 +37,62 @@ const teacherNavItems: {
         href: '/schedule',
         icon: BeakerIcon,
     },
+]
+
+const managementNavItems: {
+    title: string
+    href: ReturnType<(typeof MLinks)[keyof typeof MLinks]>
+    icon: LucideIcon
+}[] = [
     {
-        title: 'Gestion de Laboratorios',
+        title: 'De Laboratorios',
         href: MLinks.laboratories(),
         icon: HouseWifiIcon,
     },
     {
-        title: 'Gestion de Usuarios',
+        title: 'De Usuarios',
         href: MLinks.users(),
         icon: UsersIcon,
     },
     {
-        title: 'Gestion de Materias',
+        title: 'De Materias',
         href: MLinks.subjects(),
         icon: BookMarkedIcon,
     },
     {
-        title: 'Gestion de Carreras',
+        title: 'De Carreras',
         href: MLinks.career(),
         icon: SquareUserRoundIcon,
     },
     {
-        title: 'Gestion de Clases',
+        title: 'De Clases',
         href: MLinks.classes(),
         icon: CalendarCheckIcon,
     },
     {
-        title: 'Gestion de Estudiantes',
+        title: 'De Estudiantes',
         href: MLinks.students(),
         icon: GraduationCapIcon,
     },
     {
-        title: 'Gestion de Maquinas',
+        title: 'De Maquinas',
         href: MLinks.machines(),
         icon: ComputerIcon,
     },
+]
+
+const reportNavItems: {
+    title: string
+    href: string
+    icon: LucideIcon
+}[] = [
     {
-        title: 'Reportes de Laboratorio',
+        title: 'De Laboratorio',
         href: '/dashboard/reports/lab',
         icon: LayoutDashboardIcon,
     },
     {
-        title: 'Reportes de CC',
+        title: 'De CC',
         href: '/dashboard/reports/cc',
         icon: LayoutDashboardIcon,
     },
@@ -132,6 +146,43 @@ export function DashboardNav({ className }: DashboardNavProps) {
                         {item.title}
                     </Link>
                 ))}
+
+                <Accordion type='single' collapsible>
+                    <AccordionSection value='item-1' name='Gestión'>
+                        {managementNavItems.map(item => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    'hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm',
+                                    pathname === item.href ?
+                                        'bg-accent text-accent-foreground font-medium'
+                                    :   'text-muted-foreground',
+                                )}
+                            >
+                                <item.icon className='h-4 w-4' />
+                                {item.title}
+                            </Link>
+                        ))}
+                    </AccordionSection>
+                    <AccordionSection value='item-2' name='Reportes'>
+                        {reportNavItems.map(item => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    'hover:bg-accent flex items-center gap-3 rounded-md px-4 py-2 text-sm',
+                                    pathname === item.href ?
+                                        'bg-accent text-accent-foreground font-medium'
+                                    :   'text-muted-foreground',
+                                )}
+                            >
+                                <item.icon className='h-4 w-4' />
+                                {item.title}
+                            </Link>
+                        ))}
+                    </AccordionSection>
+                </Accordion>
 
                 <div className='mt-auto border-t pt-4'>
                     {/*  <Link

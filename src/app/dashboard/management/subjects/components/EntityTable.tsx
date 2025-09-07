@@ -15,13 +15,13 @@ import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
-    editDialogAtom,
+    openEditDialogAtom,
     openArchiveAtom,
     openDeleteAtom,
     openUnarchiveAtom,
     queryAtom,
     showArchivedAtom,
-    subjectToEditAtom,
+    entityToEditAtom,
     updateAtom,
 } from '@/global/management-subjects'
 import { getSubjects } from '@/actions/subjects'
@@ -29,6 +29,7 @@ import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function EntityTable() {
     const [subjects, setSubjects] = useState<Subject[]>([])
@@ -97,6 +98,7 @@ export function EntityTable() {
             <ArchiveDialog />
             <UnarchiveDialog />
             <DeleteDialog />
+            <UnarchiveOrDeleteDialog />
         </>
     )
 }
@@ -105,8 +107,8 @@ interface ButtonsProps {
     subject: Subject
 }
 function Buttons({ subject }: ButtonsProps) {
-    const openEditDialog = useSetAtom(editDialogAtom)
-    const setSubjectSelected = useSetAtom(subjectToEditAtom)
+    const openEditDialog = useSetAtom(openEditDialogAtom)
+    const setSubjectSelected = useSetAtom(entityToEditAtom)
     const setArchiveDialog = useSetAtom(openArchiveAtom)
     const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
     const openDeleteDialog = useSetAtom(openDeleteAtom)

@@ -316,6 +316,9 @@ CREATE UNIQUE INDEX "careers_name_key" ON "public"."careers"("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "machines_serie_key" ON "public"."machines"("serie");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "subjects_name_key" ON "public"."subjects"("name");
+
 -- AddForeignKey
 ALTER TABLE "public"."users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "public"."Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

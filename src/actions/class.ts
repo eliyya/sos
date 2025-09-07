@@ -4,7 +4,6 @@ import { getStartOfWeek } from '@/lib/utils'
 import { db } from '@/prisma/db'
 import { Temporal } from '@js-temporal/polyfill'
 import { Prisma, STATUS } from '@prisma/client'
-// import { getTeacherClassesWithRemainingWeekHours } from '@prisma/client/sql'
 
 export async function createClass(formData: FormData) {
     const subject_id = formData.get('subject_id') as string
@@ -165,15 +164,7 @@ export async function getClassesWithDataFromUser<
     >
 > {
     const includes = (dataToInclude ?? []) as ClassDataToInclude[]
-    // if (typeof week === 'number') {
-    //     const r = await db.$queryRawTyped(
-    //         getTeacherClassesWithRemainingWeekHours(week, userId),
-    //     )
-    //     console.log(r)
 
-    //     // @ts-expect-error Just ignore
-    //     return r
-    // }
     const classes = await db.class.findMany({
         where: {
             teacher_id: userId,

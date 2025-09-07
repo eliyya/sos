@@ -9,7 +9,7 @@ import {
     updateAtom,
     openUnarchiveOrDeleteAtom,
     openDeleteAtom,
-} from '@/global/managment-laboratory'
+} from '@/global/management-laboratory'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'

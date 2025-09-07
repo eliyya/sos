@@ -10,7 +10,7 @@ import {
 } from '@/components/Dialog'
 import {
     openDeleteAtom,
-    subjectToEditAtom,
+    entityToEditAtom,
     updateAtom,
 } from '@/global/management-subjects'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -20,7 +20,7 @@ import { useState, useTransition } from 'react'
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
     const [inTransition, startTransition] = useTransition()
-    const user = useAtomValue(subjectToEditAtom)
+    const user = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
 

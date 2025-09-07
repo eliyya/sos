@@ -7,7 +7,7 @@ import {
     openArchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-laboratory'
+} from '@/global/management-laboratory'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'

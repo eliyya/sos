@@ -1,9 +1,9 @@
 'use server'
 
 import { db } from '@/prisma/db'
-import { STATUS } from '@prisma/client'
+import { STATUS, User } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
-import { getDeletedRole } from './roles'
+import { getAdminRole, getDeletedRole } from './roles'
 import { capitalize } from '@/lib/utils'
 import { auth } from '@/lib/auth'
 
@@ -11,6 +11,18 @@ export async function getUsers() {
     return db.user.findMany({
         where: { status: { not: STATUS.DELETED } },
     })
+}
+
+export async function usernameIsTaken(
+    username: string,
+): Promise<
+    | { status: 'archived' | 'taken'; user: User }
+    | { status: 'available'; user: null }
+> {
+    const user = await db.user.findFirst({ where: { username } })
+    if (!user) return { status: 'available', user }
+    if (user.status === STATUS.ARCHIVED) return { status: 'archived', user }
+    return { status: 'taken', user }
 }
 
 export async function getTeachersActive() {
@@ -28,6 +40,11 @@ export async function archiveUser(formData: FormData) {
     } catch {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
+}
+
+export async function adminCount() {
+    const adminRole = await getAdminRole()
+    return db.user.count({ where: { role_id: adminRole.id } })
 }
 
 export async function unarchiveUser(formData: FormData) {

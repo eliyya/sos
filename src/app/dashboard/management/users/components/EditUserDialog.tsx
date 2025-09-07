@@ -1,30 +1,41 @@
 'use client'
 
-import { editUser } from '@/actions/users'
-import { Button } from '@/components/Button'
+import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
-import {
-    EditUserDialogAtom,
-    updateUsersAtom,
-    userToEditAtom,
-} from '@/global/management-users'
+import { RetornableCompletSelect } from '@/components/Select'
+import { useEffect, useState, useTransition } from 'react'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { SaveIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { EditNameInput } from './inputs/EditNameInput'
-import { EditRoleSelect } from './inputs/EditRoleSelect'
-import { EditUsernameInput } from './inputs/EditUsernameInput'
-import { EditPasswordInput } from './inputs/EditPasswordInput'
-import { ConfirmEditPasswordInput } from './inputs/ConfirmEditPasswordInput'
+import { MessageError } from '@/components/Error'
+import { Button } from '@/components/Button'
+import { editUser } from '@/actions/users'
+import { getRoles } from '@/actions/roles'
+import { Role } from '@prisma/client'
+import {
+    EditUserDialogAtom,
+    updateAtom,
+    entityToEditAtom,
+    editPasswordAtom,
+    editPasswordErrorAtom,
+    editConfirmPasswordAtom,
+    editConfirmPasswordErrorAtom,
+    passwordFocusAtom,
+    rolesAtom,
+} from '@/global/management-users'
+import {
+    AtSignIcon,
+    KeyIcon,
+    SaveIcon,
+    TriangleIcon,
+    UserIcon,
+} from 'lucide-react'
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const oldUser = useAtomValue(userToEditAtom)
+    const oldUser = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateUsersAtom)
+    const updateUsersTable = useSetAtom(updateAtom)
 
     if (!oldUser) return null
 
@@ -73,5 +84,133 @@ export function EditUserDialog() {
                 </form>
             </DialogContent>
         </Dialog>
+    )
+}
+
+export function EditUsernameInput() {
+    const oldUser = useAtomValue(entityToEditAtom)
+
+    if (!oldUser) return null
+
+    return (
+        <RetornableCompletInput
+            originalValue={oldUser.username}
+            required
+            label='Username'
+            type='text'
+            name='username'
+            icon={AtSignIcon}
+        />
+    )
+}
+
+export function EditRoleSelect() {
+    const oldUser = useAtomValue(entityToEditAtom)
+    const roles = useAtomValue(rolesAtom)
+
+    if (!oldUser) return null
+
+    return (
+        <RetornableCompletSelect
+            label='Rol'
+            name='role_id'
+            originalValue={{
+                label:
+                    roles.find(r => r.id === oldUser.role_id)?.name ??
+                    oldUser.role_id,
+                value: oldUser.role_id,
+            }}
+            options={roles.map(r => ({
+                label: r.name,
+                value: r.id,
+            }))}
+            icon={TriangleIcon}
+        />
+    )
+}
+
+export function EditPasswordInput() {
+    const [password, setPassword] = useAtom(editPasswordAtom)
+    const [error, setError] = useAtom(editPasswordErrorAtom)
+
+    return (
+        <RetornableCompletInput
+            originalValue=''
+            required
+            label='Nueva contraseña'
+            type='password'
+            name='password'
+            icon={KeyIcon}
+            value={password}
+            onChange={e => {
+                const password = e.target.value
+                setPassword(password)
+                setError('')
+                if (!password) return
+                if (!/[A-Z]/.test(password))
+                    setError(
+                        'La contraseña debe contener al menos una mayúscula',
+                    )
+                if (!/[0-9]/.test(password))
+                    setError('La contraseña debe contener al menos un número')
+                if (!/[!@#$%^&*]/.test(password))
+                    setError(
+                        'La contraseña debe contener al menos un carácter especial como !@#$%^&*',
+                    )
+                if (password.length < 10)
+                    setError('La contraseña debe tener al menos 10 caracteres')
+            }}
+            error={error}
+        />
+    )
+}
+
+export function EditNameInput() {
+    const oldUser = useAtomValue(entityToEditAtom)
+
+    if (!oldUser) return null
+
+    return (
+        <RetornableCompletInput
+            originalValue={oldUser.name}
+            required
+            label='Name'
+            type='text'
+            name='name'
+            icon={UserIcon}
+        />
+    )
+}
+
+export function ConfirmEditPasswordInput() {
+    const [confirmPassword, setConfirmPassword] = useAtom(
+        editConfirmPasswordAtom,
+    )
+    const [error, setError] = useAtom(editConfirmPasswordErrorAtom)
+    const focus = useAtomValue(passwordFocusAtom)
+    const password = useAtomValue(editPasswordAtom)
+
+    useEffect(() => {
+        const handler = setTimeout(async () => {
+            if (focus) return
+            if (confirmPassword !== password)
+                setError('Las contraseñas no coinciden')
+        }, 500)
+
+        return () => clearTimeout(handler)
+    }, [confirmPassword, password, setError, focus])
+    return (
+        <CompletInput
+            label='Confirmar contraseña'
+            type='password'
+            name='confirm-password'
+            icon={KeyIcon}
+            value={confirmPassword}
+            error={error}
+            onChange={e => {
+                setConfirmPassword(e.target.value)
+                setError('')
+            }}
+        />
     )
 }

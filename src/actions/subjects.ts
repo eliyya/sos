@@ -3,10 +3,33 @@
 import { db } from '@/prisma/db'
 import { Prisma, STATUS } from '@prisma/client'
 
-export async function createSubject(formData: FormData) {
+export async function getSubjectByName(name: string) {
+    return await db.subject.findFirst({
+        where: {
+            name,
+        },
+    })
+}
+
+export async function createSubject(formData: FormData): Promise<{
+    error:
+        | 'La materia ya existe'
+        | 'La materia se encuentra archivada'
+        | 'Error al crear la materia, intente nuevamente.'
+        | null
+}> {
     const name = formData.get('name') as string
     const theory_hours = Number(formData.get('theory_hours') as string)
     const practice_hours = Number(formData.get('practice_hours') as string)
+
+    const os = await db.subject.findFirst({
+        where: { name },
+        select: { status: true },
+    })
+
+    if (os?.status === STATUS.ACTIVE) return { error: 'La materia ya existe' }
+    if (os?.status === STATUS.ARCHIVED)
+        return { error: 'La materia se encuentra archivada' }
 
     try {
         await db.subject.create({

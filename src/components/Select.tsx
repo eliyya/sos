@@ -73,6 +73,7 @@ export function CompletSelect<
                 )}
                 <ReactSelect
                     {...props}
+                    required={required}
                     ref={selectRef}
                     options={options}
                     styles={{

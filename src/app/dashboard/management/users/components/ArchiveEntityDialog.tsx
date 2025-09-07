@@ -1,12 +1,14 @@
 'use client'
 
-import { archiveUser } from '@/actions/users'
+import { adminCount, archiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
     openArchiveUserAtom,
-    updateUsersAtom,
-    userToEditAtom,
+    updateAtom,
+    entityToEditAtom,
+    adminRoleAtom,
+    openPreventArchiveAdminAtom,
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -16,11 +18,13 @@ import { useState, useTransition } from 'react'
 export function ArchiveEntityDialog() {
     const [open, setOpen] = useAtom(openArchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(userToEditAtom)
+    const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateUsersAtom)
+    const updateUsersTable = useSetAtom(updateAtom)
+    const setOpenPreventArchiveAdmin = useSetAtom(openPreventArchiveAdminAtom)
+    const adminRole = useAtomValue(adminRoleAtom)
 
-    if (!entity) return null
+    if (!entity || !adminRole) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -37,6 +41,14 @@ export function ArchiveEntityDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
+                            if (entity.role_id === adminRole.id) {
+                                const ac = await adminCount()
+                                if (ac < 2) {
+                                    setOpenPreventArchiveAdmin(true)
+                                    setOpen(false)
+                                    return
+                                }
+                            }
                             const { error } = await archiveUser(data)
                             if (error) {
                                 setMessage(error)

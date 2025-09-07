@@ -1,4 +1,4 @@
-import { User } from '@prisma/client'
+import { Role, User } from '@prisma/client'
 import { STATUS } from '@prisma/client'
 import { atom } from 'jotai'
 
@@ -15,12 +15,12 @@ const default_user: Omit<User, 'updated_at' | 'image'> = {
 }
 export const queryAtom = atom('')
 export const EditUserDialogAtom = atom(false)
-export const userToEditAtom = atom(default_user)
-export const updateUsersAtom = atom(Symbol())
+export const entityToEditAtom = atom(default_user)
+export const updateAtom = atom(Symbol())
 export const openArchiveUserAtom = atom(false)
 export const showArchivedAtom = atom(false)
 export const openUnarchiveUserAtom = atom(false)
-export const openDeleteUserAtom = atom(false)
+export const openDeleteAtom = atom(false)
 export const openCreateUserAtom = atom(false)
 export const usernameAtom = atom('')
 export const usernameErrorAtom = atom('')
@@ -36,3 +36,7 @@ export const editPasswordAtom = atom('')
 export const editPasswordErrorAtom = atom('')
 export const editConfirmPasswordAtom = atom('')
 export const editConfirmPasswordErrorAtom = atom('')
+export const openUnarchiveOrDeleteAtom = atom(false)
+export const openPreventArchiveAdminAtom = atom(false)
+export const adminRoleAtom = atom<Role | null>(null)
+export const rolesAtom = atom<Role[]>([])

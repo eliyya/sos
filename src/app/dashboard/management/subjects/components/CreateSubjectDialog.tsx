@@ -1,9 +1,16 @@
 'use client'
 
-import { createSubject } from '@/actions/subjects'
+import { createSubject, getSubjectByName } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/management-subjects'
+import {
+    entityToEditAtom,
+    errorNameAtom,
+    nameAtom,
+    openCreateAtom,
+    openUnarchiveOrDeleteAtom,
+    updateAtom,
+} from '@/global/management-subjects'
 import {
     Dialog,
     DialogContent,
@@ -11,17 +18,31 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
-import { User, Save } from 'lucide-react'
+import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { STATUS } from '@prisma/client'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
+    const setErrorName = useSetAtom(errorNameAtom)
+    const setName = useSetAtom(nameAtom)
+    const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
+    const setUserToEdit = useSetAtom(entityToEditAtom)
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open}
+            onOpenChange={open => {
+                setOpen(open)
+                if (!open) {
+                    setName('')
+                    setErrorName('')
+                }
+            }}
+        >
             <DialogContent>
                 <DialogTitle>
                     <span className='text-3xl'>Crear Materia</span>
@@ -32,6 +53,22 @@ export function CreateSubjectDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
+                            const subject = await getSubjectByName(
+                                data.get('name') as string,
+                            )
+                            if (subject) {
+                                if (subject.status === STATUS.ARCHIVED) {
+                                    // reiniciar
+                                    setErrorName('')
+                                    setName('')
+                                    // cerrar el modal
+                                    setOpen(false)
+                                    // mostrar dialogo
+                                    setOpenUnarchiveOrDelete(true)
+                                    setUserToEdit(subject)
+                                } else setErrorName('La materia ya existe')
+                                return
+                            }
                             const { error } = await createSubject(data)
 
                             if (error) setMessage(error)
@@ -41,6 +78,8 @@ export function CreateSubjectDialog() {
                                     500,
                                 )
                                 setOpen(false)
+                                setName('')
+                                setErrorName('')
                             }
                             setTimeout(() => {
                                 setMessage('')
@@ -54,13 +93,7 @@ export function CreateSubjectDialog() {
                             {message}
                         </span>
                     )}
-                    <CompletInput
-                        required
-                        label='Nombre'
-                        type='text'
-                        name='name'
-                        icon={User}
-                    />
+                    <NameInput />
                     <div className='flex w-full gap-4'>
                         <CompletInput
                             required
@@ -69,7 +102,7 @@ export function CreateSubjectDialog() {
                             name='theory_hours'
                             min={0}
                             defaultValue={1}
-                            icon={User}
+                            icon={ClockFadingIcon}
                         />
                         <CompletInput
                             required
@@ -78,7 +111,7 @@ export function CreateSubjectDialog() {
                             name='practice_hours'
                             min={0}
                             defaultValue={0}
-                            icon={User}
+                            icon={ClockFadingIcon}
                         />
                     </div>
 
@@ -89,5 +122,26 @@ export function CreateSubjectDialog() {
                 </form>
             </DialogContent>
         </Dialog>
+    )
+}
+
+function NameInput() {
+    const [name, setName] = useAtom(nameAtom)
+    const [error, setError] = useAtom(errorNameAtom)
+
+    return (
+        <CompletInput
+            required
+            label='Nombre'
+            type='text'
+            name='name'
+            icon={SquarePenIcon}
+            value={name}
+            onChange={e => {
+                setName(e.target.value)
+                setError('')
+            }}
+            error={error}
+        />
     )
 }

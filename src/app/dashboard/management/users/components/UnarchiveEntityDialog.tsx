@@ -5,8 +5,8 @@ import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import {
     openUnarchiveUserAtom,
-    updateUsersAtom,
-    userToEditAtom,
+    updateAtom,
+    entityToEditAtom,
 } from '@/global/management-users'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -16,9 +16,9 @@ import { useState, useTransition } from 'react'
 export function UnarchiveEntityDialog() {
     const [open, setOpen] = useAtom(openUnarchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(userToEditAtom)
+    const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateUsersAtom)
+    const updateUsersTable = useSetAtom(updateAtom)
 
     if (!entity) return null
 
