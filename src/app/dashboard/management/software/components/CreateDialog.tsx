@@ -4,10 +4,11 @@ import { createSoftware } from '@/actions/software'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { openCreateAtom, updateAtom } from '@/global/managment-software'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { User, Save } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -18,9 +19,9 @@ export function CreateSubjectDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Software</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Software</DialogTitle>
+                </DialogHeader>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
                 </DialogDescription> */}
@@ -43,11 +44,7 @@ export function CreateSubjectDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <CompletInput
                         required
                         label='Nombre'

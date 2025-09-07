@@ -5,18 +5,24 @@ import { archiveClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
 import { getTeachersActive } from '@/actions/users'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { CompletInput } from '@/components/Inputs'
 import {
     openArchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-class'
+} from '@/global/management-class'
 import { User, Subject, Career } from '@prisma/client'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Archive, Ban, UserIcon } from 'lucide-react'
+import { Archive, Ban, User as UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(openArchiveAtom)
@@ -45,12 +51,12 @@ export function ArchiveDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Archivar Clase</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de archivar esta clase?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Archivar Clase</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de archivar esta clase?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -70,9 +76,7 @@ export function ArchiveDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput

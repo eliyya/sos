@@ -15,7 +15,7 @@ import {
     typeAtom,
     errorCloseHourAtom,
 } from '@/global/management-laboratory'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { Clock8Icon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -51,10 +51,10 @@ export function CreateLaboratoryDialog() {
                 }
             }}
         >
+            <DialogHeader>
+                <DialogTitle>Crear Laboratorio</DialogTitle>
+            </DialogHeader>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Laboratorio</span>
-                </DialogTitle>
                 <form
                     action={data => {
                         startTransition(async () => {

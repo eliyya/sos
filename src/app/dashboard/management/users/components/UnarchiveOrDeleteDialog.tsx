@@ -2,7 +2,13 @@
 
 import { unarchiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import {
     entityToEditAtom,
@@ -10,7 +16,6 @@ import {
     openUnarchiveOrDeleteAtom,
     openDeleteAtom,
 } from '@/global/management-users'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -28,11 +33,13 @@ export function UnarchiveOrDeleteDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>El usuario se encuentra archivado</DialogTitle>
-                <DialogDescription>
-                    Que quieres hacer con{' '}
-                    <span className='font-bold'>{entity.name}</span>?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Usuario archivado</DialogTitle>
+                    <DialogDescription>
+                        El usuario {entity.name} está archivado. ¿Qué desea
+                        hacer con él? <strong>{entity.name}</strong>?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {

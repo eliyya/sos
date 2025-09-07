@@ -97,7 +97,7 @@ model Verification {
 
 model Subject {
     id             String   @id @default(dbgenerated("snowflake()"))
-    name           String   @unique
+    name           String @unique
     created_at     DateTime @default(now())
     practice_hours Int
     theory_hours   Int

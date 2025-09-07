@@ -4,10 +4,11 @@ import { createMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import { CompletInput, CompletTextarea } from '@/components/Inputs'
 import { openCreateAtom, updateAtom } from '@/global/managment-machines'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 import { CompletSelect } from '@/components/Select'
 import { Laboratory } from '@prisma/client'
 import { getActiveLaboratories } from '@/actions/laboratory'
@@ -28,9 +29,9 @@ export function CreateSubjectDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Maquina</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Máquina</DialogTitle>
+                </DialogHeader>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
                 </DialogDescription> */}
@@ -53,11 +54,7 @@ export function CreateSubjectDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <CompletInput
                         required
                         label='Numero'

@@ -2,7 +2,13 @@
 
 import { editMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
@@ -10,10 +16,10 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-machines'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 import { findManyLaboratories } from '@/actions/laboratory'
 import { STATUS } from '@prisma/client'
 
@@ -41,12 +47,12 @@ export function EditDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Editar Maquina</span>
-                </DialogTitle>
-                <DialogDescription>
-                    Edita la Maquina{old.number}
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Editar Máquina</DialogTitle>
+                    <DialogDescription>
+                        Editar la máquina {old.number}
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -65,11 +71,7 @@ export function EditDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput
                         originalValue={old.number}

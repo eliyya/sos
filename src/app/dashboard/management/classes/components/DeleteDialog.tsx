@@ -8,19 +8,21 @@ import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
-    DialogTitle,
     DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from '@/components/Dialog'
 import { CompletInput } from '@/components/Inputs'
 import {
     openDeleteAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-class'
+} from '@/global/management-class'
 import { User, Subject, Career } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2, UserIcon } from 'lucide-react'
+import { Ban, Trash2, User as UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -46,16 +48,20 @@ export function DeleteDialog() {
 
     if (!entity) return null
 
+    const subjectName = subjects.find(s => s.id === entity.subject_id)?.name
+    const teacherName = teachers.find(t => t.id === entity.teacher_id)?.name
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Eliminar Clase</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de eliminar esta clase?{' '}
-                    <span>Esta acción es irreversible</span>
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Eliminar Clase</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de eliminar la clase {subjectName} -{' '}
+                        {teacherName}?
+                        <strong>Esta acción es irreversible</strong>
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -75,9 +81,7 @@ export function DeleteDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput

@@ -1,6 +1,11 @@
 'use client'
 
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
 import { useEffect, useState, useTransition } from 'react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -8,6 +13,14 @@ import { CompletSelect } from '@/components/Select'
 import { CompletInput } from '@/components/Inputs'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/Button'
+import { MessageError } from '@/components/Error'
+import {
+    AtSignIcon,
+    KeyIcon,
+    SaveIcon,
+    TriangleIcon,
+    UserIcon,
+} from 'lucide-react'
 import {
     canSuggestUsernameAtom,
     confirmPasswordAtom,
@@ -25,13 +38,6 @@ import {
     usernameAtom,
     usernameErrorAtom,
 } from '@/global/management-users'
-import {
-    AtSignIcon,
-    KeyIcon,
-    SaveIcon,
-    TriangleIcon,
-    UserIcon,
-} from 'lucide-react'
 import { usernameIsTaken } from '@/actions/users'
 
 export function CreateUserDialog() {
@@ -62,9 +68,9 @@ export function CreateUserDialog() {
             }}
         >
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Usuario</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Usuario</DialogTitle>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -118,11 +124,7 @@ export function CreateUserDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <NameInput />
                     <UsernameInput />
                     <RoleSelect />

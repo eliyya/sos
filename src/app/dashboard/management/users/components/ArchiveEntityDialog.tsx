@@ -2,7 +2,13 @@
 
 import { adminCount, archiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import {
     openArchiveUserAtom,
     updateAtom,
@@ -10,10 +16,10 @@ import {
     adminRoleAtom,
     openPreventArchiveAdminAtom,
 } from '@/global/management-users'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function ArchiveEntityDialog() {
     const [open, setOpen] = useAtom(openArchiveUserAtom)
@@ -29,15 +35,13 @@ export function ArchiveEntityDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>
-                        Archivar @{entity.username}
-                    </span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de archivar{' '}
-                    <span className='font-bold'>{entity.name}</span>?
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Archivar Usuario</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de archivar al usuario{' '}
+                        <strong>{entity.name}</strong>?
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -65,9 +69,7 @@ export function ArchiveEntityDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>

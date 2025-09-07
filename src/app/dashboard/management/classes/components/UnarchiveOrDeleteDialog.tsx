@@ -1,6 +1,6 @@
 'use client'
 
-import { unarchiveStudent } from '@/actions/students'
+import { unarchiveClass } from '@/actions/class'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -9,22 +9,34 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
-    openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
+    openUnarchiveOrDeleteAtom,
+    openDeleteAtom,
+    careersAtom,
+    subjectsAtom,
+    usersAtom,
+} from '@/global/management-class'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { ArchiveRestore, Ban } from 'lucide-react'
+import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
 
-export function UnarchiveDialog() {
-    const [open, setOpen] = useAtom(openUnarchiveAtom)
+export function UnarchiveOrDeleteDialog() {
+    const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const setOpenDelete = useSetAtom(openDeleteAtom)
+    const careers = useAtomValue(careersAtom)
+    const subjects = useAtomValue(subjectsAtom)
+    const teachers = useAtomValue(usersAtom)
+
+    const career = careers.find(c => c.id === entity.career_id)
+    const subject = subjects.find(s => s.id === entity.subject_id)
+    const teacher = teachers.find(t => t.id === entity.teacher_id)
 
     if (!entity) return null
 
@@ -32,16 +44,18 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Desarchivar Estudiante</DialogTitle>
+                    <DialogTitle>Clase archivada</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de desarchivar al estudiante {entity.firstname}{' '}
-                        {entity.lastname}?
+                        La clase {subject?.name} -{' '}
+                        {career?.alias ?? career?.name}
+                        {entity.group}-{entity.semester} de {teacher?.name} está
+                        archivada. ¿Qué desea hacer con ella?
                     </DialogDescription>
                 </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await unarchiveStudent(data)
+                            const { error } = await unarchiveClass(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -57,26 +71,40 @@ export function UnarchiveDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}
-                    <input type='hidden' value={entity.nc} name='nc' />
+                    <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
-                            variant={'secondary'}
+                            type='button'
+                            variant='secondary'
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
                                 setOpen(false)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
                             type='submit'
-                            variant={'default'}
+                            variant='default'
                             disabled={inTransition}
                         >
-                            <ArchiveRestore className='mr-2 h-5 w-5' />
+                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
                             Desarchivar
+                        </Button>
+                        <Button
+                            type='button'
+                            variant='destructive'
+                            disabled={inTransition}
+                            onClick={e => {
+                                e.preventDefault()
+                                setOpen(false)
+                                setOpenDelete(true)
+                            }}
+                        >
+                            <TrashIcon className='mr-2 h-5 w-5' />
+                            Eliminar
                         </Button>
                     </div>
                 </form>

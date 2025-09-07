@@ -1,9 +1,14 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { openPreventArchiveAdminAtom } from '@/global/management-users'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom } from 'jotai'
 import { CheckCheckIcon } from 'lucide-react'
 
@@ -13,13 +18,13 @@ export function PreventArchiveAdminDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Parece que olvidaste algo</span>
-                </DialogTitle>
-                <DialogDescription>
-                    Eres el único admin, no puedes dejar la aplicación sin
-                    administradores
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Parece que olvidaste algo</DialogTitle>
+                    <DialogDescription>
+                        Eres el único admin, no puedes dejar la aplicación sin
+                        administradores
+                    </DialogDescription>
+                </DialogHeader>
                 <span>
                     Intenta dejarle la batuta a alguien más creando antes otro
                     administrador

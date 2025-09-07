@@ -5,8 +5,9 @@ import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
-    DialogTitle,
     DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from '@/components/Dialog'
 import {
     openDeleteAtom,
@@ -16,6 +17,7 @@ import {
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -29,14 +31,13 @@ export function DeleteDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Eliminar Laboratorio</span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de eliminar{' '}
-                    <span className='font-bold'>{entity.name}</span>?
-                </DialogDescription>
-                <span>Esta acción es irreversible</span>
+                <DialogHeader>
+                    <DialogTitle>Eliminar Laboratorio</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de eliminar <strong>{entity.name}</strong>?
+                        <strong>Esta acción es irreversible</strong>
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -56,9 +57,7 @@ export function DeleteDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>

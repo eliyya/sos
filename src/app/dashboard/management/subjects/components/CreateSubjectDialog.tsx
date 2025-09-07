@@ -14,12 +14,13 @@ import {
 import {
     Dialog,
     DialogContent,
-    // DialogDescription,
+    DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 import { STATUS } from '@prisma/client'
 
 export function CreateSubjectDialog() {
@@ -44,9 +45,9 @@ export function CreateSubjectDialog() {
             }}
         >
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Crear Materia</span>
-                </DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Crear Asignatura</DialogTitle>
+                </DialogHeader>
                 {/* <DialogDescription>
                     Edit the user&apos;s information
                 </DialogDescription> */}
@@ -89,9 +90,7 @@ export function CreateSubjectDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
+                        <MessageError>{message}</MessageError>
                     )}
                     <NameInput />
                     <div className='flex w-full gap-4'>

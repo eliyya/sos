@@ -5,8 +5,9 @@ import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
-    DialogTitle,
     DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from '@/components/Dialog'
 import {
     openDeleteAtom,
@@ -16,6 +17,7 @@ import {
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { MessageError } from '@/components/Error'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -29,16 +31,14 @@ export function DeleteDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogTitle>
-                    <span className='text-3xl'>Eliminar Maquina </span>
-                </DialogTitle>
-                <DialogDescription>
-                    ¿Está seguro de eliminar
-                    <span className='font-bold'>
-                        {entity.number} {entity.number}
-                    </span>
-                    ?<span>Esta acción es irreversible</span>
-                </DialogDescription>
+                <DialogHeader>
+                    <DialogTitle>Eliminar Máquina</DialogTitle>
+                    <DialogDescription>
+                        ¿Está seguro de eliminar la máquina{' '}
+                        <strong>{entity.number}</strong>?
+                        <strong>Esta acción es irreversible</strong>
+                    </DialogDescription>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
@@ -57,11 +57,7 @@ export function DeleteDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <span className='animate-slide-in mt-1 block rounded-lg bg-red-100 px-3 py-1 text-sm text-red-600 shadow-md'>
-                            {message}
-                        </span>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

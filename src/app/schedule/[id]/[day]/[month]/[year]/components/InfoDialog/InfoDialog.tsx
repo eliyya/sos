@@ -110,11 +110,12 @@ export function InfoDialog({ lab, isAdmin, userId }: InfoDialogProps) {
                             'Info'
                         :   'Eliminar'}
                     </DialogTitle>
+                    {mode === DialogMode.DELETE && (
+                        <DialogDescription>
+                            ¿Estas seguro de eliminar la practica? esta accion es irreversible
+                        </DialogDescription>
+                    )}
                 </DialogHeader>
-                <DialogDescription>
-                    {mode === DialogMode.DELETE &&
-                        '¿Estas seguro de eliminar la practica? esta accion es irreversible'}
-                </DialogDescription>
                 {mode === DialogMode.EDIT ?
                     <EditMode
                         lab={lab}
