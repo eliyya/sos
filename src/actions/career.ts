@@ -1,12 +1,31 @@
 'use server'
 
 import { db } from '@/prisma/db'
-import { Prisma, STATUS } from '@prisma/client'
+import { Career, Prisma, STATUS } from '@prisma/client'
 
-export async function createCareer(formData: FormData) {
+export async function createCareer(formData: FormData): Promise<
+    | {
+          error:
+              | 'La carrera ya existe'
+              | 'Error al crear la carrera, intente nuevamente.'
+              | null
+          career: null
+      }
+    | {
+          error: 'La carrera esta archivada'
+          career: Career
+      }
+> {
     const name = formData.get('name') as string
     const alias = formData.get('alias') as string
 
+    const career = await db.career.findUnique({
+        where: {
+            name,
+        },
+    })
+    if (career?.status === STATUS.ARCHIVED)
+        return { error: 'La carrera esta archivada', career }
     try {
         await db.career.create({
             data: {
@@ -14,14 +33,18 @@ export async function createCareer(formData: FormData) {
                 alias,
             },
         })
-        return { error: null }
+        return { error: null, career: null }
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error.code === 'P2002') return { error: 'La carrera ya existe' }
+            if (error.code === 'P2002')
+                return { error: 'La carrera ya existe', career: null }
             console.log(error.meta)
         }
         console.error(error)
-        return { error: 'Error al crear la carrera, intente nuevamente.' }
+        return {
+            error: 'Error al crear la carrera, intente nuevamente.',
+            career: null,
+        }
     }
 }
 

@@ -23,12 +23,13 @@ import {
     entityToEditAtom,
     updateAtom,
     queryAtom,
-} from '@/global/managment-career'
+} from '@/global/management-career'
 import { getCareers } from '@/actions/career'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function CareersTable() {
     const [entity, setEntity] = useState<Career[]>([])
@@ -89,6 +90,7 @@ export function CareersTable() {
             <ArchiveDialog />
             <UnarchiveDialog />
             <DeleteDialog />
+            <UnarchiveOrDeleteDialog />
         </>
     )
 }
