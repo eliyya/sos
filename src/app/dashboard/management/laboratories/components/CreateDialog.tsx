@@ -14,7 +14,7 @@ import {
     errorTypeAtom,
     typeAtom,
     errorCloseHourAtom,
-} from '@/global/managment-laboratory'
+} from '@/global/management-laboratory'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { Clock8Icon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
@@ -38,7 +38,19 @@ export function CreateLaboratoryDialog() {
     const setCloseHour = useSetAtom(closeHourAtom)
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open}
+            onOpenChange={open => {
+                setOpen(open)
+                if (!open) {
+                    setName('')
+                    setNameError('')
+                    setOpenHour('08:00')
+                    setCloseHour('20:00')
+                    setOpenError('')
+                }
+            }}
+        >
             <DialogContent>
                 <DialogTitle>
                     <span className='text-3xl'>Crear Laboratorio</span>
@@ -53,8 +65,10 @@ export function CreateLaboratoryDialog() {
                                     500,
                                 )
                                 setName('')
+                                setNameError('')
                                 setOpenHour('08:00')
                                 setCloseHour('20:00')
+                                setOpenError('')
                                 return setOpen(false)
                             }
                             if (error === 'ALREADY_EXISTS') {
@@ -65,8 +79,10 @@ export function CreateLaboratoryDialog() {
                                     setOpen(false)
                                     setOpenUnarchiveOrDelete(true)
                                     setName('')
+                                    setNameError('')
                                     setOpenHour('08:00')
                                     setCloseHour('20:00')
+                                    setOpenError('')
                                 } else {
                                     setNameError(message)
                                 }

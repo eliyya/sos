@@ -8,8 +8,6 @@ import { CompletSelect } from '@/components/Select'
 import { CompletInput } from '@/components/Inputs'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/Button'
-import { getRoles } from '@/actions/roles'
-import { Role } from '@prisma/client'
 import {
     canSuggestUsernameAtom,
     confirmPasswordAtom,
@@ -50,7 +48,19 @@ export function CreateUserDialog() {
     const setConfirmPassword = useSetAtom(confirmPasswordAtom)
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open}
+            onOpenChange={open => {
+                setOpen(open)
+                if (!open) {
+                    setName('')
+                    setUsername('')
+                    setPassword('')
+                    setConfirmPassword('')
+                    setUsernameError('')
+                }
+            }}
+        >
             <DialogContent>
                 <DialogTitle>
                     <span className='text-3xl'>Crear Usuario</span>

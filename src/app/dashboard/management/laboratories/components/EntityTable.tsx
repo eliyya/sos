@@ -23,7 +23,7 @@ import {
     entityToEditAtom,
     updateAtom,
     queryAtom,
-} from '@/global/managment-laboratory'
+} from '@/global/management-laboratory'
 import { getLaboratory } from '@/actions/laboratory'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'

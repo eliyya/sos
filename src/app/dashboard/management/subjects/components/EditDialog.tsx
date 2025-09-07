@@ -5,8 +5,8 @@ import { Button } from '@/components/Button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
 import {
-    editDialogAtom,
-    subjectToEditAtom,
+    openEditDialogAtom,
+    entityToEditAtom,
     updateAtom,
 } from '@/global/management-subjects'
 import { DialogDescription } from '@radix-ui/react-dialog'
@@ -15,9 +15,9 @@ import { Save, User } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
 export function EditDialog() {
-    const [open, setOpen] = useAtom(editDialogAtom)
+    const [open, setOpen] = useAtom(openEditDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(subjectToEditAtom)
+    const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
 

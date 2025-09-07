@@ -9,7 +9,7 @@ import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-laboratory'
+} from '@/global/management-laboratory'
 import { secondsToTime } from '@/lib/utils'
 import { LABORATORY_TYPE } from '@prisma/client'
 import { DialogDescription } from '@radix-ui/react-dialog'
