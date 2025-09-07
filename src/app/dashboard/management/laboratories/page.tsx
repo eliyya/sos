@@ -1,6 +1,6 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
-import { CreateButton } from './components/create/CreateButton'
-import { CreateLaboratoryDialog } from './components/create/CreateDialog'
+import { CreateButton } from './components/CreateButton'
+import { CreateLaboratoryDialog } from './components/CreateDialog'
 import { Filters } from './components/SearchInput'
 import { EntityTable } from './components/EntityTable'
 

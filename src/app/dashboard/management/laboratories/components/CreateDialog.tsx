@@ -11,16 +11,21 @@ import {
     openHourAtom,
     openUnarchiveOrDeleteAtom,
     updateAtom,
+    errorTypeAtom,
+    typeAtom,
+    ClockIcons,
+    Hours,
+    CLOCK_ICONS,
+    errorCloseHourAtom,
 } from '@/global/managment-laboratory'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
-import { Save } from 'lucide-react'
+import { Clock8Icon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import { NameInput } from './NameInput'
-import { OpenHourInput } from './OpenHourInput'
-import { CloseHourInput } from './CloseHourInput'
-import { LaboratoryTypeSelect } from './LaboratoryTypeSelect'
 import { MessageError } from '@/components/Error'
+import { CompletInput } from '@/components/Inputs'
+import { CompletSelect } from '@/components/Select'
+import { LABORATORY_TYPE } from '@prisma/client'
 
 export function CreateLaboratoryDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -92,5 +97,107 @@ export function CreateLaboratoryDialog() {
                 </form>
             </DialogContent>
         </Dialog>
+    )
+}
+
+export function NameInput() {
+    const [name, setName] = useAtom(nameAtom)
+    const [error, setError] = useAtom(errorNameAtom)
+
+    return (
+        <CompletInput
+            required
+            label='Nombre'
+            type='text'
+            name='name'
+            icon={SquarePenIcon}
+            value={name}
+            onChange={e => {
+                setName(e.target.value)
+                setError('')
+            }}
+            error={error}
+        />
+    )
+}
+
+export function LaboratoryTypeSelect() {
+    const [value, setValue] = useAtom(typeAtom)
+    const [error, setError] = useAtom(errorTypeAtom)
+
+    return (
+        <CompletSelect
+            required
+            label='Tipo de Laboratorio'
+            name='type'
+            value={value}
+            onChange={e => {
+                setValue({
+                    value: e?.value ?? LABORATORY_TYPE.LABORATORY,
+                    label: e?.label ?? LABORATORY_TYPE.LABORATORY,
+                })
+                setError('')
+            }}
+            error={error}
+            options={[
+                {
+                    value: LABORATORY_TYPE.LABORATORY,
+                    label: 'Laboratorio',
+                },
+                {
+                    value: LABORATORY_TYPE.COMPUTER_CENTER,
+                    label: 'Centro de Computo',
+                },
+            ]}
+            icon={MicroscopeIcon}
+        />
+    )
+}
+
+export function OpenHourInput() {
+    const [value, setValue] = useAtom(openHourAtom)
+    const [error, setError] = useAtom(errorOpenHourAtom)
+    const [Icon, setIcon] = useState<ClockIcons>(Clock8Icon)
+
+    return (
+        <CompletInput
+            required
+            label='Apertura'
+            type='time'
+            name='open_hour'
+            icon={Icon}
+            value={value}
+            onChange={e => {
+                setValue(e.target.value)
+                setError('')
+                const hour = e.target.value.split(':')[0]
+                setIcon(CLOCK_ICONS[`${hour}:00` as Hours])
+            }}
+            error={error}
+        />
+    )
+}
+
+export function CloseHourInput() {
+    const [value, setValue] = useAtom(closeHourAtom)
+    const [error, setError] = useAtom(errorCloseHourAtom)
+    const [Icon, setIcon] = useState<ClockIcons>(Clock8Icon)
+
+    return (
+        <CompletInput
+            required
+            label='Cierre'
+            type='time'
+            name='close_hour'
+            icon={Icon}
+            value={value}
+            onChange={e => {
+                setValue(e.target.value)
+                setError('')
+                const hour = e.target.value.split(':')[0]
+                setIcon(CLOCK_ICONS[`${hour}:00` as Hours])
+            }}
+            error={error}
+        />
     )
 }

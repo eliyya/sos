@@ -16,36 +16,45 @@ import { STATUS } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { EditUserDialog } from './EditUserDialog'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     EditUserDialogAtom,
     openArchiveUserAtom,
     showArchivedAtom,
-    updateUsersAtom,
-    userToEditAtom,
+    updateAtom,
+    entityToEditAtom,
     openUnarchiveUserAtom,
-    openDeleteUserAtom,
+    openDeleteAtom,
     queryAtom,
+    adminRoleAtom,
+    rolesAtom,
 } from '@/global/management-users'
 import { ArchiveEntityDialog } from './ArchiveEntityDialog'
 import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
 import { DeleteEntityDialog } from './DeleteEntityDialog'
-import { getRoles } from '@/actions/roles'
+import { getAdminRole, getRoles } from '@/actions/roles'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { PreventArchiveAdminDialog } from './PreventArchiveAdmin'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
-    const update = useAtomValue(updateUsersAtom)
+    const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
-    const [roles, setRoles] = useState<Role[]>([])
+    const [roles, setRoles] = useAtom(rolesAtom)
+    const setAdminRole = useSetAtom(adminRoleAtom)
 
     useEffect(() => {
-        getUsers(/*true*/).then(setUsers)
+        getAdminRole().then(setAdminRole)
+    }, [setAdminRole])
+
+    useEffect(() => {
+        getUsers().then(setUsers)
     }, [update])
 
     useEffect(() => {
         getRoles().then(setRoles)
-    }, [])
+    }, [setRoles])
 
     return (
         <>
@@ -115,6 +124,8 @@ export function UsersTable() {
             <ArchiveEntityDialog />
             <UnarchiveEntityDialog />
             <DeleteEntityDialog />
+            <UnarchiveOrDeleteDialog />
+            <PreventArchiveAdminDialog />
         </>
     )
 }
@@ -124,10 +135,10 @@ interface ButtonsProps {
 }
 function Buttons({ user }: ButtonsProps) {
     const openEditUserDialog = useSetAtom(EditUserDialogAtom)
-    const setUserSelected = useSetAtom(userToEditAtom)
+    const setUserSelected = useSetAtom(entityToEditAtom)
     const setArchiveUserDialog = useSetAtom(openArchiveUserAtom)
     const openUnarchiveDialog = useSetAtom(openUnarchiveUserAtom)
-    const openDeleteDialog = useSetAtom(openDeleteUserAtom)
+    const openDeleteDialog = useSetAtom(openDeleteAtom)
     if (user.status === STATUS.ACTIVE)
         return (
             <>
