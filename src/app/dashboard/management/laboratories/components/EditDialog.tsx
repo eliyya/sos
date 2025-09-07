@@ -2,7 +2,12 @@
 
 import { editLaboratory } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
@@ -12,7 +17,6 @@ import {
 } from '@/global/management-laboratory'
 import { secondsToTime } from '@/lib/utils'
 import { LABORATORY_TYPE } from '@prisma/client'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useState, useTransition } from 'react'

@@ -2,7 +2,12 @@
 
 import { getActiveCareers } from '@/actions/career'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { CompletInput } from '@/components/Inputs'
 import {
     openUnarchiveAtom,
@@ -10,7 +15,6 @@ import {
     updateAtom,
 } from '@/global/management-class'
 import { Career } from '@prisma/client'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

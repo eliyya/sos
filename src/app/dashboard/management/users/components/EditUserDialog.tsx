@@ -1,16 +1,18 @@
 'use client'
 
 import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { RetornableCompletSelect } from '@/components/Select'
 import { useEffect, useState, useTransition } from 'react'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { MessageError } from '@/components/Error'
 import { Button } from '@/components/Button'
 import { editUser } from '@/actions/users'
-import { getRoles } from '@/actions/roles'
-import { Role } from '@prisma/client'
 import {
     EditUserDialogAtom,
     updateAtom,

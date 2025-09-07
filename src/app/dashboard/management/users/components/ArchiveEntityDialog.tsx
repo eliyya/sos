@@ -2,7 +2,12 @@
 
 import { adminCount, archiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import {
     openArchiveUserAtom,
     updateAtom,
@@ -10,7 +15,6 @@ import {
     adminRoleAtom,
     openPreventArchiveAdminAtom,
 } from '@/global/management-users'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'

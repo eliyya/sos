@@ -2,7 +2,12 @@
 
 import { editMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
@@ -10,7 +15,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-machines'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

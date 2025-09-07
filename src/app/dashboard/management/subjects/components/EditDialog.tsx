@@ -2,14 +2,18 @@
 
 import { editSubject } from '@/actions/subjects'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { RetornableCompletInput } from '@/components/Inputs'
 import {
     openEditDialogAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-subjects'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useState, useTransition } from 'react'

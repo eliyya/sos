@@ -2,7 +2,12 @@
 
 import { unarchiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import {
     entityToEditAtom,
@@ -10,7 +15,6 @@ import {
     openUnarchiveOrDeleteAtom,
     openDeleteAtom,
 } from '@/global/management-users'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'

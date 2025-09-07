@@ -2,13 +2,17 @@
 
 import { unarchiveCareer } from '@/actions/career'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import {
     openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-career'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'

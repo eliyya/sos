@@ -1,9 +1,13 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { openPreventArchiveAdminAtom } from '@/global/management-users'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom } from 'jotai'
 import { CheckCheckIcon } from 'lucide-react'
 

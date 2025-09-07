@@ -5,7 +5,12 @@ import { archiveClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
 import { getTeachersActive } from '@/actions/users'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/Dialog'
 import { CompletInput } from '@/components/Inputs'
 import {
     openArchiveAtom,
@@ -13,7 +18,6 @@ import {
     updateAtom,
 } from '@/global/management-class'
 import { User, Subject, Career } from '@prisma/client'
-import { DialogDescription } from '@radix-ui/react-dialog'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
