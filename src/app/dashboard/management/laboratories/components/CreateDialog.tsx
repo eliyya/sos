@@ -13,9 +13,6 @@ import {
     updateAtom,
     errorTypeAtom,
     typeAtom,
-    ClockIcons,
-    Hours,
-    CLOCK_ICONS,
     errorCloseHourAtom,
 } from '@/global/managment-laboratory'
 import { Dialog, DialogContent, DialogTitle } from '@/components/Dialog'
@@ -26,6 +23,7 @@ import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { LABORATORY_TYPE } from '@prisma/client'
+import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
 
 export function CreateLaboratoryDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
