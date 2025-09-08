@@ -10,7 +10,14 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { CompletSelect } from '@/components/Select'
 import { CompletInput } from '@/components/Inputs'
 import { useState, useTransition } from 'react'
-import { UserIcon, Save } from 'lucide-react'
+import {
+    UserIcon,
+    Save,
+    BookAIcon,
+    GraduationCapIcon,
+    UsersIcon,
+    HashIcon,
+} from 'lucide-react'
 import { MessageError } from '@/components/Error'
 import { checkClassDisponibility, createClass } from '@/actions/class'
 import { Button } from '@/components/Button'
@@ -97,9 +104,7 @@ export function CreateSubjectDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <CompletSelect
                         label='Profesor'
                         name='teacher_id'
@@ -116,7 +121,7 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                        icon={UserIcon}
+                        icon={BookAIcon}
                     />
                     <CompletSelect
                         label='Carrera'
@@ -125,12 +130,12 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                        icon={UserIcon}
+                        icon={GraduationCapIcon}
                     />
                     <CompletInput
                         label='Grupo'
                         name='group'
-                        icon={UserIcon}
+                        icon={UsersIcon}
                         type='number'
                         min={0}
                         defaultValue={1}
@@ -138,7 +143,7 @@ export function CreateSubjectDialog() {
                     <CompletInput
                         label='Semestre'
                         name='semester'
-                        icon={UserIcon}
+                        icon={HashIcon}
                         type='number'
                         min={0}
                         defaultValue={1}
