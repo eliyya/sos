@@ -16,6 +16,9 @@ import {
     ComputerIcon,
     GraduationCapIcon,
     FileDownIcon,
+    FileSearchIcon,
+    MicroscopeIcon,
+    PcCaseIcon,
 } from 'lucide-react'
 import { Accordion, AccordionSection } from '@/components/Accordion'
 import app from '@eliyya/type-routes'
@@ -89,17 +92,17 @@ const reportNavItems: {
     {
         title: 'De Laboratorio',
         href: '/dashboard/reports/lab',
-        icon: LayoutDashboardIcon,
+        icon: MicroscopeIcon,
     },
     {
         title: 'De CC',
         href: '/dashboard/reports/cc',
-        icon: LayoutDashboardIcon,
+        icon: PcCaseIcon,
     },
     {
         title: 'Consultar Datos',
         href: app.dashboard.reports.query(),
-        icon: LayoutDashboardIcon,
+        icon: FileSearchIcon,
     },
     {
         title: 'Exportar Datos',
