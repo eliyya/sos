@@ -21,7 +21,6 @@ import {
     HashIcon,
     IdCardIcon,
     Save,
-    User,
     UserIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

@@ -16,7 +16,7 @@ import {
     updateAtom,
 } from '@/global/management-career'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, SquarePenIcon, TagIcon, User } from 'lucide-react'
+import { Save, SquarePenIcon, TagIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
 
