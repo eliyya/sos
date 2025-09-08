@@ -51,10 +51,10 @@ export function CreateLaboratoryDialog() {
                 }
             }}
         >
-            <DialogHeader>
-                <DialogTitle>Crear Laboratorio</DialogTitle>
-            </DialogHeader>
             <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Crear Laboratorio</DialogTitle>
+                </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
