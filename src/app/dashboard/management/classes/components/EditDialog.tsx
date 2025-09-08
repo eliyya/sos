@@ -21,7 +21,14 @@ import {
 } from '@/global/management-class'
 import { Career, Subject, User } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, UserIcon } from 'lucide-react'
+import {
+    BookAIcon,
+    GraduationCapIcon,
+    HashIcon,
+    Save,
+    UserIcon,
+    UsersIcon,
+} from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
 
@@ -82,9 +89,10 @@ export function EditDialog() {
                     <input type='hidden' value={old.id} name='nc' />
                     <RetornableCompletSelect
                         originalValue={{
-                            label: teachers.find(t => t.id === old.teacher_id)
-                                ?.name || '',
-                            value: old.teacher_id
+                            label:
+                                teachers.find(t => t.id === old.teacher_id)
+                                    ?.name || '',
+                            value: old.teacher_id,
                         }}
                         label='Docente'
                         name='teacher_id'
@@ -106,7 +114,7 @@ export function EditDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                        icon={UserIcon}
+                        icon={BookAIcon}
                     />
                     <RetornableCompletSelect
                         originalValue={{
@@ -120,12 +128,12 @@ export function EditDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                        icon={UserIcon}
+                        icon={GraduationCapIcon}
                     />
                     <RetornableCompletInput
                         label='Grupo'
                         name='group'
-                        icon={UserIcon}
+                        icon={UsersIcon}
                         type='number'
                         min={0}
                         originalValue={old.group}
@@ -133,7 +141,7 @@ export function EditDialog() {
                     <RetornableCompletInput
                         label='Semestre'
                         name='semester'
-                        icon={UserIcon}
+                        icon={HashIcon}
                         type='number'
                         min={0}
                         originalValue={old.semester}
