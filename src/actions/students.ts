@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/prisma/db'
-import { Prisma, STATUS } from '@prisma/client'
+import { Prisma, STATUS, Student } from '@prisma/client'
 
 export async function getStudents() {
     return db.student.findMany({
@@ -131,7 +131,20 @@ export async function deleteStudent(formData: FormData) {
     }
 }
 
-export async function createStudent(formData: FormData) {
+export async function createStudent(formData: FormData): Promise<
+    | {
+          error:
+              | 'Falta algun dato'
+              | 'El estudiante ya existe'
+              | 'Algo sucedió, intenta más tarde'
+              | null
+          student: Student | null
+      }
+    | {
+          error: 'El estudiante esta archivado'
+          student: Student
+      }
+> {
     const lastname = formData.get('lastname') as string
     const firstname = formData.get('firstname') as string
     const nc = formData.get('nc') as string
@@ -139,10 +152,14 @@ export async function createStudent(formData: FormData) {
     const career_id = formData.get('career_id') as string
 
     if (!lastname || !firstname || !semester || !career_id || !nc)
-        return { error: 'Falta algun dato' }
+        return { error: 'Falta algun dato', student: null }
+
+    const student = await db.student.findFirst({ where: { nc } })
+    if (student?.status === STATUS.ARCHIVED)
+        return { error: 'El estudiante esta archivado', student: student }
 
     try {
-        await db.student.create({
+        const nstudent = await db.student.create({
             data: {
                 nc,
                 lastname,
@@ -151,15 +168,15 @@ export async function createStudent(formData: FormData) {
                 career_id,
             },
         })
-        return {}
+        return { error: null, student: nstudent }
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2002')
-                return { error: 'El estudiante ya existe' }
+                return { error: 'El estudiante ya existe', student: null }
             console.log(error.meta)
         }
         console.error(error)
-        return { error: 'Algo sucedió, intenta más tarde' }
+        return { error: 'Algo sucedió, intenta más tarde', student: null }
     }
 }
 // TODO: check role

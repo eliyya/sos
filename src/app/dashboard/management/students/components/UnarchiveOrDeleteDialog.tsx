@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteStudent } from '@/actions/students'
+import { unarchiveStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -9,22 +9,24 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
-    openDeleteAtom,
     entityToEditAtom,
     updateAtom,
+    openUnarchiveOrDeleteAtom,
+    openDeleteAtom,
 } from '@/global/management-students'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
+import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
 
-export function DeleteDialog() {
-    const [open, setOpen] = useAtom(openDeleteAtom)
+export function UnarchiveOrDeleteDialog() {
+    const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const setOpenDelete = useSetAtom(openDeleteAtom)
 
     if (!entity) return null
 
@@ -32,17 +34,17 @@ export function DeleteDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Eliminar Estudiante</DialogTitle>
+                    <DialogTitle>Estudiante archivado</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de eliminar el estudiante{' '}
-                        {entity.firstname} {entity.lastname}?
-                        <strong>Esta acción es irreversible</strong>
+                        El estudiante {entity.firstname} {entity.lastname} con
+                        el numero de control {entity.nc} está archivado. ¿Qué
+                        desea hacer con el estudiante?
                     </DialogDescription>
                 </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await deleteStudent(data)
+                            const { error } = await unarchiveStudent(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -61,21 +63,36 @@ export function DeleteDialog() {
                     <input type='hidden' value={entity.nc} name='nc' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
+                            type='button'
+                            variant='secondary'
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
                                 setOpen(false)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
                             type='submit'
-                            variant={'destructive'}
+                            variant='default'
                             disabled={inTransition}
                         >
-                            <Trash2 className='mr-2 h-5 w-5' />
+                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
+                            Desarchivar
+                        </Button>
+                        <Button
+                            type='button'
+                            variant='destructive'
+                            disabled={inTransition}
+                            onClick={e => {
+                                e.preventDefault()
+                                setOpen(false)
+                                setOpenDelete(true)
+                            }}
+                        >
+                            <TrashIcon className='mr-2 h-5 w-5' />
                             Eliminar
                         </Button>
                     </div>

@@ -13,7 +13,7 @@ import {
     openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
+} from '@/global/management-students'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -34,8 +34,8 @@ export function UnarchiveDialog() {
                 <DialogHeader>
                     <DialogTitle>Desarchivar Estudiante</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de desarchivar al estudiante {entity.firstname}{' '}
-                        {entity.lastname}?
+                        ¿Está seguro de desarchivar al estudiante{' '}
+                        {entity.firstname} {entity.lastname}?
                     </DialogDescription>
                 </DialogHeader>
                 <form

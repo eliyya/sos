@@ -22,7 +22,7 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
+} from '@/global/management-students'
 import { getStudentsWithCareer } from '@/actions/students'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'

@@ -3,10 +3,26 @@
 import { createStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/managment-students'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
+import {
+    openCreateAtom,
+    updateAtom,
+    entityToEditAtom,
+} from '@/global/management-students'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
-import { User, Save, UserIcon } from 'lucide-react'
+import {
+    Save,
+    UserIcon,
+    HashIcon,
+    IdCardIcon,
+    CalendarRangeIcon,
+    GraduationCapIcon,
+} from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
 import { CompletSelect } from '@/components/Select'
@@ -19,6 +35,7 @@ export function CreateSubjectDialog() {
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
     const [careers, setCareers] = useState<Career[]>([])
+    const setEntityToEdit = useSetAtom(entityToEditAtom)
 
     useEffect(() => {
         getActiveCareers().then(careers => {
@@ -38,8 +55,11 @@ export function CreateSubjectDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await createStudent(data)
-                            if (error) setMessage(error)
+                            const { error, student } = await createStudent(data)
+                            if (error === 'El estudiante esta archivado') {
+                                setEntityToEdit(student)
+                                setOpen(false)
+                            } else if (error) setMessage(error)
                             else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
@@ -60,28 +80,28 @@ export function CreateSubjectDialog() {
                         label='Numero de Control'
                         type='text'
                         name='nc'
-                        icon={User}
+                        icon={HashIcon}
                     />
                     <CompletInput
                         required
                         label='Nombres'
                         type='text'
                         name='firstname'
-                        icon={User}
+                        icon={UserIcon}
                     />
                     <CompletInput
                         required
                         label='Apellidos'
                         type='text'
                         name='lastname'
-                        icon={User}
+                        icon={IdCardIcon}
                     />
                     <CompletInput
                         required
                         label='Semestre'
                         type='number'
                         name='semester'
-                        icon={User}
+                        icon={CalendarRangeIcon}
                     />
                     <CompletSelect
                         label='Carrera'
@@ -90,7 +110,7 @@ export function CreateSubjectDialog() {
                             label: t.name,
                             value: t.id,
                         }))}
-                        icon={UserIcon}
+                        icon={GraduationCapIcon}
                     />
 
                     <Button type='submit' disabled={inTransition}>
