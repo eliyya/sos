@@ -32,11 +32,13 @@ export function DeleteDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Eliminar Máquina</DialogTitle>
+                    <DialogTitle>Dar de baja</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de eliminar la máquina{' '}
-                        <strong>{entity.number}</strong>?
+                        ¿Está seguro de dar de baja la máquina{' '}
+                        <strong>{entity.number}</strong> con serie{' '}
+                        <strong>{entity.serie}</strong>?
                         <strong>Esta acción es irreversible</strong>
+                        Tal vez busca colocarla en mantenimiento
                     </DialogDescription>
                 </DialogHeader>
                 <form

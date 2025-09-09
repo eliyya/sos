@@ -14,6 +14,8 @@ export function Filters() {
         <div className='flex items-center gap-4'>
             <div className='relative flex-1'>
                 <SimpleInput
+                    // TODO: Implementar busqueda
+                    disabled={true}
                     placeholder='Buscar maquina...'
                     className='pl-10'
                     value={query}
@@ -23,7 +25,7 @@ export function Filters() {
             </div>
             <div>
                 <ToggleSwitch
-                    label='Archivados'
+                    label='En Mantenimiento'
                     checked={archived}
                     onCheckedChange={() => setArchived(v => !v)}
                 />

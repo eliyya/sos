@@ -1,6 +1,6 @@
 'use client'
 
-import { archiveMachine } from '@/actions/machines'
+import { unarchiveMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -9,22 +9,24 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
-    openArchiveAtom,
     entityToEditAtom,
     updateAtom,
+    openUnarchiveOrDeleteAtom,
+    openDeleteAtom,
 } from '@/global/management-machines'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Archive, Ban, MonitorCogIcon } from 'lucide-react'
+import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
 
-export function ArchiveDialog() {
-    const [open, setOpen] = useAtom(openArchiveAtom)
+export function UnarchiveOrDeleteDialog() {
+    const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const setOpenDelete = useSetAtom(openDeleteAtom)
 
     if (!entity) return null
 
@@ -32,19 +34,19 @@ export function ArchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Poner en mantenimiento</DialogTitle>
+                    <DialogTitle>Máquina archivada</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de poner la máquina #{entity.number} con
-                        serie {entity.serie} en mantenimiento?
+                        La máquina #{entity.number} con serie {entity.serie}{' '}
+                        está archivada. ¿Qué desea hacer?
                     </DialogDescription>
                 </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await archiveMachine(data)
+                            const { error } = await unarchiveMachine(data)
                             if (error) {
                                 setMessage(error)
-                                setTimeout(() => setMessage(''), 5_000)
+                                setTimeout(() => setMessage('error'), 5_000)
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
@@ -60,22 +62,37 @@ export function ArchiveDialog() {
                     <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
+                            type='button'
+                            variant='secondary'
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
                                 setOpen(false)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
                             type='submit'
-                            variant={'destructive'}
+                            variant='default'
                             disabled={inTransition}
                         >
-                            <MonitorCogIcon className='mr-2 h-5 w-5' />
-                            Poner en mantenimiento
+                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
+                            Desarchivar
+                        </Button>
+                        <Button
+                            type='button'
+                            variant='destructive'
+                            disabled={inTransition}
+                            onClick={e => {
+                                e.preventDefault()
+                                setOpen(false)
+                                setOpenDelete(true)
+                            }}
+                        >
+                            <TrashIcon className='mr-2 h-5 w-5' />
+                            Eliminar
                         </Button>
                     </div>
                 </form>
