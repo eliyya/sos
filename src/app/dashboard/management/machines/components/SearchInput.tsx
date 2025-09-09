@@ -2,7 +2,7 @@
 
 import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
-import { queryAtom, showArchivedAtom } from '@/global/managment-machines'
+import { queryAtom, showArchivedAtom } from '@/global/management-machines'
 import ToggleSwitch from '@/components/Switch'
 import { Search } from 'lucide-react'
 

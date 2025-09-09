@@ -3,8 +3,13 @@
 import { createMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import { CompletInput, CompletTextarea } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/managment-machines'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
+import { openCreateAtom, updateAtom } from '@/global/management-machines'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

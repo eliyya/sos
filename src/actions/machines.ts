@@ -2,6 +2,7 @@
 
 import { db } from '@/prisma/db'
 import { MACHINE_STATUS, Prisma } from '@prisma/client'
+
 export async function getMachine() {
     return await db.machine.findMany({
         where: {
@@ -11,6 +12,7 @@ export async function getMachine() {
         },
     })
 }
+
 export async function editMachine(formData: FormData) {
     const id = formData.get('id') as string
     const serie = formData.get('serie') as string

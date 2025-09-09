@@ -12,7 +12,7 @@ import {
 import { Machine, MACHINE_STATUS } from '@prisma/client'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openArchiveAtom,
@@ -21,35 +21,39 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-machines'
+    laboratoriesAtom,
+} from '@/global/management-machines'
 import { getMachine } from '@/actions/machines'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { getLaboratories } from '@/actions/laboratory'
 
 export function EntityTable() {
-    const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getMachine>>
-    >([])
+    const [entity, setEntity] = useState<Machine[]>([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
+    const [laboratories, setLaboratories] = useAtom(laboratoriesAtom)
 
     useEffect(() => {
         getMachine().then(setEntity)
     }, [update])
+    useEffect(() => {
+        getLaboratories().then(setLaboratories)
+    }, [])
 
     return (
         <>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Numero</TableHead>
-                        <TableHead>Ram</TableHead>
-                        <TableHead>Procesador</TableHead>
-                        <TableHead>Almacenamiento</TableHead>
+                        <TableHead>#</TableHead>
+                        <TableHead>Caracteristicas</TableHead>
+                        <TableHead>Serie</TableHead>
                         <TableHead>Descripcion</TableHead>
                         <TableHead>Laboratorio Asignado</TableHead>
+                        <TableHead>Opciones</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -62,12 +66,20 @@ export function EntityTable() {
                         .map(entity => (
                             <TableRow key={entity.id}>
                                 <TableCell>{entity.number}</TableCell>
-                                <TableCell>{entity.ram}</TableCell>
-                                <TableCell>{entity.processor}</TableCell>
-                                <TableCell>{entity.storage}</TableCell>
-                                <TableCell>{entity.description}</TableCell>
-                                <TableCell>{entity.laboratory_id}</TableCell>
                                 <TableCell>
+                                    {entity.processor} {entity.ram}{' '}
+                                    {entity.storage}
+                                </TableCell>
+                                <TableCell>{entity.serie}</TableCell>
+                                <TableCell>{entity.description}</TableCell>
+                                <TableCell>
+                                    {
+                                        laboratories.find(
+                                            l => l.id === entity.laboratory_id,
+                                        )?.name
+                                    }
+                                </TableCell>
+                                <TableCell className='flex gap-1'>
                                     <Buttons entity={entity} />
                                 </TableCell>
                             </TableRow>

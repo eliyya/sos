@@ -28,7 +28,7 @@ export async function unarchiveLaboratory(formData: FormData) {
     }
 }
 
-export async function getLaboratory() {
+export async function getLaboratories() {
     return await db.laboratory.findMany({
         where: {
             status: {

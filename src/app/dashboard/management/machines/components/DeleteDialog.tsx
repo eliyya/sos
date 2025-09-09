@@ -13,7 +13,7 @@ import {
     openDeleteAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-machines'
+} from '@/global/management-machines'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
