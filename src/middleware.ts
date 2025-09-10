@@ -18,6 +18,15 @@ export const config = {
 const handler = new MiddlewareHandler()
 export const middleware = (request: NextRequest) => handler.handle(request)
 
+handler.use(/^\/(dashboard\/management)?$/, async ctx => {
+    const referer = ctx.request.headers.get('referer') || ctx.request.nextUrl
+    const origin = new URL(referer)
+
+    if (origin.pathname.startsWith('/dashboard/management'))
+        return ctx.redirect(origin)
+    return ctx.redirect(app.dashboard.management.laboratories())
+})
+
 handler.set(/^\/(schedule.*)?$/, async ctx => {
     const actual_date = new Date()
     const now = {
@@ -100,9 +109,7 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
 })
 
 handler.set(/^\/dashboard.*$/, async ctx => {
-    console.time('middleware')
     const session = await auth.api.getSession(ctx.request)
-    console.timeEnd('middleware')
     if (!session) return ctx.redirect(app.auth.login())
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),

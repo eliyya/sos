@@ -7,7 +7,7 @@ import { CareersTable } from './components/CareersTable'
 export default async function CareersPage() {
     return (
         <>
-            <div className='flex items-center justify-between'>
+            <div className='flex justify-between'>
                 <DashboardHeader
                     heading='Carreras'
                     text='Gestión de Carreras.'

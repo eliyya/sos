@@ -10,7 +10,7 @@ export function Accordion({
     return (
         <Root
             {...props}
-            className={cn('w-full max-w-md rounded-xl shadow-md', className)}
+            className={cn('w-full max-w-md rounded-xl', className)}
         />
     )
 }

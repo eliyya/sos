@@ -22,6 +22,7 @@ import { MessageError } from '@/components/Error'
 import { CompletSelect } from '@/components/Select'
 import { Laboratory } from '@prisma/client'
 import { getActiveLaboratories } from '@/actions/laboratory'
+import { map, mapError } from '@/lib/error'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -46,27 +47,33 @@ export function CreateSubjectDialog() {
                     Edit the user&apos;s information
                 </DialogDescription> */}
                 <form
-                    action={data => {
+                    action={formData => {
                         startTransition(async () => {
-                            const { error, machine } = await createMachine(data)
-                            if (
-                                error ===
-                                'La maquina se encuentra fuera de servicio'
-                            ) {
-                                setOpen(false)
-                                setOpenUnarchiveOrDelete(true)
-                                setEntityToEdit(machine)
-                            } else if (error) setMessage(error)
-                            else {
+                            const result = await createMachine(formData)
+                            map(result, () => {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
                                     500,
                                 )
                                 setOpen(false)
-                            }
-                            setTimeout(() => {
-                                setMessage('')
-                            }, 5_000)
+                            })
+                            mapError(result, error => {
+                                switch (error.message) {
+                                    case 'La maquina se encuentra fuera de servicio':
+                                        setOpen(false)
+                                        setOpenUnarchiveOrDelete(true)
+                                        setEntityToEdit(error.machine)
+                                        break
+                                    case 'La maquina ya existe':
+                                        setMessage(error.message)
+                                        break
+                                    default:
+                                        setMessage(error.message)
+                                        break
+                                }
+                            })
+
+                            setTimeout(() => setMessage(''), 5000)
                         })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'

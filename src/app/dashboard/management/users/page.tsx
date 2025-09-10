@@ -7,7 +7,7 @@ import { CreateUserDialog } from './components/CreateDialog'
 export default async function UserManagementPage() {
     return (
         <>
-            <div className='flex items-center justify-between'>
+            <div className='flex justify-between'>
                 <DashboardHeader
                     heading='Usuarios'
                     text='Gestión de Usuarios.'
