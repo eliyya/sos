@@ -1,5 +1,6 @@
 'use server'
 
+import { err, ok, Result } from '@/lib/error'
 import { db } from '@/prisma/db'
 import { Machine, MACHINE_STATUS, Prisma } from '@prisma/client'
 
@@ -109,19 +110,24 @@ export async function getMachines() {
     })
 }
 
-export async function createMachine(formData: FormData): Promise<
+type CreateMachineError =
+    | { message: 'Algo sucedió, intenta más tarde' }
     | {
-          error:
-              | 'Algo sucedió, intenta más tarde'
+          message:
               | 'La maquina ya existe'
-              | null
-          machine: Machine | null
-      }
-    | {
-          error: 'La maquina se encuentra fuera de servicio'
+              | 'La maquina se encuentra fuera de servicio'
           machine: Machine
       }
-> {
+
+/**
+ *
+ * @param formData
+ * @returns {Promise<Result<Machine, CreateMachineError>>}
+ * @throws {CreateMachineError}
+ */
+export async function createMachine(
+    formData: FormData,
+): Promise<Result<Machine, CreateMachineError>> {
     const serie = formData.get('serie') as string
     const processor = formData.get('processor') as string
     const ram = formData.get('ram') as string
@@ -130,33 +136,33 @@ export async function createMachine(formData: FormData): Promise<
     const description = formData.get('description') as string
 
     const machine = await db.machine.findUnique({ where: { serie } })
-    if (machine?.status === MACHINE_STATUS.OUT_OF_SERVICE)
-        return {
-            error: 'La maquina se encuentra fuera de servicio',
-            machine: machine,
+    if (machine) {
+        if (machine.status === MACHINE_STATUS.OUT_OF_SERVICE) {
+            return err({
+                message: 'La maquina se encuentra fuera de servicio',
+                machine,
+            })
         }
+        return err({ message: 'La maquina ya existe', machine })
+    }
 
     try {
-        const nmachine = await db.machine.create({
-            data: {
-                number: Number(number),
-                processor,
-                ram,
-                storage,
-                description,
-                serie,
-                status: MACHINE_STATUS.AVAILABLE,
-            },
-        })
-        return { error: null, machine: nmachine }
+        return ok(
+            await db.machine.create({
+                data: {
+                    number: Number(number),
+                    processor,
+                    ram,
+                    storage,
+                    description,
+                    serie,
+                    status: MACHINE_STATUS.AVAILABLE,
+                },
+            }),
+        )
     } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error.code === 'P2002')
-                return { error: 'La maquina ya existe', machine: null }
-            console.log(error.meta)
-        }
         console.error(error)
-        return { error: 'Algo sucedió, intenta más tarde', machine: null }
+        return err({ message: 'Algo sucedió, intenta más tarde' })
     }
 }
 // TODO: check role

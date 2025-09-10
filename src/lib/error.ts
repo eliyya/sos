@@ -1,3 +1,5 @@
+import { th } from 'zod/v4/locales'
+
 export type Result<T, E> = Ok<T> | Err<E>
 
 export type Ok<T> = {
@@ -58,4 +60,14 @@ export function unwrap<T, E>(result: Result<T, E>): T {
 // Obtiene el valor o un fallback
 export function unwrapOr<T, E>(result: Result<T, E>, fallback: T): T {
     return result.ok ? result.data : fallback
+}
+
+export function match<T, E, R>(
+    result: Result<T, E>,
+    handlers: {
+        ok: (data: T) => R
+        err: (error: E) => R
+    },
+): R {
+    return result.ok ? handlers.ok(result.data) : handlers.err(result.error)
 }
