@@ -4,9 +4,11 @@ export default async function ManagementLayout(
     props: LayoutProps<'/dashboard/management'>,
 ) {
     return (
-        <div className='flex flex-1 flex-col gap-4'>
+        <div className='flex flex-1 flex-col'>
             <ManagementNav />
-            <div className='p-8'>{props.children}</div>
+            <main className='flex flex-1 flex-col gap-4 p-8'>
+                {props.children}
+            </main>
         </div>
     )
 }

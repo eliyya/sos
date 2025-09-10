@@ -8,7 +8,7 @@ export function DashboardHeader({
     children?: React.ReactNode
 }) {
     return (
-        <div className='flex items-center justify-between p-8 pb-0'>
+        <div className='flex items-center justify-between'>
             <div className='grid gap-1'>
                 <h1 className='text-3xl font-bold tracking-tight'>{heading}</h1>
                 {text && (

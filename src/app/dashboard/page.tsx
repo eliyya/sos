@@ -84,12 +84,12 @@ export default async function AdminDashboardPage() {
         },
     ]
     return (
-        <>
+        <main className='flex flex-1 flex-col gap-4 p-8'>
             <DashboardHeader
                 heading='Panel de Administracion'
                 text='Gestiona laboratorio, reservas y usuarios del sistemas.'
             />
-            <div className='grid gap-8 p-8'>
+            <div className='grid gap-8'>
                 <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
                     {stats.map(stat => (
                         <Card key={stat.title} className='p-6'>
@@ -148,6 +148,6 @@ export default async function AdminDashboardPage() {
                     ))}
                 </div>
             </div>
-        </>
+        </main>
     )
 }
