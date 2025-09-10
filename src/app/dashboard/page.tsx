@@ -89,7 +89,7 @@ export default async function AdminDashboardPage() {
                 heading='Panel de Administracion'
                 text='Gestiona laboratorio, reservas y usuarios del sistemas.'
             />
-            <div className='mt-8 grid gap-8'>
+            <div className='grid gap-8 p-8'>
                 <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
                     {stats.map(stat => (
                         <Card key={stat.title} className='p-6'>
