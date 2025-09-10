@@ -13,9 +13,9 @@ import {
     openArchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-machines'
+} from '@/global/management-machines'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Archive, Ban } from 'lucide-react'
+import { Archive, Ban, MonitorCogIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
 
@@ -32,10 +32,10 @@ export function ArchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Archivar Máquina</DialogTitle>
+                    <DialogTitle>Poner en mantenimiento</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de archivar la máquina {entity.number}?
-                        <strong>Esta acción es reversible</strong>
+                        ¿Está seguro de poner la máquina #{entity.number} con
+                        serie {entity.serie} en mantenimiento?
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -74,8 +74,8 @@ export function ArchiveDialog() {
                             variant={'destructive'}
                             disabled={inTransition}
                         >
-                            <Archive className='mr-2 h-5 w-5' />
-                            Archivar
+                            <MonitorCogIcon className='mr-2 h-5 w-5' />
+                            Poner en mantenimiento
                         </Button>
                     </div>
                 </form>

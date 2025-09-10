@@ -24,7 +24,7 @@ import {
     updateAtom,
     queryAtom,
 } from '@/global/management-laboratory'
-import { getLaboratory } from '@/actions/laboratory'
+import { getLaboratories } from '@/actions/laboratory'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
@@ -35,14 +35,14 @@ import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getLaboratory>>
+        Awaited<ReturnType<typeof getLaboratories>>
     >([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
 
     useEffect(() => {
-        getLaboratory().then(setEntity)
+        getLaboratories().then(setEntity)
     }, [update])
 
     return (

@@ -14,9 +14,9 @@ import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-career'
+} from '@/global/management-career'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, User } from 'lucide-react'
+import { Save, SquarePenIcon, TagIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
 
@@ -62,7 +62,7 @@ export function EditDialog() {
                         label='Name'
                         type='text'
                         name='name'
-                        icon={User}
+                        icon={SquarePenIcon}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
                         originalValue={old.alias ?? ''}
@@ -70,7 +70,7 @@ export function EditDialog() {
                         label='Alias'
                         type='text'
                         name='alias'
-                        icon={User}
+                        icon={TagIcon}
                     ></RetornableCompletInput>
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />

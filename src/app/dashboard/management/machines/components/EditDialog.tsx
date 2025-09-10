@@ -15,7 +15,7 @@ import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-machines'
+} from '@/global/management-machines'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

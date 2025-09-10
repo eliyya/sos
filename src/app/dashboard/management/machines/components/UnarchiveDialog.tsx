@@ -1,6 +1,6 @@
 'use client'
 
-import { archiveMachine } from '@/actions/machines'
+import { unarchiveMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -13,9 +13,9 @@ import {
     openUnarchiveAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-machines'
+} from '@/global/management-machines'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { ArchiveRestore, Ban } from 'lucide-react'
+import { ArchiveRestore, Ban, MonitorCheckIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
 
@@ -32,15 +32,15 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Desarchivar Máquina</DialogTitle>
+                    <DialogTitle>Reactivar Máquina</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de desarchivar la máquina {entity.number}?
+                        ¿Está seguro de reactivar la máquina {entity.number}?
                     </DialogDescription>
                 </DialogHeader>
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await archiveMachine(data)
+                            const { error } = await unarchiveMachine(data)
                             if (error) {
                                 setMessage(error)
                                 setTimeout(() => setMessage('error'), 5_000)
@@ -74,8 +74,8 @@ export function UnarchiveDialog() {
                             variant={'default'}
                             disabled={inTransition}
                         >
-                            <ArchiveRestore className='mr-2 h-5 w-5' />
-                            Desarchivar
+                            <MonitorCheckIcon className='mr-2 h-5 w-5' />
+                            Reactivar
                         </Button>
                     </div>
                 </form>

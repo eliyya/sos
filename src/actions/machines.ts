@@ -1,7 +1,8 @@
 'use server'
 
 import { db } from '@/prisma/db'
-import { MACHINE_STATUS, Prisma } from '@prisma/client'
+import { Machine, MACHINE_STATUS, Prisma } from '@prisma/client'
+
 export async function getMachine() {
     return await db.machine.findMany({
         where: {
@@ -11,6 +12,7 @@ export async function getMachine() {
         },
     })
 }
+
 export async function editMachine(formData: FormData) {
     const id = formData.get('id') as string
     const serie = formData.get('serie') as string
@@ -62,7 +64,8 @@ export async function deleteMachine(formData: FormData) {
         return { error: 'Algo sucedio mal, intente nuevamente' }
     }
 }
-export async function archiveMachine(formData: FormData) {
+
+export async function unarchiveMachine(formData: FormData) {
     const id = formData.get('id') as string
     try {
         await db.machine.update({
@@ -71,6 +74,23 @@ export async function archiveMachine(formData: FormData) {
             },
             data: {
                 status: MACHINE_STATUS.AVAILABLE,
+            },
+        })
+        return { error: null }
+    } catch {
+        return { error: 'Algo sucedio mal, intente nuevamente' }
+    }
+}
+
+export async function archiveMachine(formData: FormData) {
+    const id = formData.get('id') as string
+    try {
+        await db.machine.update({
+            where: {
+                id,
+            },
+            data: {
+                status: MACHINE_STATUS.MAINTENANCE,
             },
         })
         return { error: null }
@@ -89,7 +109,19 @@ export async function getMachines() {
     })
 }
 
-export async function createMachine(formData: FormData) {
+export async function createMachine(formData: FormData): Promise<
+    | {
+          error:
+              | 'Algo sucedió, intenta más tarde'
+              | 'La maquina ya existe'
+              | null
+          machine: Machine | null
+      }
+    | {
+          error: 'La maquina se encuentra fuera de servicio'
+          machine: Machine
+      }
+> {
     const serie = formData.get('serie') as string
     const processor = formData.get('processor') as string
     const ram = formData.get('ram') as string
@@ -97,8 +129,15 @@ export async function createMachine(formData: FormData) {
     const storage = formData.get('storage') as string
     const description = formData.get('description') as string
 
+    const machine = await db.machine.findUnique({ where: { serie } })
+    if (machine?.status === MACHINE_STATUS.OUT_OF_SERVICE)
+        return {
+            error: 'La maquina se encuentra fuera de servicio',
+            machine: machine,
+        }
+
     try {
-        await db.machine.create({
+        const nmachine = await db.machine.create({
             data: {
                 number: Number(number),
                 processor,
@@ -109,14 +148,15 @@ export async function createMachine(formData: FormData) {
                 status: MACHINE_STATUS.AVAILABLE,
             },
         })
-        return {}
+        return { error: null, machine: nmachine }
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error.code === 'P2002') return { error: 'La maquina ya existe' }
+            if (error.code === 'P2002')
+                return { error: 'La maquina ya existe', machine: null }
             console.log(error.meta)
         }
         console.error(error)
-        return { error: 'Algo sucedió, intenta más tarde' }
+        return { error: 'Algo sucedió, intenta más tarde', machine: null }
     }
 }
 // TODO: check role

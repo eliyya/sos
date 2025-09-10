@@ -22,12 +22,13 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-students'
+} from '@/global/management-students'
 import { getStudentsWithCareer } from '@/actions/students'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<
@@ -78,6 +79,7 @@ export function EntityTable() {
             <ArchiveDialog />
             <UnarchiveDialog />
             <DeleteDialog />
+            <UnarchiveOrDeleteDialog />
         </>
     )
 }

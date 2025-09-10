@@ -3,7 +3,11 @@
 import { createCareer } from '@/actions/career'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/managment-career'
+import {
+    entityToEditAtom,
+    openCreateAtom,
+    updateAtom,
+} from '@/global/management-career'
 import {
     Dialog,
     DialogContent,
@@ -11,7 +15,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
-import { User, Save } from 'lucide-react'
+import { Save, TagIcon, SquarePenIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
 
@@ -20,6 +24,7 @@ export function CreateSubjectDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
+    const setEntityToEdit = useSetAtom(entityToEditAtom)
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -33,10 +38,14 @@ export function CreateSubjectDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await createCareer(data)
+                            const { error, career } = await createCareer(data)
 
-                            if (error) setMessage(error)
-                            else {
+                            if (error === 'La carrera esta archivada') {
+                                setMessage(error)
+                                setEntityToEdit(career)
+                            } else if (error) {
+                                setMessage(error)
+                            } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),
                                     500,
@@ -56,13 +65,13 @@ export function CreateSubjectDialog() {
                         label='Nombre'
                         type='text'
                         name='name'
-                        icon={User}
+                        icon={SquarePenIcon}
                     />
                     <CompletInput
                         label='Alias'
                         type='text'
                         name='alias'
-                        icon={User}
+                        icon={TagIcon}
                     />
 
                     <Button type='submit' disabled={inTransition}>

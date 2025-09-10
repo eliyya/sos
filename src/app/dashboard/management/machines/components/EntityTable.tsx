@@ -10,9 +10,17 @@ import {
     Table,
 } from '@/components/Table'
 import { Machine, MACHINE_STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import {
+    Archive,
+    ArchiveRestore,
+    MonitorCheckIcon,
+    MonitorCogIcon,
+    MonitorOffIcon,
+    Pencil,
+    Trash2,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openArchiveAtom,
@@ -21,53 +29,69 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-} from '@/global/managment-machines'
+    laboratoriesAtom,
+} from '@/global/management-machines'
 import { getMachine } from '@/actions/machines'
 import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { getLaboratories } from '@/actions/laboratory'
+import { Badge } from '@/components/Badge'
 
 export function EntityTable() {
-    const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getMachine>>
-    >([])
+    const [entity, setEntity] = useState<Machine[]>([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
+    const [laboratories, setLaboratories] = useAtom(laboratoriesAtom)
 
     useEffect(() => {
         getMachine().then(setEntity)
     }, [update])
+    useEffect(() => {
+        getLaboratories().then(setLaboratories)
+    }, [])
 
     return (
         <>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Numero</TableHead>
-                        <TableHead>Ram</TableHead>
-                        <TableHead>Procesador</TableHead>
-                        <TableHead>Almacenamiento</TableHead>
+                        <TableHead>#</TableHead>
+                        <TableHead>Caracteristicas</TableHead>
+                        <TableHead>Serie</TableHead>
                         <TableHead>Descripcion</TableHead>
                         <TableHead>Laboratorio Asignado</TableHead>
+                        <TableHead>Opciones</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {entity
                         .filter(u =>
-                            archived ? true : (
-                                u.status === MACHINE_STATUS.AVAILABLE
-                            ),
+                            archived ?
+                                u.status === MACHINE_STATUS.MAINTENANCE
+                            :   u.status === MACHINE_STATUS.AVAILABLE ||
+                                u.status === MACHINE_STATUS.IN_USE,
                         )
                         .map(entity => (
                             <TableRow key={entity.id}>
                                 <TableCell>{entity.number}</TableCell>
-                                <TableCell>{entity.ram}</TableCell>
-                                <TableCell>{entity.processor}</TableCell>
-                                <TableCell>{entity.storage}</TableCell>
-                                <TableCell>{entity.description}</TableCell>
-                                <TableCell>{entity.laboratory_id}</TableCell>
                                 <TableCell>
+                                    {entity.processor} {entity.ram}{' '}
+                                    {entity.storage}
+                                </TableCell>
+                                <TableCell>{entity.serie}</TableCell>
+                                <TableCell>{entity.description}</TableCell>
+                                <TableCell>
+                                    {laboratories.find(
+                                        l => l.id === entity.laboratory_id,
+                                    )?.name ?? (
+                                        <Badge variant='default'>
+                                            Disponible
+                                        </Badge>
+                                    )}
+                                </TableCell>
+                                <TableCell className='flex gap-1'>
                                     <Buttons entity={entity} />
                                 </TableCell>
                             </TableRow>
@@ -91,7 +115,10 @@ function Buttons({ entity }: ButtonsProps) {
     const setArchiveDialog = useSetAtom(openArchiveAtom)
     const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
     const openDeleteDialog = useSetAtom(openDeleteAtom)
-    if (entity.status === MACHINE_STATUS.AVAILABLE)
+    if (
+        entity.status === MACHINE_STATUS.AVAILABLE ||
+        entity.status === MACHINE_STATUS.IN_USE
+    )
         return (
             <>
                 {/* Editar */}
@@ -112,7 +139,7 @@ function Buttons({ entity }: ButtonsProps) {
                         setArchiveDialog(true)
                     }}
                 >
-                    <Archive className='w-xs text-xs' />
+                    <MonitorCogIcon className='w-xs text-xs' />
                 </Button>
             </>
         )
@@ -127,7 +154,7 @@ function Buttons({ entity }: ButtonsProps) {
                         openUnarchiveDialog(true)
                     }}
                 >
-                    <ArchiveRestore className='w-xs text-xs' />
+                    <MonitorCheckIcon className='w-xs text-xs' />
                 </Button>
                 {/* Delete */}
                 <Button
@@ -137,59 +164,10 @@ function Buttons({ entity }: ButtonsProps) {
                         openDeleteDialog(true)
                     }}
                 >
-                    <Trash2 className='w-xs text-xs' />
+                    <MonitorOffIcon className='w-xs text-xs' />
                 </Button>
             </>
         )
-    if (entity.status === MACHINE_STATUS.OUT_OF_SERVICE)
-        return (
-            <>
-                {/* Unarchive */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSubjectSelected(entity)
-                        openUnarchiveDialog(true)
-                    }}
-                >
-                    <ArchiveRestore className='w-xs text-xs' />
-                </Button>
-                {/* Delete */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSubjectSelected(entity)
-                        openDeleteDialog(true)
-                    }}
-                >
-                    <Trash2 className='w-xs text-xs' />
-                </Button>
-            </>
-        )
-    if (entity.status === MACHINE_STATUS.IN_USE)
-        return (
-            <>
-                {/* Unarchive */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSubjectSelected(entity)
-                        openUnarchiveDialog(true)
-                    }}
-                >
-                    <ArchiveRestore className='w-xs text-xs' />
-                </Button>
-                {/* Delete */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSubjectSelected(entity)
-                        openDeleteDialog(true)
-                    }}
-                >
-                    <Trash2 className='w-xs text-xs' />
-                </Button>
-            </>
-        )
+
     return <></>
 }

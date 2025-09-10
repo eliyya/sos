@@ -3,8 +3,18 @@
 import { createMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import { CompletInput, CompletTextarea } from '@/components/Inputs'
-import { openCreateAtom, updateAtom } from '@/global/managment-machines'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
+import {
+    entityToEditAtom,
+    openCreateAtom,
+    openUnarchiveOrDeleteAtom,
+    updateAtom,
+} from '@/global/management-machines'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -19,11 +29,11 @@ export function CreateSubjectDialog() {
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
     const [laboratories, setLaboratories] = useState<Laboratory[]>([])
+    const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
+    const setEntityToEdit = useSetAtom(entityToEditAtom)
 
     useEffect(() => {
-        getActiveLaboratories().then(labs => {
-            setLaboratories(labs)
-        })
+        getActiveLaboratories().then(setLaboratories)
     }, [])
 
     return (
@@ -38,8 +48,15 @@ export function CreateSubjectDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await createMachine(data)
-                            if (error) setMessage(error)
+                            const { error, machine } = await createMachine(data)
+                            if (
+                                error ===
+                                'La maquina se encuentra fuera de servicio'
+                            ) {
+                                setOpen(false)
+                                setOpenUnarchiveOrDelete(true)
+                                setEntityToEdit(machine)
+                            } else if (error) setMessage(error)
                             else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),

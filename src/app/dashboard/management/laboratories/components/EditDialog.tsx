@@ -1,7 +1,15 @@
 'use client'
 
+import { ClockIcon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
+import { RetornableCompletSelect } from '@/components/Select'
+import { RetornableCompletInput } from '@/components/Inputs'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { editLaboratory } from '@/actions/laboratory'
+import { MessageError } from '@/components/Error'
+import { LABORATORY_TYPE } from '@prisma/client'
+import { useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
+import { secondsToTime } from '@/lib/utils'
 import {
     Dialog,
     DialogContent,
@@ -9,19 +17,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { RetornableCompletInput } from '@/components/Inputs'
-import { RetornableCompletSelect } from '@/components/Select'
 import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-laboratory'
-import { secondsToTime } from '@/lib/utils'
-import { LABORATORY_TYPE } from '@prisma/client'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, User } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+
 const labTypeLabel = {
     [LABORATORY_TYPE.LABORATORY]: 'Laboratorio',
     [LABORATORY_TYPE.COMPUTER_CENTER]: 'Centro de Cómputo',
@@ -61,9 +62,7 @@ export function EditDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput
                         required
@@ -71,7 +70,7 @@ export function EditDialog() {
                         type='text'
                         name='name'
                         originalValue={old.name}
-                        icon={User}
+                        icon={SquarePenIcon}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
                         required
@@ -79,7 +78,7 @@ export function EditDialog() {
                         type='time'
                         name='open_hour'
                         originalValue={secondsToTime(old.open_hour * 60)}
-                        icon={User}
+                        icon={ClockIcon}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
                         required
@@ -87,7 +86,7 @@ export function EditDialog() {
                         type='time'
                         name='close_hour'
                         originalValue={secondsToTime(old.close_hour * 60)}
-                        icon={User}
+                        icon={ClockIcon}
                     ></RetornableCompletInput>
                     <RetornableCompletSelect
                         label='Tipo de Laboratorio'
@@ -108,7 +107,7 @@ export function EditDialog() {
                                 ],
                             },
                         ]}
-                        icon={User}
+                        icon={MicroscopeIcon}
                     />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
