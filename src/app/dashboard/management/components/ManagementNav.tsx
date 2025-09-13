@@ -13,46 +13,51 @@ import {
     UsersIcon,
 } from 'lucide-react'
 
-const MLinks = app.dashboard.management
+const mLinks = app.dashboard.management
 
+type MLinks = {
+    [K in keyof typeof mLinks]: (typeof mLinks)[K] extends { (): infer R } ?
+        () => R
+    :   never
+}
 const links: {
     title: string
-    href: ReturnType<(typeof MLinks)[keyof typeof MLinks]>
+    href: ReturnType<MLinks[keyof MLinks]>
     icon: LucideIcon
 }[] = [
     {
         title: 'Laboratorios',
-        href: MLinks.laboratories(),
+        href: mLinks.laboratories(),
         icon: HouseWifiIcon,
     },
     {
         title: 'Usuarios',
-        href: MLinks.users(),
+        href: mLinks.users(),
         icon: UsersIcon,
     },
     {
         title: 'Materias',
-        href: MLinks.subjects(),
+        href: mLinks.subjects(),
         icon: BookMarkedIcon,
     },
     {
         title: 'Carreras',
-        href: MLinks.career(),
+        href: mLinks.career(),
         icon: SquareUserRoundIcon,
     },
     {
         title: 'Clases',
-        href: MLinks.classes(),
+        href: mLinks.classes(),
         icon: CalendarCheckIcon,
     },
     {
         title: 'Estudiantes',
-        href: MLinks.students(),
+        href: mLinks.students(),
         icon: GraduationCapIcon,
     },
     {
         title: 'Maquinas',
-        href: MLinks.machines(),
+        href: mLinks.machines(),
         icon: ComputerIcon,
     },
 ]
