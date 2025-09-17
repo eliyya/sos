@@ -1,4 +1,4 @@
-import { BitField } from '../classes/BitField.ts'
+import { FlaggedBitfield } from '@eliyya/flagged-bitfield'
 
 export const PermissionsFlags = {
     ADMIN: 1n << 0n, // Todos los permisos
@@ -15,7 +15,9 @@ export const PermissionsFlags = {
     INSTALL_SOFTWARE: 1n << 8n, // Solicitar o instalar software
 }
 
-export class PermissionsBitField extends BitField<typeof PermissionsFlags> {
+export class PermissionsBitField extends FlaggedBitfield<
+    typeof PermissionsFlags
+> {
     static Flags = PermissionsFlags
     static DefaultBit = 0n
 }
