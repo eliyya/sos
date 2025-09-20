@@ -3,7 +3,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, MonitorCogIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-
 import { archiveMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import {

@@ -2,7 +2,6 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { UserIcon } from 'lucide-react'
-
 import { CompletInput } from '@/components/Inputs'
 import {
     canSuggestUsernameAtom,

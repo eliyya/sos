@@ -1,7 +1,6 @@
 'use server'
 
 import { Machine, MACHINE_STATUS, Prisma } from '@prisma/client'
-
 import { err, ok, Result } from '@/lib/error'
 import { db } from '@/prisma/db'
 

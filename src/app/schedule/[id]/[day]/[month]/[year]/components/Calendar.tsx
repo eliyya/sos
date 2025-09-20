@@ -8,7 +8,6 @@ import { Temporal } from '@js-temporal/polyfill'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-
 import { getPracticesFromWeek } from '@/actions/practices'
 import {
     createDayAtom,

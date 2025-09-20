@@ -1,7 +1,6 @@
 'use server'
 
 import { Prisma, STATUS } from '@prisma/client'
-
 import { db } from '@/prisma/db'
 
 export async function getSubjectByName(name: string) {

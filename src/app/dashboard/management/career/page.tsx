@@ -1,5 +1,4 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
-
 import { CareersTable } from './components/CareersTable'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'

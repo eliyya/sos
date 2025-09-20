@@ -9,7 +9,6 @@ import {
     UserIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { usernameIsTaken } from '@/actions/users'
 import { Button } from '@/components/Button'
 import {

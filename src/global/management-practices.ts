@@ -1,5 +1,4 @@
 import { atom } from 'jotai'
-
 import { type getClassesWithDataFromUser } from '@/actions/class'
 import { ScheduleEvent } from '@/types/schedule'
 

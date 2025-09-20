@@ -3,7 +3,6 @@ import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { BeakerIcon, CalendarIcon, UsersIcon } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
-
 import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { Card } from '@/components/Card'
 import { APP_NAME } from '@/constants/client'

@@ -2,14 +2,12 @@ import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-
 import {
     PermissionsBitField,
     PermissionsFlags,
 } from '@/bitfields/PermissionsBitField'
 import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
-
 import ScheduleBody from './components/ScheduleBody'
 import { ScheduleHeader } from './components/ScheduleHeader'
 

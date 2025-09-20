@@ -2,7 +2,6 @@
 
 import { Temporal } from '@js-temporal/polyfill'
 import { Class, Prisma, STATUS } from '@prisma/client'
-
 import { getStartOfWeek } from '@/lib/utils'
 import { db } from '@/prisma/db'
 

@@ -2,7 +2,6 @@
 
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-
 import { getRemainingHours } from '@/actions/class'
 import { findFirstPractice } from '@/actions/practices'
 import {
@@ -18,7 +17,6 @@ import {
     DialogMode,
 } from '@/global/management-practices'
 import { cn } from '@/lib/utils'
-
 import { DeleteMode } from './DeleteMode'
 import { EditMode } from './EditMode'
 import { InfoMode } from './InfoMode'

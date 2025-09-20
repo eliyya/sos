@@ -3,7 +3,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { SearchIcon } from 'lucide-react'
 import { useEffect } from 'react'
-
 import { getRoles } from '@/actions/roles.actions'
 import { Badge } from '@/components/Badge'
 import { Card, CardContent } from '@/components/Card'
@@ -11,7 +10,6 @@ import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { queryAtom } from '@/global/management-career'
 import { rolesAtom, selectedRoleIdAtom } from '@/global/management-roles'
-
 import { PermissionsList } from './permissions-list'
 
 export function RolesTable() {

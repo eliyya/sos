@@ -2,19 +2,18 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ShieldIcon, Trash2Icon } from 'lucide-react'
-
 import {
     PermissionsBitField,
     PermissionsFlags,
 } from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/Button'
 import { Switch } from '@/components/Switch'
+import { DEFAULT_ROLES } from '@/constants/client'
 import {
     openDeleteAtom,
     permissionsEditedAtom,
     selectedRoleAtom,
 } from '@/global/management-roles'
-
 import { RoleName } from './role-name'
 import { SaveButton } from './save-buton'
 
@@ -52,6 +51,9 @@ export function PermissionsList() {
                     <Button
                         variant='destructive'
                         size='sm'
+                        disabled={Object.values(DEFAULT_ROLES)
+                            .map(r => r.toLowerCase())
+                            .includes(selected.name.toLowerCase())}
                         onClick={() => openDeleteDialog(true)}
                     >
                         <Trash2Icon />
@@ -75,6 +77,9 @@ export function PermissionsList() {
                                 </p>
                             </div>
                             <Switch
+                                disabled={
+                                    selected?.name === DEFAULT_ROLES.ADMIN
+                                }
                                 checked={permissionsEdited.has(value)}
                                 onCheckedChange={checked =>
                                     onCheckedChange(permission, checked)

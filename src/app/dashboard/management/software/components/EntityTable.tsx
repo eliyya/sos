@@ -4,7 +4,6 @@ import { Software } from '@prisma/client'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { getSoftware } from '@/actions/software'
 import { Button } from '@/components/Button'
 import {
@@ -21,7 +20,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-software'
-
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 

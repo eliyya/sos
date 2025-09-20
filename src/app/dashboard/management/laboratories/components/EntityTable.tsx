@@ -4,7 +4,6 @@ import { Laboratory , STATUS } from '@prisma/client'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { getLaboratories } from '@/actions/laboratory'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -27,7 +26,6 @@ import {
     queryAtom,
 } from '@/global/management-laboratory'
 import { secondsToTime } from '@/lib/utils'
-
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'

@@ -3,7 +3,6 @@
 import { useAtom } from 'jotai'
 import { AtSignIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-
 import { CompletInput } from '@/components/Inputs'
 import { usernameAtom } from '@/global/login'
 

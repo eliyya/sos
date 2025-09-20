@@ -9,7 +9,6 @@ import {
     Pencil,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { getLaboratories } from '@/actions/laboratory'
 import { getMachine } from '@/actions/machines'
 import { Badge } from '@/components/Badge'
@@ -32,7 +31,6 @@ import {
     updateAtom,
     laboratoriesAtom,
 } from '@/global/management-machines'
-
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'

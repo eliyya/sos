@@ -1,7 +1,6 @@
 'use server'
 
 import { Effect } from 'effect'
-
 import {
     DB_STATES,
     DEFAULT_PERMISSIONS,
@@ -19,7 +18,7 @@ import {
     createNewRoleEffect,
     deleteRoleEffect,
     editRoleNameEffect,
-} from '@/services/roles.effect'
+} from '@/services/roles-service'
 
 export async function getAdminRole() {
     const role = await db.role.findUnique({

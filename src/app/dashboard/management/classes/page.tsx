@@ -1,5 +1,4 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
-
 import { ClassesTable } from './components/ClassesTable'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'

@@ -14,7 +14,6 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
 import { Accordion, AccordionSection } from '@/components/Accordion'
 import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'

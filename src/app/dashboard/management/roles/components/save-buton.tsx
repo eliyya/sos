@@ -1,14 +1,14 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useTransition } from 'react'
-
-import { changuePermissions } from '@/actions/roles.actions'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/Button'
+import { DEFAULT_ROLES } from '@/constants/client'
 import {
     permissionsEditedAtom,
     rolesAtom,
     selectedRoleAtom,
 } from '@/global/management-roles'
+import { changuePermissions } from '@/actions/roles.actions'
 import { cn } from '@/lib/utils'
 
 export function SaveButton() {
@@ -64,6 +64,7 @@ export function SaveButton() {
             size='sm'
             disabled={
                 isPending ||
+                selectedRole?.name === DEFAULT_ROLES.ADMIN ||
                 permissionsEdited.equals(
                     new PermissionsBitField(selectedRole?.permissions ?? 0n),
                 )

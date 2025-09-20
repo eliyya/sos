@@ -3,9 +3,7 @@ process.loadEnvFile()
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-
 import { CronJob } from 'cron'
-
 import { db } from './db.ts'
 
 const BACKUP_DIR = process.env.BACKUP_DIR ?? '.'

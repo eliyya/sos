@@ -2,7 +2,6 @@ import { EventImpl } from '@fullcalendar/core/internal'
 import type { Temporal } from '@js-temporal/polyfill'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-
 import { ScheduleEvent } from '@/types/schedule'
 
 export function cn(...inputs: ClassValue[]) {

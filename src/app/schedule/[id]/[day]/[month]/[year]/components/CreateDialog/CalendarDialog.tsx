@@ -4,7 +4,6 @@ import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useAtomValue } from 'jotai'
-
 import {
     actualEventAtom,
     createDayAtom,

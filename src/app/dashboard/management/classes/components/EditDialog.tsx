@@ -11,7 +11,6 @@ import {
     UsersIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { getActiveCareers } from '@/actions/career'
 import { editClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'

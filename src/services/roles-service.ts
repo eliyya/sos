@@ -1,5 +1,9 @@
 import { Effect } from 'effect'
-
+import {
+    DB_STATES,
+    DEFAULT_PERMISSIONS,
+    DEFAULT_ROLES,
+} from '@/constants/client'
 import {
     InvalidInputError,
     AlreadyExistsError,
@@ -7,12 +11,6 @@ import {
     NotFoundError,
 } from '../errors'
 import { PrismaService } from '../prisma/db'
-
-import {
-    DB_STATES,
-    DEFAULT_PERMISSIONS,
-    DEFAULT_ROLES,
-} from '@/constants/client'
 
 export const editRoleNameEffect = (id: string, name: string) =>
     Effect.gen(function* (_) {

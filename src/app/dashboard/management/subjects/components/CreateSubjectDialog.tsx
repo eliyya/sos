@@ -4,7 +4,6 @@ import { STATUS } from '@prisma/client'
 import { useAtom, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-
 import { createSubject, getSubjectByName } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {

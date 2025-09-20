@@ -1,7 +1,6 @@
 'use client'
 
 import { useAtom } from 'jotai'
-
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
 import { queryAtom, showArchivedAtom } from '@/global/management-users'

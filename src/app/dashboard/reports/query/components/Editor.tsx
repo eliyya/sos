@@ -3,7 +3,6 @@
 import Editor, { loader } from '@monaco-editor/react'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useState } from 'react'
-
 import getSchema from '@/actions/reports'
 import { MessageError } from '@/components/Error'
 import { queryAtom, queryErrorAtom } from '@/global/reports'

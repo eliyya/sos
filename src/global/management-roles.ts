@@ -1,7 +1,6 @@
 import { Role } from '@prisma/client'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
-
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Serializable } from '@/lib/types'
 

@@ -4,7 +4,6 @@ import { Temporal } from '@js-temporal/polyfill'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { SaveIcon, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { getRemainingHours } from '@/actions/class'
 import { setAsideLaboratory } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
@@ -23,7 +22,6 @@ import {
     selectedUserAtom,
 } from '@/global/management-practices'
 import { secondsToTime } from '@/lib/utils'
-
 import { DocenteSelect } from './FormInputs/DocenteSelect'
 
 interface CreateFormProps {

@@ -7,7 +7,6 @@ import { Temporal } from '@js-temporal/polyfill'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { SaveIcon, UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { editPractice, findFirstPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
@@ -19,7 +18,6 @@ import {
     eventInfoAtom,
 } from '@/global/management-practices'
 import { secondsToTime, setTime } from '@/lib/utils'
-
 import { getClassName } from './InfoDialog'
 
 

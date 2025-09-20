@@ -20,7 +20,7 @@ export const DEFAULT_ROLES = {
 
 export const DEFAULT_PERMISSIONS = {
     ADMIN: PermissionsFlags.ADMIN,
-    USER: PermissionsFlags.SESSION_SELF,
+    USER: PermissionsFlags.SESSION_SELF | PermissionsFlags.CAN_LOGIN,
     DELETED: 0n,
 } as const
 

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-
 import { HEADERS } from '@/constants/client'
 
 interface handlerFunctionProps {

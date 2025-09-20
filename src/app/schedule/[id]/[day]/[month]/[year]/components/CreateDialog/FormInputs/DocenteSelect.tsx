@@ -2,7 +2,6 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { TransitionStartFunction } from 'react'
-
 import { getClassesWithDataFromUser, getRemainingHours } from '@/actions/class'
 import { CompletSelect } from '@/components/Select'
 import {

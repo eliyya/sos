@@ -4,7 +4,6 @@ import { LABORATORY_TYPE } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ClockIcon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-
 import { editLaboratory } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
 import {

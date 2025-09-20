@@ -1,7 +1,6 @@
 'use client'
 
 import { useAtomValue } from 'jotai'
-
 import {
     Table,
     TableBody,

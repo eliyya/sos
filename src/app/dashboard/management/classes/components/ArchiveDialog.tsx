@@ -4,7 +4,6 @@ import { User, Subject, Career } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban, User as UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { getActiveCareers } from '@/actions/career'
 import { archiveClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'

@@ -11,7 +11,6 @@ import {
     GraduationCapIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { getActiveCareers } from '@/actions/career'
 import { createStudent } from '@/actions/students'
 import { Button } from '@/components/Button'

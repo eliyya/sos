@@ -1,8 +1,6 @@
 import { notFound } from 'next/navigation'
-
 import { APP_NAME } from '@/constants/client'
 import { db } from '@/prisma/db'
-
 import { SignUpForm } from './components/SignUpForm'
 
 export default async function LoginPage() {

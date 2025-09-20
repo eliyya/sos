@@ -1,9 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
-
 import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { db } from '@/prisma/db'
-
 import { ChangueDate } from './components/ChangueDate'
 import { MonthReportOfVisits } from './components/MonthReportOfVisits'
 import { SelectLaboratory } from './components/SelectLaboratory'

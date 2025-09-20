@@ -1,13 +1,9 @@
 import app from '@eliyya/type-routes'
 import { AlertCircleIcon, UsersIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
-
 import { Card } from '@/components/Card'
 import { db } from '@/prisma/db'
-
 import { DashboardHeader } from '../../components/DashboardHeader'
-
-
 import { ErrorDialog } from './components/ErrorDialog'
 import { RegisterVisitForm } from './components/RegisterVisitForm'
 import { VisitsTable } from './components/VisitsTable'

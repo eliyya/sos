@@ -3,7 +3,6 @@
 import { useAtom, useAtomValue } from 'jotai'
 import { RectangleEllipsisIcon } from 'lucide-react'
 import { useEffect } from 'react'
-
 import { CompletInput } from '@/components/Inputs'
 import {
     confirmPasswordAtom,

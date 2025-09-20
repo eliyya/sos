@@ -4,7 +4,6 @@ import { Student , STATUS } from '@prisma/client'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { getStudentsWithCareer } from '@/actions/students'
 import { Button } from '@/components/Button'
 import {
@@ -24,7 +23,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-students'
-
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'

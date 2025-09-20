@@ -1,6 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { NextResponse } from 'next/server'
-
 import { db } from '@/prisma/db'
 
 export async function POST(req: Request) {

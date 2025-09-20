@@ -3,14 +3,10 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { useSetAtom } from 'jotai'
 import { Save, Trash, UserIcon } from 'lucide-react'
-
 import { findFirstPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { DialogMode, modeAtom } from '@/global/management-practices'
-
-
-
 import { getClassName } from './InfoDialog'
 
 

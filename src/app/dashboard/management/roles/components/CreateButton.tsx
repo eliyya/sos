@@ -3,7 +3,6 @@
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 import { useTransition } from 'react'
-
 import { createNewRole } from '@/actions/roles.actions'
 import { Button } from '@/components/Button'
 import { rolesAtom, selectedRoleIdAtom } from '@/global/management-roles'

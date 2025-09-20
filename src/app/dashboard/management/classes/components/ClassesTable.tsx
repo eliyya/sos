@@ -4,7 +4,6 @@ import { STATUS , Class } from '@prisma/client'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { getCareers } from '@/actions/career'
 import { getDisponibleClassesWithData } from '@/actions/class'
 import { getSubjects } from '@/actions/subjects'
@@ -30,7 +29,6 @@ import {
     subjectsAtom,
     usersAtom,
 } from '@/global/management-class'
-
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'

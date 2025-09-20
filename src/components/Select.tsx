@@ -16,10 +16,7 @@ import ReactSelect, {
     SingleValue,
 } from 'react-select'
 import ReactCreatableSelect from 'react-select/creatable'
-
 import { cn } from '@/lib/utils'
-
-
 import { MessageError } from './Error'
 
 interface CompletSelectProps<O, IM extends boolean>

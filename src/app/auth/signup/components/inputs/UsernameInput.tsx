@@ -4,7 +4,6 @@ import { useAtom, useSetAtom } from 'jotai'
 import { AtSignIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
-
 import { CompletInput } from '@/components/Inputs'
 import {
     usernameAtom,

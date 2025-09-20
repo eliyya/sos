@@ -4,7 +4,6 @@ import { STATUS } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { findManyLaboratories } from '@/actions/laboratory'
 import { editMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'

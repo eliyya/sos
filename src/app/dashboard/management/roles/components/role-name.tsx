@@ -3,10 +3,10 @@
 import { useAtomValue, useSetAtom } from 'jotai'
 import { SquarePenIcon } from 'lucide-react'
 import { startTransition, useEffect, useRef, useState } from 'react'
-
-import { editRoleName } from '@/actions/roles.actions'
 import { Button } from '@/components/Button'
+import { DEFAULT_ROLES } from '@/constants/client'
 import { rolesAtom, selectedRoleAtom } from '@/global/management-roles'
+import { editRoleName } from '@/actions/roles.actions'
 import { cn } from '@/lib/utils'
 
 export function RoleName() {
@@ -90,8 +90,15 @@ export function RoleName() {
                 size='sm'
                 variant='outline'
                 className={cn('m-0 ml-1 h-4 p-0', {
-                    hidden: editMode,
+                    hidden:
+                        editMode ||
+                        Object.values(DEFAULT_ROLES)
+                            .map(r => r.toLowerCase())
+                            .includes(selected.name.toLowerCase()),
                 })}
+                disabled={Object.values(DEFAULT_ROLES)
+                    .map(r => r.toLowerCase())
+                    .includes(selected.name.toLowerCase())}
                 onClick={handleEdit}
             >
                 <SquarePenIcon className='m-0 h-4 w-4 p-0' />

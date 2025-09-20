@@ -4,7 +4,6 @@ import { Career } from '@prisma/client'
 import { useSetAtom } from 'jotai'
 import { SquarePenIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { getActiveCareers } from '@/actions/career'
 import { registerVisit } from '@/actions/cc'
 import { findStudent } from '@/actions/students'

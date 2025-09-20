@@ -1,5 +1,4 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
-
 import { CreateButton } from './components/CreateButton'
 import { CreateUserDialog } from './components/CreateDialog'
 import { Filters } from './components/SearchInput'

@@ -3,7 +3,6 @@
 import { useSetAtom } from 'jotai'
 import { SaveIcon, TrashIcon, UserIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-
 import { deletePractice, findFirstPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'

@@ -1,7 +1,6 @@
 'use client'
 
 import { useAtom } from 'jotai'
-
 import { SimpleInput } from '@/components/Inputs'
 import { queryAtom } from '@/global/managment-software'
 

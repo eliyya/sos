@@ -10,7 +10,6 @@ import {
     UserIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { getActiveCareers } from '@/actions/career'
 import { editStudent } from '@/actions/students'
 import { Button } from '@/components/Button'

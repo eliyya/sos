@@ -2,7 +2,6 @@
 
 import { useAtom } from 'jotai'
 import { CheckCheckIcon } from 'lucide-react'
-
 import { Button } from '@/components/Button'
 import {
     Dialog,

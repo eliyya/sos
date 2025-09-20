@@ -3,7 +3,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
-
 import { unarchiveSubject } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {

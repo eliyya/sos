@@ -4,7 +4,6 @@ import { Laboratory } from '@prisma/client'
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-
 import { getActiveLaboratories } from '@/actions/laboratory'
 import { createMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'

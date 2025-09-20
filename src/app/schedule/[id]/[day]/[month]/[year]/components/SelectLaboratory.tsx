@@ -2,7 +2,6 @@
 
 import app from '@eliyya/type-routes'
 import { usePathname, useRouter } from 'next/navigation'
-
 import { SimpleSelect } from '@/components/Select'
 
 interface SelectLaboratoryProps {

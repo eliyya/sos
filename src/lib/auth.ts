@@ -2,9 +2,7 @@ import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
 import { customSession, username } from 'better-auth/plugins'
-
 import { APP_NAME } from '@/constants/client.ts'
-
 import { db } from '../prisma/db.ts'
 
 export const auth = betterAuth({

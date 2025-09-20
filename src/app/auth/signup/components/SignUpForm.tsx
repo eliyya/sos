@@ -4,13 +4,11 @@ import app from '@eliyya/type-routes'
 import { LogIn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
-
 import { getAdminRole } from '@/actions/roles.actions'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, cn } from '@/lib/utils'
-
 import { ConfirmPasswordInput } from './inputs/ConfirmPasswordInput'
 import { NameInput } from './inputs/NameInput'
 import { PasswordInput } from './inputs/PasswordInput'

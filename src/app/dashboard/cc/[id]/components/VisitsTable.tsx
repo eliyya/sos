@@ -4,7 +4,6 @@ import { Visit } from '@prisma/client'
 import { useAtom } from 'jotai'
 import { LogOutIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { endVisit, getVisitsToday } from '@/actions/cc'
 import { Button } from '@/components/Button'
 import {

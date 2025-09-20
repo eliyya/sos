@@ -3,7 +3,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, TagIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
-
 import { editCareer } from '@/actions/career'
 import { Button } from '@/components/Button'
 import {

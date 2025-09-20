@@ -6,12 +6,10 @@ import { LogIn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
-
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { usernameAtom, passwordAtom } from '@/global/login'
 import { authClient } from '@/lib/auth-client'
-
 import { PasswordInput } from './inputs/PasswordInput'
 import { UsernameInput } from './inputs/UsernameInput'
 

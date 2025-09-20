@@ -1,9 +1,7 @@
 import app from '@eliyya/type-routes'
 import { LABORATORY_TYPE } from '@prisma/client'
 import { NextRequest } from 'next/server'
-
 import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
-
 import {
     PermissionsBitField,
     PermissionsFlags,

@@ -12,7 +12,6 @@ import {
     SquareUserRoundIcon,
     UsersIcon,
 } from 'lucide-react'
-
 import { ManagementNavLink } from './ManagementNavLink'
 
 const mLinks = app.dashboard.management

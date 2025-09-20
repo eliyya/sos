@@ -1,6 +1,5 @@
 import { Content, Trigger, List, Root } from '@radix-ui/react-tabs'
 import { ComponentProps } from 'react'
-
 import { cn } from '@/lib/utils'
 
 export const Tabs = Root

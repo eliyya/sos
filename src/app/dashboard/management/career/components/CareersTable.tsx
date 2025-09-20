@@ -4,7 +4,6 @@ import { Career , STATUS } from '@prisma/client'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { getCareers } from '@/actions/career'
 import { Button } from '@/components/Button'
 import {
@@ -25,7 +24,6 @@ import {
     updateAtom,
     queryAtom,
 } from '@/global/management-career'
-
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'

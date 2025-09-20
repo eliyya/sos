@@ -3,7 +3,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
-
 import { adminCount, deleteUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import {

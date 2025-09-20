@@ -4,7 +4,6 @@ import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { PlusIcon, UserIcon } from 'lucide-react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-
 import {
     PermissionsBitField,
     PermissionsFlags,

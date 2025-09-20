@@ -4,7 +4,6 @@ import { Subject , STATUS } from '@prisma/client'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 import { getSubjects } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {
@@ -25,7 +24,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-subjects'
-
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'

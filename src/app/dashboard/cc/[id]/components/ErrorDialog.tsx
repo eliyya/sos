@@ -1,7 +1,6 @@
 'use client'
 
 import { useAtom } from 'jotai'
-
 import { Button } from '@/components/Button'
 import {
     Dialog,
