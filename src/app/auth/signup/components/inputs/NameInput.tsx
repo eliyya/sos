@@ -1,5 +1,8 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { UserIcon } from 'lucide-react'
+
 import { CompletInput } from '@/components/Inputs'
 import {
     canSuggestUsernameAtom,
@@ -8,8 +11,6 @@ import {
     usernameAtom,
 } from '@/global/signup'
 import { truncateByUnderscore } from '@/lib/utils'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { UserIcon } from 'lucide-react'
 
 export function NameInput() {
     const [name, setName] = useAtom(nameAtom)

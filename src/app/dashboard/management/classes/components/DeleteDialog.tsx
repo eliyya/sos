@@ -1,5 +1,10 @@
 'use client'
 
+import { User, Subject, Career } from '@prisma/client'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Ban, Trash2, User as UserIcon } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+
 import { getActiveCareers } from '@/actions/career'
 import { deleteClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
@@ -12,17 +17,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import {
     openDeleteAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-class'
-import { User, Subject, Career } from '@prisma/client'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2, User as UserIcon } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)

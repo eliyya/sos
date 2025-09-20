@@ -1,7 +1,9 @@
-import { APP_NAME } from '@/constants/client'
-import { SignUpForm } from './components/SignUpForm'
-import { db } from '@/prisma/db'
 import { notFound } from 'next/navigation'
+
+import { APP_NAME } from '@/constants/client'
+import { db } from '@/prisma/db'
+
+import { SignUpForm } from './components/SignUpForm'
 
 export default async function LoginPage() {
     const users = await db.user.count()

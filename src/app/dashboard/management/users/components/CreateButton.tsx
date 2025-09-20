@@ -1,9 +1,10 @@
 'use client'
 
-import { Button } from '@/components/Button'
-import { openCreateUserAtom } from '@/global/management-users'
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
+
+import { Button } from '@/components/Button'
+import { openCreateUserAtom } from '@/global/management-users'
 
 export function CreateButton() {
     const openCreateUser = useSetAtom(openCreateUserAtom)

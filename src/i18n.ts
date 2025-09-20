@@ -1,4 +1,5 @@
 import { getRequestConfig } from 'next-intl/server'
+
 import es from '../locales/es.json' with { type: 'json' }
 
 export default getRequestConfig(async () => {

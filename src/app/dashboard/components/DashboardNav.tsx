@@ -1,8 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import app from '@eliyya/type-routes'
 import {
     BeakerIcon,
     LayoutDashboardIcon,
@@ -14,9 +12,12 @@ import {
     PcCaseIcon,
     Calendar1Icon,
 } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
 import { Accordion, AccordionSection } from '@/components/Accordion'
-import app from '@eliyya/type-routes'
 import { APP_NAME } from '@/constants/client'
+import { cn } from '@/lib/utils'
 
 const reportNavItems: {
     title: string

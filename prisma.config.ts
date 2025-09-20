@@ -1,6 +1,7 @@
-import { defineConfig } from 'prisma/config'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
+
+import { defineConfig } from 'prisma/config'
 
 // load .env
 if (existsSync('.env')) process.loadEnvFile()

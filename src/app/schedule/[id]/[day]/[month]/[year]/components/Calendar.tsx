@@ -1,14 +1,15 @@
 'use client'
 
-import { getPracticesFromWeek } from '@/actions/practices'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import app from '@eliyya/type-routes'
 import interactionPlugin from '@fullcalendar/interaction'
+import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { Temporal } from '@js-temporal/polyfill'
-import FullCalendar from '@fullcalendar/react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { usePathname, useRouter } from 'next/navigation'
-import app from '@eliyya/type-routes'
 import { useEffect } from 'react'
+
+import { getPracticesFromWeek } from '@/actions/practices'
 import {
     createDayAtom,
     eventsAtom,

@@ -1,27 +1,28 @@
 'use client'
 
+import { Laboratory } from '@prisma/client'
+import { useAtom, useSetAtom } from 'jotai'
+import { UserIcon, Save } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+
+import { getActiveLaboratories } from '@/actions/laboratory'
 import { createMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
-import { CompletInput, CompletTextarea } from '@/components/Inputs'
-import {
-    entityToEditAtom,
-    openCreateAtom,
-    openUnarchiveOrDeleteAtom,
-    updateAtom,
-} from '@/global/management-machines'
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { useAtom, useSetAtom } from 'jotai'
-import { UserIcon, Save } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
+import { CompletInput, CompletTextarea } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
-import { Laboratory } from '@prisma/client'
-import { getActiveLaboratories } from '@/actions/laboratory'
+import {
+    entityToEditAtom,
+    openCreateAtom,
+    openUnarchiveOrDeleteAtom,
+    updateAtom,
+} from '@/global/management-machines'
 import { map, mapError } from '@/lib/error'
 
 export function CreateSubjectDialog() {

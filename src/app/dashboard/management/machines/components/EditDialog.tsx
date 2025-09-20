@@ -1,5 +1,11 @@
 'use client'
 
+import { STATUS } from '@prisma/client'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Save, User } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+
+import { findManyLaboratories } from '@/actions/laboratory'
 import { editMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import {
@@ -9,6 +15,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
@@ -16,12 +23,8 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-machines'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, User } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
-import { findManyLaboratories } from '@/actions/laboratory'
-import { STATUS } from '@prisma/client'
+
+
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)

@@ -1,5 +1,10 @@
 'use client'
 
+import { Visit } from '@prisma/client'
+import { useAtom } from 'jotai'
+import { LogOutIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
 import { endVisit, getVisitsToday } from '@/actions/cc'
 import { Button } from '@/components/Button'
 import {
@@ -11,10 +16,6 @@ import {
     Table,
 } from '@/components/Table'
 import { updateTableAtom } from '@/global/cc'
-import { Visit } from '@prisma/client'
-import { useAtom } from 'jotai'
-import { LogOutIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
 
 interface VisitsTableProps {
     laboratory_id: string

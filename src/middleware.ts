@@ -1,13 +1,16 @@
-import { NextRequest } from 'next/server'
-import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import app from '@eliyya/type-routes'
-import { auth } from './lib/auth'
+import { LABORATORY_TYPE } from '@prisma/client'
+import { NextRequest } from 'next/server'
+
+import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
+
 import {
     PermissionsBitField,
     PermissionsFlags,
 } from './bitfields/PermissionsBitField'
+import { auth } from './lib/auth'
 import { db } from './prisma/db'
-import { LABORATORY_TYPE } from '@prisma/client'
+
 
 export const config = {
     runtime: 'nodejs',

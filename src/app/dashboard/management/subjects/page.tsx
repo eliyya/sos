@@ -1,8 +1,9 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
+
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateSubjectDialog'
-import { Filters } from './components/SearchInput'
 import { EntityTable } from './components/EntityTable'
+import { Filters } from './components/SearchInput'
 
 export default async function SubjectsPage() {
     return (

@@ -10,8 +10,9 @@ import {
     Title,
     Trigger,
 } from '@radix-ui/react-dialog'
-import { ComponentProps, forwardRef, ComponentRef, HTMLAttributes } from 'react'
 import { X } from 'lucide-react'
+import { ComponentProps, forwardRef, ComponentRef, HTMLAttributes } from 'react'
+
 import { cn } from '@/lib/utils'
 
 export const Dialog = Root

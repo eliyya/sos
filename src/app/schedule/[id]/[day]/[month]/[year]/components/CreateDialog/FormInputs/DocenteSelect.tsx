@@ -1,5 +1,9 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { TransitionStartFunction } from 'react'
+
+import { getClassesWithDataFromUser, getRemainingHours } from '@/actions/class'
 import { CompletSelect } from '@/components/Select'
 import {
     classesAtom,
@@ -8,9 +12,6 @@ import {
     selectedClassAtom,
     selectedUserAtom,
 } from '@/global/management-practices'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { TransitionStartFunction } from 'react'
-import { getClassesWithDataFromUser, getRemainingHours } from '@/actions/class'
 
 interface DocenteSelectProps {
     options: { label: string; value: string }[]

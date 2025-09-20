@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtomValue } from 'jotai'
-import { queryResultAtom } from '@/global/reports'
+
 import {
     Table,
     TableBody,
@@ -10,6 +10,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/Table'
+import { queryResultAtom } from '@/global/reports'
 
 export function QueryResult() {
     const queryResult = useAtomValue(queryResultAtom)

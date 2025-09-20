@@ -1,5 +1,9 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Ban, Trash2 } from 'lucide-react'
+import { useState, useTransition } from 'react'
+
 import { adminCount, deleteUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import {
@@ -9,6 +13,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
     openDeleteAtom,
     updateAtom,
@@ -16,10 +21,7 @@ import {
     openPreventArchiveAdminAtom,
     adminRoleAtom,
 } from '@/global/management-users'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+
 
 export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)

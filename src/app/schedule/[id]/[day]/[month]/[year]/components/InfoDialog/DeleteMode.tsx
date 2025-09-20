@@ -1,17 +1,18 @@
 'use client'
 
+import { useSetAtom } from 'jotai'
+import { SaveIcon, TrashIcon, UserIcon } from 'lucide-react'
+import { useState, useTransition } from 'react'
+
+import { deletePractice, findFirstPractice } from '@/actions/practices'
+import { Button } from '@/components/Button'
+import { MessageError } from '@/components/Error'
+import { CompletInput } from '@/components/Inputs'
 import {
     DialogMode,
     eventInfoAtom,
     modeAtom,
 } from '@/global/management-practices'
-import { deletePractice, findFirstPractice } from '@/actions/practices'
-import { CompletInput } from '@/components/Inputs'
-import { SaveIcon, TrashIcon, UserIcon } from 'lucide-react'
-import { Button } from '@/components/Button'
-import { useSetAtom } from 'jotai'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
 
 interface InfoModeProps {
     isAdmin?: boolean

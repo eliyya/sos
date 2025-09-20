@@ -1,7 +1,8 @@
 'use client'
 
-import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
+
+import { SimpleInput } from '@/components/Inputs'
 import { queryAtom } from '@/global/managment-software'
 
 export function Filters() {

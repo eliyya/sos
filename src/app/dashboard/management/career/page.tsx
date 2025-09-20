@@ -1,8 +1,9 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
+
+import { CareersTable } from './components/CareersTable'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'
 import { Filters } from './components/SearchInput'
-import { CareersTable } from './components/CareersTable'
 
 export default async function CareersPage() {
     return (

@@ -1,5 +1,9 @@
 'use client'
 
+import { useAtom, useAtomValue } from 'jotai'
+import { RectangleEllipsisIcon } from 'lucide-react'
+import { useEffect } from 'react'
+
 import { CompletInput } from '@/components/Inputs'
 import {
     confirmPasswordAtom,
@@ -7,9 +11,6 @@ import {
     passwordAtom,
     passwordFocusAtom,
 } from '@/global/signup'
-import { useAtom, useAtomValue } from 'jotai'
-import { RectangleEllipsisIcon } from 'lucide-react'
-import { useEffect } from 'react'
 
 export function ConfirmPasswordInput() {
     const [confirmPassword, setConfirmPassword] = useAtom(confirmPasswordAtom)

@@ -1,14 +1,15 @@
 'use client'
 
+import { useAtom, useSetAtom } from 'jotai'
+import { RectangleEllipsisIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+
 import { CompletInput } from '@/components/Inputs'
 import {
     passwordAtom,
     passwordErrorAtom,
     passwordFocusAtom,
 } from '@/global/signup'
-import { useAtom, useSetAtom } from 'jotai'
-import { RectangleEllipsisIcon } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 
 export function PasswordInput() {
     const t = useTranslations('app.auth.login.components.loginForm')

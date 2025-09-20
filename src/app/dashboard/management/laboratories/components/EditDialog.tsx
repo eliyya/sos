@@ -1,15 +1,12 @@
 'use client'
 
-import { ClockIcon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
-import { RetornableCompletSelect } from '@/components/Select'
-import { RetornableCompletInput } from '@/components/Inputs'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { editLaboratory } from '@/actions/laboratory'
-import { MessageError } from '@/components/Error'
 import { LABORATORY_TYPE } from '@prisma/client'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { ClockIcon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
+
+import { editLaboratory } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
-import { secondsToTime } from '@/lib/utils'
 import {
     Dialog,
     DialogContent,
@@ -17,11 +14,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
+import { RetornableCompletInput } from '@/components/Inputs'
+import { RetornableCompletSelect } from '@/components/Select'
 import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-laboratory'
+import { secondsToTime } from '@/lib/utils'
 
 const labTypeLabel = {
     [LABORATORY_TYPE.LABORATORY]: 'Laboratorio',

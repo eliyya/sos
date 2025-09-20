@@ -1,5 +1,18 @@
 'use client'
 
+import { Machine, MACHINE_STATUS } from '@prisma/client'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+    MonitorCheckIcon,
+    MonitorCogIcon,
+    MonitorOffIcon,
+    Pencil,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+import { getLaboratories } from '@/actions/laboratory'
+import { getMachine } from '@/actions/machines'
+import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -9,18 +22,6 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Machine, MACHINE_STATUS } from '@prisma/client'
-import {
-    Archive,
-    ArchiveRestore,
-    MonitorCheckIcon,
-    MonitorCogIcon,
-    MonitorOffIcon,
-    Pencil,
-    Trash2,
-} from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openArchiveAtom,
@@ -31,13 +32,11 @@ import {
     updateAtom,
     laboratoriesAtom,
 } from '@/global/management-machines'
-import { getMachine } from '@/actions/machines'
-import { EditDialog } from './EditDialog'
+
 import { ArchiveDialog } from './ArchiveDialog'
-import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
-import { getLaboratories } from '@/actions/laboratory'
-import { Badge } from '@/components/Badge'
+import { EditDialog } from './EditDialog'
+import { UnarchiveDialog } from './UnarchiveDialog'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<Machine[]>([])
@@ -50,7 +49,7 @@ export function EntityTable() {
     }, [update])
     useEffect(() => {
         getLaboratories().then(setLaboratories)
-    }, [])
+    }, [setLaboratories])
 
     return (
         <>

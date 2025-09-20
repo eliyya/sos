@@ -1,23 +1,25 @@
 'use client'
 
+import { useAtom, useSetAtom } from 'jotai'
+import { Save, TagIcon, SquarePenIcon } from 'lucide-react'
+import { useState, useTransition } from 'react'
+
 import { createCareer } from '@/actions/career'
 import { Button } from '@/components/Button'
-import { CompletInput } from '@/components/Inputs'
-import {
-    entityToEditAtom,
-    openCreateAtom,
-    updateAtom,
-} from '@/global/management-career'
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { useAtom, useSetAtom } from 'jotai'
-import { Save, TagIcon, SquarePenIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
 import { MessageError } from '@/components/Error'
+import { CompletInput } from '@/components/Inputs'
+import {
+    entityToEditAtom,
+    openCreateAtom,
+    updateAtom,
+} from '@/global/management-career'
+
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)

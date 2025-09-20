@@ -1,18 +1,15 @@
 'use client'
 
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { getDisponibleClassesWithData } from '@/actions/class'
-import { UnarchiveDialog } from './UnarchiveDialog'
+import { STATUS , Class } from '@prisma/client'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { getSubjects } from '@/actions/subjects'
-import { ArchiveDialog } from './ArchiveDialog'
-import { DeleteDialog } from './DeleteDialog'
-import { getCareers } from '@/actions/career'
-import { Button } from '@/components/Button'
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { EditDialog } from './EditDialog'
-import { STATUS } from '@prisma/client'
-import { Class } from '@prisma/client'
+
+import { getCareers } from '@/actions/career'
+import { getDisponibleClassesWithData } from '@/actions/class'
+import { getSubjects } from '@/actions/subjects'
+import { getUsers } from '@/actions/users'
+import { Button } from '@/components/Button'
 import {
     TableHeader,
     TableRow,
@@ -33,8 +30,13 @@ import {
     subjectsAtom,
     usersAtom,
 } from '@/global/management-class'
+
+import { ArchiveDialog } from './ArchiveDialog'
+import { DeleteDialog } from './DeleteDialog'
+import { EditDialog } from './EditDialog'
+import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
-import { getUsers } from '@/actions/users'
+
 
 export function ClassesTable() {
     const [entity, setEntity] = useState<

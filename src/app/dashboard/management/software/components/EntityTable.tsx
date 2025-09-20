@@ -1,5 +1,11 @@
 'use client'
 
+import { Software } from '@prisma/client'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+import { getSoftware } from '@/actions/software'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -9,19 +15,15 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Software } from '@prisma/client'
-import { Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openDeleteAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/managment-software'
-import { getSoftware } from '@/actions/software'
-import { EditDialog } from './EditDialog'
+
 import { DeleteDialog } from './DeleteDialog'
+import { EditDialog } from './EditDialog'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<Software[]>([])

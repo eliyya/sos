@@ -1,7 +1,8 @@
 'use server'
 
-import { db } from '@/prisma/db'
 import { Career, Prisma, STATUS } from '@prisma/client'
+
+import { db } from '@/prisma/db'
 
 export async function createCareer(formData: FormData): Promise<
     | {

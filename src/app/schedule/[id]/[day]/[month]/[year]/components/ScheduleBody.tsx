@@ -1,5 +1,5 @@
-import { CreateDialog } from './CreateDialog/CreateDialog'
 import { Calendar } from './Calendar'
+import { CreateDialog } from './CreateDialog/CreateDialog'
 import { InfoDialog } from './InfoDialog/InfoDialog'
 import { SearchInput } from './SearchInput'
 

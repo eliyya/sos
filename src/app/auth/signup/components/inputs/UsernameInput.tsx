@@ -1,16 +1,18 @@
 'use client'
 
+import { useAtom, useSetAtom } from 'jotai'
+import { AtSignIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
+
 import { CompletInput } from '@/components/Inputs'
 import {
     usernameAtom,
     usernameErrorAtom,
     canSuggestUsernameAtom,
 } from '@/global/signup'
-import { useAtom, useSetAtom } from 'jotai'
-import { useEffect, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
-import { AtSignIcon } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+
 
 export function UsernameInput() {
     const t = useTranslations('app.auth.login.components.loginForm')

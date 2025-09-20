@@ -1,7 +1,8 @@
 'use server'
 
-import { db } from '@/prisma/db'
 import { Prisma } from '@prisma/client'
+
+import { db } from '@/prisma/db'
 
 export async function getSoftware() {
     return db.software.findMany()

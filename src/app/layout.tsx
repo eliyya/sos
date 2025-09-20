@@ -1,14 +1,16 @@
 import './globals.css'
-import { ThemeProvider } from 'next-themes'
-import { Inter } from 'next/font/google'
+import { Provider } from 'jotai'
 import type { Metadata } from 'next'
-import { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { ToastProvider } from '@/components/Toast'
+import { Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-import { Provider } from 'jotai'
+import { ThemeProvider } from 'next-themes'
+import { ReactNode } from 'react'
+
+import { ToastProvider } from '@/components/Toast'
 import { APP_NAME } from '@/constants/client'
+import { cn } from '@/lib/utils'
+
 
 const inter = Inter({ subsets: ['latin'] })
 

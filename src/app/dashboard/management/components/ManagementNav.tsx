@@ -1,7 +1,6 @@
 'use client'
 
 import app from '@eliyya/type-routes'
-import { ManagementNavLink } from './ManagementNavLink'
 import {
     BookMarkedIcon,
     CalendarCheckIcon,
@@ -13,6 +12,8 @@ import {
     SquareUserRoundIcon,
     UsersIcon,
 } from 'lucide-react'
+
+import { ManagementNavLink } from './ManagementNavLink'
 
 const mLinks = app.dashboard.management
 

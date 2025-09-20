@@ -1,16 +1,10 @@
 'use client'
 
-import {
-    modeAtom,
-    eventInfoAtom,
-    DialogMode,
-} from '@/global/management-practices'
-import { findFirstPractice } from '@/actions/practices'
-import { getRemainingHours } from '@/actions/class'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { EditMode } from './EditMode'
-import { InfoMode } from './InfoMode'
+
+import { getRemainingHours } from '@/actions/class'
+import { findFirstPractice } from '@/actions/practices'
 import {
     Dialog,
     DialogContent,
@@ -18,8 +12,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import {
+    modeAtom,
+    eventInfoAtom,
+    DialogMode,
+} from '@/global/management-practices'
 import { cn } from '@/lib/utils'
+
 import { DeleteMode } from './DeleteMode'
+import { EditMode } from './EditMode'
+import { InfoMode } from './InfoMode'
 
 interface InfoDialogProps {
     lab: {

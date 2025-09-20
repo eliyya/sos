@@ -1,9 +1,10 @@
 'use client'
 
-import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
-import { queryAtom, showArchivedAtom } from '@/global/management-users'
+
+import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
+import { queryAtom, showArchivedAtom } from '@/global/management-users'
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)

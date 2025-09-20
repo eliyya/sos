@@ -1,10 +1,11 @@
 'use client'
 
+import { useAtomValue, useSetAtom } from 'jotai'
+import { useTransition } from 'react'
+
 import { runQuery } from '@/actions/reports'
 import { Button } from '@/components/Button'
 import { queryAtom, queryErrorAtom, queryResultAtom } from '@/global/reports'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { useTransition } from 'react'
 
 export function RunButton() {
     const query = useAtomValue(queryAtom)

@@ -1,5 +1,4 @@
-import { Role, User } from '@prisma/client'
-import { STATUS } from '@prisma/client'
+import { Role, User , STATUS } from '@prisma/client'
 import { atom } from 'jotai'
 
 const default_user: Omit<User, 'updated_at' | 'image'> = {

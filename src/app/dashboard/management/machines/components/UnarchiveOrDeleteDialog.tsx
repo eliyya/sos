@@ -1,5 +1,9 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
+import { useState, useTransition } from 'react'
+
 import { unarchiveMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import {
@@ -16,9 +20,6 @@ import {
     openUnarchiveOrDeleteAtom,
     openDeleteAtom,
 } from '@/global/management-machines'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)

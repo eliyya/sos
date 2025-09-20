@@ -1,15 +1,16 @@
 'use server'
 
-import { db } from '@/prisma/db'
-import { timeToMinutes } from '@/lib/utils'
-import { LABORATORY_TYPE, Prisma, STATUS } from '@prisma/client'
 import { Temporal } from '@js-temporal/polyfill'
-import { auth } from '@/lib/auth'
+import { LABORATORY_TYPE, Prisma, STATUS } from '@prisma/client'
 import { headers } from 'next/headers'
+
 import {
     PermissionsBitField,
     PermissionsFlags,
 } from '@/bitfields/PermissionsBitField'
+import { auth } from '@/lib/auth'
+import { timeToMinutes } from '@/lib/utils'
+import { db } from '@/prisma/db'
 
 export async function unarchiveLaboratory(formData: FormData) {
     const id = formData.get('id') as string

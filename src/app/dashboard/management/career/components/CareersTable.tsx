@@ -1,5 +1,11 @@
 'use client'
 
+import { Career , STATUS } from '@prisma/client'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+import { getCareers } from '@/actions/career'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -9,11 +15,6 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Career } from '@prisma/client'
-import { STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openArchiveAtom,
@@ -24,11 +25,11 @@ import {
     updateAtom,
     queryAtom,
 } from '@/global/management-career'
-import { getCareers } from '@/actions/career'
-import { EditDialog } from './EditDialog'
+
 import { ArchiveDialog } from './ArchiveDialog'
-import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { EditDialog } from './EditDialog'
+import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function CareersTable() {

@@ -1,17 +1,19 @@
 'use client'
 
-import { LogIn } from 'lucide-react'
-import { Button } from '@/components/Button'
-import { useState, useTransition } from 'react'
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { MessageError } from '@/components/Error'
-import { authClient } from '@/lib/auth-client'
-import { UsernameInput } from './inputs/UsernameInput'
-import { PasswordInput } from './inputs/PasswordInput'
 import { useSetAtom } from 'jotai'
+import { LogIn } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useState, useTransition } from 'react'
+
+import { Button } from '@/components/Button'
+import { MessageError } from '@/components/Error'
 import { usernameAtom, passwordAtom } from '@/global/login'
+import { authClient } from '@/lib/auth-client'
+
+import { PasswordInput } from './inputs/PasswordInput'
+import { UsernameInput } from './inputs/UsernameInput'
 
 export function LoginForm() {
     const t = useTranslations('app.auth.login.components.loginForm')

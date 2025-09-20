@@ -1,5 +1,4 @@
-import { Career } from '@prisma/client'
-import { STATUS } from '@prisma/client'
+import { Career , STATUS } from '@prisma/client'
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')

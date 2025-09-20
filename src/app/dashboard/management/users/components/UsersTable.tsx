@@ -1,5 +1,11 @@
 'use client'
 
+import { User , STATUS } from '@prisma/client'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+import { getAdminRole, getRoles } from '@/actions/roles'
 import { getUsers } from '@/actions/users'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -11,12 +17,6 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { User } from '@prisma/client'
-import { STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { EditUserDialog } from './EditUserDialog'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     EditUserDialogAtom,
     openArchiveUserAtom,
@@ -29,12 +29,13 @@ import {
     adminRoleAtom,
     rolesAtom,
 } from '@/global/management-users'
+
 import { ArchiveEntityDialog } from './ArchiveEntityDialog'
-import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
 import { DeleteEntityDialog } from './DeleteEntityDialog'
-import { getAdminRole, getRoles } from '@/actions/roles'
-import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { EditUserDialog } from './EditUserDialog'
 import { PreventArchiveAdminDialog } from './PreventArchiveAdmin'
+import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])

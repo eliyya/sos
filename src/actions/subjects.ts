@@ -1,7 +1,8 @@
 'use server'
 
-import { db } from '@/prisma/db'
 import { Prisma, STATUS } from '@prisma/client'
+
+import { db } from '@/prisma/db'
 
 export async function getSubjectByName(name: string) {
     return await db.subject.findFirst({

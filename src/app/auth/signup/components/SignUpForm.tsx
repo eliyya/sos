@@ -1,18 +1,20 @@
 'use client'
 
-import { LogIn } from 'lucide-react'
-import { Button } from '@/components/Button'
-import { useState, useTransition } from 'react'
-import { capitalize, cn } from '@/lib/utils'
-import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { LogIn } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, useTransition } from 'react'
+
+import { getAdminRole } from '@/actions/roles'
+import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
-import { getAdminRole } from '@/actions/roles'
-import { UsernameInput } from './inputs/UsernameInput'
-import { PasswordInput } from './inputs/PasswordInput'
+import { capitalize, cn } from '@/lib/utils'
+
 import { ConfirmPasswordInput } from './inputs/ConfirmPasswordInput'
 import { NameInput } from './inputs/NameInput'
+import { PasswordInput } from './inputs/PasswordInput'
+import { UsernameInput } from './inputs/UsernameInput'
 
 export function SignUpForm() {
     const [error, setError] = useState('')

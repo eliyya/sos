@@ -1,6 +1,13 @@
 'use client'
 
+import { Temporal } from '@js-temporal/polyfill'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { SaveIcon, UserIcon } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+
+import { getRemainingHours } from '@/actions/class'
 import { setAsideLaboratory } from '@/actions/laboratory'
+import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
@@ -15,13 +22,8 @@ import {
     selectedClassAtom,
     selectedUserAtom,
 } from '@/global/management-practices'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useEffect, useState, useTransition } from 'react'
-import { getRemainingHours } from '@/actions/class'
-import { Temporal } from '@js-temporal/polyfill'
-import { SaveIcon, UserIcon } from 'lucide-react'
-import { Button } from '@/components/Button'
 import { secondsToTime } from '@/lib/utils'
+
 import { DocenteSelect } from './FormInputs/DocenteSelect'
 
 interface CreateFormProps {

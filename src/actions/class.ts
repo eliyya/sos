@@ -1,9 +1,10 @@
 'use server'
 
-import { getStartOfWeek } from '@/lib/utils'
-import { db } from '@/prisma/db'
 import { Temporal } from '@js-temporal/polyfill'
 import { Class, Prisma, STATUS } from '@prisma/client'
+
+import { getStartOfWeek } from '@/lib/utils'
+import { db } from '@/prisma/db'
 
 export async function checkClassDisponibility({
     subject_id,

@@ -1,5 +1,10 @@
 'use client'
 
+import { Career } from '@prisma/client'
+import { useSetAtom } from 'jotai'
+import { SquarePenIcon } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+
 import { getActiveCareers } from '@/actions/career'
 import { registerVisit } from '@/actions/cc'
 import { findStudent } from '@/actions/students'
@@ -8,10 +13,6 @@ import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
-import { Career } from '@prisma/client'
-import { useSetAtom } from 'jotai'
-import { SquarePenIcon } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
 
 interface RegisterVisitFormProps {
     laboratory_id: string

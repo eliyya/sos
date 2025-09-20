@@ -1,12 +1,16 @@
+import app from '@eliyya/type-routes'
 import { AlertCircleIcon, UsersIcon } from 'lucide-react'
-import { DashboardHeader } from '../../components/DashboardHeader'
+import { redirect } from 'next/navigation'
+
 import { Card } from '@/components/Card'
 import { db } from '@/prisma/db'
-import app from '@eliyya/type-routes'
-import { redirect } from 'next/navigation'
+
+import { DashboardHeader } from '../../components/DashboardHeader'
+
+
+import { ErrorDialog } from './components/ErrorDialog'
 import { RegisterVisitForm } from './components/RegisterVisitForm'
 import { VisitsTable } from './components/VisitsTable'
-import { ErrorDialog } from './components/ErrorDialog'
 
 const stats = [
     {

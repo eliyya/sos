@@ -1,6 +1,17 @@
 'use client'
 
-import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+    AtSignIcon,
+    KeyIcon,
+    SaveIcon,
+    TriangleIcon,
+    UserIcon,
+} from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+
+import { editUser } from '@/actions/users'
+import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
@@ -8,12 +19,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { RetornableCompletSelect } from '@/components/Select'
-import { useEffect, useState, useTransition } from 'react'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { MessageError } from '@/components/Error'
-import { Button } from '@/components/Button'
-import { editUser } from '@/actions/users'
+import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
+import { RetornableCompletSelect } from '@/components/Select'
 import {
     EditUserDialogAtom,
     updateAtom,
@@ -25,13 +33,7 @@ import {
     passwordFocusAtom,
     rolesAtom,
 } from '@/global/management-users'
-import {
-    AtSignIcon,
-    KeyIcon,
-    SaveIcon,
-    TriangleIcon,
-    UserIcon,
-} from 'lucide-react'
+
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)

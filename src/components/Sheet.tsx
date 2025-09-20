@@ -1,6 +1,5 @@
 'use client'
 
-import { cva, type VariantProps } from 'class-variance-authority'
 import {
     Close,
     Content,
@@ -11,9 +10,12 @@ import {
     Title,
     Trigger,
 } from '@radix-ui/react-dialog'
-import { HTMLAttributes, ComponentProps } from 'react'
-import { cn } from '@/lib/utils'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { X } from 'lucide-react'
+import { HTMLAttributes, ComponentProps } from 'react'
+
+import { cn } from '@/lib/utils'
+
 
 export const Sheet = Root
 

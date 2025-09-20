@@ -25,8 +25,13 @@ export function PermissionsList() {
                     <ShieldIcon className='text-primary h-6 w-6' />
                     <RoleName />
                 </div>
-                <Button size='icon' onClick={() => openDeleteDialog(true)}>
-                    <Trash2Icon className='w-xs text-xs' />
+                <Button
+                    variant='destructive'
+                    size='sm'
+                    className='aspect-square h-8 w-8 p-2'
+                    onClick={() => openDeleteDialog(true)}
+                >
+                    <Trash2Icon />
                 </Button>
             </div>
 

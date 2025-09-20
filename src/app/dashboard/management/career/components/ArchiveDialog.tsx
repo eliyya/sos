@@ -1,5 +1,9 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Archive, Ban } from 'lucide-react'
+import { useState, useTransition } from 'react'
+
 import { archiveCareer } from '@/actions/career'
 import { Button } from '@/components/Button'
 import {
@@ -9,15 +13,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
     openArchiveAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-career'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Archive, Ban } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+
 
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(openArchiveAtom)

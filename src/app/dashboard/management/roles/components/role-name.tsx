@@ -7,7 +7,6 @@ import { startTransition, useEffect, useRef, useState } from 'react'
 import { editRoleName } from '@/actions/roles'
 import { Button } from '@/components/Button'
 import { rolesAtom, selectedRoleAtom } from '@/global/management-roles'
-
 import { cn } from '@/lib/utils'
 
 export function RoleName() {

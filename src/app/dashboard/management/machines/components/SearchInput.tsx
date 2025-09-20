@@ -1,10 +1,12 @@
 'use client'
 
-import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
-import { queryAtom, showArchivedAtom } from '@/global/management-machines'
-import LabeledSwitch from '@/components/Switch'
 import { Search } from 'lucide-react'
+
+import { SimpleInput } from '@/components/Inputs'
+import LabeledSwitch from '@/components/Switch'
+import { queryAtom, showArchivedAtom } from '@/global/management-machines'
+
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)
