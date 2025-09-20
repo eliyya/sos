@@ -1,6 +1,7 @@
 import { Role } from '@prisma/client'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
+
 import { Serializable } from '@/lib/types'
 
 type id = Role['id']

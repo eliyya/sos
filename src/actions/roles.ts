@@ -1,7 +1,17 @@
 'use server'
 
+import { Effect } from 'effect'
+
 import { DEFAULT_PERMISSIONS, DEFAULT_ROLES } from '@/constants/client'
-import { db } from '@/prisma/db'
+import {
+    AlreadyArchivedError,
+    AlreadyExistsError,
+    InvalidInputError,
+    NotFoundError,
+    UnexpectedError,
+} from '@/errors'
+import { db, PrismaLive } from '@/prisma/db'
+import { editRoleNameEffect } from '@/services/roles-services'
 
 export async function getAdminRole() {
     const role = await db.role.findUnique({
@@ -48,4 +58,48 @@ export async function getDeletedRole() {
 export async function getRoles() {
     const roles = await db.role.findMany()
     return roles
+}
+
+export async function editRoleName(id: string, name: string) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            Effect.provide(editRoleNameEffect(id, name), PrismaLive).pipe(
+                Effect.match({
+                    onSuccess: role => ({ status: 'success' as const, role }),
+                    onFailure: error => {
+                        if (error instanceof InvalidInputError)
+                            return {
+                                status: 'error' as const,
+                                type: 'invalid-input' as const,
+                                message: error.message,
+                            }
+                        if (error instanceof NotFoundError)
+                            return {
+                                status: 'error' as const,
+                                type: 'not-found' as const,
+                                message: error.message,
+                            }
+                        if (error instanceof UnexpectedError)
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error.cause),
+                            }
+                        if (error instanceof AlreadyExistsError) {
+                            return {
+                                status: 'error' as const,
+                                type: 'already-exists' as const,
+                                message: error.message,
+                            }
+                        }
+                        return {
+                            status: 'error' as const,
+                            type: 'unknown' as const,
+                            message: String(error),
+                        }
+                    },
+                }),
+            ),
+        ),
+    )
 }

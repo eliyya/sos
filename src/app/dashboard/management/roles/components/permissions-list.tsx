@@ -1,9 +1,14 @@
+'use client'
+
+import { useAtomValue, useSetAtom } from 'jotai'
+import { ShieldIcon, Trash2Icon } from 'lucide-react'
+
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/Button'
 import { Switch } from '@/components/Switch'
 import { openDeleteAtom, selectedRoleAtom } from '@/global/management-roles'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { ShieldIcon, Trash2Icon } from 'lucide-react'
+
+import { RoleName } from './role-name'
 
 const AllPermissions = new PermissionsBitField(PermissionsBitField.getMask())
 
@@ -18,11 +23,7 @@ export function PermissionsList() {
             <div className='border-border flex justify-between p-6'>
                 <div className='flex items-center gap-3'>
                     <ShieldIcon className='text-primary h-6 w-6' />
-                    <div>
-                        <h2 className='text-foreground text-xl font-bold'>
-                            Permisos para {selected.name}
-                        </h2>
-                    </div>
+                    <RoleName />
                 </div>
                 <Button size='icon' onClick={() => openDeleteDialog(true)}>
                     <Trash2Icon className='w-xs text-xs' />

@@ -1,25 +1,20 @@
 'use client'
 
-import { Role } from '@prisma/client'
-import { SearchIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import {
-    openDeleteAtom,
-    rolesAtom,
-    selectedRoleIdAtom,
-    updateAtom,
-} from '@/global/management-roles'
+import { SearchIcon } from 'lucide-react'
+import { useEffect } from 'react'
+
 import { getRoles } from '@/actions/roles'
-import { SimpleInput } from '@/components/Inputs'
-import { Card, CardContent } from '@/components/Card'
 import { Badge } from '@/components/Badge'
+import { Card, CardContent } from '@/components/Card'
+import { SimpleInput } from '@/components/Inputs'
 import { queryAtom } from '@/global/management-career'
+import { rolesAtom, selectedRoleIdAtom } from '@/global/management-roles'
+
 import { PermissionsList } from './permissions-list'
 
 export function RolesTable() {
     const [roles, setRoles] = useAtom(rolesAtom)
-    const update = useAtomValue(updateAtom)
     const selectedRoleId = useAtomValue(selectedRoleIdAtom)
     const [query, setQuery] = useAtom(queryAtom)
     const selectRole = useSetAtom(selectedRoleIdAtom)
