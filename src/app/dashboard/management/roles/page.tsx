@@ -12,7 +12,6 @@ export default async function CareersPage() {
                 <CreateButton />
                 <CreateSubjectDialog />
             </div>
-            <Filters />
             <RolesTable />
         </>
     )

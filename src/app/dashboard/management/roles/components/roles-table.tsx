@@ -3,7 +3,14 @@
 import { Button } from '@/components/Button'
 import { Career, Role } from '@prisma/client'
 import { STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import {
+    Archive,
+    ArchiveRestore,
+    Pencil,
+    SearchIcon,
+    ShieldIcon,
+    Trash2,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import {
@@ -11,22 +18,23 @@ import {
     openArchiveAtom,
     openDeleteAtom,
     openUnarchiveAtom,
-    showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-    queryAtom,
 } from '@/global/management-role'
 import { getRoles } from '@/actions/roles'
 import { Switch } from '@/components/Switch'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
+import { SimpleInput } from '@/components/Inputs'
+import { Card, CardContent } from '@/components/Card'
+import { Badge } from '@/components/Badge'
 const AllPermissions = new PermissionsBitField(PermissionsBitField.getMask())
 
 export function RolesTable() {
+    const [searchTerm, setSearchTerm] = useState('')
     const [roles, setRoles] = useState<Role[]>([])
     const update = useAtomValue(updateAtom)
-    const archived = useAtomValue(showArchivedAtom)
-    const q = useAtomValue(queryAtom)
     const [actual, setActual] = useState<Role | null>(null)
+    const openDeleteDialog = useSetAtom(openDeleteAtom)
 
     useEffect(() => {
         getRoles().then(r => {
@@ -37,32 +45,107 @@ export function RolesTable() {
 
     return (
         <>
-            <div className='mx-auto grid grid-cols-10 gap-2 *:p-4'>
-                <ul className='col-span-3 flex flex-col gap-1'>
-                    {roles.map(role => (
-                        <li
-                            className='hover:bg-accent bg-accent/20 text-muted-foreground flex items-center gap-3 rounded-md px-4 py-2 text-sm'
-                            key={role.id}
-                        >
-                            {role.name}
-                        </li>
-                    ))}
-                </ul>
-                <ul className='col-span-7 flex flex-col gap-2'>
-                    {AllPermissions.entries().map(([p, v]) => (
-                        <li
-                            key={p}
-                            className='flex items-center justify-between gap-2'
-                        >
-                            <div>{p}</div>
-                            <Switch
-                                checked={new PermissionsBitField(
-                                    actual?.permissions ?? 0n,
-                                ).has(v)}
+            <div className='flex'>
+                {/* Panel izquierdo - Lista de roles */}
+                <div className='border-border bg-card w-1/3 border-r'>
+                    <div className='border-border p-6'>
+                        {/* Barra de búsqueda */}
+                        <div className='relative'>
+                            <SearchIcon className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform' />
+                            <SimpleInput
+                                placeholder='Buscar roles...'
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                className='pl-10'
                             />
-                        </li>
-                    ))}
-                </ul>
+                        </div>
+                    </div>
+
+                    {/* Lista de roles */}
+                    <div className='space-y-2 overflow-y-auto p-6'>
+                        {roles.map(role => (
+                            <Card
+                                key={role.id}
+                                className={`cursor-pointer transition-all hover:shadow-md ${
+                                    actual?.id === role.id ?
+                                        'ring-primary bg-primary/5 ring-2'
+                                    :   'hover:bg-muted/50'
+                                }`}
+                                onClick={() => setActual(role)}
+                            >
+                                <CardContent className='p-3'>
+                                    <div className='flex items-center justify-between'>
+                                        <div className='flex-1'>
+                                            <h3 className='text-card-foreground mb-1 text-sm font-semibold'>
+                                                {role.name}
+                                            </h3>
+                                            <Badge
+                                                variant='secondary'
+                                                className='text-xs'
+                                            >
+                                                {0} usuarios
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Panel derecho - Permisos */}
+                <div className='bg-background flex-1'>
+                    <div className='border-border flex justify-between p-6'>
+                        <div className='flex items-center gap-3'>
+                            <ShieldIcon className='text-primary h-6 w-6' />
+                            <div>
+                                <h2 className='text-foreground text-xl font-bold'>
+                                    Permisos para {actual?.name}
+                                </h2>
+                            </div>
+                        </div>
+                        <Button
+                            size='icon'
+                            onClick={() => openDeleteDialog(true)}
+                        >
+                            <Trash2 className='w-xs text-xs' />
+                        </Button>
+                    </div>
+
+                    <div className='overflow-y-auto p-6'>
+                        <div className='space-y-2'>
+                            {AllPermissions.entries().map(
+                                ([permission, value]) => (
+                                    <div
+                                        key={permission}
+                                        className='border-border hover:bg-muted/30 flex items-center justify-between rounded-lg border p-3 transition-colors'
+                                    >
+                                        <div className='flex-1'>
+                                            <h4 className='text-card-foreground mb-1 font-medium'>
+                                                {permission}
+                                            </h4>
+                                            <p className='text-muted-foreground text-sm'>
+                                                {permission}
+                                            </p>
+                                        </div>
+                                        <Switch
+                                            checked={new PermissionsBitField(
+                                                actual?.permissions,
+                                            ).has(value)}
+                                            // onCheckedChange={enabled =>
+                                            //     handlePermissionToggle(
+                                            //         permission.id,
+                                            //         enabled,
+                                            //     )
+                                            // }
+                                            className='ml-4'
+                                        />
+                                    </div>
+                                ),
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     )
