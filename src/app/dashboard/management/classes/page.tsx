@@ -7,7 +7,7 @@ import { ClassesTable } from './components/ClassesTable'
 export default async function ClassesPage() {
     return (
         <>
-            <div className='flex items-center justify-between'>
+            <div className='flex justify-between'>
                 <DashboardHeader heading='Clases' text='Gestión de Clases.' />
                 <CreateButton />
                 <CreateSubjectDialog />

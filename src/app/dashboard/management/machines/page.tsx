@@ -7,7 +7,7 @@ import { EntityTable } from './components/EntityTable'
 export default async function MachinePage() {
     return (
         <>
-            <div className='flex items-center justify-between'>
+            <div className='flex justify-between'>
                 <DashboardHeader
                     heading='Maquinas'
                     text='Gestión de Maquinas.'

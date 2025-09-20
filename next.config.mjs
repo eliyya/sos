@@ -5,7 +5,7 @@ import { withTypeCSSModule } from '@eliyya/typed-css-modules'
 export default withTypeCSSModule(
     createNextIntlPlugin('./src/i18n.ts')(
         withTypeRoute({
-            // la configuracion de nextjs
+            // extraRoutes: ['/test'],
         }),
     ),
 )
