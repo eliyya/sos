@@ -5,7 +5,7 @@ import { SquarePenIcon } from 'lucide-react'
 import { startTransition, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/Button'
 import { DEFAULT_ROLES } from '@/constants/client'
-import { rolesAtom, selectedRoleAtom } from '@/global/management-roles'
+import { rolesAtom, selectedRoleAtom } from '@/global/roles.globals'
 import { editRoleName } from '@/actions/roles.actions'
 import { cn } from '@/lib/utils'
 

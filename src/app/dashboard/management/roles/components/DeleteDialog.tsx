@@ -18,7 +18,7 @@ import {
     openDeleteAtom,
     rolesAtom,
     selectedRoleAtom,
-} from '@/global/management-roles'
+} from '@/global/roles.globals'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)

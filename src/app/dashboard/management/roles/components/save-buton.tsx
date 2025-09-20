@@ -7,7 +7,7 @@ import {
     permissionsEditedAtom,
     rolesAtom,
     selectedRoleAtom,
-} from '@/global/management-roles'
+} from '@/global/roles.globals'
 import { changuePermissions } from '@/actions/roles.actions'
 import { cn } from '@/lib/utils'
 

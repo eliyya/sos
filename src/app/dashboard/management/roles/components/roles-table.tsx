@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { queryAtom } from '@/global/management-career'
-import { rolesAtom, selectedRoleIdAtom } from '@/global/management-roles'
+import { rolesAtom, selectedRoleIdAtom } from '@/global/roles.globals'
 import { PermissionsList } from './permissions-list'
 
 export function RolesTable() {

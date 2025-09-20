@@ -4,7 +4,7 @@ import { useAtom } from 'jotai'
 import { Search } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { queryAtom, showArchivedAtom } from '@/global/management-roles'
+import { queryAtom, showArchivedAtom } from '@/global/roles.globals'
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)

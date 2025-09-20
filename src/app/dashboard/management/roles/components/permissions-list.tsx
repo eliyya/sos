@@ -13,7 +13,7 @@ import {
     openDeleteAtom,
     permissionsEditedAtom,
     selectedRoleAtom,
-} from '@/global/management-roles'
+} from '@/global/roles.globals'
 import { RoleName } from './role-name'
 import { SaveButton } from './save-buton'
 
