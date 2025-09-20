@@ -1,15 +1,13 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { openCreateAtom } from '@/global/management-role'
-import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 
 export function CreateButton() {
-    const openCreateUser = useSetAtom(openCreateAtom)
+    // const openCreateUser = useSetAtom(openCreateAtom)
 
     return (
-        <Button onClick={() => openCreateUser(true)}>
+        <Button onClick={() => {}}>
             <Plus className='mr-3' />
             Crear Rol
         </Button>
