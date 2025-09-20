@@ -4,7 +4,7 @@ import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
 import { Search } from 'lucide-react'
 import { queryAtom, showArchivedAtom } from '@/global/management-subjects'
-import ToggleSwitch from '@/components/Switch'
+import LabeledSwitch from '@/components/Switch'
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)
@@ -22,7 +22,7 @@ export function Filters() {
                 />
             </div>
             <div>
-                <ToggleSwitch
+                <LabeledSwitch
                     label='Archivados'
                     checked={archived}
                     onCheckedChange={() => setArchived(v => !v)}

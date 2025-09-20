@@ -6,7 +6,7 @@ import { findStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
-import ToggleSwitch from '@/components/Switch'
+import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
 import { Career } from '@prisma/client'
 import { useSetAtom } from 'jotai'
@@ -121,7 +121,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 onChange={e => setSemester(e.currentTarget.value)}
                 disabled={!modified}
             />
-            <ToggleSwitch
+            <LabeledSwitch
                 label='El estudiante porta la credencial'
                 name='credencial'
             />

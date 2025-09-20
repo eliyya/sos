@@ -2,9 +2,9 @@
 
 import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
-import { queryAtom, showArchivedAtom } from '@/global/management-machines'
-import LabeledSwitch from '@/components/Switch'
 import { Search } from 'lucide-react'
+import { queryAtom, showArchivedAtom } from '@/global/management-role'
+import LabeledSwitch from '@/components/Switch'
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)
@@ -14,9 +14,7 @@ export function Filters() {
         <div className='flex items-center gap-4'>
             <div className='relative flex-1'>
                 <SimpleInput
-                    // TODO: Implementar busqueda
-                    disabled={true}
-                    placeholder='Buscar maquina...'
+                    placeholder='Buscar carrera...'
                     className='pl-10'
                     value={query}
                     onChange={e => setQuery(e.currentTarget.value)}
@@ -25,7 +23,7 @@ export function Filters() {
             </div>
             <div>
                 <LabeledSwitch
-                    label='En Mantenimiento'
+                    label='Archivados'
                     checked={archived}
                     onCheckedChange={() => setArchived(v => !v)}
                 />

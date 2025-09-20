@@ -3,7 +3,7 @@
 import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
 import { queryAtom, showArchivedAtom } from '@/global/management-users'
-import ToggleSwitch from '@/components/Switch'
+import LabeledSwitch from '@/components/Switch'
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)
@@ -20,7 +20,7 @@ export function Filters() {
                 />
             </div>
             <div>
-                <ToggleSwitch
+                <LabeledSwitch
                     label='Archivados'
                     checked={archived}
                     onCheckedChange={() => setArchived(v => !v)}

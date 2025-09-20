@@ -9,6 +9,7 @@ import {
     GraduationCapIcon,
     HouseWifiIcon,
     LucideIcon,
+    ShieldCheckIcon,
     SquareUserRoundIcon,
     UsersIcon,
 } from 'lucide-react'
@@ -34,6 +35,11 @@ const links: {
         title: 'Usuarios',
         href: mLinks.users(),
         icon: UsersIcon,
+    },
+    {
+        title: 'Roles',
+        href: mLinks.roles(),
+        icon: ShieldCheckIcon,
     },
     {
         title: 'Materias',
