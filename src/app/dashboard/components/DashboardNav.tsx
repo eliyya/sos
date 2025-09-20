@@ -81,7 +81,7 @@ export function DashboardNav({ className }: DashboardNavProps) {
                     Dashboard
                 </Link>
                 <Link
-                    href={app.dashboard()}
+                    href={'/schedule'}
                     className='hover:bg-accent text-muted-foreground flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                 >
                     <Calendar1Icon className='h-4 w-4' />
