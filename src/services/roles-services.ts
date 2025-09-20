@@ -119,3 +119,21 @@ export const createNewRoleEffect = () =>
 
         return created
     })
+
+export const deleteRoleEffect = (id: string) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+        yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.$transaction(async prisma => {
+                        prisma.user.updateMany({
+                            where: { role_id: id },
+                            data: { role_id: DEFAULT_ROLES.USER },
+                        })
+                        prisma.role.delete({ where: { id } })
+                    }),
+                catch: err => new UnexpectedError(err),
+            }),
+        )
+    })

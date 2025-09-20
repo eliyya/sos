@@ -16,6 +16,7 @@ import {
 import { db, PrismaLive } from '@/prisma/db'
 import {
     createNewRoleEffect,
+    deleteRoleEffect,
     editRoleNameEffect,
 } from '@/services/roles-services'
 
@@ -161,6 +162,31 @@ export async function createNewRole() {
             Effect.provide(createNewRoleEffect(), PrismaLive).pipe(
                 Effect.match({
                     onSuccess: role => ({ status: 'success' as const, role }),
+                    onFailure: error => {
+                        if (error instanceof UnexpectedError)
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error.cause),
+                            }
+                        return {
+                            status: 'error' as const,
+                            type: 'unknown' as const,
+                            message: String(error),
+                        }
+                    },
+                }),
+            ),
+        ),
+    )
+}
+
+export async function deleteRole(id: string) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            Effect.provide(deleteRoleEffect(id), PrismaLive).pipe(
+                Effect.match({
+                    onSuccess: () => ({ status: 'success' as const }),
                     onFailure: error => {
                         if (error instanceof UnexpectedError)
                             return {

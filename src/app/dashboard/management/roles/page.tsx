@@ -1,6 +1,7 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
 
 import { CreateButton } from './components/CreateButton'
+import { DeleteDialog } from './components/DeleteDialog'
 import { RolesTable } from './components/roles-table'
 
 export default async function CareersPage() {
@@ -11,6 +12,7 @@ export default async function CareersPage() {
                 <CreateButton />
             </div>
             <RolesTable />
+            <DeleteDialog />
         </>
     )
 }

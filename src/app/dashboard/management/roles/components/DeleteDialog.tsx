@@ -1,6 +1,10 @@
 'use client'
 
-import { deleteCareer } from '@/actions/career'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Ban, Trash2 } from 'lucide-react'
+import { useState, useTransition } from 'react'
+
+import { deleteRole } from '@/actions/roles'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -9,22 +13,19 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
     openDeleteAtom,
-    entityToEditAtom,
-    updateAtom,
+    rolesAtom,
+    selectedRoleAtom,
 } from '@/global/management-roles'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedRoleAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const setRoles = useSetAtom(rolesAtom)
 
     if (!entity) return null
 
@@ -32,23 +33,24 @@ export function DeleteDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Eliminar Carrera</DialogTitle>
+                    <DialogTitle>Eliminar Rol</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de eliminar <strong>{entity.name}</strong>?
+                        ¿Está seguro de eliminar el rol{' '}
+                        <strong>{entity.name}</strong>? todos los usuarios con
+                        este rol serán asignados al rol User.
                         <strong>Esta acción es irreversible</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
+                    action={() => {
                         startTransition(async () => {
-                            const { error } = await deleteCareer(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
+                            const response = await deleteRole(entity.id)
+                            if (response.status === 'error') {
+                                setMessage('Algo salio mal, intente de nuevo')
+                                setTimeout(() => setMessage(''), 5_000)
                             } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
+                                setRoles(prev =>
+                                    prev.filter(role => role.id !== entity.id),
                                 )
                                 setOpen(false)
                             }
@@ -57,7 +59,6 @@ export function DeleteDialog() {
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}
-                    <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}
