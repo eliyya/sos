@@ -11,7 +11,7 @@ export const selectedRoleIdAtom = atomWithStorage<id>('selectedRoleId', '')
 export const selectedRoleAtom = atom(get => {
     const roles = get(rolesAtom)
     const selectedId = get(selectedRoleIdAtom)
-    return roles.find(role => role.id === selectedId)
+    return roles.find(role => role.id === selectedId) ?? roles.at(0)
 })
 export const updateAtom = atom(Symbol())
 export const openDeleteAtom = atom(false)

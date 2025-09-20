@@ -2,27 +2,48 @@
 
 import { Effect } from 'effect'
 
-import { DEFAULT_PERMISSIONS, DEFAULT_ROLES } from '@/constants/client'
 import {
-    AlreadyArchivedError,
+    DB_STATES,
+    DEFAULT_PERMISSIONS,
+    DEFAULT_ROLES,
+} from '@/constants/client'
+import {
     AlreadyExistsError,
     InvalidInputError,
     NotFoundError,
     UnexpectedError,
 } from '@/errors'
 import { db, PrismaLive } from '@/prisma/db'
-import { editRoleNameEffect } from '@/services/roles-services'
+import {
+    createNewRoleEffect,
+    editRoleNameEffect,
+} from '@/services/roles-services'
 
 export async function getAdminRole() {
     const role = await db.role.findUnique({
         where: { name: DEFAULT_ROLES.ADMIN },
     })
     if (role) return role
-    const newRole = await db.role.create({
-        data: {
-            name: DEFAULT_ROLES.ADMIN,
-            permissions: DEFAULT_PERMISSIONS.ADMIN,
-        },
+    const newRole = await db.$transaction(async t => {
+        const role = await t.role.create({
+            data: {
+                name: DEFAULT_ROLES.ADMIN,
+                permissions: DEFAULT_PERMISSIONS.ADMIN,
+            },
+        })
+        await t.states.upsert({
+            where: { name: DB_STATES.ROLES_COUNT },
+            create: {
+                name: DB_STATES.ROLES_COUNT,
+                value: 1,
+            },
+            update: {
+                value: {
+                    increment: 1,
+                },
+            },
+        })
+        return role
     })
     return newRole
 }
@@ -32,11 +53,26 @@ export async function getUserRole() {
         where: { name: DEFAULT_ROLES.USER },
     })
     if (role) return role
-    const newRole = await db.role.create({
-        data: {
-            name: DEFAULT_ROLES.USER,
-            permissions: DEFAULT_PERMISSIONS.USER,
-        },
+    const newRole = await db.$transaction(async t => {
+        const role = await t.role.create({
+            data: {
+                name: DEFAULT_ROLES.USER,
+                permissions: DEFAULT_PERMISSIONS.USER,
+            },
+        })
+        await t.states.upsert({
+            where: { name: DB_STATES.ROLES_COUNT },
+            create: {
+                name: DB_STATES.ROLES_COUNT,
+                value: 2,
+            },
+            update: {
+                value: {
+                    increment: 1,
+                },
+            },
+        })
+        return role
     })
     return newRole
 }
@@ -46,11 +82,26 @@ export async function getDeletedRole() {
         where: { name: DEFAULT_ROLES.DELETED },
     })
     if (role) return role
-    const newRole = await db.role.create({
-        data: {
-            name: DEFAULT_ROLES.DELETED,
-            permissions: DEFAULT_PERMISSIONS.DELETED,
-        },
+    const newRole = await db.$transaction(async t => {
+        const role = await t.role.create({
+            data: {
+                name: DEFAULT_ROLES.DELETED,
+                permissions: DEFAULT_PERMISSIONS.DELETED,
+            },
+        })
+        await t.states.upsert({
+            where: { name: DB_STATES.ROLES_COUNT },
+            create: {
+                name: DB_STATES.ROLES_COUNT,
+                value: 3,
+            },
+            update: {
+                value: {
+                    increment: 1,
+                },
+            },
+        })
+        return role
     })
     return newRole
 }
@@ -92,6 +143,31 @@ export async function editRoleName(id: string, name: string) {
                                 message: error.message,
                             }
                         }
+                        return {
+                            status: 'error' as const,
+                            type: 'unknown' as const,
+                            message: String(error),
+                        }
+                    },
+                }),
+            ),
+        ),
+    )
+}
+
+export async function createNewRole() {
+    return await Effect.runPromise(
+        Effect.scoped(
+            Effect.provide(createNewRoleEffect(), PrismaLive).pipe(
+                Effect.match({
+                    onSuccess: role => ({ status: 'success' as const, role }),
+                    onFailure: error => {
+                        if (error instanceof UnexpectedError)
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error.cause),
+                            }
                         return {
                             status: 'error' as const,
                             type: 'unknown' as const,

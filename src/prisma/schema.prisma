@@ -16,11 +16,20 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
+model States {
+    name String @id
+    value Int
+
+    @@map("states")
+}
+
 model Role {
     id          String @id @default(dbgenerated("snowflake()"))
     name        String @unique
-    permissions BigInt 
+    permissions BigInt @default(0)
     User        User[]
+
+    @@map("roles")
 }
 
 model User {

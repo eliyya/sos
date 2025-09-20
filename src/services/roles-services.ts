@@ -8,7 +8,11 @@ import {
 } from '../errors'
 import { PrismaService } from '../prisma/db'
 
-import { DEFAULT_ROLES } from '@/constants/client'
+import {
+    DB_STATES,
+    DEFAULT_PERMISSIONS,
+    DEFAULT_ROLES,
+} from '@/constants/client'
 
 export const editRoleNameEffect = (id: string, name: string) =>
     Effect.gen(function* (_) {
@@ -48,6 +52,8 @@ export const editRoleNameEffect = (id: string, name: string) =>
             return yield* _(Effect.fail(new InvalidInputError('Reserved Role')))
         }
 
+        name = name.trim().replace(/\s/g, '-')
+
         const existing = yield* _(
             Effect.tryPromise({
                 try: () => prisma.role.findUnique({ where: { name } }),
@@ -68,6 +74,45 @@ export const editRoleNameEffect = (id: string, name: string) =>
             Effect.tryPromise({
                 try: () =>
                     prisma.role.update({ data: { name }, where: { id } }),
+                catch: err => new UnexpectedError(err),
+            }),
+        )
+
+        return created
+    })
+
+export const createNewRoleEffect = () =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+        const count = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.states.findUnique({
+                        where: { name: DB_STATES.ROLES_COUNT },
+                        select: { value: true },
+                    }),
+                catch: err => new UnexpectedError(err),
+            }).pipe(Effect.map(c => (c?.value ?? 0) + 1)),
+        )
+
+        const name = `Role-${count}`
+
+        const created = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.$transaction(async tx => {
+                        const created = await tx.role.create({
+                            data: {
+                                name,
+                                permissions: DEFAULT_PERMISSIONS.USER,
+                            },
+                        })
+                        await tx.states.update({
+                            where: { name: DB_STATES.ROLES_COUNT },
+                            data: { value: count },
+                        })
+                        return created
+                    }),
                 catch: err => new UnexpectedError(err),
             }),
         )
