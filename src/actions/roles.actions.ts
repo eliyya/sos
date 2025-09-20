@@ -19,7 +19,7 @@ import {
     createNewRoleEffect,
     deleteRoleEffect,
     editRoleNameEffect,
-} from '@/services/roles-services'
+} from '@/services/roles.effect'
 
 export async function getAdminRole() {
     const role = await db.role.findUnique({

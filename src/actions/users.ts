@@ -8,8 +8,7 @@ import { auth } from '@/lib/auth'
 import { capitalize } from '@/lib/utils'
 import { db } from '@/prisma/db'
 
-import { getAdminRole, getDeletedRole } from './roles'
-
+import { getAdminRole, getDeletedRole } from './roles.actions'
 
 export async function getUsers() {
     return db.user.findMany({

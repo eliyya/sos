@@ -1,11 +1,11 @@
 'use client'
 
-import { User , STATUS } from '@prisma/client'
+import { User, STATUS } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { getAdminRole, getRoles } from '@/actions/roles'
+import { getAdminRole, getRoles } from '@/actions/roles.actions'
 import { getUsers } from '@/actions/users'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'

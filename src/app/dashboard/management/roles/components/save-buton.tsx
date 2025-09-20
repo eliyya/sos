@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useTransition } from 'react'
 
-import { changuePermissions } from '@/actions/roles'
+import { changuePermissions } from '@/actions/roles.actions'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/Button'
 import {

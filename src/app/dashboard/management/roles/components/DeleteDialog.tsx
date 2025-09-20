@@ -4,7 +4,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
-import { deleteRole } from '@/actions/roles'
+import { deleteRole } from '@/actions/roles.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
