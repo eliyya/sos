@@ -1,20 +1,42 @@
 'use client'
 
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ShieldIcon, Trash2Icon } from 'lucide-react'
 
-import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
+import {
+    PermissionsBitField,
+    PermissionsFlags,
+} from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/Button'
 import { Switch } from '@/components/Switch'
-import { openDeleteAtom, selectedRoleAtom } from '@/global/management-roles'
+import {
+    openDeleteAtom,
+    permissionsEditedAtom,
+    selectedRoleAtom,
+} from '@/global/management-roles'
 
 import { RoleName } from './role-name'
+import { SaveButton } from './save-buton'
 
 const AllPermissions = new PermissionsBitField(PermissionsBitField.getMask())
 
 export function PermissionsList() {
     const openDeleteDialog = useSetAtom(openDeleteAtom)
     const selected = useAtomValue(selectedRoleAtom)
+    const [permissionsEdited, setPermissionsEdited] = useAtom(
+        permissionsEditedAtom,
+    )
+
+    const onCheckedChange = (
+        permission: keyof typeof PermissionsFlags,
+        enabled: boolean,
+    ) => {
+        if (enabled) {
+            setPermissionsEdited(permissionsEdited.with(permission))
+        } else {
+            setPermissionsEdited(permissionsEdited.without(permission))
+        }
+    }
 
     if (!selected) return null
 
@@ -25,14 +47,16 @@ export function PermissionsList() {
                     <ShieldIcon className='text-primary h-6 w-6' />
                     <RoleName />
                 </div>
-                <Button
-                    variant='destructive'
-                    size='sm'
-                    className='aspect-square h-8 w-8 p-2'
-                    onClick={() => openDeleteDialog(true)}
-                >
-                    <Trash2Icon />
-                </Button>
+                <div className='flex items-center gap-8'>
+                    <SaveButton />
+                    <Button
+                        variant='destructive'
+                        size='sm'
+                        onClick={() => openDeleteDialog(true)}
+                    >
+                        <Trash2Icon />
+                    </Button>
+                </div>
             </div>
 
             <div className='overflow-y-auto p-6'>
@@ -51,15 +75,10 @@ export function PermissionsList() {
                                 </p>
                             </div>
                             <Switch
-                                checked={new PermissionsBitField(
-                                    selected.permissions,
-                                ).has(value)}
-                                // onCheckedChange={enabled =>
-                                //     handlePermissionToggle(
-                                //         permission.id,
-                                //         enabled,
-                                //     )
-                                // }
+                                checked={permissionsEdited.has(value)}
+                                onCheckedChange={checked =>
+                                    onCheckedChange(permission, checked)
+                                }
                                 className='ml-4'
                             />
                         </div>

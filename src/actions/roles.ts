@@ -15,6 +15,7 @@ import {
 } from '@/errors'
 import { db, PrismaLive } from '@/prisma/db'
 import {
+    changuePermissionsEffect,
     createNewRoleEffect,
     deleteRoleEffect,
     editRoleNameEffect,
@@ -193,6 +194,46 @@ export async function deleteRole(id: string) {
                                 status: 'error' as const,
                                 type: 'unexpected' as const,
                                 message: String(error.cause),
+                            }
+                        return {
+                            status: 'error' as const,
+                            type: 'unknown' as const,
+                            message: String(error),
+                        }
+                    },
+                }),
+            ),
+        ),
+    )
+}
+
+export async function changuePermissions(id: string, permissions: bigint) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            Effect.provide(
+                changuePermissionsEffect(id, permissions),
+                PrismaLive,
+            ).pipe(
+                Effect.match({
+                    onSuccess: role => ({ status: 'success' as const, role }),
+                    onFailure: error => {
+                        if (error instanceof UnexpectedError)
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error.cause),
+                            }
+                        if (error instanceof NotFoundError)
+                            return {
+                                status: 'error' as const,
+                                type: 'not-found' as const,
+                                message: error.message,
+                            }
+                        if (error instanceof InvalidInputError)
+                            return {
+                                status: 'error' as const,
+                                type: 'invalid-input' as const,
+                                message: error.message,
                             }
                         return {
                             status: 'error' as const,

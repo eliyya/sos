@@ -138,3 +138,31 @@ export const deleteRoleEffect = (id: string) =>
             }),
         )
     })
+
+export const changuePermissionsEffect = (id: string, permissions: bigint) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+        const actual = yield* _(
+            Effect.tryPromise({
+                try: () => prisma.role.findUnique({ where: { id } }),
+                catch: err => new UnexpectedError(err),
+            }),
+        )
+        if (!actual) {
+            return yield* _(Effect.fail(new NotFoundError('Role not found')))
+        }
+        if (actual.name === DEFAULT_ROLES.ADMIN) {
+            return yield* _(Effect.fail(new InvalidInputError('Reserved Role')))
+        }
+        const updated = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.role.update({
+                        data: { permissions },
+                        where: { id },
+                    }),
+                catch: err => new UnexpectedError(err),
+            }),
+        )
+        return updated
+    })

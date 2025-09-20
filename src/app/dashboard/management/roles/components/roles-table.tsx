@@ -8,6 +8,7 @@ import { getRoles } from '@/actions/roles'
 import { Badge } from '@/components/Badge'
 import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
+import { DEFAULT_ROLES } from '@/constants/client'
 import { queryAtom } from '@/global/management-career'
 import { rolesAtom, selectedRoleIdAtom } from '@/global/management-roles'
 
@@ -48,6 +49,7 @@ export function RolesTable() {
                     {/* Lista de roles */}
                     <div className='space-y-2 overflow-y-auto p-6'>
                         {roles
+                            .filter(role => role.name !== DEFAULT_ROLES.DELETED)
                             .filter(role =>
                                 role.name
                                     .toLowerCase()

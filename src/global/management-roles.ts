@@ -2,6 +2,7 @@ import { Role } from '@prisma/client'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
+import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Serializable } from '@/lib/types'
 
 type id = Role['id']
@@ -15,3 +16,4 @@ export const selectedRoleAtom = atom(get => {
 })
 export const updateAtom = atom(Symbol())
 export const openDeleteAtom = atom(false)
+export const permissionsEditedAtom = atom(new PermissionsBitField())
