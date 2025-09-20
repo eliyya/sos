@@ -1,5 +1,4 @@
-import { DEFAULT_ROLES } from '../constants/client.ts'
-import { PermissionsFlags } from '../bitfields/PermissionsBitField.ts'
+import { DEFAULT_PERMISSIONS, DEFAULT_ROLES } from '../constants/client.ts'
 import { PrismaClient } from '@prisma/client'
 
 const db = new PrismaClient()
@@ -7,18 +6,18 @@ const db = new PrismaClient()
 await db.role.create({
     data: {
         name: DEFAULT_ROLES.ADMIN,
-        permissions: PermissionsFlags.ADMIN,
+        permissions: DEFAULT_PERMISSIONS.ADMIN,
     },
 })
 await db.role.create({
     data: {
         name: DEFAULT_ROLES.USER,
-        permissions: PermissionsFlags.SESSION_SELF,
+        permissions: DEFAULT_PERMISSIONS.USER,
     },
 })
 await db.role.create({
     data: {
         name: DEFAULT_ROLES.DELETED,
-        permissions: 0n,
+        permissions: DEFAULT_PERMISSIONS.DELETED,
     },
 })

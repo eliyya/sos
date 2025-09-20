@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { Context, Layer, Effect } from 'effect'
+import { Context, Layer } from 'effect'
 
 function createPrismaClient() {
     return new PrismaClient()
