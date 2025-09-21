@@ -10,7 +10,6 @@ export const auth = betterAuth({
         provider: 'postgresql',
     }),
     plugins: [
-        nextCookies(),
         username({
             schema: {
                 user: {
@@ -34,6 +33,7 @@ export const auth = betterAuth({
                 },
             }
         }),
+        nextCookies(),
     ],
     emailAndPassword: {
         enabled: true,

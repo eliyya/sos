@@ -9,12 +9,15 @@ import {
     AlreadyExistsError,
     UnexpectedError,
     NotFoundError,
-} from '../errors'
-import { PrismaService } from '../prisma/db'
+} from '@/errors'
+import { PrismaService } from '@/layers/db.layer'
+import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
+import { requirePermission } from './auth.service'
 
 export const editRoleNameEffect = (id: string, name: string) =>
     Effect.gen(function* (_) {
-        // 1. Validar input
+        yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
+
         if (!name) {
             return yield* _(Effect.fail(new InvalidInputError('Required Name')))
         }
@@ -81,6 +84,8 @@ export const editRoleNameEffect = (id: string, name: string) =>
 
 export const createNewRoleEffect = () =>
     Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
+
         const prisma = yield* _(PrismaService)
         const count = yield* _(
             Effect.tryPromise({
@@ -120,6 +125,7 @@ export const createNewRoleEffect = () =>
 
 export const deleteRoleEffect = (id: string) =>
     Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
         const prisma = yield* _(PrismaService)
         yield* _(
             Effect.tryPromise({
@@ -138,6 +144,7 @@ export const deleteRoleEffect = (id: string) =>
 
 export const changuePermissionsEffect = (id: string, permissions: bigint) =>
     Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
         const prisma = yield* _(PrismaService)
         const actual = yield* _(
             Effect.tryPromise({

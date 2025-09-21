@@ -32,4 +32,8 @@ export class PermissionsBitField extends FlaggedBitfield<
 > {
     static Flags = PermissionsFlags
     static DefaultBit = 0n
+
+    isAdmin() {
+        return this.has(PermissionsFlags.ADMIN)
+    }
 }
