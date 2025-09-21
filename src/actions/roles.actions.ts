@@ -12,14 +12,16 @@ import {
     NotFoundError,
     UnexpectedError,
 } from '@/errors'
-import { db, PrismaLive } from '@/prisma/db'
+import { db } from '@/prisma/db'
 import {
     changuePermissionsEffect,
     createNewRoleEffect,
     deleteRoleEffect,
     editRoleNameEffect,
     usersCountPerRoleEffect,
-} from '@/services/roles-service'
+} from '@/services/roles.service'
+import { PrismaLive } from '@/layers/db.layer'
+import { SessionLive } from '@/layers/auth.layer'
 
 export async function getAdminRole() {
     const role = await db.role.findUnique({
@@ -87,43 +89,49 @@ export async function getRoles() {
 export async function editRoleName(id: string, name: string) {
     return await Effect.runPromise(
         Effect.scoped(
-            Effect.provide(editRoleNameEffect(id, name), PrismaLive).pipe(
-                Effect.match({
-                    onSuccess: role => ({ status: 'success' as const, role }),
-                    onFailure: error => {
-                        if (error instanceof InvalidInputError)
+            editRoleNameEffect(id, name)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(SessionLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: role => ({
+                            status: 'success' as const,
+                            role,
+                        }),
+                        onFailure: error => {
+                            if (error instanceof InvalidInputError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'invalid-input' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof NotFoundError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'not-found' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof UnexpectedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            if (error instanceof AlreadyExistsError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'already-exists' as const,
+                                    message: error.message,
+                                }
+                            }
                             return {
                                 status: 'error' as const,
-                                type: 'invalid-input' as const,
-                                message: error.message,
+                                type: 'unknown' as const,
+                                message: String(error),
                             }
-                        if (error instanceof NotFoundError)
-                            return {
-                                status: 'error' as const,
-                                type: 'not-found' as const,
-                                message: error.message,
-                            }
-                        if (error instanceof UnexpectedError)
-                            return {
-                                status: 'error' as const,
-                                type: 'unexpected' as const,
-                                message: String(error.cause),
-                            }
-                        if (error instanceof AlreadyExistsError) {
-                            return {
-                                status: 'error' as const,
-                                type: 'already-exists' as const,
-                                message: error.message,
-                            }
-                        }
-                        return {
-                            status: 'error' as const,
-                            type: 'unknown' as const,
-                            message: String(error),
-                        }
-                    },
-                }),
-            ),
+                        },
+                    }),
+                ),
         ),
     )
 }
@@ -131,24 +139,30 @@ export async function editRoleName(id: string, name: string) {
 export async function createNewRole() {
     return await Effect.runPromise(
         Effect.scoped(
-            Effect.provide(createNewRoleEffect(), PrismaLive).pipe(
-                Effect.match({
-                    onSuccess: role => ({ status: 'success' as const, role }),
-                    onFailure: error => {
-                        if (error instanceof UnexpectedError)
+            createNewRoleEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(SessionLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: role => ({
+                            status: 'success' as const,
+                            role,
+                        }),
+                        onFailure: error => {
+                            if (error instanceof UnexpectedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
                             return {
                                 status: 'error' as const,
-                                type: 'unexpected' as const,
-                                message: String(error.cause),
+                                type: 'unknown' as const,
+                                message: String(error),
                             }
-                        return {
-                            status: 'error' as const,
-                            type: 'unknown' as const,
-                            message: String(error),
-                        }
-                    },
-                }),
-            ),
+                        },
+                    }),
+                ),
         ),
     )
 }
@@ -156,24 +170,27 @@ export async function createNewRole() {
 export async function deleteRole(id: string) {
     return await Effect.runPromise(
         Effect.scoped(
-            Effect.provide(deleteRoleEffect(id), PrismaLive).pipe(
-                Effect.match({
-                    onSuccess: () => ({ status: 'success' as const }),
-                    onFailure: error => {
-                        if (error instanceof UnexpectedError)
+            deleteRoleEffect(id)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(SessionLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: () => ({ status: 'success' as const }),
+                        onFailure: error => {
+                            if (error instanceof UnexpectedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
                             return {
                                 status: 'error' as const,
-                                type: 'unexpected' as const,
-                                message: String(error.cause),
+                                type: 'unknown' as const,
+                                message: String(error),
                             }
-                        return {
-                            status: 'error' as const,
-                            type: 'unknown' as const,
-                            message: String(error),
-                        }
-                    },
-                }),
-            ),
+                        },
+                    }),
+                ),
         ),
     )
 }
@@ -181,39 +198,42 @@ export async function deleteRole(id: string) {
 export async function changuePermissions(id: string, permissions: bigint) {
     return await Effect.runPromise(
         Effect.scoped(
-            Effect.provide(
-                changuePermissionsEffect(id, permissions),
-                PrismaLive,
-            ).pipe(
-                Effect.match({
-                    onSuccess: role => ({ status: 'success' as const, role }),
-                    onFailure: error => {
-                        if (error instanceof UnexpectedError)
+            changuePermissionsEffect(id, permissions)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(SessionLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: role => ({
+                            status: 'success' as const,
+                            role,
+                        }),
+                        onFailure: error => {
+                            if (error instanceof UnexpectedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            if (error instanceof NotFoundError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'not-found' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof InvalidInputError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'invalid-input' as const,
+                                    message: error.message,
+                                }
                             return {
                                 status: 'error' as const,
-                                type: 'unexpected' as const,
-                                message: String(error.cause),
+                                type: 'unknown' as const,
+                                message: String(error),
                             }
-                        if (error instanceof NotFoundError)
-                            return {
-                                status: 'error' as const,
-                                type: 'not-found' as const,
-                                message: error.message,
-                            }
-                        if (error instanceof InvalidInputError)
-                            return {
-                                status: 'error' as const,
-                                type: 'invalid-input' as const,
-                                message: error.message,
-                            }
-                        return {
-                            status: 'error' as const,
-                            type: 'unknown' as const,
-                            message: String(error),
-                        }
-                    },
-                }),
-            ),
+                        },
+                    }),
+                ),
         ),
     )
 }
