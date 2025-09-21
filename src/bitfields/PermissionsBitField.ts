@@ -7,6 +7,7 @@ export const PermissionsFlags = {
     SESSION_SELF: 1n << 2n, // Registrar su propia sesión en laboratorio
     SESSION_OTHERS: 1n << 3n, // Registrar sesiones de otros usuarios
     SESSION_MANAGE: 1n << 4n, // Eliminar sesiones de otros usuarios
+    SESSION_CC: 1n << 5n, // Registrar entradas en el centro de computo
 
     MANAGE_LABS: 1n << 8n, // Crear/editar/eliminar laboratorios
     MANAGE_USERS: 1n << 9n, // Crear/editar/eliminar usuarios
