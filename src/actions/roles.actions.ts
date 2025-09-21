@@ -25,6 +25,10 @@ import {
 import { PrismaLive } from '@/layers/db.layer'
 import { SessionLive } from '@/layers/auth.layer'
 
+/**
+ * Obtiene el rol ADMIN si existe; de lo contrario lo crea con los permisos por defecto.
+ * También actualiza el contador de roles en la tabla de estados.
+ */
 export async function getAdminRole() {
     const role = await db.role.findUnique({
         where: { name: DEFAULT_ROLES.ADMIN },
@@ -54,6 +58,10 @@ export async function getAdminRole() {
     return newRole
 }
 
+/**
+ * Obtiene el rol DELETED si existe; de lo contrario lo crea con los permisos por defecto.
+ * También actualiza el contador de roles en la tabla de estados.
+ */
 export async function getDeletedRole() {
     const role = await db.role.findFirst({
         where: { name: DEFAULT_ROLES.DELETED },
@@ -83,11 +91,18 @@ export async function getDeletedRole() {
     return newRole
 }
 
+/**
+ * Lista todos los roles existentes en la base de datos.
+ */
 export async function getRoles() {
     const roles = await db.role.findMany()
     return roles
 }
 
+/**
+ * Cambia el nombre de un rol.
+ * Requiere sesión válida y permisos adecuados; usa efectos para manejar errores tipificados.
+ */
 export async function editRoleName(id: string, name: string) {
     return await Effect.runPromise(
         Effect.scoped(
@@ -150,6 +165,10 @@ export async function editRoleName(id: string, name: string) {
     )
 }
 
+/**
+ * Crea un nuevo rol con valores por defecto.
+ * Requiere sesión válida y permisos adecuados.
+ */
 export async function createNewRole() {
     return await Effect.runPromise(
         Effect.scoped(
@@ -193,6 +212,10 @@ export async function createNewRole() {
     )
 }
 
+/**
+ * Elimina (o desactiva) un rol por ID.
+ * Requiere sesión válida y permisos adecuados.
+ */
 export async function deleteRole(id: string) {
     return await Effect.runPromise(
         Effect.scoped(
@@ -233,6 +256,12 @@ export async function deleteRole(id: string) {
     )
 }
 
+/**
+ * Cambia los permisos de un rol.
+ * Requiere sesión válida y permisos adecuados.
+ *
+ * Nota: los permisos se representan como un bigint (máscara de bits).
+ */
 export async function changuePermissions(id: string, permissions: bigint) {
     return await Effect.runPromise(
         Effect.scoped(
@@ -289,6 +318,9 @@ export async function changuePermissions(id: string, permissions: bigint) {
     )
 }
 
+/**
+ * Obtiene el conteo de usuarios por rol.
+ */
 export async function getUsersCountPerRole() {
     return await Effect.runPromise(
         Effect.scoped(
