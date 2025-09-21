@@ -1,15 +1,18 @@
-import { Metadata } from 'next'
-import { db } from '@/prisma/db'
-import { notFound } from 'next/navigation'
 import { LABORATORY_TYPE, STATUS } from '@prisma/client'
-import { ScheduleHeader } from './components/ScheduleHeader'
-import ScheduleBody from './components/ScheduleBody'
-import { auth } from '@/lib/auth'
+import { Metadata } from 'next'
 import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
 import {
     PermissionsBitField,
     PermissionsFlags,
 } from '@/bitfields/PermissionsBitField'
+import { auth } from '@/lib/auth'
+import { db } from '@/prisma/db'
+import ScheduleBody from './components/ScheduleBody'
+import { ScheduleHeader } from './components/ScheduleHeader'
+
+
+
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',

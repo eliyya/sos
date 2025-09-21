@@ -1,5 +1,6 @@
 'use client'
 
+import { LucideIcon, Undo2 } from 'lucide-react'
 import {
     ForwardedRef,
     InputHTMLAttributes,
@@ -11,7 +12,6 @@ import {
     useRef,
     useState,
 } from 'react'
-import { LucideIcon, Undo2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { MessageError } from './Error'
 

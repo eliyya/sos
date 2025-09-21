@@ -1,5 +1,7 @@
 'use client'
 
+import { useAtom } from 'jotai'
+import { CheckCheckIcon } from 'lucide-react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -9,8 +11,6 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { openPreventArchiveAdminAtom } from '@/global/management-users'
-import { useAtom } from 'jotai'
-import { CheckCheckIcon } from 'lucide-react'
 
 export function PreventArchiveAdminDialog() {
     const [open, setOpen] = useAtom(openPreventArchiveAdminAtom)

@@ -1,5 +1,8 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Ban, Trash2 } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { adminCount, deleteUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import {
@@ -9,17 +12,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
     openDeleteAtom,
     updateAtom,
     entityToEditAtom,
     openPreventArchiveAdminAtom,
-    adminRoleAtom,
 } from '@/global/management-users'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+import { rolesAtom } from '@/global/roles.globals'
+import { DEFAULT_ROLES } from '@/constants/client'
 
 export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -28,7 +29,8 @@ export function DeleteEntityDialog() {
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
     const setOpenPreventArchiveAdmin = useSetAtom(openPreventArchiveAdminAtom)
-    const adminRole = useAtomValue(adminRoleAtom)
+    const roles = useAtomValue(rolesAtom)
+    const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
 
     if (!entity || !adminRole) return null
 

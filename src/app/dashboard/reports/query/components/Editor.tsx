@@ -1,11 +1,11 @@
 'use client'
 
-import getSchema from '@/actions/reports'
-import { MessageError } from '@/components/Error'
-import { queryAtom, queryErrorAtom } from '@/global/reports'
 import Editor, { loader } from '@monaco-editor/react'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useState } from 'react'
+import getSchema from '@/actions/reports'
+import { MessageError } from '@/components/Error'
+import { queryAtom, queryErrorAtom } from '@/global/reports'
 
 export function SQLEditor() {
     const [schema, setSchema] = useState<Awaited<ReturnType<typeof getSchema>>>(

@@ -1,13 +1,14 @@
 'use client'
 
-import { DialogMode, modeAtom } from '@/global/management-practices'
-import { findFirstPractice } from '@/actions/practices'
-import { CompletInput } from '@/components/Inputs'
 import { Temporal } from '@js-temporal/polyfill'
-import { Save, Trash, UserIcon } from 'lucide-react'
-import { Button } from '@/components/Button'
-import { getClassName } from './InfoDialog'
 import { useSetAtom } from 'jotai'
+import { Save, Trash, UserIcon } from 'lucide-react'
+import { findFirstPractice } from '@/actions/practices'
+import { Button } from '@/components/Button'
+import { CompletInput } from '@/components/Inputs'
+import { DialogMode, modeAtom } from '@/global/management-practices'
+import { getClassName } from './InfoDialog'
+
 
 interface InfoModeProps {
     isAdmin?: boolean

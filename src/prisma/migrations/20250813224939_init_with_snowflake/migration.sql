@@ -45,12 +45,21 @@ CREATE TYPE "public"."MACHINE_STATUS" AS ENUM ('AVAILABLE', 'MAINTENANCE', 'IN_U
 CREATE TYPE "public"."STATUS" AS ENUM ('ACTIVE', 'ARCHIVED', 'DELETED');
 
 -- CreateTable
-CREATE TABLE "public"."Role" (
+CREATE TABLE "public"."states" (
+    "name" TEXT NOT NULL,
+    "value" INTEGER NOT NULL,
+
+    CONSTRAINT "states_pkey" PRIMARY KEY ("name")
+);
+
+
+-- CreateTable
+CREATE TABLE "public"."roles" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
-    "permissions" BIGINT NOT NULL,
+    "permissions" BIGINT NOT NULL DEFAULT 0,
 
-    CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -293,7 +302,7 @@ CREATE TABLE "public"."student_classes" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Role_name_key" ON "public"."Role"("name");
+CREATE UNIQUE INDEX "roles_name_key" ON "public"."roles"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "public"."users"("username");
@@ -320,7 +329,7 @@ CREATE UNIQUE INDEX "machines_serie_key" ON "public"."machines"("serie");
 CREATE UNIQUE INDEX "subjects_name_key" ON "public"."subjects"("name");
 
 -- AddForeignKey
-ALTER TABLE "public"."users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "public"."Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "public"."roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."session" ADD CONSTRAINT "session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,7 +1,15 @@
 'use client'
 
+import { LABORATORY_TYPE } from '@prisma/client'
+import { useAtom, useSetAtom } from 'jotai'
+import { Clock8Icon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { createlab } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
+import { CompletInput } from '@/components/Inputs'
+import { CompletSelect } from '@/components/Select'
 import {
     closeHourAtom,
     errorNameAtom,
@@ -15,14 +23,6 @@ import {
     typeAtom,
     errorCloseHourAtom,
 } from '@/global/management-laboratory'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
-import { useAtom, useSetAtom } from 'jotai'
-import { Clock8Icon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
-import { CompletInput } from '@/components/Inputs'
-import { CompletSelect } from '@/components/Select'
-import { LABORATORY_TYPE } from '@prisma/client'
 import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
 
 export function CreateLaboratoryDialog() {

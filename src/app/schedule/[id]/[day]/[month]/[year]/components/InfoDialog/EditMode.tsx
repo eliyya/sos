@@ -1,24 +1,25 @@
 'use client'
 
+import interactionPlugin from '@fullcalendar/interaction'
+import FullCalendar from '@fullcalendar/react'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import { Temporal } from '@js-temporal/polyfill'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { SaveIcon, UserIcon } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+import { editPractice, findFirstPractice } from '@/actions/practices'
+import { Button } from '@/components/Button'
+import { MessageError } from '@/components/Error'
+import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import {
     modeAtom,
     eventsAtom,
     DialogMode,
     eventInfoAtom,
 } from '@/global/management-practices'
-import interactionPlugin from '@fullcalendar/interaction'
-import { editPractice, findFirstPractice } from '@/actions/practices'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
-import { MessageError } from '@/components/Error'
-import { SaveIcon, UserIcon } from 'lucide-react'
-import { Temporal } from '@js-temporal/polyfill'
-import FullCalendar from '@fullcalendar/react'
-import { Button } from '@/components/Button'
 import { secondsToTime, setTime } from '@/lib/utils'
 import { getClassName } from './InfoDialog'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { useEffect, useState, useTransition } from 'react'
+
 
 interface EditModeProps {
     practice: Exclude<

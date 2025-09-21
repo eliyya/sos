@@ -1,5 +1,6 @@
 'use client'
 
+import { useAtom } from 'jotai'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -9,7 +10,6 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { errorAtom } from '@/global/cc'
-import { useAtom } from 'jotai'
 
 export function ErrorDialog() {
     const [error, setError] = useAtom(errorAtom)

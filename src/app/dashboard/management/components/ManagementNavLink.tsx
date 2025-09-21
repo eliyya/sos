@@ -1,9 +1,9 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
-import React, { memo } from 'react'
 import { LucideIcon } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import React, { memo } from 'react'
 import { cn } from '@/lib/utils'
 
 export const ManagementNavLink = memo(function ManagementNavLink({

@@ -1,5 +1,10 @@
 'use client'
 
+import { Student , STATUS } from '@prisma/client'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { getStudentsWithCareer } from '@/actions/students'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -9,11 +14,6 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Student } from '@prisma/client'
-import { STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openArchiveAtom,
@@ -23,11 +23,10 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-students'
-import { getStudentsWithCareer } from '@/actions/students'
-import { EditDialog } from './EditDialog'
 import { ArchiveDialog } from './ArchiveDialog'
-import { UnarchiveDialog } from './UnarchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { EditDialog } from './EditDialog'
+import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function EntityTable() {

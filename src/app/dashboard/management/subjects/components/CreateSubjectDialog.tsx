@@ -1,7 +1,18 @@
 'use client'
 
+import { STATUS } from '@prisma/client'
+import { useAtom, useSetAtom } from 'jotai'
+import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { createSubject, getSubjectByName } from '@/actions/subjects'
 import { Button } from '@/components/Button'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import {
     entityToEditAtom,
@@ -11,17 +22,8 @@ import {
     openUnarchiveOrDeleteAtom,
     updateAtom,
 } from '@/global/management-subjects'
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { useAtom, useSetAtom } from 'jotai'
-import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
-import { STATUS } from '@prisma/client'
+
+
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)

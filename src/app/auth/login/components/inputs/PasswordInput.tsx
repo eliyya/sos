@@ -1,9 +1,9 @@
 'use client'
 
-import { RectangleEllipsisIcon } from 'lucide-react'
-import { CompletInput } from '@/components/Inputs'
-import { useTranslations } from 'next-intl'
 import { useAtom } from 'jotai'
+import { RectangleEllipsisIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { CompletInput } from '@/components/Inputs'
 import { passwordAtom } from '@/global/login'
 
 export function PasswordInput() {

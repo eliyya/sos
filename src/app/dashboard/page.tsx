@@ -1,12 +1,14 @@
+import { Temporal } from '@js-temporal/polyfill'
+import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { BeakerIcon, CalendarIcon, UsersIcon } from 'lucide-react'
 import { Metadata } from 'next'
-import { Card } from '@/components/Card'
-import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
-import { db } from '@/prisma/db'
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import Link from 'next/link'
-import { Temporal } from '@js-temporal/polyfill'
+import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
+import { Card } from '@/components/Card'
 import { APP_NAME } from '@/constants/client'
+import { db } from '@/prisma/db'
+
+
 
 export const metadata: Metadata = {
     title: 'Panel de Administrador | ' + APP_NAME,

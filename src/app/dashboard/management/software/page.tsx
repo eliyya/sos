@@ -1,8 +1,8 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'
-import { Filters } from './components/SearchInput'
 import { EntityTable } from './components/EntityTable'
+import { Filters } from './components/SearchInput'
 
 export default async function SoftwarePage() {
     return (

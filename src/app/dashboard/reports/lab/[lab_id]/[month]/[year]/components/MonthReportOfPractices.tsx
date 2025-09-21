@@ -1,5 +1,6 @@
 'use client'
 
+import { use } from 'react'
 import { Card } from '@/components/Card'
 import {
     Table,
@@ -10,7 +11,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/Table'
-import { use } from 'react'
 
 // Devuelve el número de semana dentro del mes (1 a 5)
 function getWeekOfMonth(date: Date) {

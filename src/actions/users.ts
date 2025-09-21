@@ -1,11 +1,11 @@
 'use server'
 
-import { db } from '@/prisma/db'
-import { STATUS, User } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
-import { getAdminRole, getDeletedRole } from './roles'
-import { capitalize } from '@/lib/utils'
+import { STATUS, User } from '@prisma/client'
 import { auth } from '@/lib/auth'
+import { capitalize } from '@/lib/utils'
+import { db } from '@/prisma/db'
+import { getAdminRole, getDeletedRole } from './roles.actions'
 
 export async function getUsers() {
     return db.user.findMany({

@@ -1,9 +1,9 @@
-import { ButtonLink } from '@/components/Links'
-import { db } from '@/prisma/db'
 import app from '@eliyya/type-routes'
 import { LABORATORY_TYPE } from '@prisma/client'
 import { PlusIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import { ButtonLink } from '@/components/Links'
+import { db } from '@/prisma/db'
 
 export default async function NullPage() {
     const lab = await db.laboratory.findFirst({

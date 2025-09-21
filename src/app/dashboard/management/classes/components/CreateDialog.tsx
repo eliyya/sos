@@ -1,15 +1,7 @@
 'use client'
 
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
+import { STATUS } from '@prisma/client'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { CompletSelect } from '@/components/Select'
-import { CompletInput } from '@/components/Inputs'
-import { useState, useTransition } from 'react'
 import {
     UserIcon,
     Save,
@@ -18,10 +10,18 @@ import {
     UsersIcon,
     HashIcon,
 } from 'lucide-react'
-import { MessageError } from '@/components/Error'
+import { useState, useTransition } from 'react'
 import { checkClassDisponibility, createClass } from '@/actions/class'
 import { Button } from '@/components/Button'
-import { STATUS } from '@prisma/client'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
+import { CompletInput } from '@/components/Inputs'
+import { CompletSelect } from '@/components/Select'
 import {
     careersAtom,
     entityToEditAtom,

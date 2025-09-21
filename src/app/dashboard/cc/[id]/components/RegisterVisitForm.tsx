@@ -1,17 +1,17 @@
 'use client'
 
+import { Career } from '@prisma/client'
+import { useSetAtom } from 'jotai'
+import { SquarePenIcon } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
 import { getActiveCareers } from '@/actions/career'
 import { registerVisit } from '@/actions/cc'
 import { findStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
-import ToggleSwitch from '@/components/Switch'
+import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
-import { Career } from '@prisma/client'
-import { useSetAtom } from 'jotai'
-import { SquarePenIcon } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
 
 interface RegisterVisitFormProps {
     laboratory_id: string
@@ -121,7 +121,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 onChange={e => setSemester(e.currentTarget.value)}
                 disabled={!modified}
             />
-            <ToggleSwitch
+            <LabeledSwitch
                 label='El estudiante porta la credencial'
                 name='credencial'
             />

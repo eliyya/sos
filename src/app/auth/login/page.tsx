@@ -1,8 +1,8 @@
-import { APP_NAME } from '@/constants/client'
-import { LoginForm } from './components/LoginForm'
-import { db } from '@/prisma/db'
-import { redirect } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { redirect } from 'next/navigation'
+import { APP_NAME } from '@/constants/client'
+import { db } from '@/prisma/db'
+import { LoginForm } from './components/LoginForm'
 
 export default async function LoginPage() {
     const usersCount = await db.user.count()

@@ -1,5 +1,8 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Save, SquarePenIcon, TagIcon } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { editCareer } from '@/actions/career'
 import { Button } from '@/components/Button'
 import {
@@ -9,16 +12,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import {
     editDialogAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-career'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, SquarePenIcon, TagIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)

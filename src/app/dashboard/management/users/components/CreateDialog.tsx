@@ -1,19 +1,6 @@
 'use client'
 
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { capitalize, truncateByUnderscore } from '@/lib/utils'
-import { useEffect, useState, useTransition } from 'react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { CompletSelect } from '@/components/Select'
-import { CompletInput } from '@/components/Inputs'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/Button'
-import { MessageError } from '@/components/Error'
 import {
     AtSignIcon,
     KeyIcon,
@@ -21,6 +8,18 @@ import {
     TriangleIcon,
     UserIcon,
 } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+import { usernameIsTaken } from '@/actions/users'
+import { Button } from '@/components/Button'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
+import { CompletInput } from '@/components/Inputs'
+import { CompletSelect } from '@/components/Select'
 import {
     canSuggestUsernameAtom,
     confirmPasswordAtom,
@@ -33,12 +32,13 @@ import {
     passwordAtom,
     passwordErrorAtom,
     passwordFocusAtom,
-    rolesAtom,
     updateAtom,
     usernameAtom,
     usernameErrorAtom,
 } from '@/global/management-users'
-import { usernameIsTaken } from '@/actions/users'
+import { authClient } from '@/lib/auth-client'
+import { capitalize, truncateByUnderscore } from '@/lib/utils'
+import { rolesAtom } from '@/global/roles.globals'
 
 export function CreateUserDialog() {
     const [open, setOpen] = useAtom(openCreateUserAtom)

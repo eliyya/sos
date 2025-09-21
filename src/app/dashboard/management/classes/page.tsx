@@ -1,8 +1,8 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
+import { ClassesTable } from './components/ClassesTable'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'
 import { Filters } from './components/SearchInput'
-import { ClassesTable } from './components/ClassesTable'
 
 export default async function ClassesPage() {
     return (

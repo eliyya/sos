@@ -1,8 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import app from '@eliyya/type-routes'
 import {
     BeakerIcon,
     LayoutDashboardIcon,
@@ -14,9 +12,12 @@ import {
     PcCaseIcon,
     Calendar1Icon,
 } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Accordion, AccordionSection } from '@/components/Accordion'
-import app from '@eliyya/type-routes'
 import { APP_NAME } from '@/constants/client'
+import { cn } from '@/lib/utils'
+import { ManagementLink } from './management-link'
 
 const reportNavItems: {
     title: string
@@ -87,19 +88,7 @@ export function DashboardNav({ className }: DashboardNavProps) {
                     <Calendar1Icon className='h-4 w-4' />
                     Horario
                 </Link>
-                <Link
-                    href='/dashboard/management'
-                    className={cn(
-                        'hover:bg-accent text-muted-foreground flex items-center gap-3 rounded-md px-4 py-2 text-sm',
-                        {
-                            'bg-accent text-accent-foreground font-medium':
-                                pathname.includes('/dashboard/management'),
-                        },
-                    )}
-                >
-                    <BeakerIcon className='h-4 w-4' />
-                    Gestion
-                </Link>
+                <ManagementLink />
 
                 <Accordion defaultValue='item-2' type='single' collapsible>
                     <AccordionSection value='item-2' name='Reportes'>

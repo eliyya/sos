@@ -1,5 +1,8 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Ban, Trash2 } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { deleteSubject } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {
@@ -9,15 +12,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import {
     openDeleteAtom,
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-subjects'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)

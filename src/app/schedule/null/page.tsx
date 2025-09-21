@@ -1,3 +1,9 @@
+import app from '@eliyya/type-routes'
+import { Temporal } from '@js-temporal/polyfill'
+import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { PlusIcon, UserIcon } from 'lucide-react'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import {
     PermissionsBitField,
     PermissionsFlags,
@@ -6,12 +12,6 @@ import { ButtonLink } from '@/components/Links'
 import { APP_NAME } from '@/constants/client'
 import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
-import app from '@eliyya/type-routes'
-import { Temporal } from '@js-temporal/polyfill'
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
-import { PlusIcon, UserIcon } from 'lucide-react'
-import { headers } from 'next/headers'
-import { redirect } from 'next/navigation'
 
 export default async function NullPage() {
     const lab = await db.laboratory.findFirst({

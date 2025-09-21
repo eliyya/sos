@@ -1,5 +1,3 @@
-import { th } from 'zod/v4/locales'
-
 export type Result<T, E> = Ok<T> | Err<E>
 
 export type Ok<T> = {

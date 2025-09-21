@@ -1,5 +1,11 @@
 'use client'
 
+import { Laboratory , STATUS } from '@prisma/client'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { getLaboratories } from '@/actions/laboratory'
+import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -9,11 +15,6 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { Laboratory } from '@prisma/client'
-import { STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
 import {
     editDialogAtom,
     openArchiveAtom,
@@ -24,13 +25,11 @@ import {
     updateAtom,
     queryAtom,
 } from '@/global/management-laboratory'
-import { getLaboratories } from '@/actions/laboratory'
-import { EditDialog } from './EditDialog'
-import { ArchiveDialog } from './ArchiveDialog'
-import { UnarchiveDialog } from './UnarchiveDialog'
-import { DeleteDialog } from './DeleteDialog'
 import { secondsToTime } from '@/lib/utils'
-import { Badge } from '@/components/Badge'
+import { ArchiveDialog } from './ArchiveDialog'
+import { DeleteDialog } from './DeleteDialog'
+import { EditDialog } from './EditDialog'
+import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 
 export function EntityTable() {

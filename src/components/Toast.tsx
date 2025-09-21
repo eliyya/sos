@@ -10,8 +10,8 @@ import {
     Viewport,
 } from '@radix-ui/react-toast'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { ReactElement, ComponentProps } from 'react'
 import { X } from 'lucide-react'
+import { ReactElement, ComponentProps } from 'react'
 import { cn } from '@/lib/utils'
 
 export const ToastProvider = Provider

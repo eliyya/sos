@@ -1,5 +1,8 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { ArchiveRestore, Ban } from 'lucide-react'
+import { useState, useTransition } from 'react'
 import { unarchiveUser } from '@/actions/users'
 import { Button } from '@/components/Button'
 import {
@@ -15,9 +18,6 @@ import {
     updateAtom,
     entityToEditAtom,
 } from '@/global/management-users'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { ArchiveRestore, Ban } from 'lucide-react'
-import { useState, useTransition } from 'react'
 
 export function UnarchiveEntityDialog() {
     const [open, setOpen] = useAtom(openUnarchiveUserAtom)

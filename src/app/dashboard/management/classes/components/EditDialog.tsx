@@ -1,5 +1,16 @@
 'use client'
 
+import { Career, Subject, User } from '@prisma/client'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+    BookAIcon,
+    GraduationCapIcon,
+    HashIcon,
+    Save,
+    UserIcon,
+    UsersIcon,
+} from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
 import { getActiveCareers } from '@/actions/career'
 import { editClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
@@ -12,6 +23,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
@@ -19,18 +31,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-class'
-import { Career, Subject, User } from '@prisma/client'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import {
-    BookAIcon,
-    GraduationCapIcon,
-    HashIcon,
-    Save,
-    UserIcon,
-    UsersIcon,
-} from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
+
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)

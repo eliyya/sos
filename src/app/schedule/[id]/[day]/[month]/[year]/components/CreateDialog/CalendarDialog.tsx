@@ -1,15 +1,15 @@
 'use client'
 
-import { secondsToTime } from '@/lib/utils'
+import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
 import { useAtomValue } from 'jotai'
 import {
     actualEventAtom,
     createDayAtom,
     eventsAtom,
 } from '@/global/management-practices'
+import { secondsToTime } from '@/lib/utils'
 
 interface CalendarProps {
     lab: {

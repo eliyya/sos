@@ -1,19 +1,6 @@
 'use client'
 
-import { createStudent } from '@/actions/students'
-import { Button } from '@/components/Button'
-import { CompletInput } from '@/components/Inputs'
-import {
-    openCreateAtom,
-    updateAtom,
-    entityToEditAtom,
-} from '@/global/management-students'
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
+import { Career } from '@prisma/client'
 import { useAtom, useSetAtom } from 'jotai'
 import {
     Save,
@@ -24,10 +11,24 @@ import {
     GraduationCapIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-import { MessageError } from '@/components/Error'
-import { CompletSelect } from '@/components/Select'
 import { getActiveCareers } from '@/actions/career'
-import { Career } from '@prisma/client'
+import { createStudent } from '@/actions/students'
+import { Button } from '@/components/Button'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
+import { MessageError } from '@/components/Error'
+import { CompletInput } from '@/components/Inputs'
+import { CompletSelect } from '@/components/Select'
+import {
+    openCreateAtom,
+    updateAtom,
+    entityToEditAtom,
+} from '@/global/management-students'
+
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)

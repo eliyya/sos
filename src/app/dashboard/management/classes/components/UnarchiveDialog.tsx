@@ -1,5 +1,9 @@
 'use client'
 
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { ArchiveRestore, Ban } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { unarchiveClass } from '@/actions/class'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -17,10 +21,7 @@ import {
     subjectsAtom,
     usersAtom,
 } from '@/global/management-class'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { ArchiveRestore, Ban } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { unarchiveClass } from '@/actions/class'
+
 
 export function UnarchiveDialog() {
     const [open, setOpen] = useAtom(openUnarchiveAtom)

@@ -1,10 +1,11 @@
 'use client'
 
-import { SimpleInput } from '@/components/Inputs'
 import { useAtom } from 'jotai'
-import { queryAtom, showArchivedAtom } from '@/global/management-machines'
-import ToggleSwitch from '@/components/Switch'
 import { Search } from 'lucide-react'
+import { SimpleInput } from '@/components/Inputs'
+import LabeledSwitch from '@/components/Switch'
+import { queryAtom, showArchivedAtom } from '@/global/management-machines'
+
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)
@@ -24,7 +25,7 @@ export function Filters() {
                 <Search className='absolute top-1/2 left-3 -translate-y-1/2' />
             </div>
             <div>
-                <ToggleSwitch
+                <LabeledSwitch
                     label='En Mantenimiento'
                     checked={archived}
                     onCheckedChange={() => setArchived(v => !v)}

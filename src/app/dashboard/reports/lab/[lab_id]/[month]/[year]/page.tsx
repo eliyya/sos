@@ -1,10 +1,12 @@
-import { db } from '@/prisma/db'
+import { Temporal } from '@js-temporal/polyfill'
+import { LABORATORY_TYPE, STATUS } from '@prisma/client'
 import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
+import { db } from '@/prisma/db'
+import { ChangueDate } from './components/ChangueDate'
 import MonthReportOfPractices from './components/MonthReportOfPractices'
 import { SelectLaboratory } from './components/SelectLaboratory'
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
-import { Temporal } from '@js-temporal/polyfill'
-import { ChangueDate } from './components/ChangueDate'
+
+
 
 interface MonthReportOfPracticesProps {
     params: Promise<{

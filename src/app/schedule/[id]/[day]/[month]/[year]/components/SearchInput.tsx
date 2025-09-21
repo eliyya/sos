@@ -1,11 +1,11 @@
 'use client'
 
-import { Button } from '@/components/Button'
-import { SimpleInput } from '@/components/Inputs'
 import app from '@eliyya/type-routes'
 import { Temporal } from '@js-temporal/polyfill'
 import { CalendarSearchIcon } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
+import { Button } from '@/components/Button'
+import { SimpleInput } from '@/components/Inputs'
 
 export function SearchInput() {
     const router = useRouter()

@@ -1,10 +1,10 @@
-import { SelectLaboratory } from './SelectLaboratory'
 import app from '@eliyya/type-routes'
-import { ButtonLink } from '@/components/Links'
 import {
     PermissionsBitField,
     PermissionsFlags,
 } from '@/bitfields/PermissionsBitField'
+import { ButtonLink } from '@/components/Links'
+import { SelectLaboratory } from './SelectLaboratory'
 
 interface ScheduleHeaderProps {
     labs: { id: string; name: string }[]

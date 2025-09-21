@@ -1,5 +1,6 @@
 'use client'
 
+import { LucideIcon, Undo2Icon } from 'lucide-react'
 import {
     ComponentProps,
     ReactNode,
@@ -7,8 +8,7 @@ import {
     useRef,
     useImperativeHandle,
     useEffect,
-} from 'react'
-import { LucideIcon, Undo2Icon } from 'lucide-react'
+ useState } from 'react'
 import ReactSelect, {
     MultiValue,
     OnChangeValue,
@@ -17,7 +17,6 @@ import ReactSelect, {
 } from 'react-select'
 import ReactCreatableSelect from 'react-select/creatable'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
 import { MessageError } from './Error'
 
 interface CompletSelectProps<O, IM extends boolean>

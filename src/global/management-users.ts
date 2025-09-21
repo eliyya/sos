@@ -1,5 +1,4 @@
-import { Role, User } from '@prisma/client'
-import { STATUS } from '@prisma/client'
+import { Role, User, STATUS } from '@prisma/client'
 import { atom } from 'jotai'
 
 const default_user: Omit<User, 'updated_at' | 'image'> = {
@@ -39,4 +38,3 @@ export const editConfirmPasswordErrorAtom = atom('')
 export const openUnarchiveOrDeleteAtom = atom(false)
 export const openPreventArchiveAdminAtom = atom(false)
 export const adminRoleAtom = atom<Role | null>(null)
-export const rolesAtom = atom<Role[]>([])

@@ -1,5 +1,4 @@
-import { Laboratory, Machine } from '@prisma/client'
-import { MACHINE_STATUS } from '@prisma/client'
+import { Laboratory, Machine , MACHINE_STATUS } from '@prisma/client'
 import { atom } from 'jotai'
 
 const defaultEntity: Omit<Machine, 'created_at' | 'updated_at'> = {

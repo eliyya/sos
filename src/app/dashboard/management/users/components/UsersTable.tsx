@@ -1,5 +1,10 @@
 'use client'
 
+import { User, STATUS } from '@prisma/client'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { getRoles } from '@/actions/roles.actions'
 import { getUsers } from '@/actions/users'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -11,12 +16,6 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { User } from '@prisma/client'
-import { STATUS } from '@prisma/client'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { EditUserDialog } from './EditUserDialog'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     EditUserDialogAtom,
     openArchiveUserAtom,
@@ -26,15 +25,14 @@ import {
     openUnarchiveUserAtom,
     openDeleteAtom,
     queryAtom,
-    adminRoleAtom,
-    rolesAtom,
 } from '@/global/management-users'
 import { ArchiveEntityDialog } from './ArchiveEntityDialog'
-import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
 import { DeleteEntityDialog } from './DeleteEntityDialog'
-import { getAdminRole, getRoles } from '@/actions/roles'
-import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { EditUserDialog } from './EditUserDialog'
 import { PreventArchiveAdminDialog } from './PreventArchiveAdmin'
+import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
+import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { rolesAtom } from '@/global/roles.globals'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
@@ -42,18 +40,21 @@ export function UsersTable() {
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
     const [roles, setRoles] = useAtom(rolesAtom)
-    const setAdminRole = useSetAtom(adminRoleAtom)
-
-    useEffect(() => {
-        getAdminRole().then(setAdminRole)
-    }, [setAdminRole])
 
     useEffect(() => {
         getUsers().then(setUsers)
     }, [update])
 
     useEffect(() => {
-        getRoles().then(setRoles)
+        getRoles().then(r =>
+            setRoles(
+                r.map(r => ({
+                    id: r.id,
+                    name: r.name,
+                    permissions: r.permissions.toString(),
+                })),
+            ),
+        )
     }, [setRoles])
 
     return (

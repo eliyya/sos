@@ -36,6 +36,7 @@
         "cron": "4.3.3",
         "dexie": "4.2.0",
         "effect": "^3.17.13",
+        "eslint-plugin-import": "^2.32.0",
         "jotai": "2.14.0",
         "lucide-react": "0.544.0",
         "monaco-editor": "0.53.0",
