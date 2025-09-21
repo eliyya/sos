@@ -18,9 +18,9 @@ import {
     updateAtom,
     entityToEditAtom,
     openPreventArchiveAdminAtom,
-    adminRoleAtom,
 } from '@/global/management-users'
-
+import { rolesAtom } from '@/global/roles.globals'
+import { DEFAULT_ROLES } from '@/constants/client'
 
 export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -29,7 +29,8 @@ export function DeleteEntityDialog() {
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
     const setOpenPreventArchiveAdmin = useSetAtom(openPreventArchiveAdminAtom)
-    const adminRole = useAtomValue(adminRoleAtom)
+    const roles = useAtomValue(rolesAtom)
+    const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
 
     if (!entity || !adminRole) return null
 

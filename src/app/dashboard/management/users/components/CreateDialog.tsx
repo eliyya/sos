@@ -32,13 +32,13 @@ import {
     passwordAtom,
     passwordErrorAtom,
     passwordFocusAtom,
-    rolesAtom,
     updateAtom,
     usernameAtom,
     usernameErrorAtom,
 } from '@/global/management-users'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
+import { rolesAtom } from '@/global/roles.globals'
 
 export function CreateUserDialog() {
     const [open, setOpen] = useAtom(openCreateUserAtom)

@@ -30,9 +30,8 @@ import {
     editConfirmPasswordAtom,
     editConfirmPasswordErrorAtom,
     passwordFocusAtom,
-    rolesAtom,
 } from '@/global/management-users'
-
+import { rolesAtom } from '@/global/roles.globals'
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)

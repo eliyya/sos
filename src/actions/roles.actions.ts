@@ -50,35 +50,6 @@ export async function getAdminRole() {
     return newRole
 }
 
-export async function getUserRole() {
-    const role = await db.role.findFirst({
-        where: { name: DEFAULT_ROLES.USER },
-    })
-    if (role) return role
-    const newRole = await db.$transaction(async t => {
-        const role = await t.role.create({
-            data: {
-                name: DEFAULT_ROLES.USER,
-                permissions: DEFAULT_PERMISSIONS.USER,
-            },
-        })
-        await t.states.upsert({
-            where: { name: DB_STATES.ROLES_COUNT },
-            create: {
-                name: DB_STATES.ROLES_COUNT,
-                value: 2,
-            },
-            update: {
-                value: {
-                    increment: 1,
-                },
-            },
-        })
-        return role
-    })
-    return newRole
-}
-
 export async function getDeletedRole() {
     const role = await db.role.findFirst({
         where: { name: DEFAULT_ROLES.DELETED },
