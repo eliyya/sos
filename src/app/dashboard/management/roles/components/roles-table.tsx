@@ -3,13 +3,17 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { SearchIcon } from 'lucide-react'
 import { useEffect } from 'react'
-import { getRoles } from '@/actions/roles.actions'
+import { getRoles, getUsersCountPerRole } from '@/actions/roles.actions'
 import { Badge } from '@/components/Badge'
 import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { queryAtom } from '@/global/management-career'
-import { rolesAtom, selectedRoleIdAtom } from '@/global/roles.globals'
+import {
+    rolesAtom,
+    selectedRoleIdAtom,
+    usersCountAtom,
+} from '@/global/roles.globals'
 import { PermissionsList } from './permissions-list'
 
 export function RolesTable() {
@@ -17,6 +21,7 @@ export function RolesTable() {
     const selectedRoleId = useAtomValue(selectedRoleIdAtom)
     const [query, setQuery] = useAtom(queryAtom)
     const selectRole = useSetAtom(selectedRoleIdAtom)
+    const [usersCount, setUsersCount] = useAtom(usersCountAtom)
 
     useEffect(() => {
         getRoles().then(r => {
@@ -24,7 +29,12 @@ export function RolesTable() {
                 r.map(r => ({ ...r, permissions: r.permissions.toString() })),
             )
         })
-    }, [setRoles])
+        getUsersCountPerRole().then(r => {
+            if (r.status === 'success') {
+                setUsersCount(r.roles)
+            }
+        })
+    }, [setRoles, setUsersCount])
 
     return (
         <>
@@ -65,7 +75,7 @@ export function RolesTable() {
                                 >
                                     <CardContent className='p-3'>
                                         <div className='flex items-center justify-between'>
-                                            <div className='flex-1'>
+                                            <div className='flex flex-1 items-center gap-2'>
                                                 <h3 className='text-card-foreground mb-1 text-sm font-semibold'>
                                                     {role.name}
                                                 </h3>
@@ -73,8 +83,23 @@ export function RolesTable() {
                                                     variant='secondary'
                                                     className='text-xs'
                                                 >
-                                                    {0} usuarios
+                                                    {usersCount.find(
+                                                        u => u.id === role.id,
+                                                    )?.count ?? 0}{' '}
+                                                    usuarios
                                                 </Badge>
+                                                {Object.values(DEFAULT_ROLES)
+                                                    .map(r => r.toLowerCase())
+                                                    .includes(
+                                                        role.name.toLowerCase(),
+                                                    ) && (
+                                                    <Badge
+                                                        variant='outline'
+                                                        className='text-xs'
+                                                    >
+                                                        System
+                                                    </Badge>
+                                                )}
                                             </div>
                                         </div>
                                     </CardContent>

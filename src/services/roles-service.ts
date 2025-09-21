@@ -163,3 +163,33 @@ export const changuePermissionsEffect = (id: string, permissions: bigint) =>
         )
         return updated
     })
+
+// get users count by roles
+export const usersCountPerRoleEffect = () =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+        return yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.user.findMany({
+                        where: {
+                            role_id: {
+                                not: DEFAULT_ROLES.DELETED,
+                            },
+                        },
+                        select: {
+                            role_id: true,
+                        },
+                    }),
+                catch: err => new UnexpectedError(err),
+            })
+                .pipe(Effect.map(users => users.map(u => u.role_id)))
+                .pipe(Effect.map(users => Object.groupBy(users, u => u)))
+                .pipe(Effect.map(users => Object.entries(users)))
+                .pipe(
+                    Effect.map(users =>
+                        users.map(([id, u]) => ({ id, count: u?.length ?? 0 })),
+                    ),
+                ),
+        )
+    })

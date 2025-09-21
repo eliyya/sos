@@ -16,3 +16,6 @@ export const selectedRoleAtom = atom(get => {
 export const updateAtom = atom(Symbol())
 export const openDeleteAtom = atom(false)
 export const permissionsEditedAtom = atom(new PermissionsBitField())
+export const usersCountAtom = atomWithStorage<
+    Serializable<{ id: string; count: number }[]>
+>('usersCount', [])

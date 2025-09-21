@@ -18,6 +18,7 @@ import {
     createNewRoleEffect,
     deleteRoleEffect,
     editRoleNameEffect,
+    usersCountPerRoleEffect,
 } from '@/services/roles-service'
 
 export async function getAdminRole() {
@@ -233,6 +234,31 @@ export async function changuePermissions(id: string, permissions: bigint) {
                                 status: 'error' as const,
                                 type: 'invalid-input' as const,
                                 message: error.message,
+                            }
+                        return {
+                            status: 'error' as const,
+                            type: 'unknown' as const,
+                            message: String(error),
+                        }
+                    },
+                }),
+            ),
+        ),
+    )
+}
+
+export async function getUsersCountPerRole() {
+    return await Effect.runPromise(
+        Effect.scoped(
+            Effect.provide(usersCountPerRoleEffect(), PrismaLive).pipe(
+                Effect.match({
+                    onSuccess: roles => ({ status: 'success' as const, roles }),
+                    onFailure: error => {
+                        if (error instanceof UnexpectedError)
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error.cause),
                             }
                         return {
                             status: 'error' as const,
