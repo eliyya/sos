@@ -10,6 +10,8 @@ import {
     AlreadyExistsError,
     InvalidInputError,
     NotFoundError,
+    PermissionError,
+    UnauthorizedError,
     UnexpectedError,
 } from '@/errors'
 import { db } from '@/prisma/db'
@@ -124,6 +126,18 @@ export async function editRoleName(id: string, name: string) {
                                     message: error.message,
                                 }
                             }
+                            if (error instanceof UnauthorizedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof PermissionError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                }
                             return {
                                 status: 'error' as const,
                                 type: 'unknown' as const,
@@ -155,6 +169,18 @@ export async function createNewRole() {
                                     type: 'unexpected' as const,
                                     message: String(error.cause),
                                 }
+                            if (error instanceof UnauthorizedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof PermissionError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                }
                             return {
                                 status: 'error' as const,
                                 type: 'unknown' as const,
@@ -182,6 +208,18 @@ export async function deleteRole(id: string) {
                                     status: 'error' as const,
                                     type: 'unexpected' as const,
                                     message: String(error.cause),
+                                }
+                            if (error instanceof UnauthorizedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof PermissionError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
                                 }
                             return {
                                 status: 'error' as const,
@@ -224,6 +262,19 @@ export async function changuePermissions(id: string, permissions: bigint) {
                                 return {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
+                                    message: error.message,
+                                }
+
+                            if (error instanceof UnauthorizedError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof PermissionError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
                                     message: error.message,
                                 }
                             return {
