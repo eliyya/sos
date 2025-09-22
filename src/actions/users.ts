@@ -5,7 +5,10 @@ import { STATUS, User } from '@/prisma/client'
 import { auth } from '@/lib/auth'
 import { capitalize } from '@/lib/utils'
 import { db } from '@/prisma/db'
-import { getAdminRole, getDeletedRole } from './roles.actions'
+import { getAdminRole } from './roles.actions'
+import { Effect } from 'effect'
+import { getDeletedRoleEffect } from '@/services/roles.service'
+import { PrismaLive } from '@/layers/db.layer'
 
 export async function getUsers() {
     return db.user.findMany({
@@ -73,7 +76,24 @@ export async function unarchiveUser(formData: FormData) {
 
 export async function deleteUser(formData: FormData) {
     const id = formData.get('user_id') as string
-    const userRole = await getDeletedRole()
+    const userRole = await Effect.runPromise(
+        Effect.scoped(
+            getDeletedRoleEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return value
+                        },
+                        onFailure(error) {
+                            console.error(error)
+                            return null
+                        },
+                    }),
+                ),
+        ),
+    )
+    if (!userRole) return { error: 'Algo sucedio mal, intente nuevamente' }
     try {
         await db.user.update({
             where: { id },
