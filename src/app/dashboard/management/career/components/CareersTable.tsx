@@ -1,6 +1,6 @@
 'use client'
 
-import { Career , STATUS } from '@prisma/client'
+import { Career, STATUS } from '@/prisma/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'

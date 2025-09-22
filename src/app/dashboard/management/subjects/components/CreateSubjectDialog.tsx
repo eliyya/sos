@@ -1,6 +1,6 @@
 'use client'
 
-import { STATUS } from '@prisma/client'
+import { STATUS } from '@/prisma/browser'
 import { useAtom, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -22,8 +22,6 @@ import {
     openUnarchiveOrDeleteAtom,
     updateAtom,
 } from '@/global/management-subjects'
-
-
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -91,9 +89,7 @@ export function CreateSubjectDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <NameInput />
                     <div className='flex w-full gap-4'>
                         <CompletInput

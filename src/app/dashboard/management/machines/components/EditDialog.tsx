@@ -1,6 +1,6 @@
 'use client'
 
-import { STATUS } from '@prisma/client'
+import { STATUS } from '@/prisma/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -22,8 +22,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-machines'
-
-
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)

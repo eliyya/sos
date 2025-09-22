@@ -1,6 +1,6 @@
 'use client'
 
-import { LABORATORY_TYPE } from '@prisma/client'
+import { LABORATORY_TYPE } from '@/prisma/enums'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ClockIcon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'

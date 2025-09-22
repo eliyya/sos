@@ -1,6 +1,6 @@
 'use client'
 
-import { Software } from '@prisma/client'
+import { Software } from '@/prisma/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'

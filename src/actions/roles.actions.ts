@@ -2,11 +2,6 @@
 
 import { Effect } from 'effect'
 import {
-    DB_STATES,
-    DEFAULT_PERMISSIONS,
-    DEFAULT_ROLES,
-} from '@/constants/client'
-import {
     AlreadyExistsError,
     InvalidInputError,
     NotFoundError,
@@ -14,89 +9,63 @@ import {
     UnauthorizedError,
     UnexpectedError,
 } from '@/errors'
-import { db } from '@/prisma/db'
 import {
     changuePermissionsEffect,
     createNewRoleEffect,
     deleteRoleEffect,
     editRoleNameEffect,
+    getAdminRoleEffect,
+    getRolesEffect,
     usersCountPerRoleEffect,
 } from '@/services/roles.service'
 import { PrismaLive } from '@/layers/db.layer'
-import { SessionLive } from '@/layers/auth.layer'
+import { AuthLive } from '@/layers/auth.layer'
 
 /**
  * Obtiene el rol ADMIN si existe; de lo contrario lo crea con los permisos por defecto.
  * También actualiza el contador de roles en la tabla de estados.
  */
 export async function getAdminRole() {
-    const role = await db.role.findUnique({
-        where: { name: DEFAULT_ROLES.ADMIN },
-    })
-    if (role) return role
-    const newRole = await db.$transaction(async t => {
-        const role = await t.role.create({
-            data: {
-                name: DEFAULT_ROLES.ADMIN,
-                permissions: DEFAULT_PERMISSIONS.ADMIN,
-            },
-        })
-        await t.states.upsert({
-            where: { name: DB_STATES.ROLES_COUNT },
-            create: {
-                name: DB_STATES.ROLES_COUNT,
-                value: 1,
-            },
-            update: {
-                value: {
-                    increment: 1,
-                },
-            },
-        })
-        return role
-    })
-    return newRole
-}
-
-/**
- * Obtiene el rol DELETED si existe; de lo contrario lo crea con los permisos por defecto.
- * También actualiza el contador de roles en la tabla de estados.
- */
-export async function getDeletedRole() {
-    const role = await db.role.findFirst({
-        where: { name: DEFAULT_ROLES.DELETED },
-    })
-    if (role) return role
-    const newRole = await db.$transaction(async t => {
-        const role = await t.role.create({
-            data: {
-                name: DEFAULT_ROLES.DELETED,
-                permissions: DEFAULT_PERMISSIONS.DELETED,
-            },
-        })
-        await t.states.upsert({
-            where: { name: DB_STATES.ROLES_COUNT },
-            create: {
-                name: DB_STATES.ROLES_COUNT,
-                value: 3,
-            },
-            update: {
-                value: {
-                    increment: 1,
-                },
-            },
-        })
-        return role
-    })
-    return newRole
+    return await Effect.runPromise(
+        Effect.scoped(
+            getAdminRoleEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return value
+                        },
+                        onFailure(error) {
+                            console.error(error)
+                            return null
+                        },
+                    }),
+                ),
+        ),
+    )
 }
 
 /**
  * Lista todos los roles existentes en la base de datos.
  */
 export async function getRoles() {
-    const roles = await db.role.findMany()
-    return roles
+    return await Effect.runPromise(
+        Effect.scoped(
+            getRolesEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return value
+                        },
+                        onFailure(error) {
+                            console.error(error)
+                            return []
+                        },
+                    }),
+                ),
+        ),
+    )
 }
 
 /**
@@ -108,7 +77,7 @@ export async function editRoleName(id: string, name: string) {
         Effect.scoped(
             editRoleNameEffect(id, name)
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: role => ({
@@ -174,7 +143,7 @@ export async function createNewRole() {
         Effect.scoped(
             createNewRoleEffect()
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: role => ({
@@ -221,7 +190,7 @@ export async function deleteRole(id: string) {
         Effect.scoped(
             deleteRoleEffect(id)
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: () => ({ status: 'success' as const }),
@@ -267,7 +236,7 @@ export async function changuePermissions(id: string, permissions: bigint) {
         Effect.scoped(
             changuePermissionsEffect(id, permissions)
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: role => ({

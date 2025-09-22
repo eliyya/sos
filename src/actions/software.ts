@@ -1,6 +1,6 @@
 'use server'
 
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@/prisma/client'
 import { db } from '@/prisma/db'
 
 export async function getSoftware() {

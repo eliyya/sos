@@ -1,12 +1,17 @@
 'use client'
 
-import { LABORATORY_TYPE } from '@prisma/client'
+import { LABORATORY_TYPE } from '@/prisma/browser'
 import { useAtom, useSetAtom } from 'jotai'
 import { Clock8Icon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { createlab } from '@/actions/laboratory'
 import { Button } from '@/components/Button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'

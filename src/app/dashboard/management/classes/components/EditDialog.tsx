@@ -1,6 +1,6 @@
 'use client'
 
-import { Career, Subject, User } from '@prisma/client'
+import { Career, Subject, User } from '@/prisma/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     BookAIcon,
@@ -14,7 +14,7 @@ import { useEffect, useState, useTransition } from 'react'
 import { getActiveCareers } from '@/actions/career'
 import { editClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
-import { getTeachersActive } from '@/actions/users'
+import { getUsers } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -32,7 +32,6 @@ import {
     updateAtom,
 } from '@/global/management-class'
 
-
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)
     const [inTransition, startTransition] = useTransition()
@@ -47,7 +46,7 @@ export function EditDialog() {
         getActiveCareers().then(careers => {
             setCareers(careers)
         })
-        getTeachersActive().then(users => {
+        getUsers().then(users => {
             setTeachers(users)
         })
         getSubjectsActive().then(subjects => {

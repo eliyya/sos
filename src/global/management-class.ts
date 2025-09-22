@@ -1,4 +1,4 @@
-import { Career, Class, STATUS, Subject, User } from '@prisma/client'
+import { Career, Class, STATUS, Subject, User } from '@/prisma/browser'
 import { atom } from 'jotai'
 
 const defaultEntity: Omit<Class, 'created_at' | 'updated_at'> = {

@@ -1,11 +1,16 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './client/client.ts'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 function createPrismaClient() {
-    return new PrismaClient()
+    const adapter =
+        globalThis.adapterGlobal ??
+        new PrismaPg({ connectionString: process.env.DATABASE_URL })
+    return new PrismaClient({ adapter })
 }
 
 declare const globalThis: {
     dbGlobal: ReturnType<typeof createPrismaClient>
+    adapterGlobal: PrismaPg
 } & typeof global
 
 const db = globalThis.dbGlobal ?? createPrismaClient()

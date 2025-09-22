@@ -1,4 +1,4 @@
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { LABORATORY_TYPE, STATUS } from '@/prisma/browser'
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -10,9 +10,6 @@ import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
 import ScheduleBody from './components/ScheduleBody'
 import { ScheduleHeader } from './components/ScheduleHeader'
-
-
-
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',

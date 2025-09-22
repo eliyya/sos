@@ -3,7 +3,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import { adminCount, archiveUser } from '@/actions/users'
+import { archiveUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -47,17 +47,21 @@ export function ArchiveEntityDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            if (entity.role_id === adminRole.id) {
-                                const ac = await adminCount()
-                                if (ac < 2) {
+                            const id = data.get('id') as string
+                            const response = await archiveUser(id)
+                            if (response.status === 'error') {
+                                if (
+                                    response.type === 'not-allowed' &&
+                                    response.message ===
+                                        'Unique admin cannot be archived'
+                                ) {
                                     setOpenPreventArchiveAdmin(true)
                                     setOpen(false)
                                     return
                                 }
-                            }
-                            const { error } = await archiveUser(data)
-                            if (error) {
-                                setMessage(error)
+                                setMessage(
+                                    'Algo sucedio mal, intente nuevamente',
+                                )
                                 setTimeout(() => setMessage(''), 5_000)
                             } else {
                                 setTimeout(

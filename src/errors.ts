@@ -50,3 +50,8 @@ export class PermissionError {
         this.message = `PermissionError: Missing permissions: ${new PermissionsBitField(flag).toArray().join(', ')}`
     }
 }
+
+export class PrismaError<T> {
+    readonly _tag = 'PrismaError'
+    constructor(readonly cause: T) {}
+}

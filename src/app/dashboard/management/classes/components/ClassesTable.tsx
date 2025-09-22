@@ -1,13 +1,13 @@
 'use client'
 
-import { STATUS , Class } from '@prisma/client'
+import { STATUS, Class } from '@/prisma/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getCareers } from '@/actions/career'
 import { getDisponibleClassesWithData } from '@/actions/class'
 import { getSubjects } from '@/actions/subjects'
-import { getUsers } from '@/actions/users'
+import { getUsers } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -34,7 +34,6 @@ import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
-
 
 export function ClassesTable() {
     const [entity, setEntity] = useState<

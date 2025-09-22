@@ -1,6 +1,6 @@
 'use client'
 
-import { Career } from '@prisma/client'
+import { Career } from '@/prisma/browser'
 import { useAtom, useSetAtom } from 'jotai'
 import {
     Save,
@@ -28,7 +28,6 @@ import {
     updateAtom,
     entityToEditAtom,
 } from '@/global/management-students'
-
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)

@@ -1,13 +1,13 @@
 'use client'
 
-import { User, Subject, Career } from '@prisma/client'
+import { User, Subject, Career } from '@/prisma/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2, User as UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { getActiveCareers } from '@/actions/career'
 import { deleteClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
-import { getTeachersActive } from '@/actions/users'
+import { getUsers } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -24,7 +24,6 @@ import {
     updateAtom,
 } from '@/global/management-class'
 
-
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
     const [inTransition, startTransition] = useTransition()
@@ -36,7 +35,7 @@ export function DeleteDialog() {
     const [careers, setCareers] = useState<Career[]>([])
 
     useEffect(() => {
-        getTeachersActive().then(users => {
+        getUsers().then(users => {
             setTeachers(users)
         })
         getSubjectsActive().then(subjects => {
@@ -81,9 +80,7 @@ export function DeleteDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput
                         label='Profesor'

@@ -1,6 +1,6 @@
 'use client'
 
-import { Laboratory } from '@prisma/client'
+import { Laboratory } from '@/prisma/browser'
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

@@ -3,7 +3,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import { adminCount, deleteUser } from '@/actions/users'
+import { deleteUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -48,16 +48,23 @@ export function DeleteEntityDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            if (entity.role_id === adminRole.id) {
-                                const ac = await adminCount()
-                                if (ac < 2) {
+                            const id = data.get('user_id') as string
+                            const response = await deleteUser(id)
+                            if (response.status === 'error') {
+                                if (
+                                    response.type === 'not-allowed' &&
+                                    response.message ===
+                                        'Unique admin cannot be deleted'
+                                ) {
                                     setOpenPreventArchiveAdmin(true)
                                     setOpen(false)
                                     return
                                 }
-                            }
-                            const { error } = await deleteUser(data)
-                            if (error) {
+                                if (response.type === 'not-found') {
+                                    setMessage('El usuario no se encontro')
+                                    setTimeout(() => setMessage(''), 5_000)
+                                    return
+                                }
                                 setMessage(
                                     'Algo sucedio mal, intente nuevamente',
                                 )

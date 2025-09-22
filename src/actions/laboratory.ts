@@ -1,7 +1,7 @@
 'use server'
 
 import { Temporal } from '@js-temporal/polyfill'
-import { LABORATORY_TYPE, Prisma, STATUS } from '@prisma/client'
+import { LABORATORY_TYPE, Prisma, STATUS } from '@/prisma/client'
 import { headers } from 'next/headers'
 import {
     PermissionsBitField,
