@@ -1,23 +1,33 @@
 'use client'
 
 import app from '@eliyya/type-routes'
-import { LogIn } from 'lucide-react'
+import { LogIn, RectangleEllipsisIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { getAdminRole } from '@/actions/roles.actions'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, cn } from '@/lib/utils'
-import { ConfirmPasswordInput } from './inputs/ConfirmPasswordInput'
 import { NameInput } from './inputs/NameInput'
-import { PasswordInput } from './inputs/PasswordInput'
 import { UsernameInput } from './inputs/UsernameInput'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+    confirmPasswordAtom,
+    confirmPasswordErrorAtom,
+    passwordAtom,
+    passwordErrorAtom,
+    passwordFocusAtom,
+} from '@/global/signup'
+import { CompletInput } from '@/components/Inputs'
+import { useTranslations } from 'next-intl'
 
 export function SignUpForm() {
     const [error, setError] = useState('')
     const [pending, startTransition] = useTransition()
     const { push } = useRouter()
+    const setPasswordError = useSetAtom(passwordErrorAtom)
+    const setConfirmPasswordError = useSetAtom(confirmPasswordAtom)
 
     return (
         <form
@@ -28,6 +38,17 @@ export function SignUpForm() {
                     const name = capitalize(
                         (formData.get('name') as string).trim(),
                     )
+                    const check = checkPassword(password)
+                    if (check?.error) {
+                        return setPasswordError(
+                            'La contraseña debe contener al menos 10 caracteres',
+                        )
+                    }
+                    if (password !== formData.get('confirm-password')) {
+                        return setConfirmPasswordError(
+                            'Las contraseñas no coinciden',
+                        )
+                    }
 
                     const adminRole = await getAdminRole()
                     if (!adminRole) return setError('Something went wrong')
@@ -40,7 +61,7 @@ export function SignUpForm() {
                         role_id: adminRole.id,
                     })
                     if (!error) return push(app.dashboard())
-                    setError('Something went wrong')
+                    setError('Algo salió mal')
                     console.log(error)
                 })
             }
@@ -72,5 +93,88 @@ export function SignUpForm() {
                 Crear cuenta
             </Button>
         </form>
+    )
+}
+
+function checkPassword(password: string) {
+    if (password.length < 10)
+        return {
+            error: 'La contraseña debe tener al menos 10 caracteres',
+        }
+    if (!/[A-Z]/.test(password))
+        return {
+            error: 'La contraseña debe contener al menos una mayúscula',
+        }
+    if (!/[0-9]/.test(password))
+        return {
+            error: 'La contraseña debe contener al menos un número',
+        }
+    if (!/[!@#$%^&*.-_]/.test(password))
+        return {
+            error: 'La contraseña debe contener al menos un carácter especial como !@#$%^&*',
+        }
+}
+
+function PasswordInput() {
+    const t = useTranslations('app.auth.login.components.loginForm')
+    const [pass, setUsername] = useAtom(passwordAtom)
+    const [error, setError] = useAtom(passwordErrorAtom)
+    const setFocus = useSetAtom(passwordFocusAtom)
+
+    return (
+        <CompletInput
+            required
+            label={t('pass')}
+            type='password'
+            name='password'
+            placeholder={t('username-placeholder')}
+            onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
+            value={pass}
+            error={error}
+            onChange={e => {
+                const password = e.target.value
+                setUsername(e.target.value)
+                setError('')
+                if (!password) return
+                const check = checkPassword(password)
+                if (check?.error) return setError(check.error)
+            }}
+            icon={RectangleEllipsisIcon}
+        />
+    )
+}
+
+function ConfirmPasswordInput() {
+    const [confirmPassword, setConfirmPassword] = useAtom(confirmPasswordAtom)
+    const [error, setError] = useAtom(confirmPasswordErrorAtom)
+    const focus = useAtomValue(passwordFocusAtom)
+    const password = useAtomValue(passwordAtom)
+
+    useEffect(() => {
+        const handler = setTimeout(async () => {
+            if (focus) return
+            if (confirmPassword !== password)
+                setError('Las contraseñas no coinciden')
+        }, 500)
+
+        return () => clearTimeout(handler)
+    }, [confirmPassword, password, setError, focus])
+
+    return (
+        <CompletInput
+            required
+            label={'Confirmar contraseña'}
+            type='password'
+            name='confirm-password'
+            placeholder='* * * * * * * *'
+            value={confirmPassword}
+            error={error}
+            onChange={e => {
+                setConfirmPassword(e.target.value)
+                setError('')
+            }}
+            icon={RectangleEllipsisIcon}
+        />
     )
 }
