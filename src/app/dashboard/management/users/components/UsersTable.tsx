@@ -5,7 +5,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getRoles } from '@/actions/roles.actions'
-import { getUsers } from '@/actions/users'
+import { getUsers } from '@/actions/users.actions'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {

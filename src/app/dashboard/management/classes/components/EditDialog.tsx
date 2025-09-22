@@ -14,7 +14,7 @@ import { useEffect, useState, useTransition } from 'react'
 import { getActiveCareers } from '@/actions/career'
 import { editClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
-import { getTeachersActive } from '@/actions/users'
+import { getUsers } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -46,7 +46,7 @@ export function EditDialog() {
         getActiveCareers().then(careers => {
             setCareers(careers)
         })
-        getTeachersActive().then(users => {
+        getUsers().then(users => {
             setTeachers(users)
         })
         getSubjectsActive().then(subjects => {

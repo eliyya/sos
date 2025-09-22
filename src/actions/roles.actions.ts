@@ -19,7 +19,7 @@ import {
     usersCountPerRoleEffect,
 } from '@/services/roles.service'
 import { PrismaLive } from '@/layers/db.layer'
-import { SessionLive } from '@/layers/auth.layer'
+import { AuthLive } from '@/layers/auth.layer'
 
 /**
  * Obtiene el rol ADMIN si existe; de lo contrario lo crea con los permisos por defecto.
@@ -77,7 +77,7 @@ export async function editRoleName(id: string, name: string) {
         Effect.scoped(
             editRoleNameEffect(id, name)
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: role => ({
@@ -143,7 +143,7 @@ export async function createNewRole() {
         Effect.scoped(
             createNewRoleEffect()
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: role => ({
@@ -190,7 +190,7 @@ export async function deleteRole(id: string) {
         Effect.scoped(
             deleteRoleEffect(id)
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: () => ({ status: 'success' as const }),
@@ -236,7 +236,7 @@ export async function changuePermissions(id: string, permissions: bigint) {
         Effect.scoped(
             changuePermissionsEffect(id, permissions)
                 .pipe(Effect.provide(PrismaLive))
-                .pipe(Effect.provide(SessionLive))
+                .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
                         onSuccess: role => ({

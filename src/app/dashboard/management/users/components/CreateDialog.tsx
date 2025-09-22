@@ -9,7 +9,7 @@ import {
     UserIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-import { usernameIsTaken } from '@/actions/users'
+import { usernameIsTaken } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -82,11 +82,13 @@ export function CreateUserDialog() {
                             ).trim()
                             const password = data.get('password') as string
                             const role_id = data.get('role_id') as string
-                            const { status, user: takenUser } =
-                                await usernameIsTaken(username)
-                            if (status === 'archived') {
+                            const response = await usernameIsTaken(username)
+                            if (
+                                response.status === 'success' &&
+                                response.type === 'archived'
+                            ) {
                                 setOpen(false)
-                                setTakenUser(takenUser)
+                                setTakenUser(response.user)
                                 setOpenUnarchiveOrDelete(true)
                                 // reset
                                 setName('')

@@ -8,18 +8,26 @@ const getSession = async () => {
     return session
 }
 
+const getContext = async () => {
+    const ctx = await auth.$context
+    return ctx
+}
+
 export type BetterSession = Exclude<
     Awaited<ReturnType<typeof getSession>>,
     null
 >
+export type BetterContext = Awaited<ReturnType<typeof getContext>>
 
-export class SessionService extends Context.Tag('SessionService')<
-    SessionService,
+export class AuthService extends Context.Tag('AuthService')<
+    AuthService,
     {
         getSession: () => Promise<BetterSession | null>
+        getContext: () => Promise<BetterContext>
     }
 >() {}
 
-export const SessionLive = Layer.succeed(SessionService, {
+export const AuthLive = Layer.succeed(AuthService, {
     getSession,
+    getContext,
 })

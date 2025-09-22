@@ -3,7 +3,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import { unarchiveUser } from '@/actions/users'
+import { unarchiveUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -40,10 +40,17 @@ export function UnarchiveEntityDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await unarchiveUser(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
+                            const id = data.get('id') as string
+                            const response = await unarchiveUser(id)
+                            if (response.status === 'error') {
+                                if (response.type === 'not-found') {
+                                    setMessage(response.message)
+                                } else {
+                                    setMessage(
+                                        'Algo sucedio mal, intente nuevamente',
+                                    )
+                                }
+                                setTimeout(() => setMessage(''), 5_000)
                             } else {
                                 setTimeout(
                                     () => updateUsersTable(Symbol()),

@@ -1,13 +1,13 @@
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { PermissionError, UnauthorizedError, UnexpectedError } from '@/errors'
-import { SessionService } from '@/layers/auth.layer'
+import { AuthService } from '@/layers/auth.layer'
 import { Effect } from 'effect'
 
 export const requirePermission = (
     flag: Parameters<PermissionsBitField['has']>[0],
 ) =>
     Effect.gen(function* (_) {
-        const auth = yield* _(SessionService)
+        const auth = yield* _(AuthService)
 
         const session = yield* _(
             Effect.tryPromise({

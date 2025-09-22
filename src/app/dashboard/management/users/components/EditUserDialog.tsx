@@ -9,7 +9,7 @@ import {
     UserIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-import { editUser } from '@/actions/users'
+import { editUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -54,19 +54,36 @@ export function EditUserDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await editUser(data)
-                            if (error) {
-                                setMessage(error)
+                            const user_id = data.get('user_id') as string
+                            const name = data.get('name') as string
+                            const username = data.get('username') as string
+                            const role_id = data.get('role_id') as string
+                            const password = data.get('password') as string
+                            const response = await editUser({
+                                id: user_id,
+                                name,
+                                username,
+                                role_id,
+                                password,
+                            })
+                            if (response.status === 'error') {
+                                if (response.type === 'not-found') {
+                                    setMessage(response.message)
+                                    setTimeout(() => {
+                                        setMessage('')
+                                    }, 5_000)
+                                    return
+                                }
+                                setMessage(
+                                    'Algo sucedio mal, intente nuevamente',
+                                )
                                 setTimeout(() => {
                                     setMessage('')
                                 }, 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
+                                return
                             }
+                            setTimeout(() => updateUsersTable(Symbol()), 500)
+                            setOpen(false)
                         })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
@@ -139,7 +156,6 @@ export function EditPasswordInput() {
     return (
         <RetornableCompletInput
             originalValue=''
-            required
             label='Nueva contraseña'
             type='password'
             name='password'

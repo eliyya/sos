@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { getCareers } from '@/actions/career'
 import { getDisponibleClassesWithData } from '@/actions/class'
 import { getSubjects } from '@/actions/subjects'
-import { getUsers } from '@/actions/users'
+import { getUsers } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
