@@ -1,11 +1,9 @@
-import { PrismaClient } from '@/prisma/client'
+import { db } from './db.ts'
 import {
     DB_STATES,
     DEFAULT_PERMISSIONS,
     DEFAULT_ROLES,
 } from '../constants/client.ts'
-
-const db = new PrismaClient()
 
 await db.role.create({
     data: {
