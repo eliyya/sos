@@ -20,6 +20,7 @@ import {
     createNewRoleEffect,
     deleteRoleEffect,
     editRoleNameEffect,
+    getAdminRoleEffect,
     usersCountPerRoleEffect,
 } from '@/services/roles.service'
 import { PrismaLive } from '@/layers/db.layer'
@@ -30,32 +31,23 @@ import { SessionLive } from '@/layers/auth.layer'
  * También actualiza el contador de roles en la tabla de estados.
  */
 export async function getAdminRole() {
-    const role = await db.role.findUnique({
-        where: { name: DEFAULT_ROLES.ADMIN },
-    })
-    if (role) return role
-    const newRole = await db.$transaction(async t => {
-        const role = await t.role.create({
-            data: {
-                name: DEFAULT_ROLES.ADMIN,
-                permissions: DEFAULT_PERMISSIONS.ADMIN,
-            },
-        })
-        await t.states.upsert({
-            where: { name: DB_STATES.ROLES_COUNT },
-            create: {
-                name: DB_STATES.ROLES_COUNT,
-                value: 1,
-            },
-            update: {
-                value: {
-                    increment: 1,
-                },
-            },
-        })
-        return role
-    })
-    return newRole
+    return await Effect.runPromise(
+        Effect.scoped(
+            getAdminRoleEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return value
+                        },
+                        onFailure(error) {
+                            console.error(error)
+                            return null
+                        },
+                    }),
+                ),
+        ),
+    )
 }
 
 /**

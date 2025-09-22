@@ -200,3 +200,48 @@ export const usersCountPerRoleEffect = () =>
                 ),
         )
     })
+
+export function getAdminRoleEffect() {
+    return Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+        const role = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.role.findUnique({
+                        where: { name: DEFAULT_ROLES.ADMIN },
+                    }),
+                catch: err => new UnexpectedError(err),
+            }),
+        )
+        if (role) return role
+        const newRole = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.$transaction(async prisma => {
+                        const role = await prisma.role.create({
+                            data: {
+                                name: DEFAULT_ROLES.ADMIN,
+                                permissions: DEFAULT_PERMISSIONS.ADMIN,
+                            },
+                        })
+                        await prisma.states.upsert({
+                            where: { name: DB_STATES.ROLES_COUNT },
+                            create: {
+                                name: DB_STATES.ROLES_COUNT,
+                                value: 1,
+                            },
+                            update: {
+                                value: {
+                                    increment: 1,
+                                },
+                            },
+                        })
+                        return role
+                    }),
+                catch: error => new UnexpectedError(error),
+            }),
+        )
+        if (newRole) return newRole
+        return null
+    })
+}

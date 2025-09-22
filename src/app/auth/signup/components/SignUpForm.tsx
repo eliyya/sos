@@ -29,15 +29,15 @@ export function SignUpForm() {
                         (formData.get('name') as string).trim(),
                     )
 
-                    const { id: role_id } = await getAdminRole()
-                    if (!role_id) return setError('Something went wrong')
+                    const adminRole = await getAdminRole()
+                    if (!adminRole) return setError('Something went wrong')
 
                     const { error } = await authClient.signUp.email({
                         email: `${username}@noemail.local`,
                         password,
                         name,
                         username,
-                        role_id,
+                        role_id: adminRole.id,
                     })
                     if (!error) return push(app.dashboard())
                     setError('Something went wrong')

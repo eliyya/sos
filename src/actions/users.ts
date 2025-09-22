@@ -44,6 +44,7 @@ export async function archiveUser(formData: FormData) {
 
 export async function adminCount() {
     const adminRole = await getAdminRole()
+    if (!adminRole) return 0
     return db.user.count({ where: { role_id: adminRole.id } })
 }
 
