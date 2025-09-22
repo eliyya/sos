@@ -1,6 +1,6 @@
 import app from '@eliyya/type-routes'
 import { Temporal } from '@js-temporal/polyfill'
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { LABORATORY_TYPE, STATUS } from '@/prisma/browser'
 import { PlusIcon, UserIcon } from 'lucide-react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'

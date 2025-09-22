@@ -1,7 +1,7 @@
 'use server'
 
 import { randomUUID } from 'node:crypto'
-import { STATUS, User } from '@prisma/client'
+import { STATUS, User } from '@/prisma/client'
 import { auth } from '@/lib/auth'
 import { capitalize } from '@/lib/utils'
 import { db } from '@/prisma/db'

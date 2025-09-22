@@ -1,6 +1,6 @@
 'use client'
 
-import { User, Subject, Career } from '@prisma/client'
+import { User, Subject, Career } from '@/prisma/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2, User as UserIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -23,7 +23,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-class'
-
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -81,9 +80,7 @@ export function DeleteDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput
                         label='Profesor'

@@ -1,6 +1,6 @@
 'use client'
 
-import { Career, Subject, User } from '@prisma/client'
+import { Career, Subject, User } from '@/prisma/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     BookAIcon,
@@ -31,7 +31,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-class'
-
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)

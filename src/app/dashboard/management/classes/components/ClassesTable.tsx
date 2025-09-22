@@ -1,6 +1,6 @@
 'use client'
 
-import { STATUS , Class } from '@prisma/client'
+import { STATUS, Class } from '@/prisma/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -34,7 +34,6 @@ import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
-
 
 export function ClassesTable() {
     const [entity, setEntity] = useState<

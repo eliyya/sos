@@ -1,6 +1,6 @@
 'use client'
 
-import { STATUS } from '@prisma/client'
+import { STATUS } from '@/prisma/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     UserIcon,

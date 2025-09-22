@@ -1,6 +1,6 @@
 'use client'
 
-import { Visit } from '@prisma/client'
+import { Visit } from '@/prisma/browser'
 import { useAtom } from 'jotai'
 import { LogOutIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'

@@ -1,6 +1,6 @@
 'use client'
 
-import { Career } from '@prisma/client'
+import { Career } from '@/prisma/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     CalendarRangeIcon,
@@ -28,7 +28,6 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-students'
-
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)

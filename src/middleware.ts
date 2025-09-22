@@ -1,5 +1,5 @@
 import app from '@eliyya/type-routes'
-import { LABORATORY_TYPE } from '@prisma/client'
+import { LABORATORY_TYPE } from '@/prisma/client'
 import { NextRequest } from 'next/server'
 import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import {
@@ -7,8 +7,7 @@ import {
     PermissionsFlags,
 } from './bitfields/PermissionsBitField'
 import { auth } from './lib/auth'
-import { db } from './prisma/db'
-
+import { db } from '@/prisma/db'
 
 export const config = {
     runtime: 'nodejs',

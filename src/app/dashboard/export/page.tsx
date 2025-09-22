@@ -1,4 +1,4 @@
-import { LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { LABORATORY_TYPE, STATUS } from '@/prisma/browser'
 import { Button } from '@/components/Button'
 import { Card, CardTitle, CardContent } from '@/components/Card'
 import { CompletInput } from '@/components/Inputs'

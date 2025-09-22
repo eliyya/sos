@@ -1,4 +1,4 @@
-import { Laboratory, LABORATORY_TYPE, STATUS } from '@prisma/client'
+import { Laboratory, LABORATORY_TYPE, STATUS } from '@/prisma/browser'
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')
