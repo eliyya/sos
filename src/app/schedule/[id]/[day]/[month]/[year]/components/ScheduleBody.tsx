@@ -24,19 +24,23 @@ export default async function ScheduleBody({
     if (!lab) return null
 
     return (
-        <main className='container mx-auto px-4 py-8'>
-            <div className='flex items-center justify-between'>
-                <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
+        <main className="container mx-auto px-2 py-4 sm:px-4 sm:py-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <h1 className="text-2xl font-bold sm:text-3xl mb-2 sm:mb-8">Horario Semanal</h1>
                 <SearchInput />
             </div>
-            <Calendar lab={lab} isAdmin={isAdmin} canSeeInfo={!!user} />
-            <CreateDialog
-                isAdmin={isAdmin}
-                lab={lab}
-                user={user}
-                users={users}
-            />
-            <InfoDialog userId={user?.id ?? ''} lab={lab} isAdmin={isAdmin} />
+            <div className="mt-4">
+                <Calendar lab={lab} isAdmin={isAdmin} canSeeInfo={!!user} />
+            </div>
+            <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:gap-8">
+                <CreateDialog
+                    isAdmin={isAdmin}
+                    lab={lab}
+                    user={user}
+                    users={users}
+                />
+                <InfoDialog userId={user?.id ?? ''} lab={lab} isAdmin={isAdmin} />
+            </div>
         </main>
     )
 }

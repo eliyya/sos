@@ -610,6 +610,7 @@ export function SimpleSelect<
     IM extends boolean = false,
 >({ children, options, icon, id, ...props }: SimpleSelectProps<O, IM>) {
     const rid = useId()
+    const selectId = useId() // Generar ID estable para React Select
     const Icon = icon
     const selectRef = useRef<SelectInstance<O, IM>>(null)
 
@@ -623,7 +624,7 @@ export function SimpleSelect<
                 {...props}
                 ref={selectRef}
                 options={options}
-                instanceId={`select-${props.name || Math.random().toString(36).substring(2, 9)}`}
+                instanceId={`select-${props.name || selectId}`} // Usar ID estable en lugar de random
                 styles={{
                     control: base => ({
                         ...base,

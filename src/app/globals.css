@@ -211,6 +211,57 @@
   color: hsl(var(--foreground) / 90%);
 }
 
+/* Responsive FullCalendar styles */
+/* Base styles (móvil primero) */
+.fc {
+  font-size: 0.8rem;
+}
+
+.fc .fc-timegrid-slot {
+  height: 1.75rem;
+}
+
+.fc .fc-event {
+  padding: 0.1rem 0.2rem;
+  font-size: 0.75rem;
+}
+
+.fc .fc-col-header-cell {
+  padding: 0.5rem 0;
+}
+
+/* Tabletas */
+@media (min-width: 640px) {
+  .fc {
+    font-size: 0.85rem;
+  }
+  
+  .fc .fc-timegrid-slot {
+    height: 2rem;
+  }
+  
+  .fc .fc-event {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Escritorio */
+@media (min-width: 1024px) {
+  .fc {
+    font-size: 0.9rem;
+  }
+  
+  .fc .fc-timegrid-slot {
+    height: 2.5rem;
+  }
+  
+  .fc .fc-event {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.875rem;
+  }
+}
+
 @utility on-scroll-blur {
     animation: on-scroll-blur ease;
     animation-timeline: scroll();
@@ -246,4 +297,33 @@
     &:hover::after {
         width: 100%;
     }
+}
+
+/* Añade esto a tu globals.css */
+.fc-event {
+  border-left: 4px solid var(--fc-event-border-color) !important;
+  background-color: var(--fc-event-bg-color) !important;
+  font-weight: 500 !important;
+}
+
+.fc-day-today {
+  background-color: rgba(var(--accent-rgb), 0.15) !important;
+}
+
+.fc-timegrid-slot-label, .fc-timegrid-axis-cushion {
+  font-weight: 500 !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.fc .fc-col-header-cell {
+  background-color: hsl(var(--card)) !important;
+  padding: 0.75rem 0 !important;
+  border-bottom: 2px solid hsl(var(--border)) !important;
+}
+
+/* Mejorar contraste de eventos */
+.fc-event-main {
+  padding: 4px 6px !important;
+  color: white !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2) !important;
 }
