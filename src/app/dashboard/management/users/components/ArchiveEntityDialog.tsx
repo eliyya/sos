@@ -19,7 +19,7 @@ import {
     entityToEditAtom,
     openPreventArchiveAdminAtom,
 } from '@/global/management-users'
-import { rolesAtom } from '@/global/roles.globals'
+import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 
 export function ArchiveEntityDialog() {
@@ -29,7 +29,7 @@ export function ArchiveEntityDialog() {
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
     const setOpenPreventArchiveAdmin = useSetAtom(openPreventArchiveAdminAtom)
-    const roles = useAtomValue(rolesAtom)
+    const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
 
     if (!entity || !adminRole) return null

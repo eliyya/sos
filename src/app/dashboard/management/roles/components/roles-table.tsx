@@ -9,15 +9,12 @@ import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { queryAtom } from '@/global/management-career'
-import {
-    rolesAtom,
-    selectedRoleIdAtom,
-    usersCountAtom,
-} from '@/global/roles.globals'
+import { selectedRoleIdAtom, usersCountAtom } from '@/global/roles.globals'
+import { useRoles } from '@/hooks/roles.hooks'
 import { PermissionsList } from './permissions-list'
 
 export function RolesTable() {
-    const [roles, setRoles] = useAtom(rolesAtom)
+    const { roles, setRoles } = useRoles()
     const selectedRoleId = useAtomValue(selectedRoleIdAtom)
     const [query, setQuery] = useAtom(queryAtom)
     const selectRole = useSetAtom(selectedRoleIdAtom)
