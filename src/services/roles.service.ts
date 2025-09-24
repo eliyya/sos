@@ -163,11 +163,11 @@ export const deleteRoleEffect = (id: string) =>
             Effect.tryPromise({
                 try: () =>
                     prisma.$transaction(async prisma => {
-                        prisma.user.updateMany({
+                        await prisma.user.updateMany({
                             where: { role_id: id },
                             data: { role_id: DEFAULT_ROLES.USER },
                         })
-                        prisma.role.delete({ where: { id } })
+                        await prisma.role.delete({ where: { id } })
                     }),
                 catch: err => new UnexpectedError(err),
             }),

@@ -179,7 +179,7 @@ export async function createNewRole() {
                                 }
                             return {
                                 status: 'error' as const,
-                                type: 'unknown' as const,
+                                type: 'unexpected' as const,
                                 message: String(error),
                             }
                         },
