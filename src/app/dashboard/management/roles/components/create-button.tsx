@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import { PlusIcon } from 'lucide-react'
 import { useTransition } from 'react'
 import { createNewRole } from '@/actions/roles.actions'
