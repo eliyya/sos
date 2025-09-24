@@ -6,6 +6,7 @@ import {
     InvalidInputError,
     NotFoundError,
     PermissionError,
+    PrismaError,
     UnauthorizedError,
     UnexpectedError,
 } from '@/errors'
@@ -122,6 +123,7 @@ export async function editRoleName(id: string, name: string) {
                                     type: 'permission' as const,
                                     message: error.message,
                                 }
+
                             return {
                                 status: 'error' as const,
                                 type: 'unknown' as const,
@@ -168,6 +170,12 @@ export async function createNewRole() {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                }
+                            if (error instanceof PrismaError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
                                 }
                             return {
                                 status: 'error' as const,

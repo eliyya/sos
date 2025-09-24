@@ -55,3 +55,8 @@ export class PrismaError<T> {
     readonly _tag = 'PrismaError'
     constructor(readonly cause: T) {}
 }
+
+export class RoleCreationConflictError<T extends string> {
+    readonly _tag = 'RoleCreationConflictError'
+    constructor(readonly message: T) {}
+}

@@ -9,7 +9,6 @@ import { selectedRoleIdAtom } from '@/global/roles.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 
 export function CreateButton() {
-    // const openCreateUser = useSetAtom(openCreateAtom)
     const { setRoles } = useRoles()
     const [inTransition, startTransition] = useTransition()
     const setSelectedRoleId = useSetAtom(selectedRoleIdAtom)

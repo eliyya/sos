@@ -10,8 +10,9 @@ import {
     UnexpectedError,
     NotFoundError,
     PrismaError,
+    RoleCreationConflictError,
 } from '@/errors'
-import { PrismaLive, PrismaService } from '@/layers/db.layer'
+import { PrismaService } from '@/layers/db.layer'
 import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
 import { requirePermission } from './auth.service'
 import { PrismaClientKnownRequestError } from '@/prisma/internal/prismaNamespace'
@@ -72,7 +73,6 @@ export const editRoleNameEffect = (id: string, name: string) =>
             )
         }
 
-        // 4. Insertar nuevo archivo
         const created = yield* _(
             Effect.tryPromise({
                 try: () =>
@@ -84,57 +84,13 @@ export const editRoleNameEffect = (id: string, name: string) =>
         return created
     })
 
-class RoleCreationConflictError<T extends string> {
-    readonly _tag = 'RoleCreationConflictError'
-    constructor(readonly message: T) {}
-}
-function tryCreateRoleEffect(num: number) {
-    return Effect.gen(function* (_) {
-        const prisma = yield* _(PrismaService)
-        const name = `Role-${num}`
-
-        const created = yield* _(
-            Effect.tryPromise({
-                try: () =>
-                    prisma.$transaction(async tx => {
-                        const created = await tx.role.create({
-                            data: {
-                                name,
-                                permissions: DEFAULT_PERMISSIONS.USER,
-                            },
-                        })
-                        await tx.states.update({
-                            where: { name: DB_STATES.ROLES_COUNT },
-                            data: { value: num },
-                        })
-                        return created
-                    }),
-                catch: err => {
-                    if (err instanceof PrismaClientKnownRequestError) {
-                        if (err.code === 'P2002') {
-                            return new RoleCreationConflictError(
-                                'Role name conflict',
-                            )
-                        } else {
-                            return new PrismaError(err)
-                        }
-                    }
-                    return new UnexpectedError(err)
-                },
-            }),
-        )
-
-        return created
-    })
-}
-
 export const createNewRoleEffect = () =>
     Effect.gen(function* (_) {
         yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
 
         const prisma = yield* _(PrismaService)
 
-        const count = yield* _(
+        let count = yield* _(
             Effect.tryPromise({
                 try: () =>
                     prisma.states.findUnique({
@@ -144,16 +100,59 @@ export const createNewRoleEffect = () =>
                 catch: err => new UnexpectedError(err),
             }).pipe(Effect.map(c => (c?.value ?? 0) + 1)),
         )
+        let intents = 10
 
-        return _(
-            tryCreateRoleEffect(count)
-                .pipe(Effect.provide(PrismaLive))
-                .pipe(
-                    Effect.catchTag('RoleCreationConflictError', () =>
-                        tryCreateRoleEffect(count + 1),
-                    ),
+        while (intents--) {
+            const name = `Role-${count}`
+
+            const created = yield* _(
+                Effect.tryPromise({
+                    try: () =>
+                        prisma.$transaction(async tx => {
+                            const created = await tx.role.create({
+                                data: {
+                                    name,
+                                    permissions: DEFAULT_PERMISSIONS.USER,
+                                },
+                            })
+                            await tx.states.update({
+                                where: { name: DB_STATES.ROLES_COUNT },
+                                data: { value: count++ },
+                            })
+                            return created
+                        }),
+                    catch: err => {
+                        if (err instanceof PrismaClientKnownRequestError) {
+                            if (err.code === 'P2002') {
+                                return new RoleCreationConflictError(
+                                    'Role name conflict',
+                                )
+                            } else {
+                                return new PrismaError(err)
+                            }
+                        }
+                        return new UnexpectedError(err)
+                    },
+                }),
+                Effect.catchIf(
+                    err => err instanceof RoleCreationConflictError,
+                    () => Effect.succeed(null),
                 ),
+            )
+
+            if (created) return created
+        }
+        yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.states.update({
+                        where: { name: DB_STATES.ROLES_COUNT },
+                        data: { value: count },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
         )
+        throw new RoleCreationConflictError('Role creation failed')
     })
 
 export const deleteRoleEffect = (id: string) =>
