@@ -38,7 +38,7 @@ import {
 } from '@/global/management-users'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
-import { rolesAtom } from '@/global/roles.globals'
+import { useRoles } from '@/hooks/roles.hooks'
 
 export function CreateUserDialog() {
     const [open, setOpen] = useAtom(openCreateUserAtom)
@@ -143,7 +143,7 @@ export function CreateUserDialog() {
 }
 
 export function RoleSelect() {
-    const roles = useAtomValue(rolesAtom)
+    const { roles } = useRoles()
 
     return (
         <CompletSelect

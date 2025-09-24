@@ -1,5 +1,5 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
-import { CreateButton } from './components/CreateButton'
+import { CreateButton } from './components/create-button'
 import { DeleteDialog } from './components/DeleteDialog'
 import { RolesTable } from './components/roles-table'
 

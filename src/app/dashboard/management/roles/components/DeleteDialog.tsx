@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { deleteRole } from '@/actions/roles.actions'
@@ -14,18 +14,15 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { DEFAULT_ROLES } from '@/constants/client'
-import {
-    openDeleteAtom,
-    rolesAtom,
-    selectedRoleAtom,
-} from '@/global/roles.globals'
+import { openDeleteAtom, selectedRoleAtom } from '@/global/roles.globals'
+import { useRoles } from '@/hooks/roles.hooks'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedRoleAtom)
     const [message, setMessage] = useState('')
-    const setRoles = useSetAtom(rolesAtom)
+    const { setRoles } = useRoles()
 
     if (!entity) return null
 

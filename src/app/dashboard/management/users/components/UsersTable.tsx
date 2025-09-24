@@ -1,7 +1,7 @@
 'use client'
 
 import { User, STATUS } from '@/prisma/browser'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getRoles } from '@/actions/roles.actions'
@@ -32,14 +32,14 @@ import { EditUserDialog } from './EditUserDialog'
 import { PreventArchiveAdminDialog } from './PreventArchiveAdmin'
 import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
-import { rolesAtom } from '@/global/roles.globals'
+import { useRoles } from '@/hooks/roles.hooks'
 
 export function UsersTable() {
     const [users, setUsers] = useState<User[]>([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
-    const [roles, setRoles] = useAtom(rolesAtom)
+    const { roles, setRoles } = useRoles()
 
     useEffect(() => {
         getUsers().then(setUsers)

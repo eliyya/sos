@@ -5,8 +5,10 @@ import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Serializable } from '@/lib/types'
 
 type id = Role['id']
-export const queryAtom = atom('')
+
 export const rolesAtom = atomWithStorage<Serializable<Role>[]>('roles', [])
+
+export const queryAtom = atom('')
 export const selectedRoleIdAtom = atomWithStorage<id>('selectedRoleId', '')
 export const selectedRoleAtom = atom(get => {
     const roles = get(rolesAtom)

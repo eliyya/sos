@@ -31,7 +31,7 @@ import {
     editConfirmPasswordErrorAtom,
     passwordFocusAtom,
 } from '@/global/management-users'
-import { rolesAtom } from '@/global/roles.globals'
+import { useRoles } from '@/hooks/roles.hooks'
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)
@@ -126,7 +126,7 @@ export function EditUsernameInput() {
 
 export function EditRoleSelect() {
     const oldUser = useAtomValue(entityToEditAtom)
-    const roles = useAtomValue(rolesAtom)
+    const { roles } = useRoles()
 
     if (!oldUser) return null
 
