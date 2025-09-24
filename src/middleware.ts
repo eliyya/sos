@@ -110,6 +110,7 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
 
 handler.set(/^\/dashboard.*$/, async ctx => {
     const session = await auth.api.getSession(ctx.request)
+
     if (!session) return ctx.redirect(app.auth.login())
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),

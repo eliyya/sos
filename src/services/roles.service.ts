@@ -9,10 +9,12 @@ import {
     AlreadyExistsError,
     UnexpectedError,
     NotFoundError,
+    PrismaError,
 } from '@/errors'
-import { PrismaService } from '@/layers/db.layer'
+import { PrismaLive, PrismaService } from '@/layers/db.layer'
 import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
 import { requirePermission } from './auth.service'
+import { PrismaClientKnownRequestError } from '@/prisma/internal/prismaNamespace'
 
 export const editRoleNameEffect = (id: string, name: string) =>
     Effect.gen(function* (_) {
@@ -82,23 +84,14 @@ export const editRoleNameEffect = (id: string, name: string) =>
         return created
     })
 
-export const createNewRoleEffect = () =>
-    Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
-
+class RoleCreationConflictError<T extends string> {
+    readonly _tag = 'RoleCreationConflictError'
+    constructor(readonly message: T) {}
+}
+function tryCreateRoleEffect(num: number) {
+    return Effect.gen(function* (_) {
         const prisma = yield* _(PrismaService)
-        const count = yield* _(
-            Effect.tryPromise({
-                try: () =>
-                    prisma.states.findUnique({
-                        where: { name: DB_STATES.ROLES_COUNT },
-                        select: { value: true },
-                    }),
-                catch: err => new UnexpectedError(err),
-            }).pipe(Effect.map(c => (c?.value ?? 0) + 1)),
-        )
-
-        const name = `Role-${count}`
+        const name = `Role-${num}`
 
         const created = yield* _(
             Effect.tryPromise({
@@ -112,15 +105,55 @@ export const createNewRoleEffect = () =>
                         })
                         await tx.states.update({
                             where: { name: DB_STATES.ROLES_COUNT },
-                            data: { value: count },
+                            data: { value: num },
                         })
                         return created
                     }),
-                catch: err => new UnexpectedError(err),
+                catch: err => {
+                    if (err instanceof PrismaClientKnownRequestError) {
+                        if (err.code === 'P2002') {
+                            return new RoleCreationConflictError(
+                                'Role name conflict',
+                            )
+                        } else {
+                            return new PrismaError(err)
+                        }
+                    }
+                    return new UnexpectedError(err)
+                },
             }),
         )
 
         return created
+    })
+}
+
+export const createNewRoleEffect = () =>
+    Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
+
+        const prisma = yield* _(PrismaService)
+
+        const count = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.states.findUnique({
+                        where: { name: DB_STATES.ROLES_COUNT },
+                        select: { value: true },
+                    }),
+                catch: err => new UnexpectedError(err),
+            }).pipe(Effect.map(c => (c?.value ?? 0) + 1)),
+        )
+
+        return _(
+            tryCreateRoleEffect(count)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.catchTag('RoleCreationConflictError', () =>
+                        tryCreateRoleEffect(count + 1),
+                    ),
+                ),
+        )
     })
 
 export const deleteRoleEffect = (id: string) =>
