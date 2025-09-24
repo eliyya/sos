@@ -1,19 +1,16 @@
 import { FlaggedBitfield } from '@eliyya/flagged-bitfield'
 
 export const PermissionsFlags = {
-    /** Todos los permisos */
-    ADMIN: 1n << 0n, // Todos los permisos
-
     /** Puede iniciar sesion */
-    CAN_LOGIN: 1n << 1n, // TODO: implementar
+    CAN_LOGIN: 1n << 0n, // TODO: implementar
     /** Registrar su propia sesion en laboratorio */
-    SESSION_SELF: 1n << 2n, // TODO: implementar
+    SESSION_SELF: 1n << 1n, // TODO: implementar
     /** Registrar sesiones de otros usuarios */
-    SESSION_OTHERS: 1n << 3n, // TODO: implementar
+    SESSION_OTHERS: 1n << 2n, // TODO: implementar
     /** Eliminar sesiones de otros usuarios */
-    SESSION_MANAGE: 1n << 4n, // TODO: implementar
+    SESSION_MANAGE: 1n << 3n, // TODO: implementar
     /** Registrar entradas en el centro de computo */
-    SESSION_CC: 1n << 5n, // TODO: implementar
+    SESSION_CC: 1n << 4n, // TODO: implementar
 
     /** Crear/editar/eliminar laboratorios */
     MANAGE_LABS: 1n << 8n, // TODO: implementar
@@ -55,8 +52,4 @@ export class PermissionsBitField extends FlaggedBitfield<
 > {
     static Flags = PermissionsFlags
     static DefaultBit = 0n
-
-    isAdmin() {
-        return this.has(PermissionsFlags.ADMIN)
-    }
 }
