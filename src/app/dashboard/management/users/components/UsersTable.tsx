@@ -1,7 +1,7 @@
 'use client'
 
 import { User, STATUS } from '@/prisma/browser'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getRoles } from '@/actions/roles.actions'
