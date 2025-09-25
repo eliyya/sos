@@ -15,6 +15,7 @@ import {
     Table,
 } from '@/components/Table'
 import { updateTableAtom } from '@/global/cc'
+import { useTranslations } from 'next-intl'
 
 interface VisitsTableProps {
     laboratory_id: string
@@ -22,7 +23,7 @@ interface VisitsTableProps {
 export function VisitsTable({ laboratory_id }: VisitsTableProps) {
     const [visits, setVisits] = useState<Visit[]>([])
     const [tableSignal, refreshTable] = useAtom(updateTableAtom)
-
+    const t = useTranslations('cc')
     useEffect(() => {
         getVisitsToday({
             laboratory_id: laboratory_id,
@@ -35,9 +36,9 @@ export function VisitsTable({ laboratory_id }: VisitsTableProps) {
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>NC</TableHead>
-                    <TableHead>Entrada</TableHead>
-                    <TableHead>Salida</TableHead>
+                    <TableHead>{t('cn')}</TableHead>
+                    <TableHead>{t('entrance')}</TableHead>
+                    <TableHead>{t('exit')}</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>

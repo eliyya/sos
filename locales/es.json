@@ -7,5 +7,19 @@
         "password": "Contraseña",
         "user": "Usuario",
         "confirm_password": "Confirmar contraseña"
+    },
+    "cc": {
+        "error": "Error",
+        "understood": "Entendido",
+        "control_number": "Numero de control",
+        "names": "Nombres",
+        "surnames": "Apellidos",
+        "career": "Carrera",
+        "semester": "Semestre",
+        "credential_confirmation": "El estudiante porta la credencial",
+        "register_visit": "Registrar visita",
+        "cn": "NC",
+        "entrance": "Entrada",
+        "exit": "Salida"
     }
 }

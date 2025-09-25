@@ -8,6 +8,7 @@ import { ErrorDialog } from './components/ErrorDialog'
 import { RegisterVisitForm } from './components/RegisterVisitForm'
 import { VisitsTable } from './components/VisitsTable'
 
+// TODO traducir despues
 const stats = [
     {
         title: 'Estudiantes',
