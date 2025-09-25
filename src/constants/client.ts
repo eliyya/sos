@@ -1,4 +1,7 @@
-import { PermissionsFlags } from '../bitfields/PermissionsBitField.ts'
+import {
+    PermissionsBitField,
+    PermissionsFlags,
+} from '../bitfields/PermissionsBitField.ts'
 
 export const APP_NAME = 'SOS'
 
@@ -19,7 +22,7 @@ export const DEFAULT_ROLES = {
 } as const
 
 export const DEFAULT_PERMISSIONS = {
-    ADMIN: PermissionsFlags.ADMIN,
+    ADMIN: PermissionsBitField.getMask(),
     USER: PermissionsFlags.SESSION_SELF | PermissionsFlags.CAN_LOGIN,
     DELETED: 0n,
 } as const

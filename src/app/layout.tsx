@@ -6,10 +6,9 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { ReactNode } from 'react'
-import { ToastProvider } from '@/components/Toast'
+import { ToastProvider, ToastViewport } from '@/components/Toast'
 import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
-
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -38,10 +37,11 @@ export default async function RootLayout({
                     defaultTheme='light'
                     enableSystem
                 >
-                    <ToastProvider>
+                    <ToastProvider swipeDirection='up' duration={3000}>
                         <NextIntlClientProvider messages={messages}>
                             <Provider>{children}</Provider>
                         </NextIntlClientProvider>
+                        <ToastViewport />
                     </ToastProvider>
                 </ThemeProvider>
             </body>

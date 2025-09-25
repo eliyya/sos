@@ -115,6 +115,7 @@ handler.set(/^\/dashboard.*$/, async ctx => {
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),
     )
-    if (permissions.has(PermissionsFlags.ADMIN)) return ctx.next()
+    // TODO: cambiar a MANAGE_DASHBOARD
+    if (permissions.has(PermissionsFlags.MANAGE_CAREERS)) return ctx.next()
     return ctx.redirect(app.schedule.null())
 })

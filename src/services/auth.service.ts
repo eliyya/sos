@@ -24,7 +24,7 @@ export const requirePermission = (
 
         const permissions = new PermissionsBitField(session.user.permissions)
 
-        if (!permissions.isAdmin() && !permissions.has(flag)) {
+        if (!permissions.has(flag)) {
             return yield* _(Effect.fail(new PermissionError(flag)))
         }
 

@@ -33,7 +33,8 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     const permissions = new PermissionsBitField(
         BigInt(session?.user.permissions ?? 0n),
     )
-    const isAdmin = !!session && permissions.has(PermissionsFlags.ADMIN)
+    // TODO: cambiar a MANAGE_LABS
+    const isAdmin = !!session && permissions.has(PermissionsFlags.MANAGE_LABS)
 
     let users: { id: string; name: string }[] = []
 

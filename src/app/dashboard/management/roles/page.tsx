@@ -1,6 +1,6 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/create-button'
-import { DeleteDialog } from './components/DeleteDialog'
+import { DeleteDialog } from './components/delete-dialog'
 import { RolesTable } from './components/roles-table'
 
 export default async function CareersPage() {

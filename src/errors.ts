@@ -44,10 +44,10 @@ export class UnauthorizedError<T extends string> {
 export class PermissionError {
     readonly _tag = 'PermissionError'
     readonly missings: Parameters<PermissionsBitField['has']>[0]
-    readonly message: string
+    readonly message: `Missing permissions: ${string}`
     constructor(flag: Parameters<PermissionsBitField['has']>[0]) {
         this.missings = flag
-        this.message = `PermissionError: Missing permissions: ${new PermissionsBitField(flag).toArray().join(', ')}`
+        this.message = `Missing permissions: ${new PermissionsBitField(flag).toArray().join(', ')}`
     }
 }
 

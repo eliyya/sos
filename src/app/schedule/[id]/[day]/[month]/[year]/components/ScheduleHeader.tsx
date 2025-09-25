@@ -37,6 +37,7 @@ function GuestButtons() {
 }
 
 function Buttons({ permissions }: { permissions: PermissionsBitField }) {
-    if (permissions.has(PermissionsFlags.ADMIN)) return <AdminButtons />
+    // TODO: cambiar a MANAGE_LABS
+    if (permissions.has(PermissionsFlags.MANAGE_LABS)) return <AdminButtons />
     return <GuestButtons />
 }
