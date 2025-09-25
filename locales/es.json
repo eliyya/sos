@@ -5,19 +5,5 @@
         "login": "Iniciar Sesión",
         "password": "Contraseña",
         "user": "Usuario"
-    },
-    "app": {
-        "auth": {
-            "verify": {
-                "components": {
-                    "VerifyForm": {
-                        "tittle": "Antes de continuar",
-                        "sub": "Verifiquemos que eres en realidad tu",
-                        "totp": "Token",
-                        "submit": "Iniciar Sesión"
-                    }
-                }
-            }
-        }
     }
 }
