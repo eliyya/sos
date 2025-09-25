@@ -1,8 +1,8 @@
 'use client'
 
 import app from '@eliyya/type-routes'
-import { useSetAtom } from 'jotai'
-import { LogIn } from 'lucide-react'
+import { useAtom, useSetAtom } from 'jotai'
+import { AtSignIcon, LogIn, RectangleEllipsisIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
@@ -10,11 +10,11 @@ import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { usernameAtom, passwordAtom } from '@/global/login'
 import { authClient } from '@/lib/auth-client'
-import { PasswordInput } from './inputs/PasswordInput'
-import { UsernameInput } from './inputs/UsernameInput'
+import { CompletInput } from '@/components/Inputs'
 
 export function LoginForm() {
-    const t = useTranslations('app.auth.login.components.loginForm')
+    const t = useTranslations('login')
+
     const [error, setError] = useState('')
     const [pending, startTransition] = useTransition()
     const { replace } = useRouter()
@@ -49,10 +49,10 @@ export function LoginForm() {
             className='flex w-full max-w-md flex-col justify-center gap-6'
         >
             <h2 className='text-3xl font-bold text-gray-800 md:text-4xl dark:text-gray-100'>
-                {t('welcome')}
+                {t('welcome_title')}
             </h2>
             <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {t('sub')}
+                {t('welcome_message')}
             </p>
 
             {error && <MessageError>{error}</MessageError>}
@@ -65,5 +65,38 @@ export function LoginForm() {
                 {t('login')}
             </Button>
         </form>
+    )
+}
+
+export function PasswordInput() {
+    const t = useTranslations('login')
+    const [password, setPassword] = useAtom(passwordAtom)
+    return (
+        <CompletInput
+            required
+            label={t('password')}
+            type='password'
+            name='password'
+            placeholder='* * * * * * * *'
+            icon={RectangleEllipsisIcon}
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+        />
+    )
+}
+
+export function UsernameInput() {
+    const t = useTranslations('login')
+    const [username, setUsername] = useAtom(usernameAtom)
+    return (
+        <CompletInput
+            required
+            label={t('user')}
+            type='text'
+            name='username'
+            icon={AtSignIcon}
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+        />
     )
 }

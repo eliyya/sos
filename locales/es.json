@@ -1,18 +1,13 @@
 {
+    "login": {
+        "welcome_title": "Bienvenido de nuevo",
+        "welcome_message": "Inicia sesión para continuar",
+        "login": "Iniciar Sesión",
+        "password": "Contraseña",
+        "user": "Usuario"
+    },
     "app": {
         "auth": {
-            "login": {
-                "components": {
-                    "loginForm": {
-                        "welcome": "Bienvenido de nuevo",
-                        "sub": "Inicia sesión para continuar",
-                        "username": "Usuario",
-                        "pass": "Contraseña",
-                        "login": "Iniciar Sesión",
-                        "username-placeholder": "username"
-                    }
-                }
-            },
             "verify": {
                 "components": {
                     "VerifyForm": {
