@@ -3,27 +3,14 @@ import {
     ToastDescription,
     ToastTitle,
 } from '@/components/Toast'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 
 export function useToast() {
-    const [toastInfo, setToast] = useState<{
+    const [toastInfo, openToast] = useState<{
         title: string
         description?: string
         variant?: 'destructive' | 'default'
     } | null>(null)
-
-    const openToast = useCallback(
-        (
-            info: {
-                title: string
-                description: string
-                variant?: 'destructive' | 'default'
-            } | null,
-        ) => {
-            setToast(info)
-        },
-        [setToast],
-    )
 
     const Toast = () => (
         <ToastComponent

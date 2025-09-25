@@ -18,11 +18,7 @@ export function CreateButton() {
     const router = useRouter()
     const { openToast, Toast } = useToast()
 
-    const onClick = async () => {
-        openToast({
-            title: 'Creando rol...',
-            description: 'Por favor, espera mientras se crea el rol.',
-        })
+    const onClick = async () =>
         startTransition(async () => {
             const response = await createNewRole()
             if (response.status === 'success') {
@@ -57,7 +53,6 @@ export function CreateButton() {
                 }
             }
         })
-    }
 
     return (
         <>
