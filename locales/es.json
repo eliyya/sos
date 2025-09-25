@@ -1,9 +1,11 @@
 {
-    "login": {
+    "auth": {
         "welcome_title": "Bienvenido de nuevo",
+        "name": "Nombre",
         "welcome_message": "Inicia sesión para continuar",
         "login": "Iniciar Sesión",
         "password": "Contraseña",
-        "user": "Usuario"
+        "user": "Usuario",
+        "confirm_password": "Confirmar contraseña"
     }
 }

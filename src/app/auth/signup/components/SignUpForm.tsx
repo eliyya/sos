@@ -1,23 +1,31 @@
 'use client'
 
 import app from '@eliyya/type-routes'
-import { LogIn, RectangleEllipsisIcon } from 'lucide-react'
+import {
+    AtSignIcon,
+    LogIn,
+    RectangleEllipsisIcon,
+    UserIcon,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { getAdminRole } from '@/actions/roles.actions'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
-import { capitalize, cn } from '@/lib/utils'
-import { NameInput } from './inputs/NameInput'
-import { UsernameInput } from './inputs/UsernameInput'
+import { capitalize, cn, truncateByUnderscore } from '@/lib/utils'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
+    canSuggestUsernameAtom,
     confirmPasswordAtom,
     confirmPasswordErrorAtom,
+    nameAtom,
+    nameErrorAtom,
     passwordAtom,
     passwordErrorAtom,
     passwordFocusAtom,
+    usernameAtom,
+    usernameErrorAtom,
 } from '@/global/signup'
 import { CompletInput } from '@/components/Inputs'
 import { useTranslations } from 'next-intl'
@@ -116,7 +124,7 @@ function checkPassword(password: string) {
 }
 
 function PasswordInput() {
-    const t = useTranslations('app.auth.login.components.loginForm')
+    const t = useTranslations('auth')
     const [pass, setUsername] = useAtom(passwordAtom)
     const [error, setError] = useAtom(passwordErrorAtom)
     const setFocus = useSetAtom(passwordFocusAtom)
@@ -124,10 +132,10 @@ function PasswordInput() {
     return (
         <CompletInput
             required
-            label={t('pass')}
+            label={t('password')}
             type='password'
             name='password'
-            placeholder={t('username-placeholder')}
+            placeholder='* * * * * * * * * *'
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
             value={pass}
@@ -146,6 +154,7 @@ function PasswordInput() {
 }
 
 function ConfirmPasswordInput() {
+    const t = useTranslations('auth')
     const [confirmPassword, setConfirmPassword] = useAtom(confirmPasswordAtom)
     const [error, setError] = useAtom(confirmPasswordErrorAtom)
     const focus = useAtomValue(passwordFocusAtom)
@@ -164,7 +173,7 @@ function ConfirmPasswordInput() {
     return (
         <CompletInput
             required
-            label={'Confirmar contraseña'}
+            label={t('confirm_password')}
             type='password'
             name='confirm-password'
             placeholder='* * * * * * * *'
@@ -175,6 +184,95 @@ function ConfirmPasswordInput() {
                 setError('')
             }}
             icon={RectangleEllipsisIcon}
+        />
+    )
+}
+
+export function UsernameInput() {
+    const t = useTranslations('auth')
+    const [username, setUsername] = useAtom(usernameAtom)
+    const [error, setError] = useAtom(usernameErrorAtom)
+    const setCanSuggestUsername = useSetAtom(canSuggestUsernameAtom)
+    const [focus, setFocus] = useState(false)
+
+    useEffect(() => {
+        const handler = setTimeout(async () => {
+            if (!username) return
+            const isAv = await authClient.isUsernameAvailable({ username })
+            if (!isAv) setError('El usuario no esta disponible')
+        }, 500)
+
+        return () => clearTimeout(handler)
+    }, [username, setError])
+
+    return (
+        <CompletInput
+            required
+            label={t('user')}
+            type='text'
+            name='username'
+            min={3}
+            max={30}
+            pattern='^[a-z0-9_]+$'
+            onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
+            value={username}
+            error={error}
+            onChange={e => {
+                const username = e.target.value
+                setUsername(username)
+                setError('')
+                if (!username) return setCanSuggestUsername(true)
+                if (username && focus) setCanSuggestUsername(false)
+                if (username.length < 3)
+                    setError(
+                        'El nombre de usuario debe tener al menos 3 caracteres',
+                    )
+                if (username.length > 30)
+                    setError(
+                        'El nombre de usuario puede tener hasta 30 caracteres',
+                    )
+                if (!/^[a-z0-9_]+$/.test(username))
+                    setError(
+                        'El nombre de usuario debe contener solo minusculas, numeros y guiones bajos',
+                    )
+                if (username.includes(' '))
+                    setError('El nombre de usuario no debe contener espacios')
+            }}
+            icon={AtSignIcon}
+        />
+    )
+}
+
+export function NameInput() {
+    const t = useTranslations('auth')
+    const [name, setName] = useAtom(nameAtom)
+    const [error, setError] = useAtom(nameErrorAtom)
+    const setUsername = useSetAtom(usernameAtom)
+    const canSuggestUsername = useAtomValue(canSuggestUsernameAtom)
+
+    return (
+        <CompletInput
+            required
+            label={t('name')}
+            type='text'
+            name='name'
+            placeholder='Nombre'
+            value={name}
+            error={error}
+            onChange={e => {
+                const name = e.target.value
+                setName(name)
+                setError('')
+                if (!canSuggestUsername) return
+                if (name.length < 3) return
+                setUsername(
+                    truncateByUnderscore(
+                        name.toLowerCase().replace(/\s+/g, '_'),
+                    ),
+                )
+            }}
+            icon={UserIcon}
         />
     )
 }

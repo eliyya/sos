@@ -13,7 +13,7 @@ import { authClient } from '@/lib/auth-client'
 import { CompletInput } from '@/components/Inputs'
 
 export function LoginForm() {
-    const t = useTranslations('login')
+    const t = useTranslations('auth')
 
     const [error, setError] = useState('')
     const [pending, startTransition] = useTransition()
@@ -69,7 +69,7 @@ export function LoginForm() {
 }
 
 export function PasswordInput() {
-    const t = useTranslations('login')
+    const t = useTranslations('auth')
     const [password, setPassword] = useAtom(passwordAtom)
     return (
         <CompletInput
@@ -86,7 +86,7 @@ export function PasswordInput() {
 }
 
 export function UsernameInput() {
-    const t = useTranslations('login')
+    const t = useTranslations('auth')
     const [username, setUsername] = useAtom(usernameAtom)
     return (
         <CompletInput
