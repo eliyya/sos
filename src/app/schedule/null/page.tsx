@@ -89,7 +89,7 @@ function GetContent({ permissions, hasSession, hasUsers }: GetContentProps) {
             </>
         )
     // si no tiene admin
-    if (!permissions.has(PermissionsFlags.ADMIN))
+    if (!permissions.has(PermissionsFlags.MANAGE_LABS))
         return <p>Por favor contacta con un administrador</p>
     // es admin
     return (

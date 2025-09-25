@@ -216,7 +216,7 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
         parseInt(formData.get('starts_at') as string),
     )
     const ends_at = starts_at.add({ hours: parseInt(time) })
-    if (!permissions.has(PermissionsFlags.ADMIN) && !class_id)
+    if (!permissions.has(PermissionsFlags.MANAGE_LABS) && !class_id)
         return {
             message: 'Faltan datos',
             errors: { class_id: 'Este campo es requerido' },
@@ -235,7 +235,7 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
     })
     if (!passVerified) {
         if (
-            permissions.has(PermissionsFlags.ADMIN) &&
+            permissions.has(PermissionsFlags.MANAGE_LABS) &&
             teacher_id !== session.user.id
         ) {
             const user = await db.account.findFirst({
