@@ -3,7 +3,7 @@ import { Provider } from 'jotai'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages } from 'next-intl/server'
+import { getLocale } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { ReactNode } from 'react'
 import { ToastProvider, ToastViewport } from '@/components/Toast'
@@ -25,7 +25,7 @@ export default async function RootLayout({
     children: ReactNode
 }) {
     const locale = await getLocale()
-    const messages = await getMessages()
+    // const messages = await getMessages()
     return (
         <html lang={locale} suppressHydrationWarning>
             <body
@@ -38,7 +38,7 @@ export default async function RootLayout({
                     enableSystem
                 >
                     <ToastProvider swipeDirection='up' duration={3000}>
-                        <NextIntlClientProvider messages={messages}>
+                        <NextIntlClientProvider>
                             <Provider>{children}</Provider>
                         </NextIntlClientProvider>
                         <ToastViewport />

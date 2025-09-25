@@ -33,5 +33,7 @@
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "i18n-ally.localesPaths": ["locales"],
+    "i18n-ally.keystyle": "nested"
 }
