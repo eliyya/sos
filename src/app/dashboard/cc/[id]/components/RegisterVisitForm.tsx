@@ -12,6 +12,7 @@ import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
+import { useTranslations } from 'next-intl'
 
 interface RegisterVisitFormProps {
     laboratory_id: string
@@ -27,6 +28,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
     const [careers, setCareers] = useState<Career[]>([])
     const setError = useSetAtom(errorAtom)
     const refreshTable = useSetAtom(updateTableAtom)
+    const t = useTranslations('cc')
 
     useEffect(() => {
         async function fetchCareers() {
@@ -73,7 +75,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 value={props.laboratory_id}
             />
             <CompletInput
-                label='Numero de control'
+                label={t('control_number')}
                 required
                 value={nc}
                 onChange={e => {
@@ -82,7 +84,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 name='student_nc'
             />
             <CompletInput
-                label='Nombres'
+                label={t('names')}
                 required
                 name='firstname'
                 value={name}
@@ -90,7 +92,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 disabled={!modified}
             />
             <CompletInput
-                label='Apellidos'
+                label={t('surnames')}
                 required
                 name='lastname'
                 value={lastname}
@@ -98,7 +100,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 disabled={!modified}
             />
             <CompletSelect
-                label='Carrera'
+                label={t('career')}
                 required
                 name='career_id'
                 value={{
@@ -114,7 +116,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
             />
             <CompletInput
                 required
-                label='Semestre'
+                label={t('semester')}
                 name='semester'
                 type='number'
                 value={semester}
@@ -122,7 +124,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 disabled={!modified}
             />
             <LabeledSwitch
-                label='El estudiante porta la credencial'
+                label={t('credential_confirmation')}
                 name='credencial'
             />
             <Button
@@ -131,7 +133,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 disabled={inTransition}
             >
                 <SquarePenIcon className='mr-2 h-5 w-5' />
-                Registrar visita
+                {t('register_visit')}
             </Button>
         </form>
     )
