@@ -3,10 +3,15 @@ import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Serializable } from '@/lib/types'
+import { createSerializableLocaleStorage } from '@/lib/utils'
 
 type id = Role['id']
 
-export const rolesAtom = atomWithStorage<Serializable<Role>[]>('roles', [])
+export const rolesAtom = atomWithStorage<Role[]>(
+    'roles',
+    [],
+    createSerializableLocaleStorage(),
+)
 
 export const queryAtom = atom('')
 export const selectedRoleIdAtom = atomWithStorage<id>('selectedRoleId', '')
@@ -19,5 +24,5 @@ export const updateAtom = atom(Symbol())
 export const openDeleteAtom = atom(false)
 export const permissionsEditedAtom = atom(new PermissionsBitField())
 export const usersCountAtom = atomWithStorage<
-    Serializable<{ id: string; count: number }[]>
+    Serializable<{ id: id; count: number }[]>
 >('usersCount', [])

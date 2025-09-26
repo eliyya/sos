@@ -3,7 +3,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { SearchIcon } from 'lucide-react'
 import { useEffect } from 'react'
-import { getRoles, getUsersCountPerRole } from '@/actions/roles.actions'
+import { getUsersCountPerRole } from '@/actions/roles.actions'
 import { Badge } from '@/components/Badge'
 import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
@@ -14,24 +14,19 @@ import { useRoles } from '@/hooks/roles.hooks'
 import { PermissionsList } from './permissions-list'
 
 export function RolesTable() {
-    const { roles, setRoles } = useRoles()
+    const { roles } = useRoles()
     const selectedRoleId = useAtomValue(selectedRoleIdAtom)
     const [query, setQuery] = useAtom(queryAtom)
     const selectRole = useSetAtom(selectedRoleIdAtom)
     const [usersCount, setUsersCount] = useAtom(usersCountAtom)
 
     useEffect(() => {
-        getRoles().then(r => {
-            setRoles(
-                r.map(r => ({ ...r, permissions: r.permissions.toString() })),
-            )
-        })
         getUsersCountPerRole().then(r => {
             if (r.status === 'success') {
                 setUsersCount(r.roles)
             }
         })
-    }, [setRoles, setUsersCount])
+    }, [setUsersCount])
 
     return (
         <>
