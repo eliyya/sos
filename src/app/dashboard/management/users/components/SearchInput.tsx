@@ -3,7 +3,7 @@
 import { useAtom } from 'jotai'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { queryAtom, showArchivedAtom } from '@/global/management-users'
+import { queryAtom, showArchivedAtom } from '@/global/users.globals'
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)

@@ -27,7 +27,7 @@ export function CreateButton() {
                     {
                         id: response.role.id,
                         name: response.role.name,
-                        permissions: response.role.permissions.toString(),
+                        permissions: response.role.permissions,
                     },
                 ])
                 setSelectedRoleId(response.role.id)

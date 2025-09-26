@@ -1,5 +1,7 @@
+import { createSerializableLocaleStorage } from '@/lib/utils'
 import { Role, User, STATUS } from '@/prisma/browser'
 import { atom } from 'jotai'
+import { atomWithStorage } from 'jotai/utils'
 
 const default_user: Omit<User, 'updated_at' | 'image'> = {
     name: '',
@@ -12,10 +14,14 @@ const default_user: Omit<User, 'updated_at' | 'image'> = {
     email: '',
     email_verified: false,
 }
+export const usersAtom = atomWithStorage<User[]>(
+    'users',
+    [],
+    createSerializableLocaleStorage(),
+)
 export const queryAtom = atom('')
 export const EditUserDialogAtom = atom(false)
 export const entityToEditAtom = atom(default_user)
-export const updateAtom = atom(Symbol())
 export const openArchiveUserAtom = atom(false)
 export const showArchivedAtom = atom(false)
 export const openUnarchiveUserAtom = atom(false)

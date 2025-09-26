@@ -19,9 +19,8 @@ import {
     updateAtom,
     careersAtom,
     subjectsAtom,
-    usersAtom,
 } from '@/global/management-class'
-
+import { useUsers } from '@/hooks/users.hooks'
 
 export function UnarchiveDialog() {
     const [open, setOpen] = useAtom(openUnarchiveAtom)
@@ -29,15 +28,14 @@ export function UnarchiveDialog() {
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const { users } = useUsers()
     const career = useAtomValue(careersAtom).find(
         c => c.id === entity.career_id,
     )
     const subject = useAtomValue(subjectsAtom).find(
         s => s.id === entity.subject_id,
     )
-    const teacher = useAtomValue(usersAtom).find(
-        t => t.id === entity.teacher_id,
-    )
+    const teacher = users.find(t => t.id === entity.teacher_id)
 
     if (!entity) return null
 

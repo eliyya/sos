@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import {
     AtSignIcon,
     KeyIcon,
@@ -23,22 +23,22 @@ import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
     EditUserDialogAtom,
-    updateAtom,
     entityToEditAtom,
     editPasswordAtom,
     editPasswordErrorAtom,
     editConfirmPasswordAtom,
     editConfirmPasswordErrorAtom,
     passwordFocusAtom,
-} from '@/global/management-users'
+} from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
+import { useUsers } from '@/hooks/users.hooks'
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(EditUserDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const oldUser = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const { setUsers } = useUsers()
 
     if (!oldUser) return null
 
@@ -82,7 +82,13 @@ export function EditUserDialog() {
                                 }, 5_000)
                                 return
                             }
-                            setTimeout(() => updateUsersTable(Symbol()), 500)
+                            setUsers(users =>
+                                users.map(user =>
+                                    user.id === user_id ?
+                                        { ...user, name, username, role_id }
+                                    :   user,
+                                ),
+                            )
                             setOpen(false)
                         })
                     }}

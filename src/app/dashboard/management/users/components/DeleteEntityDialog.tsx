@@ -15,22 +15,22 @@ import {
 import { MessageError } from '@/components/Error'
 import {
     openDeleteAtom,
-    updateAtom,
     entityToEditAtom,
     openPreventArchiveAdminAtom,
-} from '@/global/management-users'
+} from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
+import { useUsers } from '@/hooks/users.hooks'
 
 export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
     const setOpenPreventArchiveAdmin = useSetAtom(openPreventArchiveAdminAtom)
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
+    const { setUsers } = useUsers()
 
     if (!entity || !adminRole) return null
 
@@ -70,9 +70,8 @@ export function DeleteEntityDialog() {
                                 )
                                 setTimeout(() => setMessage(''), 5_000)
                             } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
+                                setUsers(users =>
+                                    users.filter(user => user.id !== id),
                                 )
                                 setOpen(false)
                             }

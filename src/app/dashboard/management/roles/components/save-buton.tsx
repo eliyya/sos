@@ -37,8 +37,7 @@ export function SaveButton() {
                         r.id === selectedRole.id ?
                             {
                                 ...r,
-                                permissions:
-                                    response.role.permissions.toString(),
+                                permissions: response.role.permissions,
                             }
                         :   r,
                     ),

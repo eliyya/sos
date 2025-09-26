@@ -3,7 +3,7 @@
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/Button'
-import { openCreateUserAtom } from '@/global/management-users'
+import { openCreateUserAtom } from '@/global/users.globals'
 
 export function CreateButton() {
     const openCreateUser = useSetAtom(openCreateUserAtom)

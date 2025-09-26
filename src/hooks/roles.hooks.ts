@@ -10,15 +10,7 @@ export function useRoles() {
     const [isFetched, setIsFetched] = useAtom(isRolesFetchedAtom)
 
     const refetchRoles = useCallback(
-        () =>
-            getRoles().then(roles =>
-                setRoles(
-                    roles.map(role => ({
-                        ...role,
-                        permissions: role.permissions.toString(),
-                    })),
-                ),
-            ),
+        () => getRoles().then(roles => setRoles(roles)),
         [setRoles],
     )
 
