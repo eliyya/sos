@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { unarchiveUser } from '@/actions/users.actions'
@@ -13,18 +13,16 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openUnarchiveUserAtom,
-    updateAtom,
-    entityToEditAtom,
-} from '@/global/management-users'
+import { openUnarchiveUserAtom, entityToEditAtom } from '@/global/users.globals'
+import { useUsers } from '@/hooks/users.hooks'
+import { STATUS } from '@/prisma/enums'
 
 export function UnarchiveEntityDialog() {
     const [open, setOpen] = useAtom(openUnarchiveUserAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
+    const { setUsers } = useUsers()
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
 
     if (!entity) return null
 
@@ -52,9 +50,12 @@ export function UnarchiveEntityDialog() {
                                 }
                                 setTimeout(() => setMessage(''), 5_000)
                             } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
+                                setUsers(users =>
+                                    users.map(user =>
+                                        user.id === id ?
+                                            { ...user, status: STATUS.ACTIVE }
+                                        :   user,
+                                    ),
                                 )
                                 setOpen(false)
                             }

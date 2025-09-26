@@ -10,7 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { openPreventArchiveAdminAtom } from '@/global/management-users'
+import { openPreventArchiveAdminAtom } from '@/global/users.globals'
 
 export function PreventArchiveAdminDialog() {
     const [open, setOpen] = useAtom(openPreventArchiveAdminAtom)

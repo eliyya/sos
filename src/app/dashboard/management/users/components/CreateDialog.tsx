@@ -32,19 +32,18 @@ import {
     passwordAtom,
     passwordErrorAtom,
     passwordFocusAtom,
-    updateAtom,
     usernameAtom,
     usernameErrorAtom,
-} from '@/global/management-users'
+} from '@/global/users.globals'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
 import { useRoles } from '@/hooks/roles.hooks'
+import { useUsers } from '@/hooks/users.hooks'
 
 export function CreateUserDialog() {
     const [open, setOpen] = useAtom(openCreateUserAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const updateUsersTable = useSetAtom(updateAtom)
     const setUsernameError = useSetAtom(usernameErrorAtom)
     const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
     const setTakenUser = useSetAtom(entityToEditAtom)
@@ -52,6 +51,7 @@ export function CreateUserDialog() {
     const setUsername = useSetAtom(usernameAtom)
     const setPassword = useSetAtom(passwordAtom)
     const setConfirmPassword = useSetAtom(confirmPasswordAtom)
+    const { refetchUsers } = useUsers()
 
     return (
         <Dialog
@@ -113,10 +113,7 @@ export function CreateUserDialog() {
                                 } else setMessage('Algo salio mal')
                                 console.log(error)
                             } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
+                                refetchUsers()
                                 setOpen(false)
                             }
                             setTimeout(() => {

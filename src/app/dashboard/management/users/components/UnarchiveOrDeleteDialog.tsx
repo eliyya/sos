@@ -15,18 +15,19 @@ import {
 import { MessageError } from '@/components/Error'
 import {
     entityToEditAtom,
-    updateAtom,
     openUnarchiveOrDeleteAtom,
     openDeleteAtom,
-} from '@/global/management-users'
+} from '@/global/users.globals'
+import { useUsers } from '@/hooks/users.hooks'
+import { STATUS } from '@/prisma/enums'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
     const setOpenDelete = useSetAtom(openDeleteAtom)
+    const { setUsers } = useUsers()
 
     if (!entity) return null
 
@@ -55,9 +56,12 @@ export function UnarchiveOrDeleteDialog() {
                                 }
                                 setTimeout(() => setMessage(''), 5_000)
                             } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
+                                setUsers(users =>
+                                    users.map(user =>
+                                        user.id === id ?
+                                            { ...user, status: STATUS.ACTIVE }
+                                        :   user,
+                                    ),
                                 )
                                 setOpen(false)
                             }

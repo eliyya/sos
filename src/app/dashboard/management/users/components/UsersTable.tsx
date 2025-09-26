@@ -3,9 +3,6 @@
 import { User, STATUS } from '@/prisma/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { getRoles } from '@/actions/roles.actions'
-import { getUsers } from '@/actions/users.actions'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {
@@ -20,12 +17,11 @@ import {
     EditUserDialogAtom,
     openArchiveUserAtom,
     showArchivedAtom,
-    updateAtom,
     entityToEditAtom,
     openUnarchiveUserAtom,
     openDeleteAtom,
     queryAtom,
-} from '@/global/management-users'
+} from '@/global/users.globals'
 import { ArchiveEntityDialog } from './ArchiveEntityDialog'
 import { DeleteEntityDialog } from './DeleteEntityDialog'
 import { EditUserDialog } from './EditUserDialog'
@@ -33,29 +29,13 @@ import { PreventArchiveAdminDialog } from './PreventArchiveAdmin'
 import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useRoles } from '@/hooks/roles.hooks'
+import { useUsers } from '@/hooks/users.hooks'
 
 export function UsersTable() {
-    const [users, setUsers] = useState<User[]>([])
-    const update = useAtomValue(updateAtom)
+    const { users } = useUsers()
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
-    const { roles, setRoles } = useRoles()
-
-    useEffect(() => {
-        getUsers().then(setUsers)
-    }, [update])
-
-    useEffect(() => {
-        getRoles().then(r =>
-            setRoles(
-                r.map(r => ({
-                    id: r.id,
-                    name: r.name,
-                    permissions: r.permissions.toString(),
-                })),
-            ),
-        )
-    }, [setRoles])
+    const { roles } = useRoles()
 
     return (
         <>
