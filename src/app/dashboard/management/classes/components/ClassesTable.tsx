@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 import { getCareers } from '@/actions/career'
 import { getDisponibleClassesWithData } from '@/actions/class'
 import { getSubjects } from '@/actions/subjects'
-import { getUsers } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -27,7 +26,6 @@ import {
     updateAtom,
     careersAtom,
     subjectsAtom,
-    usersAtom,
 } from '@/global/management-class'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -49,12 +47,10 @@ export function ClassesTable() {
     // las carreras, materias y usuarios se usan en varios componentes
     const setCareers = useSetAtom(careersAtom)
     const setSubjects = useSetAtom(subjectsAtom)
-    const setUsers = useSetAtom(usersAtom)
     useEffect(() => {
         getCareers().then(setCareers)
         getSubjects().then(setSubjects)
-        getUsers().then(setUsers)
-    }, [setCareers, setSubjects, setUsers])
+    }, [setCareers, setSubjects])
 
     return (
         <>

@@ -29,8 +29,8 @@ import {
     openUnarchiveOrDeleteAtom,
     subjectsAtom,
     updateAtom,
-    usersAtom,
 } from '@/global/management-class'
+import { useUsers } from '@/hooks/users.hooks'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -39,9 +39,9 @@ export function CreateSubjectDialog() {
     const updateUsersTable = useSetAtom(updateAtom)
     const setEntityToEdit = useSetAtom(entityToEditAtom)
     const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
-    const users = useAtomValue(usersAtom).filter(
-        c => c.status === STATUS.ACTIVE,
-    )
+    const { users: unfilteredUsers } = useUsers()
+    const users = unfilteredUsers.filter(c => c.status === STATUS.ACTIVE)
+
     const subjects = useAtomValue(subjectsAtom).filter(
         c => c.status === STATUS.ACTIVE,
     )

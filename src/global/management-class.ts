@@ -1,4 +1,4 @@
-import { Career, Class, STATUS, Subject, User } from '@/prisma/browser'
+import { Career, Class, STATUS, Subject } from '@/prisma/browser'
 import { atom } from 'jotai'
 
 const defaultEntity: Omit<Class, 'created_at' | 'updated_at'> = {
@@ -17,7 +17,6 @@ export const updateAtom = atom(Symbol())
 export const showArchivedAtom = atom(false)
 export const careersAtom = atom<Career[]>([])
 export const subjectsAtom = atom<Subject[]>([])
-export const usersAtom = atom<User[]>([])
 
 // open
 export const editDialogAtom = atom(false)

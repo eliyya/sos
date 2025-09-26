@@ -20,8 +20,8 @@ import {
     openDeleteAtom,
     careersAtom,
     subjectsAtom,
-    usersAtom,
 } from '@/global/management-class'
+import { useUsers } from '@/hooks/users.hooks'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
@@ -32,11 +32,11 @@ export function UnarchiveOrDeleteDialog() {
     const setOpenDelete = useSetAtom(openDeleteAtom)
     const careers = useAtomValue(careersAtom)
     const subjects = useAtomValue(subjectsAtom)
-    const teachers = useAtomValue(usersAtom)
+    const { users } = useUsers()
 
     const career = careers.find(c => c.id === entity.career_id)
     const subject = subjects.find(s => s.id === entity.subject_id)
-    const teacher = teachers.find(t => t.id === entity.teacher_id)
+    const teacher = users.find(t => t.id === entity.teacher_id)
 
     if (!entity) return null
 
