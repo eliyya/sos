@@ -1,7 +1,7 @@
-import messages from '../locales/es.json'
+import { BaseMessage } from './i18n/types'
 
 declare module 'next-intl' {
     interface AppConfig {
-        Messages: typeof messages
+        Messages: BaseMessage
     }
 }

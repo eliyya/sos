@@ -5,11 +5,12 @@
     "type": "module",
     "scripts": {
         "dev": "next dev",
-        "build": "prisma generate && next build",
+        "build": "node src/i18n/type-base.ts && prisma generate && next build",
         "start": "prisma migrate deploy && next start",
         "lint": "eslint",
         "postinstall": "prisma generate",
-        "backup:start": "node src/prisma/backup.ts"
+        "backup:start": "node src/prisma/backup.ts",
+        "locales": "node src/i18n/type-base.ts --watch"
     },
     "dependencies": {
         "@eliyya/flagged-bitfield": "1.1.1",

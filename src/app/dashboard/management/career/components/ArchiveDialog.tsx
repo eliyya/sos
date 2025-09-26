@@ -18,7 +18,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-career'
-
+import { useTranslations } from 'next-intl'
 
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(openArchiveAtom)
@@ -26,6 +26,7 @@ export function ArchiveDialog() {
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const t = useTranslations('career')
 
     if (!entity) return null
 
@@ -33,9 +34,9 @@ export function ArchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Archivar Carrera</DialogTitle>
+                    <DialogTitle>{t('archive')}</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de archivar <strong>{entity.name}</strong>?
+                        {t('confirm', { name: entity.name })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -67,7 +68,7 @@ export function ArchiveDialog() {
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancell')}
                         </Button>
                         <Button
                             type='submit'

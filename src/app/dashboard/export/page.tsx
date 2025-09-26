@@ -5,23 +5,23 @@ import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { db } from '@/prisma/db'
 import { DashboardHeader } from '../components/DashboardHeader'
+import { useTranslations } from 'next-intl'
 
 export default async function ExportPage() {
+    const t = useTranslations('exports')
     const labs = await db.laboratory.findMany({
         where: {
             status: STATUS.ACTIVE,
         },
     })
+
     return (
         <>
-            <DashboardHeader
-                heading='Exportar'
-                text='Exporta los datos del sistema.'
-            />
+            <DashboardHeader heading={t('export')} text={t('system_data')} />
             <div className='grid gap-4 md:grid-cols-2'>
                 <Card>
                     <CardTitle className='p-4'>
-                        Exportar las Prácticas
+                        {t('export_practices')}
                     </CardTitle>
                     <CardContent>
                         <form
@@ -32,19 +32,19 @@ export default async function ExportPage() {
                             <div className='flex gap-4'>
                                 <CompletInput
                                     required
-                                    label='Desde'
+                                    label={t('from')}
                                     type='date'
                                     name='from'
                                 />
                                 <CompletInput
                                     required
-                                    label='Hasta'
+                                    label={t('until')}
                                     type='date'
                                     name='to'
                                 />
                             </div>
                             <CompletSelect
-                                label='Laboratorio'
+                                label={t('laboratory')}
                                 name='laboratory_id'
                                 required
                                 defaultValue={
@@ -71,7 +71,7 @@ export default async function ExportPage() {
                                     }))}
                             />
                             <CompletSelect
-                                label='Formato'
+                                label={t('format')}
                                 name='format'
                                 required
                                 defaultValue={{ value: 'json', label: 'JSON' }}
@@ -80,13 +80,13 @@ export default async function ExportPage() {
                                     { value: 'csv', label: 'CSV' },
                                 ]}
                             />
-                            <Button type='submit'>Exportar</Button>
+                            <Button type='submit'>{t('export')}</Button>
                         </form>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardTitle className='p-4'>Exportar las Visitas</CardTitle>
+                    <CardTitle className='p-4'>{t('export_visits')}</CardTitle>
                     <CardContent>
                         <form
                             action='/api/export/visits'
@@ -96,19 +96,19 @@ export default async function ExportPage() {
                             <div className='flex gap-4'>
                                 <CompletInput
                                     required
-                                    label='Desde'
+                                    label={t('from')}
                                     type='date'
                                     name='from'
                                 />
                                 <CompletInput
                                     required
-                                    label='Hasta'
+                                    label={t('until')}
                                     type='date'
                                     name='to'
                                 />
                             </div>
                             <CompletSelect
-                                label='Centro de Cómputo'
+                                label={t('computer_center')}
                                 name='laboratory_id'
                                 required
                                 value={
@@ -135,7 +135,7 @@ export default async function ExportPage() {
                                     }))}
                             />
                             <CompletSelect
-                                label='Formato'
+                                label={t('format')}
                                 name='format'
                                 required
                                 defaultValue={{ value: 'json', label: 'JSON' }}
@@ -144,7 +144,7 @@ export default async function ExportPage() {
                                     { value: 'csv', label: 'CSV' },
                                 ]}
                             />
-                            <Button type='submit'>Exportar</Button>
+                            <Button type='submit'>{t('export')}</Button>
                         </form>
                     </CardContent>
                 </Card>

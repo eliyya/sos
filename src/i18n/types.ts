@@ -1,4 +1,4 @@
-{
+export type BaseMessage = {
     "auth": {
         "welcome_title": "Bienvenido de nuevo",
         "name": "Nombre",
