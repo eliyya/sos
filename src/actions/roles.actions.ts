@@ -126,7 +126,7 @@ export async function editRoleName(id: string, name: string) {
 
                             return {
                                 status: 'error' as const,
-                                type: 'unknown' as const,
+                                type: 'unexpected' as const,
                                 message: String(error),
                             }
                         },
@@ -221,9 +221,27 @@ export async function deleteRole(id: string) {
                                     type: 'permission' as const,
                                     message: error.message,
                                 }
+                            if (error instanceof PrismaError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            if (error instanceof NotFoundError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'not-found' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof InvalidInputError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'invalid-input' as const,
+                                    message: error.message,
+                                }
                             return {
                                 status: 'error' as const,
-                                type: 'unknown' as const,
+                                type: 'unexpected' as const,
                                 message: String(error),
                             }
                         },
@@ -270,7 +288,6 @@ export async function changuePermissions(id: string, permissions: bigint) {
                                     type: 'invalid-input' as const,
                                     message: error.message,
                                 }
-
                             if (error instanceof UnauthorizedError)
                                 return {
                                     status: 'error' as const,
@@ -283,9 +300,15 @@ export async function changuePermissions(id: string, permissions: bigint) {
                                     type: 'permission' as const,
                                     message: error.message,
                                 }
+                            if (error instanceof PrismaError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
                             return {
                                 status: 'error' as const,
-                                type: 'unknown' as const,
+                                type: 'unexpected' as const,
                                 message: String(error),
                             }
                         },
@@ -305,7 +328,7 @@ export async function getUsersCountPerRole() {
                 Effect.match({
                     onSuccess: roles => ({ status: 'success' as const, roles }),
                     onFailure: error => {
-                        if (error instanceof UnexpectedError)
+                        if (error instanceof PrismaError)
                             return {
                                 status: 'error' as const,
                                 type: 'unexpected' as const,
@@ -313,7 +336,7 @@ export async function getUsersCountPerRole() {
                             }
                         return {
                             status: 'error' as const,
-                            type: 'unknown' as const,
+                            type: 'unexpected' as const,
                             message: String(error),
                         }
                     },

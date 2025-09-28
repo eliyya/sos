@@ -7,6 +7,9 @@ import { permissionsEditedAtom, selectedRoleAtom } from '@/global/roles.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { changuePermissions } from '@/actions/roles.actions'
 import { cn } from '@/lib/utils'
+import { useToast } from '@/hooks/toast.hooks'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 export function SaveButton() {
     const selectedRole = useAtomValue(selectedRoleAtom)
@@ -15,6 +18,8 @@ export function SaveButton() {
     const [permissionsEdited, setPermissionsEdited] = useAtom(
         permissionsEditedAtom,
     )
+    const { Toast, openToast } = useToast()
+    const router = useRouter()
 
     useEffect(() => {
         if (selectedRole) {
@@ -45,29 +50,77 @@ export function SaveButton() {
                 return setPermissionsEdited(
                     new PermissionsBitField(response.role.permissions),
                 )
+            } else {
+                if (response.type === 'not-found') {
+                    openToast({
+                        title: 'Error',
+                        description: 'El rol no se encontro',
+                        variant: 'destructive',
+                    })
+                } else if (response.type === 'permission') {
+                    openToast({
+                        title: 'Error',
+                        description: 'No tienes permiso para editar este rol',
+                        variant: 'destructive',
+                    })
+                } else if (response.type === 'invalid-input') {
+                    openToast({
+                        title: 'Error',
+                        description:
+                            'El rol es administrado por el sistema, no se puede editar',
+                        variant: 'destructive',
+                    })
+                } else if (response.type === 'unexpected') {
+                    openToast({
+                        title: 'Error',
+                        description: 'Algo salio mal, intente de nuevo',
+                        variant: 'destructive',
+                    })
+                } else if (response.type === 'unauthorized') {
+                    router.replace(app.auth.login())
+                }
             }
         })
     }
 
     return (
-        <Button
-            type='submit'
-            className={cn('', {
-                hidden: permissionsEdited.equals(
-                    new PermissionsBitField(selectedRole?.permissions ?? 0n),
-                ),
-            })}
-            size='sm'
-            disabled={
-                isPending ||
-                selectedRole?.name === DEFAULT_ROLES.ADMIN ||
-                permissionsEdited.equals(
-                    new PermissionsBitField(selectedRole?.permissions ?? 0n),
-                )
-            }
-            onClick={handleSave}
-        >
-            Guardar cambios
-        </Button>
+        <>
+            <Button
+                type='submit'
+                className={cn('', {
+                    hidden: permissionsEdited.equals(
+                        new PermissionsBitField(
+                            selectedRole?.permissions ?? 0n,
+                        ),
+                    ),
+                })}
+                size='sm'
+                disabled={
+                    isPending ||
+                    selectedRole?.name === DEFAULT_ROLES.ADMIN ||
+                    permissionsEdited.equals(
+                        new PermissionsBitField(
+                            selectedRole?.permissions ?? 0n,
+                        ),
+                    )
+                }
+                onClick={handleSave}
+            >
+                Guardar cambios
+            </Button>
+            <Button
+                variant='outline'
+                size='sm'
+                disabled={isPending}
+                onClick={() =>
+                    setPermissionsEdited(
+                        new PermissionsBitField(selectedRole?.permissions),
+                    )
+                }
+            >
+                Restaurar
+            </Button>
+            <Toast />
+        </>
     )
 }

@@ -13,9 +13,10 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { DEFAULT_ROLES } from '@/constants/client'
 import { openDeleteAtom, selectedRoleAtom } from '@/global/roles.globals'
 import { useRoles } from '@/hooks/roles.hooks'
+import app from '@eliyya/type-routes'
+import { useRouter } from 'next/navigation'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -23,8 +24,34 @@ export function DeleteDialog() {
     const entity = useAtomValue(selectedRoleAtom)
     const [message, setMessage] = useState('')
     const { setRoles } = useRoles()
+    const router = useRouter()
 
-    if (!entity) return null
+    if (!entity) return
+
+    const handleDelete = () => {
+        startTransition(async () => {
+            const response = await deleteRole(entity.id)
+            if (response.status === 'error') {
+                if (response.type === 'not-found') {
+                    setMessage('El rol no se encontro')
+                } else if (response.type === 'permission') {
+                    setMessage('No tienes permiso para eliminar este rol')
+                } else if (response.type === 'invalid-input') {
+                    setMessage(
+                        'El rol es administrado por el sistema, no se puede eliminar',
+                    )
+                } else if (response.type === 'unexpected') {
+                    setMessage('Algo salio mal, intente de nuevo')
+                } else if (response.type === 'unauthorized') {
+                    router.replace(app.auth.login())
+                }
+                setTimeout(() => setMessage(''), 5_000)
+            } else {
+                setRoles(prev => prev.filter(role => role.id !== entity.id))
+                setOpen(false)
+            }
+        })
+    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -39,31 +66,7 @@ export function DeleteDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={() => {
-                        startTransition(async () => {
-                            if (
-                                Object.values(DEFAULT_ROLES)
-                                    .map(r => r.toLowerCase())
-                                    .includes(entity.name.toLowerCase())
-                            ) {
-                                setMessage(
-                                    'El rol es administrado por el sistema, no se puede eliminar',
-                                )
-                                setTimeout(() => setMessage(''), 5_000)
-                                return
-                            }
-                            const response = await deleteRole(entity.id)
-                            if (response.status === 'error') {
-                                setMessage('Algo salio mal, intente de nuevo')
-                                setTimeout(() => setMessage(''), 5_000)
-                            } else {
-                                setRoles(prev =>
-                                    prev.filter(role => role.id !== entity.id),
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={handleDelete}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}

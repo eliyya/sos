@@ -2,7 +2,6 @@ import { Role } from '@/prisma/browser'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
-import { Serializable } from '@/lib/types'
 import { createSerializableLocaleStorage } from '@/lib/utils'
 
 type id = Role['id']
@@ -23,6 +22,7 @@ export const selectedRoleAtom = atom(get => {
 export const updateAtom = atom(Symbol())
 export const openDeleteAtom = atom(false)
 export const permissionsEditedAtom = atom(new PermissionsBitField())
-export const usersCountAtom = atomWithStorage<
-    Serializable<{ id: id; count: number }[]>
->('usersCount', [])
+export const usersCountAtom = atomWithStorage<{ id: id; count: number }[]>(
+    'usersCount',
+    [],
+)
