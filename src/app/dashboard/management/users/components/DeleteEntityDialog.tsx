@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { deleteUser } from '@/actions/users.actions'
@@ -13,21 +13,16 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openDeleteAtom,
-    entityToEditAtom,
-    openPreventArchiveAdminAtom,
-} from '@/global/users.globals'
+import { dialogOpenedAtom, entityToEditAtom } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { useUsers } from '@/hooks/users.hooks'
 
 export function DeleteEntityDialog() {
-    const [open, setOpen] = useAtom(openDeleteAtom)
+    const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const setOpenPreventArchiveAdmin = useSetAtom(openPreventArchiveAdminAtom)
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
     const { setUsers } = useUsers()
@@ -35,7 +30,12 @@ export function DeleteEntityDialog() {
     if (!entity || !adminRole) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'delete'}
+            onOpenChange={open => {
+                setOpen(open ? 'delete' : null)
+            }}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Eliminar Usuario</DialogTitle>
@@ -56,8 +56,7 @@ export function DeleteEntityDialog() {
                                     response.message ===
                                         'Unique admin cannot be deleted'
                                 ) {
-                                    setOpenPreventArchiveAdmin(true)
-                                    setOpen(false)
+                                    setOpen('preventArchiveAdmin')
                                     return
                                 }
                                 if (response.type === 'not-found') {
@@ -73,7 +72,7 @@ export function DeleteEntityDialog() {
                                 setUsers(users =>
                                     users.filter(user => user.id !== id),
                                 )
-                                setOpen(false)
+                                setOpen(null)
                             }
                         })
                     }}
@@ -86,7 +85,7 @@ export function DeleteEntityDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                setOpen(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />

@@ -10,13 +10,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { openPreventArchiveAdminAtom } from '@/global/users.globals'
+import { dialogOpenedAtom } from '@/global/users.globals'
 
 export function PreventArchiveAdminDialog() {
-    const [open, setOpen] = useAtom(openPreventArchiveAdminAtom)
+    const [open, setOpen] = useAtom(dialogOpenedAtom)
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'preventArchiveAdmin'}
+            onOpenChange={op => setOpen(op ? 'preventArchiveAdmin' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Parece que olvidaste algo</DialogTitle>
@@ -30,7 +33,7 @@ export function PreventArchiveAdminDialog() {
                     administrador
                 </span>
                 <form
-                    action={() => setOpen(false)}
+                    action={() => setOpen(null)}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     <div className='flex flex-row gap-2 *:flex-1'>

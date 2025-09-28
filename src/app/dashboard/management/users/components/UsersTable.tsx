@@ -14,13 +14,10 @@ import {
     Table,
 } from '@/components/Table'
 import {
-    EditUserDialogAtom,
-    openArchiveUserAtom,
     showArchivedAtom,
     entityToEditAtom,
-    openUnarchiveUserAtom,
-    openDeleteAtom,
     queryAtom,
+    dialogOpenedAtom,
 } from '@/global/users.globals'
 import { ArchiveEntityDialog } from './ArchiveEntityDialog'
 import { DeleteEntityDialog } from './DeleteEntityDialog'
@@ -115,11 +112,8 @@ interface ButtonsProps {
     user: User
 }
 function Buttons({ user }: ButtonsProps) {
-    const openEditUserDialog = useSetAtom(EditUserDialogAtom)
+    const setDialogOpened = useSetAtom(dialogOpenedAtom)
     const setUserSelected = useSetAtom(entityToEditAtom)
-    const setArchiveUserDialog = useSetAtom(openArchiveUserAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveUserAtom)
-    const openDeleteDialog = useSetAtom(openDeleteAtom)
     if (user.status === STATUS.ACTIVE)
         return (
             <>
@@ -127,7 +121,7 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        openEditUserDialog(true)
+                        setDialogOpened('edit')
                         setUserSelected(user)
                     }}
                 >
@@ -137,8 +131,8 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
+                        setDialogOpened('archive')
                         setUserSelected(user)
-                        setArchiveUserDialog(true)
                     }}
                 >
                     <Archive className='w-xs text-xs' />
@@ -152,8 +146,8 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
+                        setDialogOpened('unarchive')
                         setUserSelected(user)
-                        openUnarchiveDialog(true)
                     }}
                 >
                     <ArchiveRestore className='w-xs text-xs' />
@@ -162,8 +156,8 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
+                        setDialogOpened('delete')
                         setUserSelected(user)
-                        openDeleteDialog(true)
                     }}
                 >
                     <Trash2 className='w-xs text-xs' />

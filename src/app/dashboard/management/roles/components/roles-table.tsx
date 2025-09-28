@@ -9,14 +9,18 @@ import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { queryAtom } from '@/global/management-career'
-import { selectedRoleIdAtom, usersCountAtom } from '@/global/roles.globals'
+import {
+    selectedRoleAtom,
+    selectedRoleIdAtom,
+    usersCountAtom,
+} from '@/global/roles.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { PermissionsList } from './permissions-list'
 import { cn } from '@/lib/utils'
 
 export function RolesTable() {
     const { roles } = useRoles()
-    const selectedRoleId = useAtomValue(selectedRoleIdAtom)
+    const selectedRole = useAtomValue(selectedRoleAtom)
     const [query, setQuery] = useAtom(queryAtom)
     const selectRole = useSetAtom(selectedRoleIdAtom)
     const [usersCount, setUsersCount] = useAtom(usersCountAtom)
@@ -63,9 +67,9 @@ export function RolesTable() {
                                         'hover:shadow-md',
                                         {
                                             'ring-primary bg-primary/5 ring-2':
-                                                selectedRoleId === role.id,
+                                                selectedRole?.id === role.id,
                                             'hover:bg-muted/50':
-                                                selectedRoleId !== role.id,
+                                                selectedRole?.id !== role.id,
                                         },
                                     )}
                                     onClick={() => selectRole(role.id)}

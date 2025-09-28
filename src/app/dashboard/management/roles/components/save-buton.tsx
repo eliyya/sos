@@ -112,6 +112,13 @@ export function SaveButton() {
                 variant='outline'
                 size='sm'
                 disabled={isPending}
+                className={cn('', {
+                    hidden: permissionsEdited.equals(
+                        new PermissionsBitField(
+                            selectedRole?.permissions ?? 0n,
+                        ),
+                    ),
+                })}
                 onClick={() =>
                     setPermissionsEdited(
                         new PermissionsBitField(selectedRole?.permissions),

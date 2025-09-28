@@ -20,13 +20,18 @@ export const usersAtom = atomWithStorage<User[]>(
     createSerializableLocaleStorage(),
 )
 export const queryAtom = atom('')
-export const EditUserDialogAtom = atom(false)
+export const dialogOpenedAtom = atom<
+    | 'create'
+    | 'edit'
+    | 'archive'
+    | 'unarchive'
+    | 'delete'
+    | 'unarchiveOrDelete'
+    | 'preventArchiveAdmin'
+    | null
+>(null)
 export const entityToEditAtom = atom(default_user)
-export const openArchiveUserAtom = atom(false)
 export const showArchivedAtom = atom(false)
-export const openUnarchiveUserAtom = atom(false)
-export const openDeleteAtom = atom(false)
-export const openCreateUserAtom = atom(false)
 export const usernameAtom = atom('')
 export const usernameErrorAtom = atom('')
 export const canSuggestUsernameAtom = atom(false)
@@ -41,6 +46,4 @@ export const editPasswordAtom = atom('')
 export const editPasswordErrorAtom = atom('')
 export const editConfirmPasswordAtom = atom('')
 export const editConfirmPasswordErrorAtom = atom('')
-export const openUnarchiveOrDeleteAtom = atom(false)
-export const openPreventArchiveAdminAtom = atom(false)
 export const adminRoleAtom = atom<Role | null>(null)

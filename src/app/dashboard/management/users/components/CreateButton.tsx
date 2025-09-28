@@ -3,13 +3,13 @@
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/Button'
-import { openCreateUserAtom } from '@/global/users.globals'
+import { dialogOpenedAtom } from '@/global/users.globals'
 
 export function CreateButton() {
-    const openCreateUser = useSetAtom(openCreateUserAtom)
+    const openCreateUser = useSetAtom(dialogOpenedAtom)
 
     return (
-        <Button onClick={() => openCreateUser(true)}>
+        <Button onClick={() => openCreateUser('create')}>
             <Plus className='mr-3' />
             Crear Usuario
         </Button>

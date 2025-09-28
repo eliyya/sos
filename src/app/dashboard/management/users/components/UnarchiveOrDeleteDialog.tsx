@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { unarchiveUser } from '@/actions/users.actions'
@@ -13,26 +13,24 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    entityToEditAtom,
-    openUnarchiveOrDeleteAtom,
-    openDeleteAtom,
-} from '@/global/users.globals'
+import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { useUsers } from '@/hooks/users.hooks'
 import { STATUS } from '@/prisma/enums'
 
 export function UnarchiveOrDeleteDialog() {
-    const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
+    const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const setOpenDelete = useSetAtom(openDeleteAtom)
     const { setUsers } = useUsers()
 
     if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'unarchiveOrDelete'}
+            onOpenChange={op => setOpen(op ? 'unarchiveOrDelete' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Usuario archivado</DialogTitle>
@@ -63,7 +61,7 @@ export function UnarchiveOrDeleteDialog() {
                                         :   user,
                                     ),
                                 )
-                                setOpen(false)
+                                setOpen(null)
                             }
                         })
                     }}
@@ -78,7 +76,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                setOpen(null)
                             }}
                         >
                             <BanIcon className='mr-2 h-5 w-5' />
@@ -98,8 +96,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
-                                setOpenDelete(true)
+                                setOpen('delete')
                             }}
                         >
                             <TrashIcon className='mr-2 h-5 w-5' />

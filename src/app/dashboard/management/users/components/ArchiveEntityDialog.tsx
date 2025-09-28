@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { archiveUser } from '@/actions/users.actions'
@@ -13,22 +13,17 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openArchiveUserAtom,
-    entityToEditAtom,
-    openPreventArchiveAdminAtom,
-} from '@/global/users.globals'
+import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { useUsers } from '@/hooks/users.hooks'
 import { STATUS } from '@/prisma/browser'
 
 export function ArchiveEntityDialog() {
-    const [open, setOpen] = useAtom(openArchiveUserAtom)
+    const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const setOpenPreventArchiveAdmin = useSetAtom(openPreventArchiveAdminAtom)
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
     const { setUsers } = useUsers()
@@ -36,7 +31,10 @@ export function ArchiveEntityDialog() {
     if (!entity || !adminRole) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'archive'}
+            onOpenChange={op => setOpen(op ? 'archive' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Archivar Usuario</DialogTitle>
@@ -56,8 +54,7 @@ export function ArchiveEntityDialog() {
                                     response.message ===
                                         'Unique admin cannot be archived'
                                 ) {
-                                    setOpenPreventArchiveAdmin(true)
-                                    setOpen(false)
+                                    setOpen('preventArchiveAdmin')
                                     return
                                 }
                                 setMessage(
@@ -72,7 +69,7 @@ export function ArchiveEntityDialog() {
                                         :   { ...u, status: STATUS.ARCHIVED },
                                     ),
                                 )
-                                setOpen(false)
+                                setOpen(null)
                             }
                         })
                     }}
@@ -85,7 +82,7 @@ export function ArchiveEntityDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                setOpen(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
