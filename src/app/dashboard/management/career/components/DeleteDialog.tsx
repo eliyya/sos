@@ -18,7 +18,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-career'
-
+import { useTranslations } from 'next-intl'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -26,6 +26,7 @@ export function DeleteDialog() {
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const t = useTranslations('career')
 
     if (!entity) return null
 
@@ -33,10 +34,10 @@ export function DeleteDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Eliminar Carrera</DialogTitle>
+                    <DialogTitle>{t('delete_career')}</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de eliminar <strong>{entity.name}</strong>?
-                        <strong>Esta acción es irreversible</strong>
+                        {t('confirm_delete', { 'entity.name': entity.name })}{' '}
+                        <strong>{t('is_irreversible')}</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -68,7 +69,7 @@ export function DeleteDialog() {
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancell')}
                         </Button>
                         <Button
                             type='submit'
@@ -76,7 +77,7 @@ export function DeleteDialog() {
                             disabled={inTransition}
                         >
                             <Trash2 className='mr-2 h-5 w-5' />
-                            Eliminar
+                            {t('delete')}
                         </Button>
                     </div>
                 </form>

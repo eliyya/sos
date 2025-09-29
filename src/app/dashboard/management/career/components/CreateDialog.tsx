@@ -18,7 +18,7 @@ import {
     openCreateAtom,
     updateAtom,
 } from '@/global/management-career'
-
+import { useTranslations } from 'next-intl'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -26,12 +26,13 @@ export function CreateSubjectDialog() {
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
     const setEntityToEdit = useSetAtom(entityToEditAtom)
+    const t = useTranslations('career')
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Crear Carrera</DialogTitle>
+                    <DialogTitle>{t('create_career')}</DialogTitle>
                     {/* <DialogDescription>
                         Edit the user&apos;s information
                     </DialogDescription> */}
@@ -63,13 +64,13 @@ export function CreateSubjectDialog() {
                     {message && <MessageError>{message}</MessageError>}
                     <CompletInput
                         required
-                        label='Nombre'
+                        label={t('name')}
                         type='text'
                         name='name'
                         icon={SquarePenIcon}
                     />
                     <CompletInput
-                        label='Alias'
+                        label={t('alias')}
                         type='text'
                         name='alias'
                         icon={TagIcon}
@@ -77,7 +78,7 @@ export function CreateSubjectDialog() {
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
-                        Crear
+                        {t('create')}
                     </Button>
                 </form>
             </DialogContent>

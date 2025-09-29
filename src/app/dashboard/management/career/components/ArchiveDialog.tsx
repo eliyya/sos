@@ -34,7 +34,7 @@ export function ArchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{t('archive')}</DialogTitle>
+                    <DialogTitle>{t('archive_career')}</DialogTitle>
                     <DialogDescription>
                         {t('confirm', { name: entity.name })}
                     </DialogDescription>
@@ -76,7 +76,7 @@ export function ArchiveDialog() {
                             disabled={inTransition}
                         >
                             <Archive className='mr-2 h-5 w-5' />
-                            Archivar
+                            {t('archive')}
                         </Button>
                     </div>
                 </form>

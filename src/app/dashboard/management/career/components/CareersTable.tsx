@@ -29,12 +29,14 @@ import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { useTranslations } from 'next-intl'
 
 export function CareersTable() {
     const [entity, setEntity] = useState<Career[]>([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
+    const t = useTranslations('career')
 
     useEffect(() => {
         getCareers().then(setEntity)
@@ -45,9 +47,9 @@ export function CareersTable() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Carrera</TableHead>
-                        <TableHead>Alias</TableHead>
-                        <TableHead>Options</TableHead>
+                        <TableHead>{t('career')}</TableHead>
+                        <TableHead>{t('alias')}</TableHead>
+                        <TableHead>{t('options')}</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

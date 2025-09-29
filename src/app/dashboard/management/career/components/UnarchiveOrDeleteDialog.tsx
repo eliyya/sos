@@ -19,6 +19,7 @@ import {
     openUnarchiveOrDeleteAtom,
     openDeleteAtom,
 } from '@/global/management-career'
+import { useTranslations } from 'next-intl'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
@@ -27,6 +28,7 @@ export function UnarchiveOrDeleteDialog() {
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
     const setOpenDelete = useSetAtom(openDeleteAtom)
+    const t = useTranslations('career')
 
     if (!entity) return null
 
@@ -34,10 +36,11 @@ export function UnarchiveOrDeleteDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Carrera archivada</DialogTitle>
+                    <DialogTitle>{t('archived_career')}</DialogTitle>
                     <DialogDescription>
-                        La carrera {entity.name} está archivada. ¿Qué desea
-                        hacer con <strong>{entity.name}</strong>?
+                        {t('unarchive_or_delete_description', {
+                            'entity.name': entity.name,
+                        })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -71,7 +74,7 @@ export function UnarchiveOrDeleteDialog() {
                             }}
                         >
                             <BanIcon className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancell')}
                         </Button>
                         <Button
                             type='submit'
@@ -79,7 +82,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                         >
                             <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
-                            Desarchivar
+                            {t('unarchive')}
                         </Button>
                         <Button
                             type='button'
@@ -92,7 +95,7 @@ export function UnarchiveOrDeleteDialog() {
                             }}
                         >
                             <TrashIcon className='mr-2 h-5 w-5' />
-                            Eliminar
+                            {t('delete')}
                         </Button>
                     </div>
                 </form>

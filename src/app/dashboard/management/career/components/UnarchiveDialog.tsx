@@ -18,7 +18,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-career'
-
+import { useTranslations } from 'next-intl'
 
 export function UnarchiveDialog() {
     const [open, setOpen] = useAtom(openUnarchiveAtom)
@@ -26,6 +26,7 @@ export function UnarchiveDialog() {
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const t = useTranslations('career')
 
     if (!entity) return null
 
@@ -33,9 +34,9 @@ export function UnarchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Desarchivar Carrera</DialogTitle>
+                    <DialogTitle>{t('unarchive_career')}</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de desarchivar {entity.name}?
+                        {t('confirm_unarchive', { 'entity.name': entity.name })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -68,7 +69,7 @@ export function UnarchiveDialog() {
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancell')}
                         </Button>
                         <Button
                             type='submit'
@@ -76,7 +77,7 @@ export function UnarchiveDialog() {
                             disabled={inTransition}
                         >
                             <ArchiveRestore className='mr-2 h-5 w-5' />
-                            Desarchivar
+                            {t('unarchive')}
                         </Button>
                     </div>
                 </form>

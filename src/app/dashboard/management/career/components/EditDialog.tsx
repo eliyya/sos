@@ -19,7 +19,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-career'
-
+import { useTranslations } from 'next-intl'
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)
@@ -27,6 +27,7 @@ export function EditDialog() {
     const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
+    const t = useTranslations('career')
 
     if (!old) return null
 
@@ -34,9 +35,9 @@ export function EditDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Editar Carrera</DialogTitle>
+                    <DialogTitle>{t('edit_career')}</DialogTitle>
                     <DialogDescription>
-                        Edita la carrera {old.name}
+                        {t('edit_career_name', { 'old.name': old.name })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -60,7 +61,7 @@ export function EditDialog() {
                     <RetornableCompletInput
                         originalValue={old.name}
                         required
-                        label='Name'
+                        label={t('name')}
                         type='text'
                         name='name'
                         icon={SquarePenIcon}
@@ -68,14 +69,14 @@ export function EditDialog() {
                     <RetornableCompletInput
                         originalValue={old.alias ?? ''}
                         required
-                        label='Alias'
+                        label={t('alias')}
                         type='text'
                         name='alias'
                         icon={TagIcon}
                     ></RetornableCompletInput>
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
-                        Save
+                        {t('save')}
                     </Button>
                 </form>
             </DialogContent>
