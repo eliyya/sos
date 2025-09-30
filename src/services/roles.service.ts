@@ -40,7 +40,7 @@ export const editRoleNameEffect = (id: string, name: string) =>
         const actual = yield* _(
             Effect.tryPromise({
                 try: () => prisma.role.findUnique({ where: { id } }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }),
         )
 
@@ -61,7 +61,7 @@ export const editRoleNameEffect = (id: string, name: string) =>
         const existing = yield* _(
             Effect.tryPromise({
                 try: () => prisma.role.findUnique({ where: { name } }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }),
         )
 
@@ -97,7 +97,7 @@ export const createNewRoleEffect = () =>
                         where: { name: DB_STATES.ROLES_COUNT },
                         select: { value: true },
                     }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }).pipe(Effect.map(c => (c?.value ?? 0) + 1)),
         )
         let intents = 10
@@ -127,11 +127,9 @@ export const createNewRoleEffect = () =>
                                 return new RoleCreationConflictError(
                                     'Role name conflict',
                                 )
-                            } else {
-                                return new PrismaError(err)
                             }
                         }
-                        return new UnexpectedError(err)
+                        return new PrismaError(err)
                     },
                 }),
                 Effect.catchIf(
@@ -159,6 +157,22 @@ export const deleteRoleEffect = (id: string) =>
     Effect.gen(function* (_) {
         yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
         const prisma = yield* _(PrismaService)
+        const role = yield* _(
+            Effect.tryPromise({
+                try: () => prisma.role.findUnique({ where: { id } }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        if (!role) {
+            return yield* _(Effect.fail(new NotFoundError('Role not found')))
+        }
+        if (
+            role.name === DEFAULT_ROLES.ADMIN ||
+            role.name === DEFAULT_ROLES.USER ||
+            role.name === DEFAULT_ROLES.DELETED
+        ) {
+            return yield* _(Effect.fail(new InvalidInputError('Reserved Role')))
+        }
         yield* _(
             Effect.tryPromise({
                 try: () =>
@@ -169,7 +183,7 @@ export const deleteRoleEffect = (id: string) =>
                         })
                         await prisma.role.delete({ where: { id } })
                     }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }),
         )
     })
@@ -181,7 +195,7 @@ export const changuePermissionsEffect = (id: string, permissions: bigint) =>
         const actual = yield* _(
             Effect.tryPromise({
                 try: () => prisma.role.findUnique({ where: { id } }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }),
         )
         if (!actual) {
@@ -197,7 +211,7 @@ export const changuePermissionsEffect = (id: string, permissions: bigint) =>
                         data: { permissions },
                         where: { id },
                     }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }),
         )
         return updated
@@ -220,7 +234,7 @@ export const usersCountPerRoleEffect = () =>
                             role_id: true,
                         },
                     }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             })
                 .pipe(Effect.map(users => users.map(u => u.role_id)))
                 .pipe(Effect.map(users => Object.groupBy(users, u => u)))
@@ -242,7 +256,7 @@ export function getAdminRoleEffect() {
                     prisma.role.findUnique({
                         where: { name: DEFAULT_ROLES.ADMIN },
                     }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }),
         )
         if (role) return role
@@ -270,7 +284,7 @@ export function getAdminRoleEffect() {
                         })
                         return role
                     }),
-                catch: error => new UnexpectedError(error),
+                catch: error => new PrismaError(error),
             }),
         )
         if (newRole) return newRole
@@ -287,7 +301,7 @@ export function getDeletedRoleEffect() {
                     prisma.role.findUnique({
                         where: { name: DEFAULT_ROLES.DELETED },
                     }),
-                catch: err => new UnexpectedError(err),
+                catch: err => new PrismaError(err),
             }),
         )
         if (role) return role
@@ -315,7 +329,7 @@ export function getDeletedRoleEffect() {
                         })
                         return role
                     }),
-                catch: error => new UnexpectedError(error),
+                catch: error => new PrismaError(error),
             }),
         )
         if (newRole) return newRole
@@ -328,8 +342,11 @@ export function getRolesEffect() {
         const prisma = yield* _(PrismaService)
         return yield* _(
             Effect.tryPromise({
-                try: () => prisma.role.findMany(),
-                catch: err => new UnexpectedError(err),
+                try: () =>
+                    prisma.role.findMany({
+                        where: { name: { not: DEFAULT_ROLES.DELETED } },
+                    }),
+                catch: err => new PrismaError(err),
             }),
         )
     })

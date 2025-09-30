@@ -5,10 +5,10 @@ import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { db } from '@/prisma/db'
 import { DashboardHeader } from '../components/DashboardHeader'
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 
 export default async function ExportPage() {
-    const t = useTranslations('exports')
+    const t = await getTranslations('exports')
     const labs = await db.laboratory.findMany({
         where: {
             status: STATUS.ACTIVE,

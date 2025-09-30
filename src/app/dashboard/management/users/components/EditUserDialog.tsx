@@ -22,19 +22,19 @@ import { MessageError } from '@/components/Error'
 import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
-    EditUserDialogAtom,
     entityToEditAtom,
     editPasswordAtom,
     editPasswordErrorAtom,
     editConfirmPasswordAtom,
     editConfirmPasswordErrorAtom,
     passwordFocusAtom,
+    dialogOpenedAtom,
 } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { useUsers } from '@/hooks/users.hooks'
 
 export function EditUserDialog() {
-    const [open, setOpen] = useAtom(EditUserDialogAtom)
+    const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
     const oldUser = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
@@ -43,7 +43,10 @@ export function EditUserDialog() {
     if (!oldUser) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'edit'}
+            onOpenChange={op => setOpen(op ? 'edit' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Edit @{oldUser.username}</DialogTitle>
@@ -89,7 +92,7 @@ export function EditUserDialog() {
                                     :   user,
                                 ),
                             )
-                            setOpen(false)
+                            setOpen(null)
                         })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'

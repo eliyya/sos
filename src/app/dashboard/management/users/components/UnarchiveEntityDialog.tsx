@@ -13,12 +13,12 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openUnarchiveUserAtom, entityToEditAtom } from '@/global/users.globals'
+import { dialogOpenedAtom, entityToEditAtom } from '@/global/users.globals'
 import { useUsers } from '@/hooks/users.hooks'
 import { STATUS } from '@/prisma/enums'
 
 export function UnarchiveEntityDialog() {
-    const [open, setOpen] = useAtom(openUnarchiveUserAtom)
+    const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
     const { setUsers } = useUsers()
@@ -27,7 +27,10 @@ export function UnarchiveEntityDialog() {
     if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'unarchive'}
+            onOpenChange={op => setOpen(op ? 'unarchive' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Desarchivar Usuario</DialogTitle>
@@ -57,7 +60,7 @@ export function UnarchiveEntityDialog() {
                                         :   user,
                                     ),
                                 )
-                                setOpen(false)
+                                setOpen(null)
                             }
                         })
                     }}
@@ -71,7 +74,7 @@ export function UnarchiveEntityDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                setOpen(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />

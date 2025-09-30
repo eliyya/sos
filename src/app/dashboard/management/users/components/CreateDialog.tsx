@@ -27,8 +27,7 @@ import {
     entityToEditAtom,
     nameAtom,
     nameErrorAtom,
-    openCreateUserAtom,
-    openUnarchiveOrDeleteAtom,
+    dialogOpenedAtom,
     passwordAtom,
     passwordErrorAtom,
     passwordFocusAtom,
@@ -41,11 +40,10 @@ import { useRoles } from '@/hooks/roles.hooks'
 import { useUsers } from '@/hooks/users.hooks'
 
 export function CreateUserDialog() {
-    const [open, setOpen] = useAtom(openCreateUserAtom)
+    const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setUsernameError = useSetAtom(usernameErrorAtom)
-    const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
     const setTakenUser = useSetAtom(entityToEditAtom)
     const setName = useSetAtom(nameAtom)
     const setUsername = useSetAtom(usernameAtom)
@@ -55,9 +53,9 @@ export function CreateUserDialog() {
 
     return (
         <Dialog
-            open={open}
+            open={open === 'create'}
             onOpenChange={open => {
-                setOpen(open)
+                setOpen(null)
                 if (!open) {
                     setName('')
                     setUsername('')
@@ -87,9 +85,9 @@ export function CreateUserDialog() {
                                 response.status === 'success' &&
                                 response.type === 'archived'
                             ) {
-                                setOpen(false)
+                                setOpen(null)
                                 setTakenUser(response.user)
-                                setOpenUnarchiveOrDelete(true)
+                                setOpen('unarchiveOrDelete')
                                 // reset
                                 setName('')
                                 setUsername('')
@@ -114,7 +112,7 @@ export function CreateUserDialog() {
                                 console.log(error)
                             } else {
                                 refetchUsers()
-                                setOpen(false)
+                                setOpen(null)
                             }
                             setTimeout(() => {
                                 setMessage('')

@@ -9,13 +9,18 @@ import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { queryAtom } from '@/global/management-career'
-import { selectedRoleIdAtom, usersCountAtom } from '@/global/roles.globals'
+import {
+    selectedRoleAtom,
+    selectedRoleIdAtom,
+    usersCountAtom,
+} from '@/global/roles.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { PermissionsList } from './permissions-list'
+import { cn } from '@/lib/utils'
 
 export function RolesTable() {
     const { roles } = useRoles()
-    const selectedRoleId = useAtomValue(selectedRoleIdAtom)
+    const selectedRole = useAtomValue(selectedRoleAtom)
     const [query, setQuery] = useAtom(queryAtom)
     const selectRole = useSetAtom(selectedRoleIdAtom)
     const [usersCount, setUsersCount] = useAtom(usersCountAtom)
@@ -49,7 +54,6 @@ export function RolesTable() {
                     {/* Lista de roles */}
                     <div className='space-y-2 overflow-y-auto p-6'>
                         {roles
-                            .filter(role => role.name !== DEFAULT_ROLES.DELETED)
                             .filter(role =>
                                 role.name
                                     .toLowerCase()
@@ -58,11 +62,16 @@ export function RolesTable() {
                             .map(role => (
                                 <Card
                                     key={role.id}
-                                    className={`cursor-pointer transition-all hover:shadow-md ${
-                                        selectedRoleId === role.id ?
-                                            'ring-primary bg-primary/5 ring-2'
-                                        :   'hover:bg-muted/50'
-                                    }`}
+                                    className={cn(
+                                        'cursor-pointer transition-all',
+                                        'hover:shadow-md',
+                                        {
+                                            'ring-primary bg-primary/5 ring-2':
+                                                selectedRole?.id === role.id,
+                                            'hover:bg-muted/50':
+                                                selectedRole?.id !== role.id,
+                                        },
+                                    )}
                                     onClick={() => selectRole(role.id)}
                                 >
                                     <CardContent className='p-3'>
