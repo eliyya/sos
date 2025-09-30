@@ -23,6 +23,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-class'
+import { useTranslations } from 'next-intl'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDeleteAtom)
@@ -33,6 +34,7 @@ export function DeleteDialog() {
     const [teachers, setTeachers] = useState<User[]>([])
     const [subjects, setSubjects] = useState<Subject[]>([])
     const [careers, setCareers] = useState<Career[]>([])
+    const t = useTranslations('classes')
 
     useEffect(() => {
         getUsers().then(users => {
@@ -55,11 +57,13 @@ export function DeleteDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Eliminar Clase</DialogTitle>
+                    <DialogTitle>{t('delete_class')}</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de eliminar la clase {subjectName} -{' '}
-                        {teacherName}?
-                        <strong>Esta acción es irreversible</strong>
+                        {t('confirm_delete_class', {
+                            'entity.subject': subjectName,
+                            'entity.teacher': teacherName,
+                        })}{' '}
+                        <strong>{t('is_irreversible')}</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -83,7 +87,7 @@ export function DeleteDialog() {
                     {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput
-                        label='Profesor'
+                        label={t('teacher')}
                         disabled
                         value={
                             teachers.find(t => t.id === entity.teacher_id)?.name
@@ -91,7 +95,7 @@ export function DeleteDialog() {
                         icon={UserIcon}
                     />
                     <CompletInput
-                        label='Materia'
+                        label={t('subject')}
                         disabled
                         value={
                             subjects.find(s => s.id === entity.subject_id)?.name
@@ -99,7 +103,7 @@ export function DeleteDialog() {
                         icon={UserIcon}
                     />
                     <CompletInput
-                        label='Carrera'
+                        label={t('career')}
                         disabled
                         value={
                             careers.find(c => c.id === entity.career_id)?.name
@@ -107,14 +111,14 @@ export function DeleteDialog() {
                         icon={UserIcon}
                     />
                     <CompletInput
-                        label='Grupo'
+                        label={t('group')}
                         icon={UserIcon}
                         type='number'
                         disabled
                         value={entity.group}
                     />
                     <CompletInput
-                        label='Semestre'
+                        label={t('semester')}
                         icon={UserIcon}
                         type='number'
                         disabled
@@ -129,7 +133,7 @@ export function DeleteDialog() {
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancel')}
                         </Button>
                         <Button
                             type='submit'
@@ -137,7 +141,7 @@ export function DeleteDialog() {
                             disabled={inTransition}
                         >
                             <Trash2 className='mr-2 h-5 w-5' />
-                            Eliminar
+                            {t('delete')}
                         </Button>
                     </div>
                 </form>

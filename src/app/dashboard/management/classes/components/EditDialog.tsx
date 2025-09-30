@@ -24,6 +24,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
+import { useTranslations } from 'next-intl'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
@@ -33,6 +34,7 @@ import {
 } from '@/global/management-class'
 
 export function EditDialog() {
+    const t = useTranslations('classes')
     const [open, setOpen] = useAtom(editDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(entityToEditAtom)
@@ -41,6 +43,9 @@ export function EditDialog() {
     const [careers, setCareers] = useState<Career[]>([])
     const [teachers, setTeachers] = useState<User[]>([])
     const [subjects, setSubjects] = useState<Subject[]>([])
+
+    const subject = subjects.find(s => s.id === old.subject_id)
+    const career = careers.find(c => c.id === old.career_id)
 
     useEffect(() => {
         getActiveCareers().then(careers => {
@@ -55,18 +60,26 @@ export function EditDialog() {
     }, [])
 
     if (!old) return null
+    if (!subject) return null
+    if (!career) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Editar Clase</DialogTitle>
+                    <DialogTitle>
+                        {t('edit_class', {
+                            subject: subject.name,
+                            career: career.alias ?? career.name,
+                            group: old.group + '',
+                        })}
+                    </DialogTitle>
                     <DialogDescription>
-                        Edita la clase{' '}
-                        {subjects.find(s => s.id === old.subject_id)?.name}{' '}
-                        {careers.find(c => c.id === old.career_id)?.alias ??
-                            careers.find(c => c.id === old.career_id)?.name}
-                        {old.group}
+                        {t('edit_class', {
+                            subject: subject.name,
+                            career: career.alias ?? career.name,
+                            group: old.group + '',
+                        })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -94,7 +107,7 @@ export function EditDialog() {
                                     ?.name || '',
                             value: old.teacher_id,
                         }}
-                        label='Docente'
+                        label={t('teacher')}
                         name='teacher_id'
                         options={teachers.map(t => ({
                             label: t.name,
@@ -108,7 +121,7 @@ export function EditDialog() {
                                 ?.name,
                             value: old.career_id,
                         }}
-                        label='Materia'
+                        label={t('subject')}
                         name='subject_id'
                         options={subjects.map(t => ({
                             label: t.name,
@@ -122,7 +135,7 @@ export function EditDialog() {
                                 ?.name,
                             value: old.career_id,
                         }}
-                        label='Carrera'
+                        label={t('career')}
                         name='career_id'
                         options={careers.map(t => ({
                             label: t.name,
@@ -131,7 +144,7 @@ export function EditDialog() {
                         icon={GraduationCapIcon}
                     />
                     <RetornableCompletInput
-                        label='Grupo'
+                        label={t('group')}
                         name='group'
                         icon={UsersIcon}
                         type='number'
@@ -139,7 +152,7 @@ export function EditDialog() {
                         originalValue={old.group}
                     />
                     <RetornableCompletInput
-                        label='Semestre'
+                        label={t('semester')}
                         name='semester'
                         icon={HashIcon}
                         type='number'
@@ -149,7 +162,7 @@ export function EditDialog() {
                     <Button type='submit' disabled={inTransition}>
                         <MessageError>{message}</MessageError>
                         <Save className='mr-2 h-5 w-5' />
-                        Save
+                        {t('save')}
                     </Button>
                 </form>
             </DialogContent>

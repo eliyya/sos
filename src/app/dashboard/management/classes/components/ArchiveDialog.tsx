@@ -23,6 +23,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-class'
+import { useTranslations } from 'next-intl'
 
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(openArchiveAtom)
@@ -33,6 +34,7 @@ export function ArchiveDialog() {
     const [teachers, setTeachers] = useState<User[]>([])
     const [subjects, setSubjects] = useState<Subject[]>([])
     const [careers, setCareers] = useState<Career[]>([])
+    const t = useTranslations('classes')
 
     useEffect(() => {
         getUsers().then(users => {
@@ -52,9 +54,9 @@ export function ArchiveDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Archivar Clase</DialogTitle>
+                    <DialogTitle>{t('archive_class')}</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de archivar esta clase?
+                        {t('confirm_archive')}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -78,7 +80,7 @@ export function ArchiveDialog() {
                     {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={entity.id} name='id' />
                     <CompletInput
-                        label='Profesor'
+                        label={t('teacher')}
                         name='teacher_id'
                         disabled
                         value={
@@ -87,7 +89,7 @@ export function ArchiveDialog() {
                         icon={UserIcon}
                     />
                     <CompletInput
-                        label='Materia'
+                        label={t('subject')}
                         name='subject_id'
                         disabled
                         value={
@@ -96,7 +98,7 @@ export function ArchiveDialog() {
                         icon={UserIcon}
                     />
                     <CompletInput
-                        label='Carrera'
+                        label={t('career')}
                         name='career_id'
                         disabled
                         value={
@@ -105,14 +107,14 @@ export function ArchiveDialog() {
                         icon={UserIcon}
                     />
                     <CompletInput
-                        label='Grupo'
+                        label={t('group')}
                         icon={UserIcon}
                         type='number'
                         disabled
                         value={entity.group}
                     />
                     <CompletInput
-                        label='Semestre'
+                        label={t('semester')}
                         icon={UserIcon}
                         type='number'
                         disabled
@@ -127,7 +129,7 @@ export function ArchiveDialog() {
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancel')}
                         </Button>
                         <Button
                             type='submit'
@@ -135,7 +137,7 @@ export function ArchiveDialog() {
                             disabled={inTransition}
                         >
                             <Archive className='mr-2 h-5 w-5' />
-                            Archivar
+                            {t('archive')}
                         </Button>
                     </div>
                 </form>

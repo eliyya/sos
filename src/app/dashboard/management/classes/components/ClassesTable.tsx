@@ -32,6 +32,7 @@ import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { useTranslations } from 'next-intl'
 
 export function ClassesTable() {
     const [entity, setEntity] = useState<
@@ -51,16 +52,16 @@ export function ClassesTable() {
         getCareers().then(setCareers)
         getSubjects().then(setSubjects)
     }, [setCareers, setSubjects])
-
+    const t = useTranslations('classes')
     return (
         <>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Materia</TableHead>
-                        <TableHead>Profesor</TableHead>
-                        <TableHead>Grupo</TableHead>
-                        <TableHead>Options</TableHead>
+                        <TableHead>{t('subject')}</TableHead>
+                        <TableHead>{t('teacher')}</TableHead>
+                        <TableHead>{t('group')}</TableHead>
+                        <TableHead>{t('options')}</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

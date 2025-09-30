@@ -21,8 +21,10 @@ import {
     subjectsAtom,
 } from '@/global/management-class'
 import { useUsers } from '@/hooks/users.hooks'
+import { useTranslations } from 'next-intl'
 
 export function UnarchiveDialog() {
+    const t = useTranslations('classes')
     const [open, setOpen] = useAtom(openUnarchiveAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
@@ -38,16 +40,23 @@ export function UnarchiveDialog() {
     const teacher = users.find(t => t.id === entity.teacher_id)
 
     if (!entity) return null
+    if (!subject) return null
+    if (!career) return null
+    if (!teacher) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Desarchivar Clase</DialogTitle>
+                    <DialogTitle>{t('unarchive_class')}</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de desarchivar la clase {subject?.name} -{' '}
-                        {career?.alias ?? career?.name}
-                        {entity.group}-{entity.semester} de {teacher?.name}?
+                        {t('confirm_unarchive', {
+                            subject: subject.name,
+                            career: career.alias ?? career.name,
+                            group: entity.group + '',
+                            semester: entity.semester + '',
+                            teacher: teacher.name,
+                        })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -80,7 +89,7 @@ export function UnarchiveDialog() {
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancel')}
                         </Button>
                         <Button
                             type='submit'
@@ -88,7 +97,7 @@ export function UnarchiveDialog() {
                             disabled={inTransition}
                         >
                             <ArchiveRestore className='mr-2 h-5 w-5' />
-                            Desarchivar
+                            {t('unarchive')}
                         </Button>
                     </div>
                 </form>

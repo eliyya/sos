@@ -31,6 +31,7 @@ import {
     updateAtom,
 } from '@/global/management-class'
 import { useUsers } from '@/hooks/users.hooks'
+import { useTranslations } from 'next-intl'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
@@ -41,7 +42,7 @@ export function CreateSubjectDialog() {
     const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
     const { users: unfilteredUsers } = useUsers()
     const users = unfilteredUsers.filter(c => c.status === STATUS.ACTIVE)
-
+    const t = useTranslations('classes')
     const subjects = useAtomValue(subjectsAtom).filter(
         c => c.status === STATUS.ACTIVE,
     )
@@ -53,7 +54,7 @@ export function CreateSubjectDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Crear Clase</DialogTitle>
+                    <DialogTitle>{t('create_class')}</DialogTitle>
                     {/* <DialogDescription>
                         Edit the user&apos;s information
                     </DialogDescription> */}
@@ -106,7 +107,7 @@ export function CreateSubjectDialog() {
                 >
                     {message && <MessageError>{message}</MessageError>}
                     <CompletSelect
-                        label='Profesor'
+                        label={t('teacher')}
                         name='teacher_id'
                         options={users.map(t => ({
                             label: t.name,
@@ -115,7 +116,7 @@ export function CreateSubjectDialog() {
                         icon={UserIcon}
                     />
                     <CompletSelect
-                        label='Materia'
+                        label={t('subject')}
                         name='subject_id'
                         options={subjects.map(t => ({
                             label: t.name,
@@ -124,7 +125,7 @@ export function CreateSubjectDialog() {
                         icon={BookAIcon}
                     />
                     <CompletSelect
-                        label='Carrera'
+                        label={t('career')}
                         name='career_id'
                         options={careers.map(t => ({
                             label: t.name,
@@ -133,7 +134,7 @@ export function CreateSubjectDialog() {
                         icon={GraduationCapIcon}
                     />
                     <CompletInput
-                        label='Grupo'
+                        label={t('group')}
                         name='group'
                         icon={UsersIcon}
                         type='number'
@@ -141,7 +142,7 @@ export function CreateSubjectDialog() {
                         defaultValue={1}
                     />
                     <CompletInput
-                        label='Semestre'
+                        label={t('semester')}
                         name='semester'
                         icon={HashIcon}
                         type='number'
@@ -151,7 +152,7 @@ export function CreateSubjectDialog() {
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
-                        Crear
+                        {t('create')}
                     </Button>
                 </form>
             </DialogContent>

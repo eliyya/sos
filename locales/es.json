@@ -64,7 +64,7 @@
   "classes": {
     "archive_class": "Archivar Clase",
     "confirm_archive": "¿Está seguro de archivar esta clase?",
-    "teacher": "Profesor",
+    "teacher": "Docente",
     "subject": "Materia",
     "career": "Carrera",
     "group": "Grupo",
@@ -75,8 +75,19 @@
     "create_class": "Crear Clase",
     "create": "Crear",
     "delete_class": "Eliminar Clase",
-    "confirm_delete_class": "¿Está seguro de eliminar la clase {subjectName} -{' '} {teacherName}?",
+    "confirm_delete_class": "¿Está seguro de eliminar la clase {subjectName} - {teacherName}?",
     "is_irreversible": "Esta acción es irreversible",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "edit_class": "Edita la clase {subject} {career} {group}",
+    "save": "Save",
+    "search_class": "Buscar clase...",
+    "archived": "Archivados",
+    "unarchive_class": "Desarchivar Clase",
+    "confirm_unarchive": "¿Está seguro de desarchivar la clase {subject} - {career} {group}-{semester} de {teacher}?",
+    "unarchive": "Desarchivar",
+    "archived_class": "Clase archivada",
+    "unarchived_or_delete_description": "La clase {subject_name} - {career} {group}-{semester} de {teacher} está archivada. ¿Qué desea hacer con ella?",
+    "classes": "Clases",
+    "classes_management": "Gestión de Clases."
   }
 }

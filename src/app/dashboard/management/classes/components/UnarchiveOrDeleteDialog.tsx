@@ -22,6 +22,7 @@ import {
     subjectsAtom,
 } from '@/global/management-class'
 import { useUsers } from '@/hooks/users.hooks'
+import { useTranslations } from 'next-intl'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
@@ -33,23 +34,29 @@ export function UnarchiveOrDeleteDialog() {
     const careers = useAtomValue(careersAtom)
     const subjects = useAtomValue(subjectsAtom)
     const { users } = useUsers()
-
+    const t = useTranslations('classes')
     const career = careers.find(c => c.id === entity.career_id)
     const subject = subjects.find(s => s.id === entity.subject_id)
     const teacher = users.find(t => t.id === entity.teacher_id)
 
     if (!entity) return null
+    if (!subject) return null
+    if (!career) return null
+    if (!teacher) return null
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Clase archivada</DialogTitle>
+                    <DialogTitle>{t('archived_class')}</DialogTitle>
                     <DialogDescription>
-                        La clase {subject?.name} -{' '}
-                        {career?.alias ?? career?.name}
-                        {entity.group}-{entity.semester} de {teacher?.name} está
-                        archivada. ¿Qué desea hacer con ella?
+                        {t('unarchived_or_delete_description', {
+                            subject_name: subject.name,
+                            career: career.alias ?? career.name,
+                            group: entity.group + '',
+                            semester: entity.semester + '',
+                            teacher: teacher?.name,
+                        })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -83,7 +90,7 @@ export function UnarchiveOrDeleteDialog() {
                             }}
                         >
                             <BanIcon className='mr-2 h-5 w-5' />
-                            Cancelar
+                            {t('cancel')}
                         </Button>
                         <Button
                             type='submit'
@@ -91,7 +98,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                         >
                             <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
-                            Desarchivar
+                            {t('unarchive')}
                         </Button>
                         <Button
                             type='button'
@@ -104,7 +111,7 @@ export function UnarchiveOrDeleteDialog() {
                             }}
                         >
                             <TrashIcon className='mr-2 h-5 w-5' />
-                            Eliminar
+                            {t('delete')}
                         </Button>
                     </div>
                 </form>
