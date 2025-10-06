@@ -1,4 +1,4 @@
-import { PrismaClient } from './client/client.ts'
+import { PrismaClient } from './generated/client.ts'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 function createPrismaClient() {
