@@ -7,6 +7,7 @@ import {
     AlreadyArchivedError,
     AlreadyExistsError,
     InvalidInputError,
+    NotFoundError,
     PrismaError,
 } from '@/errors'
 
@@ -106,4 +107,109 @@ export const createLaboratoryEffect = ({
             }),
         )
         return created
+    })
+
+export const editLaboratoryEffect = ({
+    close_hour,
+    name,
+    open_hour,
+    type,
+}: Partial<CreateLaboratoryProps>) =>
+    Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+
+        const prisma = yield* _(PrismaService)
+
+        const lab = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.findUnique({
+                        where: { name },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        if (!lab)
+            return yield* _(
+                Effect.fail(new NotFoundError('Laboratory not found')),
+            )
+        if (lab.status !== STATUS.ACTIVE)
+            return yield* _(
+                Effect.fail(new NotFoundError('Laboratory not found')),
+            )
+
+        name ||= lab.name
+        open_hour ??= lab.open_hour
+        close_hour ??= lab.close_hour
+        type ??= lab.type
+
+        if (open_hour <= close_hour)
+            return yield* _(
+                Effect.fail(
+                    new InvalidInputError(
+                        'close_hour',
+                        'Close hour must be greater than open hour',
+                    ),
+                ),
+            )
+
+        if (lab.name !== name) {
+            const exists = yield* _(
+                Effect.tryPromise({
+                    try: () =>
+                        prisma.laboratory.findUnique({
+                            where: { name },
+                        }),
+                    catch: err => new PrismaError(err),
+                }),
+            )
+            if (exists)
+                return yield* _(
+                    Effect.fail(
+                        new AlreadyExistsError(
+                            exists.id,
+                            'Laboratory already exists',
+                        ),
+                    ),
+                )
+        }
+
+        if (
+            lab.type !== LABORATORY_TYPE.LABORATORY &&
+            lab.type !== LABORATORY_TYPE.COMPUTER_CENTER
+        )
+            return yield* _(
+                Effect.fail(new InvalidInputError('type', 'Type is not valid')),
+            )
+
+        if (open_hour < 0)
+            return yield* _(
+                Effect.fail(
+                    new InvalidInputError(
+                        'open_hour',
+                        'Open hour must be positive',
+                    ),
+                ),
+            )
+        if (close_hour < 0)
+            return yield* _(
+                Effect.fail(
+                    new InvalidInputError(
+                        'close_hour',
+                        'Close hour must be positive',
+                    ),
+                ),
+            )
+
+        const updated = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.update({
+                        where: { name },
+                        data: { name, open_hour, close_hour, type },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        return updated
     })
