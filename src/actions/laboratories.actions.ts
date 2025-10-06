@@ -305,9 +305,67 @@ export async function archiveLaboratory(id: string) {
     )
 }
 
-export async function getActiveLaboratories() {}
+export async function unarchiveLaboratory(id: string) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            archiveLaboratoryEffect(id)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(AuthLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: () => ({
+                            status: 'success' as const,
+                        }),
+                        onFailure: error => {
+                            if (error instanceof NotFoundError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'not-found' as const,
+                                    message: error.message,
+                                }
+                            }
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                    missings: error.missings,
+                                }
+                            }
+                            if (error instanceof UnexpectedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error),
+                            }
+                        },
+                    }),
+                ),
+        ),
+    )
+}
 
-export async function unarchiveLaboratory() {}
+export async function getActiveLaboratories() {}
 
 export async function getLaboratories() {}
 

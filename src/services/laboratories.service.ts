@@ -308,3 +308,40 @@ export const archiveLaboratoryEffect = (id: string) =>
             }),
         )
     })
+
+export const unarchiveLaboratoryEffect = (id: string) =>
+    Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+
+        const prisma = yield* _(PrismaService)
+
+        const lab = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.findUnique({
+                        where: { id },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        if (!lab)
+            return yield* _(
+                Effect.fail(new NotFoundError('Laboratory not found')),
+            )
+        if (lab.status === STATUS.DELETED)
+            return yield* _(
+                Effect.fail(new NotFoundError('Laboratory not found')),
+            )
+        if (lab.status === STATUS.ACTIVE) return lab
+
+        yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.update({
+                        where: { id },
+                        data: { status: STATUS.ACTIVE },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+    })
