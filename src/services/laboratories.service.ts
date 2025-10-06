@@ -2,7 +2,7 @@ import { Effect } from 'effect'
 import { requirePermission } from './auth.service'
 import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
 import { PrismaService } from '@/layers/db.layer'
-import { LABORATORY_TYPE, STATUS } from '@/prisma/client'
+import { LABORATORY_TYPE, MACHINE_STATUS, STATUS } from '@/prisma/client'
 import {
     AlreadyArchivedError,
     AlreadyExistsError,
@@ -233,10 +233,77 @@ export const deleteLaboratoryEffect = (id: string) =>
             return yield* _(
                 Effect.fail(new NotFoundError('Laboratory not found')),
             )
+        if (lab.status === STATUS.DELETED) return
 
         yield* _(
             Effect.tryPromise({
-                try: () => prisma.laboratory.delete({ where: { id } }),
+                try: () =>
+                    prisma.$transaction(async prisma => {
+                        await prisma.laboratory.update({
+                            where: { id },
+                            data: {
+                                status: STATUS.DELETED,
+                                close_hour: 0,
+                                open_hour: 0,
+                                name: id,
+                            },
+                        })
+                        await prisma.machine.updateMany({
+                            where: {
+                                laboratory_id: id,
+                                status: MACHINE_STATUS.IN_USE,
+                            },
+                            data: {
+                                laboratory_id: null,
+                                status: MACHINE_STATUS.AVAILABLE,
+                            },
+                        })
+                        await prisma.machine.updateMany({
+                            where: {
+                                laboratory_id: id,
+                            },
+                            data: {
+                                laboratory_id: null,
+                            },
+                        })
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+    })
+
+export const archiveLaboratoryEffect = (id: string) =>
+    Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+
+        const prisma = yield* _(PrismaService)
+
+        const lab = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.findUnique({
+                        where: { id },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        if (!lab)
+            return yield* _(
+                Effect.fail(new NotFoundError('Laboratory not found')),
+            )
+        if (lab.status === STATUS.DELETED)
+            return yield* _(
+                Effect.fail(new NotFoundError('Laboratory not found')),
+            )
+        if (lab.status === STATUS.ARCHIVED) return lab
+
+        yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.update({
+                        where: { id },
+                        data: { status: STATUS.ARCHIVED },
+                    }),
                 catch: err => new PrismaError(err),
             }),
         )
