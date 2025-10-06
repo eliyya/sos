@@ -14,6 +14,7 @@ import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
 import {
     createLaboratoryEffect,
+    deleteLaboratoryEffect,
     editLaboratoryEffect,
 } from '@/services/laboratories.service'
 import { Effect } from 'effect'
@@ -183,11 +184,69 @@ export async function editLaboratory({
     )
 }
 
+export async function deleteLaboratory(id: string) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            deleteLaboratoryEffect(id)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(AuthLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: () => ({
+                            status: 'success' as const,
+                        }),
+                        onFailure: error => {
+                            if (error instanceof NotFoundError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'not-found' as const,
+                                    message: error.message,
+                                }
+                            }
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            }
+                            if (error instanceof UnexpectedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                    missings: error.missings,
+                                }
+                            }
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error),
+                            }
+                        },
+                    }),
+                ),
+        ),
+    )
+}
+
 export async function unarchiveLaboratory() {}
 
 export async function getLaboratories() {}
-
-export async function deleteLaboratory() {}
 
 export async function getActiveLaboratories() {}
 

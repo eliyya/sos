@@ -180,7 +180,7 @@ export const deleteRoleEffect = (id: string) =>
             role.name === DEFAULT_ROLES.DELETED
         ) {
             return yield* _(
-                Effect.fail(new InvalidInputError('name', 'Reserved Role')),
+                Effect.fail(new InvalidInputError('id', 'Reserved Role')),
             )
         }
         yield* _(

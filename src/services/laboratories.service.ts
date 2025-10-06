@@ -213,3 +213,31 @@ export const editLaboratoryEffect = ({
         )
         return updated
     })
+
+export const deleteLaboratoryEffect = (id: string) =>
+    Effect.gen(function* (_) {
+        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+
+        const prisma = yield* _(PrismaService)
+
+        const lab = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.findUnique({
+                        where: { id },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        if (!lab)
+            return yield* _(
+                Effect.fail(new NotFoundError('Laboratory not found')),
+            )
+
+        yield* _(
+            Effect.tryPromise({
+                try: () => prisma.laboratory.delete({ where: { id } }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+    })
