@@ -2,9 +2,13 @@
 
 import { LABORATORY_TYPE } from '@/prisma/browser'
 import { useAtom, useSetAtom } from 'jotai'
-import { Clock8Icon, MicroscopeIcon, Save, SquarePenIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { createlab } from '@/actions/laboratory'
+import {
+    Clock8Icon,
+    MicroscopeIcon,
+    SaveIcon,
+    SquarePenIcon,
+} from 'lucide-react'
+import { useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -15,44 +19,115 @@ import {
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
+import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
 import {
     closeHourAtom,
+    errorCloseHourAtom,
     errorNameAtom,
     errorOpenHourAtom,
-    nameAtom,
-    openCreateAtom,
-    openHourAtom,
-    openUnarchiveOrDeleteAtom,
-    updateAtom,
     errorTypeAtom,
+    nameAtom,
+    openDialogAtom,
+    openHourAtom,
+    selectedLaboratoryIdAtom,
     typeAtom,
-    errorCloseHourAtom,
-} from '@/global/management-laboratory'
-import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
+} from '@/global/laboratories.globals'
+import { createLaboratory } from '@/actions/laboratories.actions'
+import { useLaboratories } from '@/hooks/laboratories.hoohs'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 export function CreateLaboratoryDialog() {
-    const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const updateUsersTable = useSetAtom(updateAtom)
-    const setNameError = useSetAtom(errorNameAtom)
-    const setOpenError = useSetAtom(errorOpenHourAtom)
-    const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
+    const [dialogOpened, openDialog] = useAtom(openDialogAtom)
+    const { setLaboratories } = useLaboratories()
+    const router = useRouter()
+    const selectLaboratory = useSetAtom(selectedLaboratoryIdAtom)
+    // inputs
     const setName = useSetAtom(nameAtom)
+    const setNameError = useSetAtom(errorNameAtom)
     const setOpenHour = useSetAtom(openHourAtom)
+    const setOpenHourError = useSetAtom(errorOpenHourAtom)
     const setCloseHour = useSetAtom(closeHourAtom)
+    const setCloseHourError = useSetAtom(errorCloseHourAtom)
+    const setTypeError = useSetAtom(errorTypeAtom)
 
-    return (
-        <Dialog
-            open={open}
-            onOpenChange={open => {
-                setOpen(open)
-                if (!open) {
+    const onAction = useCallback(
+        ({
+            name,
+            close_hour,
+            open_hour,
+            type,
+        }: {
+            name: string
+            close_hour: number
+            open_hour: number
+            type: LABORATORY_TYPE
+        }) =>
+            startTransition(async () => {
+                const response = await createLaboratory({
+                    name,
+                    close_hour,
+                    open_hour,
+                    type,
+                })
+                if (response.status === 'success') {
+                    setLaboratories(labs => [...labs, response.laboratory])
+                    openDialog(null)
                     setName('')
                     setNameError('')
                     setOpenHour('08:00')
                     setCloseHour('20:00')
-                    setOpenError('')
+                } else {
+                    if (response.type === 'unauthorized') {
+                        router.replace(app.auth.login())
+                    } else if (response.type === 'permission') {
+                        setMessage('No tienes permiso para crear laboratorios')
+                    } else if (response.type === 'invalid-input') {
+                        if (response.input === 'name') {
+                            setNameError(response.message)
+                        } else if (response.input === 'open_hour') {
+                            setOpenHourError(response.message)
+                        } else if (response.input === 'close_hour') {
+                            setCloseHourError(response.message)
+                        } else if (response.input === 'type') {
+                            setTypeError(response.message)
+                        }
+                    } else if (response.type === 'already-exists') {
+                        setNameError('El laboratorio ya existe')
+                    } else if (response.type === 'unexpected') {
+                        setMessage('Ha ocurrido un error, intente más tarde')
+                    } else if (response.type === 'already-archived') {
+                        selectLaboratory(response.id)
+                        openDialog('UNARCHIVE_OR_DELETE')
+                    }
+                }
+            }),
+        [
+            openDialog,
+            router,
+            setCloseHour,
+            setCloseHourError,
+            setLaboratories,
+            setName,
+            setNameError,
+            setOpenHour,
+            setOpenHourError,
+            setTypeError,
+            selectLaboratory,
+        ],
+    )
+
+    return (
+        <Dialog
+            open={dialogOpened === 'CREATE'}
+            onOpenChange={open => {
+                if (!open) {
+                    openDialog(null)
+                    setName('')
+                    setOpenHour('08:00')
+                    setCloseHour('20:00')
                 }
             }}
         >
@@ -62,44 +137,11 @@ export function CreateLaboratoryDialog() {
                 </DialogHeader>
                 <form
                     action={data => {
-                        startTransition(async () => {
-                            const { error, message } = await createlab(data)
-                            if (!error) {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setName('')
-                                setNameError('')
-                                setOpenHour('08:00')
-                                setCloseHour('20:00')
-                                setOpenError('')
-                                return setOpen(false)
-                            }
-                            if (error === 'ALREADY_EXISTS') {
-                                if (
-                                    message ===
-                                    'El laboratorio se encuentra archivado'
-                                ) {
-                                    setOpen(false)
-                                    setOpenUnarchiveOrDelete(true)
-                                    setName('')
-                                    setNameError('')
-                                    setOpenHour('08:00')
-                                    setCloseHour('20:00')
-                                    setOpenError('')
-                                } else {
-                                    setNameError(message)
-                                }
-                            } else if (error === 'DATA_ERROR') {
-                                setOpenError(message)
-                            } else {
-                                setMessage(message)
-                                setTimeout(() => {
-                                    setMessage('')
-                                }, 5_000)
-                            }
-                        })
+                        const name = data.get('name') as string
+                        const close_hour = Number(data.get('close_hour'))
+                        const open_hour = Number(data.get('open_hour'))
+                        const type = data.get('type') as LABORATORY_TYPE
+                        onAction({ name, close_hour, open_hour, type })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
@@ -110,7 +152,7 @@ export function CreateLaboratoryDialog() {
                     <LaboratoryTypeSelect />
 
                     <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
+                        <SaveIcon className='mr-2 h-5 w-5' />
                         Crear
                     </Button>
                 </form>

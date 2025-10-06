@@ -1,6 +1,5 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
-import { CreateLaboratoryDialog } from './components/CreateDialog'
 import { EntityTable } from './components/EntityTable'
 import { Filters } from './components/SearchInput'
 
@@ -13,7 +12,6 @@ export default async function LaboratoryPage() {
                     text='Gestión de Laboratorios.'
                 />
                 <CreateButton />
-                <CreateLaboratoryDialog />
             </div>
             <Filters />
             <EntityTable />

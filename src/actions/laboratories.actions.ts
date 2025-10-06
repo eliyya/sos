@@ -45,21 +45,21 @@ export async function createLaboratory({
                                     type: 'invalid-input' as const,
                                     message: error.message,
                                     input: error.input,
-                                }
+                                } as const
                             }
                             if (error instanceof UnauthorizedError) {
                                 return {
                                     status: 'error' as const,
                                     type: 'unauthorized' as const,
                                     message: error.message,
-                                }
+                                } as const
                             }
                             if (error instanceof PrismaError) {
                                 return {
                                     status: 'error' as const,
                                     type: 'unexpected' as const,
                                     message: String(error.cause),
-                                }
+                                } as const
                             }
                             if (error instanceof AlreadyArchivedError) {
                                 return {
@@ -67,7 +67,7 @@ export async function createLaboratory({
                                     type: 'already-archived' as const,
                                     message: error.message,
                                     id: error.id,
-                                }
+                                } as const
                             }
                             if (error instanceof AlreadyExistsError) {
                                 return {
@@ -75,14 +75,14 @@ export async function createLaboratory({
                                     type: 'already-exists' as const,
                                     message: error.message,
                                     id: error.id,
-                                }
+                                } as const
                             }
                             if (error instanceof UnexpectedError) {
                                 return {
                                     status: 'error' as const,
                                     type: 'unexpected' as const,
                                     message: String(error.cause),
-                                }
+                                } as const
                             }
                             if (error instanceof PermissionError) {
                                 return {
@@ -90,13 +90,13 @@ export async function createLaboratory({
                                     type: 'permission' as const,
                                     message: error.message,
                                     missings: error.missings,
-                                }
+                                } as const
                             }
                             return {
                                 status: 'error' as const,
                                 type: 'unexpected' as const,
                                 message: String(error),
-                            }
+                            } as const
                         },
                     }),
                 ),
@@ -373,22 +373,10 @@ export async function getLaboratories() {
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
                     Effect.match({
-                        onSuccess: laboratories => ({
-                            status: 'success' as const,
-                            laboratories,
-                        }),
+                        onSuccess: laboratories => laboratories,
                         onFailure: error => {
                             console.log(error)
-                            if (error instanceof PrismaError) {
-                                return {
-                                    status: 'success' as const,
-                                    laboratories: [],
-                                }
-                            }
-                            return {
-                                status: 'success' as const,
-                                laboratories: [],
-                            }
+                            return []
                         },
                     }),
                 ),

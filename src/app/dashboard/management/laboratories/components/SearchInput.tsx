@@ -1,10 +1,10 @@
 'use client'
 
 import { useAtom } from 'jotai'
-import { Search } from 'lucide-react'
+import { SearchIcon } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { queryAtom, showArchivedAtom } from '@/global/management-laboratory'
+import { queryAtom, showArchivedAtom } from '@/global/laboratories.globals'
 
 export function Filters() {
     const [query, setQuery] = useAtom(queryAtom)
@@ -19,7 +19,7 @@ export function Filters() {
                     value={query}
                     onChange={e => setQuery(e.currentTarget.value)}
                 />
-                <Search className='absolute top-1/2 left-3 -translate-y-1/2' />
+                <SearchIcon className='absolute top-1/2 left-3 -translate-y-1/2' />
             </div>
             <div>
                 <LabeledSwitch

@@ -8,8 +8,8 @@ import { Badge } from '@/components/Badge'
 import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
-import { queryAtom } from '@/global/management-career'
 import {
+    queryAtom,
     selectedRoleAtom,
     selectedRoleIdAtom,
     usersCountAtom,

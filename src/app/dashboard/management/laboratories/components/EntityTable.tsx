@@ -3,8 +3,6 @@
 import { Laboratory, STATUS } from '@/prisma/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { getLaboratories } from '@/actions/laboratory'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {
@@ -15,34 +13,24 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import {
-    editDialogAtom,
-    openArchiveAtom,
-    openDeleteAtom,
-    openUnarchiveAtom,
-    showArchivedAtom,
-    entityToEditAtom,
-    updateAtom,
-    queryAtom,
-} from '@/global/management-laboratory'
+import { entityToEditAtom } from '@/global/management-laboratory'
 import { secondsToTime } from '@/lib/utils'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { useLaboratories } from '@/hooks/laboratories.hoohs'
+import {
+    openDialogAtom,
+    queryAtom,
+    showArchivedAtom,
+} from '@/global/laboratories.globals'
 
 export function EntityTable() {
-    const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getLaboratories>>
-    >([])
-    const update = useAtomValue(updateAtom)
+    const { laboratories } = useLaboratories()
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
-
-    useEffect(() => {
-        getLaboratories().then(setEntity)
-    }, [update])
 
     return (
         <>
@@ -57,7 +45,7 @@ export function EntityTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {entity
+                    {laboratories
                         .filter(
                             u =>
                                 (u.status === STATUS.ACTIVE && !archived) ||
@@ -116,11 +104,9 @@ interface ButtonsProps {
     entity: Laboratory
 }
 function Buttons({ entity }: ButtonsProps) {
-    const openEditDialog = useSetAtom(editDialogAtom)
     const setSubjectSelected = useSetAtom(entityToEditAtom)
-    const setArchiveDialog = useSetAtom(openArchiveAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
-    const openDeleteDialog = useSetAtom(openDeleteAtom)
+    const openDialog = useSetAtom(openDialogAtom)
+
     if (entity.status === STATUS.ACTIVE)
         return (
             <>
@@ -128,7 +114,7 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        openEditDialog(true)
+                        openDialog('EDIT')
                         setSubjectSelected(entity)
                     }}
                 >
@@ -139,7 +125,7 @@ function Buttons({ entity }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setSubjectSelected(entity)
-                        setArchiveDialog(true)
+                        openDialog('ARCHIVE')
                     }}
                 >
                     <Archive className='w-xs text-xs' />
@@ -154,7 +140,7 @@ function Buttons({ entity }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setSubjectSelected(entity)
-                        openUnarchiveDialog(true)
+                        openDialog('UNARCHIVE')
                     }}
                 >
                     <ArchiveRestore className='w-xs text-xs' />
@@ -164,7 +150,7 @@ function Buttons({ entity }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setSubjectSelected(entity)
-                        openDeleteDialog(true)
+                        openDialog('DELETE')
                     }}
                 >
                     <Trash2 className='w-xs text-xs' />

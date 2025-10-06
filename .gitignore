@@ -21,6 +21,7 @@
 /build
 /public/sw*
 /src/prisma/client
+/src/prisma/generated
 
 # misc
 .DS_Store

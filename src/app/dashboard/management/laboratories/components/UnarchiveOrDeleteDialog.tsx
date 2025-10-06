@@ -13,12 +13,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    entityToEditAtom,
-    updateAtom,
-    openUnarchiveOrDeleteAtom,
-    openDeleteAtom,
-} from '@/global/management-laboratory'
+import { entityToEditAtom } from '@/global/management-laboratory'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
