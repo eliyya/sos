@@ -154,7 +154,9 @@ model Laboratory {
     id         String          @id @default(dbgenerated("snowflake()"))
     created_at DateTime        @default(now())
     name       String          @unique
+    /// in minutes
     open_hour  Int
+    /// in minutes
     close_hour Int
     type       LABORATORY_TYPE @default(LABORATORY)
     status     STATUS          @default(ACTIVE)

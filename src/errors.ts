@@ -1,8 +1,11 @@
 import { PermissionsBitField } from './bitfields/PermissionsBitField'
 
-export class InvalidInputError<T extends string> {
+export class InvalidInputError<T extends string, I extends string> {
     readonly _tag = 'InvalidInputError'
-    constructor(readonly message: T) {}
+    constructor(
+        readonly input: I,
+        readonly message: T,
+    ) {}
 }
 
 export class AlreadyArchivedError<T extends string> {

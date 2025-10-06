@@ -1,0 +1,112 @@
+'use server'
+
+import {
+    AlreadyArchivedError,
+    AlreadyExistsError,
+    InvalidInputError,
+    PermissionError,
+    PrismaError,
+    UnauthorizedError,
+    UnexpectedError,
+} from '@/errors'
+import { AuthLive } from '@/layers/auth.layer'
+import { PrismaLive } from '@/layers/db.layer'
+import { createLaboratoryEffect } from '@/services/laboratories.service'
+import { Effect } from 'effect'
+
+export async function createLaboratory({
+    close_hour,
+    name,
+    open_hour,
+    type,
+}: Parameters<typeof createLaboratoryEffect>[0]) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            createLaboratoryEffect({ close_hour, name, open_hour, type })
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(AuthLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: laboratory => ({
+                            status: 'success' as const,
+                            laboratory,
+                        }),
+                        onFailure: error => {
+                            if (error instanceof InvalidInputError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'invalid-input' as const,
+                                    message: error.message,
+                                    input: error.input,
+                                }
+                            }
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            }
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            if (error instanceof AlreadyArchivedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'already-archived' as const,
+                                    message: error.message,
+                                    id: error.id,
+                                }
+                            }
+                            if (error instanceof AlreadyExistsError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'already-exists' as const,
+                                    message: error.message,
+                                    id: error.id,
+                                }
+                            }
+                            if (error instanceof UnexpectedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                    missings: error.missings,
+                                }
+                            }
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error),
+                            }
+                        },
+                    }),
+                ),
+        ),
+    )
+}
+
+export async function unarchiveLaboratory() {}
+
+export async function getLaboratories() {}
+
+export async function editLaboratory() {}
+
+export async function deleteLaboratory() {}
+
+export async function getActiveLaboratories() {}
+
+export async function archiveLaboratory() {}
+
+export async function setAsideLaboratory() {}

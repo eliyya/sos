@@ -114,6 +114,7 @@ export async function archiveUser(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             }
                             if (error instanceof UnauthorizedError) {
@@ -163,6 +164,7 @@ export async function unarchiveUser(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             }
                             if (error instanceof UnauthorizedError) {
@@ -218,6 +220,7 @@ export async function deleteUser(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             }
                             if (error instanceof UnauthorizedError) {

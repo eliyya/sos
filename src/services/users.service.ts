@@ -257,12 +257,15 @@ export function validatePasswordEffect(password: string) {
     return Effect.gen(function* (_) {
         if (!password)
             return yield* _(
-                Effect.fail(new InvalidInputError('Password is required')),
+                Effect.fail(
+                    new InvalidInputError('password', 'Password is required'),
+                ),
             )
         if (!/[A-Z]/.test(password))
             return yield* _(
                 Effect.fail(
                     new InvalidInputError(
+                        'password',
                         'Password must contain at least one uppercase letter',
                     ),
                 ),
@@ -271,6 +274,7 @@ export function validatePasswordEffect(password: string) {
             return yield* _(
                 Effect.fail(
                     new InvalidInputError(
+                        'password',
                         'Password must contain at least one lowercase letter',
                     ),
                 ),
@@ -279,6 +283,7 @@ export function validatePasswordEffect(password: string) {
             return yield* _(
                 Effect.fail(
                     new InvalidInputError(
+                        'password',
                         'Password must contain at least one number',
                     ),
                 ),
@@ -287,6 +292,7 @@ export function validatePasswordEffect(password: string) {
             return yield* _(
                 Effect.fail(
                     new InvalidInputError(
+                        'password',
                         'Password must contain at least one special character',
                     ),
                 ),
@@ -295,6 +301,7 @@ export function validatePasswordEffect(password: string) {
             return yield* _(
                 Effect.fail(
                     new InvalidInputError(
+                        'password',
                         'Password must be at least 10 characters long',
                     ),
                 ),

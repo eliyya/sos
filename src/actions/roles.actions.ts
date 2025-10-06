@@ -91,6 +91,7 @@ export async function editRoleName(id: string, name: string) {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
+                                    input: error.input,
                                 }
                             if (error instanceof NotFoundError)
                                 return {
@@ -122,6 +123,7 @@ export async function editRoleName(id: string, name: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
 
                             return {
@@ -170,6 +172,7 @@ export async function createNewRole() {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             if (error instanceof PrismaError)
                                 return {
@@ -220,6 +223,7 @@ export async function deleteRole(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             if (error instanceof PrismaError)
                                 return {
@@ -238,6 +242,7 @@ export async function deleteRole(id: string) {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
+                                    input: error.input,
                                 }
                             return {
                                 status: 'error' as const,
@@ -299,6 +304,7 @@ export async function changuePermissions(id: string, permissions: bigint) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             if (error instanceof PrismaError)
                                 return {

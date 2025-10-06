@@ -22,17 +22,23 @@ export const editRoleNameEffect = (id: string, name: string) =>
         yield* _(requirePermission(PermissionsFlags.MANAGE_ROLES))
 
         if (!name) {
-            return yield* _(Effect.fail(new InvalidInputError('Required Name')))
+            return yield* _(
+                Effect.fail(new InvalidInputError('name', 'Required Name')),
+            )
         }
         if (
             Object.values(DEFAULT_ROLES)
                 .map(r => r.toLowerCase())
                 .includes(name.toLowerCase())
         ) {
-            return yield* _(Effect.fail(new InvalidInputError('Reserved Name')))
+            return yield* _(
+                Effect.fail(new InvalidInputError('name', 'Reserved Name')),
+            )
         }
         if (!id) {
-            return yield* _(Effect.fail(new InvalidInputError('Required ID')))
+            return yield* _(
+                Effect.fail(new InvalidInputError('id', 'Required ID')),
+            )
         }
 
         const prisma = yield* _(PrismaService)
@@ -53,7 +59,9 @@ export const editRoleNameEffect = (id: string, name: string) =>
                 .map(r => r.toLowerCase())
                 .includes(actual.name.toLowerCase())
         ) {
-            return yield* _(Effect.fail(new InvalidInputError('Reserved Role')))
+            return yield* _(
+                Effect.fail(new InvalidInputError('name', 'Reserved Role')),
+            )
         }
 
         name = name.trim().replace(/\s/g, '-')
@@ -171,7 +179,9 @@ export const deleteRoleEffect = (id: string) =>
             role.name === DEFAULT_ROLES.USER ||
             role.name === DEFAULT_ROLES.DELETED
         ) {
-            return yield* _(Effect.fail(new InvalidInputError('Reserved Role')))
+            return yield* _(
+                Effect.fail(new InvalidInputError('name', 'Reserved Role')),
+            )
         }
         yield* _(
             Effect.tryPromise({
@@ -202,7 +212,9 @@ export const changuePermissionsEffect = (id: string, permissions: bigint) =>
             return yield* _(Effect.fail(new NotFoundError('Role not found')))
         }
         if (actual.name === DEFAULT_ROLES.ADMIN) {
-            return yield* _(Effect.fail(new InvalidInputError('Reserved Role')))
+            return yield* _(
+                Effect.fail(new InvalidInputError('name', 'Reserved Role')),
+            )
         }
         const updated = yield* _(
             Effect.tryPromise({
