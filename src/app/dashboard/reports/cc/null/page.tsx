@@ -1,5 +1,5 @@
 import app from '@eliyya/type-routes'
-import { LABORATORY_TYPE } from '@/prisma/browser'
+import { LABORATORY_TYPE } from '@/prisma/generated/browser'
 import { PlusIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { ButtonLink } from '@/components/Links'

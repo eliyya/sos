@@ -1,5 +1,5 @@
 import { createSerializableLocaleStorage } from '@/lib/utils'
-import { Role, User, STATUS } from '@/prisma/browser'
+import { Role, User, STATUS } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 

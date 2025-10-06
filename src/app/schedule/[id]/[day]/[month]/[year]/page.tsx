@@ -1,4 +1,4 @@
-import { LABORATORY_TYPE, STATUS } from '@/prisma/browser'
+import { LABORATORY_TYPE, STATUS } from '@/prisma/generated/browser'
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'

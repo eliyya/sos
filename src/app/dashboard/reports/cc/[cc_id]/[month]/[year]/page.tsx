@@ -1,5 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
-import { LABORATORY_TYPE, STATUS } from '@/prisma/browser'
+import { LABORATORY_TYPE, STATUS } from '@/prisma/generated/browser'
 import { DashboardHeader } from '@/app/dashboard/components/DashboardHeader'
 import { db } from '@/prisma/db'
 import { ChangueDate } from './components/ChangueDate'

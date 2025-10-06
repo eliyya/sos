@@ -2,7 +2,11 @@ import { Effect } from 'effect'
 import { requirePermission } from './auth.service'
 import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
 import { PrismaService } from '@/layers/db.layer'
-import { LABORATORY_TYPE, MACHINE_STATUS, STATUS } from '@/prisma/client'
+import {
+    LABORATORY_TYPE,
+    MACHINE_STATUS,
+    STATUS,
+} from '@/prisma/generated/client'
 import {
     AlreadyArchivedError,
     AlreadyExistsError,

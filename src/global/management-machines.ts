@@ -1,4 +1,4 @@
-import { Laboratory, Machine, MACHINE_STATUS } from '@/prisma/browser'
+import { Laboratory, Machine, MACHINE_STATUS } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 
 const defaultEntity: Omit<Machine, 'created_at' | 'updated_at'> = {

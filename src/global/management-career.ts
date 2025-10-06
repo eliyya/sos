@@ -1,4 +1,4 @@
-import { Career, STATUS } from '@/prisma/browser'
+import { Career, STATUS } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 
 export const queryAtom = atom('')

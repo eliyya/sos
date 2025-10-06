@@ -1,6 +1,6 @@
 'use server'
 
-import { Machine, MACHINE_STATUS, Prisma } from '@/prisma/client'
+import { Machine, MACHINE_STATUS, Prisma } from '@/prisma/generated/client'
 import { err, ok, Result } from '@/lib/error'
 import { db } from '@/prisma/db'
 

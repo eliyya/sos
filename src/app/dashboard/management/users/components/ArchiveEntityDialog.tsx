@@ -17,7 +17,7 @@ import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { useUsers } from '@/hooks/users.hooks'
-import { STATUS } from '@/prisma/browser'
+import { STATUS } from '@/prisma/generated/browser'
 
 export function ArchiveEntityDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)

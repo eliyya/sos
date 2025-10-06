@@ -1,6 +1,6 @@
 'use client'
 
-import { Career, Subject, User } from '@/prisma/browser'
+import { Career, Subject, User } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     BookAIcon,

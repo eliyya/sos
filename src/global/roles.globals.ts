@@ -1,4 +1,4 @@
-import { Role } from '@/prisma/browser'
+import { Role } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'

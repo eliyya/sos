@@ -1,6 +1,6 @@
 'use client'
 
-import { LABORATORY_TYPE } from '@/prisma/browser'
+import { LABORATORY_TYPE } from '@/prisma/generated/browser'
 import { useAtom, useSetAtom } from 'jotai'
 import {
     Clock8Icon,

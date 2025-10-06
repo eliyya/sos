@@ -1,6 +1,6 @@
 'use client'
 
-import { Career } from '@/prisma/browser'
+import { Career } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     CalendarRangeIcon,

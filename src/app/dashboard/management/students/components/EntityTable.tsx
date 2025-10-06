@@ -1,6 +1,6 @@
 'use client'
 
-import { Student, STATUS } from '@/prisma/browser'
+import { Student, STATUS } from '@/prisma/generated/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'

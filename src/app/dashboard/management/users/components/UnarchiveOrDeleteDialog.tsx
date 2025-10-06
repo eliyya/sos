@@ -15,7 +15,7 @@ import {
 import { MessageError } from '@/components/Error'
 import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { useUsers } from '@/hooks/users.hooks'
-import { STATUS } from '@/prisma/enums'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)

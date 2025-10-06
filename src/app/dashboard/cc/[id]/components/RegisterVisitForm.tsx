@@ -1,6 +1,6 @@
 'use client'
 
-import { Career } from '@/prisma/browser'
+import { Career } from '@/prisma/generated/browser'
 import { useSetAtom } from 'jotai'
 import { SquarePenIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'

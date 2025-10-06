@@ -1,7 +1,7 @@
 'use server'
 
 import { Temporal } from '@js-temporal/polyfill'
-import { Class, Prisma, STATUS } from '@/prisma/client'
+import { Class, Prisma, STATUS } from '@/prisma/generated/client'
 import { getStartOfWeek } from '@/lib/utils'
 import { db } from '@/prisma/db'
 

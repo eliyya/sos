@@ -1,6 +1,6 @@
 'use client'
 
-import { Machine, MACHINE_STATUS } from '@/prisma/browser'
+import { Machine, MACHINE_STATUS } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     MonitorCheckIcon,

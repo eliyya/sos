@@ -1,6 +1,6 @@
 'use client'
 
-import { Laboratory, STATUS } from '@/prisma/browser'
+import { Laboratory, STATUS } from '@/prisma/generated/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/Badge'

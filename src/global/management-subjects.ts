@@ -1,4 +1,4 @@
-import { Subject, STATUS } from '@/prisma/browser'
+import { Subject, STATUS } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 
 const defaultEntity: Omit<Subject, 'created_at' | 'updated_at'> = {

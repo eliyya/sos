@@ -6,7 +6,7 @@ import {
     PrismaError,
 } from '@/errors'
 import { PrismaService } from '@/layers/db.layer'
-import { STATUS } from '@/prisma/enums'
+import { STATUS } from '@/prisma/generated/enums'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { AuthService } from '@/layers/auth.layer'
 import { db } from '@/prisma/db'
