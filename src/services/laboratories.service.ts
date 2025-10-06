@@ -345,3 +345,22 @@ export const unarchiveLaboratoryEffect = (id: string) =>
             }),
         )
     })
+
+export const getLaboratoriesEffect = () =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        return yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.findMany({
+                        where: {
+                            status: {
+                                not: STATUS.DELETED,
+                            },
+                        },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+    })

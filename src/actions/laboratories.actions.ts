@@ -17,6 +17,7 @@ import {
     createLaboratoryEffect,
     deleteLaboratoryEffect,
     editLaboratoryEffect,
+    getLaboratoriesEffect,
 } from '@/services/laboratories.service'
 import { Effect } from 'effect'
 
@@ -365,8 +366,32 @@ export async function unarchiveLaboratory(id: string) {
     )
 }
 
-export async function getActiveLaboratories() {}
-
-export async function getLaboratories() {}
-
-export async function setAsideLaboratory() {}
+export async function getLaboratories() {
+    return await Effect.runPromise(
+        Effect.scoped(
+            getLaboratoriesEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: laboratories => ({
+                            status: 'success' as const,
+                            laboratories,
+                        }),
+                        onFailure: error => {
+                            console.log(error)
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'success' as const,
+                                    laboratories: [],
+                                }
+                            }
+                            return {
+                                status: 'success' as const,
+                                laboratories: [],
+                            }
+                        },
+                    }),
+                ),
+        ),
+    )
+}
