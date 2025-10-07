@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import {
     PermissionsBitField,
-    PermissionsFlags,
+    PERMISSIONS_FLAGS,
 } from '@/bitfields/PermissionsBitField'
 import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
@@ -34,7 +34,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
         BigInt(session?.user.permissions ?? 0n),
     )
     // TODO: cambiar a MANAGE_LABS
-    const isAdmin = !!session && permissions.has(PermissionsFlags.MANAGE_LABS)
+    const isAdmin = !!session && permissions.has(PERMISSIONS_FLAGS.MANAGE_LABS)
 
     let users: { id: string; name: string }[] = []
 

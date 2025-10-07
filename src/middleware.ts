@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server'
 import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import {
     PermissionsBitField,
-    PermissionsFlags,
+    PERMISSIONS_FLAGS,
 } from './bitfields/PermissionsBitField'
 import { auth } from './lib/auth'
 import { db } from '@/prisma/db'
@@ -116,6 +116,6 @@ handler.set(/^\/dashboard.*$/, async ctx => {
         BigInt(session.user.permissions),
     )
     // TODO: cambiar a MANAGE_DASHBOARD
-    if (permissions.has(PermissionsFlags.MANAGE_CAREERS)) return ctx.next()
+    if (permissions.has(PERMISSIONS_FLAGS.MANAGE_CAREERS)) return ctx.next()
     return ctx.redirect(app.schedule.null())
 })

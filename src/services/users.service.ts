@@ -11,7 +11,7 @@ import { DEFAULT_ROLES } from '@/constants/client'
 import { AuthService } from '@/layers/auth.layer'
 import { db } from '@/prisma/db'
 import { requirePermission } from './auth.service'
-import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
+import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 
 export function getUsersEffect() {
     return Effect.gen(function* (_) {
@@ -44,7 +44,7 @@ export function checkIfUsernameIsTakenEffect(username: string) {
 
 export function archiveUserEffect(id: string) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
         const prisma = yield* _(PrismaService)
 
         const user = yield* _(
@@ -96,7 +96,7 @@ export function archiveUserEffect(id: string) {
 
 export function unarchiveUserEffect(id: string) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
         const prisma = yield* _(PrismaService)
 
         const user = yield* _(
@@ -129,7 +129,7 @@ export function unarchiveUserEffect(id: string) {
 
 export function deleteUserEffect(id: string) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
         const prisma = yield* _(PrismaService)
 
         const user = yield* _(
@@ -205,7 +205,7 @@ export function editUserEffect({
     password,
 }: EditUserEffectProps) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
 
         const prisma = yield* _(PrismaService)
         const auth = yield* _(AuthService)

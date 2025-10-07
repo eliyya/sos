@@ -13,6 +13,12 @@ import {
     UsersIcon,
 } from 'lucide-react'
 import { ManagementNavLink } from './ManagementNavLink'
+import {
+    PermissionsBitField,
+    PERMISSIONS_FLAGS,
+    PermissionsFlags,
+} from '@/bitfields/PermissionsBitField'
+import { authClient } from '@/lib/auth-client'
 
 const mLinks = app.dashboard.management
 
@@ -25,60 +31,77 @@ const links: {
     title: string
     href: ReturnType<MLinks[keyof MLinks]>
     icon: LucideIcon
+    permission: PermissionsFlags
 }[] = [
     {
         title: 'Laboratorios',
         href: mLinks.laboratories(),
         icon: HouseWifiIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_LABS,
     },
     {
         title: 'Usuarios',
         href: mLinks.users(),
         icon: UsersIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_USERS,
     },
     {
         title: 'Roles',
         href: mLinks.roles(),
         icon: ShieldCheckIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_ROLES,
     },
     {
         title: 'Materias',
         href: mLinks.subjects(),
         icon: BookMarkedIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_SUBJECTS,
     },
     {
         title: 'Carreras',
         href: mLinks.career(),
         icon: SquareUserRoundIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_CAREERS,
     },
     {
         title: 'Clases',
         href: mLinks.classes(),
         icon: CalendarCheckIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_CLASSES,
     },
     {
         title: 'Estudiantes',
         href: mLinks.students(),
         icon: GraduationCapIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_STUDENTS,
     },
     {
         title: 'Maquinas',
         href: mLinks.machines(),
         icon: ComputerIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_MACHINES,
     },
 ]
 
 export function ManagementNav() {
+    const { data: session } = authClient.useSession()
+    const permissions =
+        session ?
+            new PermissionsBitField(session.user.permissions)
+        :   new PermissionsBitField()
+
     return (
         <nav className='flex flex-nowrap items-center justify-center gap-4 overflow-x-auto border-b p-4'>
-            {links.map(link => (
-                <ManagementNavLink
-                    key={link.href}
-                    href={link.href}
-                    label={link.title}
-                    icon={link.icon}
-                />
-            ))}
+            {links
+                .filter(link => permissions.has(link.permission))
+                .map(link => (
+                    <ManagementNavLink
+                        key={link.href}
+                        href={link.href}
+                        label={link.title}
+                        icon={link.icon}
+                    />
+                ))}
         </nav>
     )
 }

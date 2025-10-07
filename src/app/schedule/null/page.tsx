@@ -6,7 +6,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import {
     PermissionsBitField,
-    PermissionsFlags,
+    PERMISSIONS_FLAGS,
 } from '@/bitfields/PermissionsBitField'
 import { ButtonLink } from '@/components/Links'
 import { APP_NAME } from '@/constants/client'
@@ -89,7 +89,7 @@ function GetContent({ permissions, hasSession, hasUsers }: GetContentProps) {
             </>
         )
     // si no tiene admin
-    if (!permissions.has(PermissionsFlags.MANAGE_LABS))
+    if (!permissions.has(PERMISSIONS_FLAGS.MANAGE_LABS))
         return <p>Por favor contacta con un administrador</p>
     // es admin
     return (

@@ -4,7 +4,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ShieldIcon, Trash2Icon } from 'lucide-react'
 import {
     PermissionsBitField,
-    PermissionsFlags,
+    PERMISSIONS_FLAGS,
 } from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/Button'
 import { Switch } from '@/components/Switch'
@@ -27,7 +27,7 @@ export function PermissionsList() {
     )
 
     const onCheckedChange = (
-        permission: keyof typeof PermissionsFlags,
+        permission: keyof typeof PERMISSIONS_FLAGS,
         enabled: boolean,
     ) => {
         if (enabled) {

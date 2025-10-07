@@ -1,7 +1,7 @@
 import app from '@eliyya/type-routes'
 import {
     PermissionsBitField,
-    PermissionsFlags,
+    PERMISSIONS_FLAGS,
 } from '@/bitfields/PermissionsBitField'
 import { ButtonLink } from '@/components/Links'
 import { SelectLaboratory } from './SelectLaboratory'
@@ -38,6 +38,6 @@ function GuestButtons() {
 
 function Buttons({ permissions }: { permissions: PermissionsBitField }) {
     // TODO: cambiar a MANAGE_LABS
-    if (permissions.has(PermissionsFlags.MANAGE_LABS)) return <AdminButtons />
+    if (permissions.has(PERMISSIONS_FLAGS.MANAGE_LABS)) return <AdminButtons />
     return <GuestButtons />
 }

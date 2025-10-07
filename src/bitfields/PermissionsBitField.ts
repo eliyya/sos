@@ -1,6 +1,7 @@
+import { brand, KeysBrand } from '@/lib/types'
 import { FlaggedBitfield } from '@eliyya/flagged-bitfield'
 
-export const PermissionsFlags = {
+export const PERMISSIONS_FLAGS = brand({
     /** Puede iniciar sesion */
     CAN_LOGIN: 1n << 0n, // TODO: implementar
     /** Registrar su propia sesion en laboratorio */
@@ -45,11 +46,13 @@ export const PermissionsFlags = {
     COMMENT_ISSUES: 1n << 37n, // TODO: implementar
     /** Cerrar fallas o incidencias */
     CLOSE_ISSUES: 1n << 38n, // TODO: implementar
-}
+} as const)
 
 export class PermissionsBitField extends FlaggedBitfield<
-    typeof PermissionsFlags
+    typeof PERMISSIONS_FLAGS
 > {
-    static Flags = PermissionsFlags
+    static Flags = PERMISSIONS_FLAGS
     static DefaultBit = 0n
 }
+
+export type PermissionsFlags = KeysBrand<typeof PERMISSIONS_FLAGS>

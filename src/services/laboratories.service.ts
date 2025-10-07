@@ -1,6 +1,6 @@
 import { Effect } from 'effect'
 import { requirePermission } from './auth.service'
-import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
+import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 import { PrismaService } from '@/layers/db.layer'
 import {
     LABORATORY_TYPE,
@@ -28,7 +28,7 @@ export const createLaboratoryEffect = ({
     type,
 }: CreateLaboratoryProps) =>
     Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_LABS))
 
         const prisma = yield* _(PrismaService)
 
@@ -120,7 +120,7 @@ export const editLaboratoryEffect = ({
     type,
 }: Partial<CreateLaboratoryProps>) =>
     Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_LABS))
 
         const prisma = yield* _(PrismaService)
 
@@ -220,7 +220,7 @@ export const editLaboratoryEffect = ({
 
 export const deleteLaboratoryEffect = (id: string) =>
     Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_LABS))
 
         const prisma = yield* _(PrismaService)
 
@@ -278,7 +278,7 @@ export const deleteLaboratoryEffect = (id: string) =>
 
 export const archiveLaboratoryEffect = (id: string) =>
     Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_LABS))
 
         const prisma = yield* _(PrismaService)
 
@@ -317,7 +317,7 @@ export const archiveLaboratoryEffect = (id: string) =>
 
 export const unarchiveLaboratoryEffect = (id: string) =>
     Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_LABS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_LABS))
 
         const prisma = yield* _(PrismaService)
 
