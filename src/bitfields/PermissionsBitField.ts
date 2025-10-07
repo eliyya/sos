@@ -1,7 +1,7 @@
-import { brand, KeysBrand } from '@/lib/types'
+import { brandFlags, KeysBrand } from '@/lib/types'
 import { FlaggedBitfield } from '@eliyya/flagged-bitfield'
 
-export const PERMISSIONS_FLAGS = brand({
+export const PERMISSIONS_FLAGS = brandFlags({
     /** Puede iniciar sesion */
     CAN_LOGIN: 1n << 0n, // TODO: implementar
     /** Registrar su propia sesion en laboratorio */
