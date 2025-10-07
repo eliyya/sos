@@ -1,9 +1,8 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { deleteLaboratory } from '@/actions/laboratory'
+import { useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -14,23 +13,56 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import {
-    openDeleteAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-laboratory'
-
+    openDialogAtom,
+    selectedLaboratoryAtom,
+} from '@/global/laboratories.globals'
+import { useLaboratories } from '@/hooks/laboratories.hoohs'
+import { deleteLaboratory } from '@/actions/laboratories.actions'
+import { useRouter } from 'next/navigation'
 
 export function DeleteDialog() {
-    const [open, setOpen] = useAtom(openDeleteAtom)
+    const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedLaboratoryAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const { setLaboratories, refetchLaboratories } = useLaboratories()
+    const router = useRouter()
+
+    const onAction = useCallback(
+        async (id: string) => {
+            startTransition(async () => {
+                const response = await deleteLaboratory(id)
+                if (response.status === 'success') {
+                    setLaboratories(labs => labs.filter(lab => lab.id !== id))
+                    setOpen(null)
+                } else {
+                    if (response.type === 'not-found') {
+                        await refetchLaboratories()
+                        setOpen(null)
+                    } else if (response.type === 'unexpected') {
+                        setMessage('Ha ocurrido un error, intente más tarde')
+                    } else if (response.type === 'permission') {
+                        setMessage(
+                            'No tienes permiso para eliminar este laboratorio',
+                        )
+                    } else if (response.type === 'unauthorized') {
+                        router.replace('/login')
+                    }
+                }
+            })
+        },
+        [setLaboratories, setOpen, refetchLaboratories, router],
+    )
 
     if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'DELETE'}
+            onOpenChange={state => {
+                if (!state) setOpen(null)
+            }}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Eliminar Laboratorio</DialogTitle>
@@ -42,31 +74,20 @@ export function DeleteDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const { error } = await deleteLaboratory(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage(''), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
+                            const id = data.get('id') as string
+                            onAction(id)
                         })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
+                    {message && <MessageError>{message}</MessageError>}
                     <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                setOpen(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
