@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
+import { BanIcon, Trash2Icon } from 'lucide-react'
 import { useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
@@ -90,7 +90,7 @@ export function DeleteDialog() {
                                 setOpen(null)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
@@ -98,7 +98,7 @@ export function DeleteDialog() {
                             variant={'destructive'}
                             disabled={inTransition}
                         >
-                            <Trash2 className='mr-2 h-5 w-5' />
+                            <Trash2Icon className='mr-2 h-5 w-5' />
                             Eliminar
                         </Button>
                     </div>

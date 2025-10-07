@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { ArchiveRestore, Ban } from 'lucide-react'
+import { ArchiveRestoreIcon, BanIcon } from 'lucide-react'
 import { useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
@@ -92,7 +92,7 @@ export function UnarchiveDialog() {
                                 setOpen(null)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
@@ -100,7 +100,7 @@ export function UnarchiveDialog() {
                             variant={'default'}
                             disabled={inTransition}
                         >
-                            <ArchiveRestore className='mr-2 h-5 w-5' />
+                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
                             Desarchivar
                         </Button>
                     </div>
