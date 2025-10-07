@@ -340,7 +340,7 @@ export const unarchiveLaboratoryEffect = (id: string) =>
             )
         if (lab.status === STATUS.ACTIVE) return lab
 
-        yield* _(
+        const laboratory = yield* _(
             Effect.tryPromise({
                 try: () =>
                     prisma.laboratory.update({
@@ -350,6 +350,8 @@ export const unarchiveLaboratoryEffect = (id: string) =>
                 catch: err => new PrismaError(err),
             }),
         )
+
+        return laboratory
     })
 
 export const getLaboratoriesEffect = () =>

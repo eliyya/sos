@@ -18,6 +18,7 @@ import {
     deleteLaboratoryEffect,
     editLaboratoryEffect,
     getLaboratoriesEffect,
+    unarchiveLaboratoryEffect,
 } from '@/services/laboratories.service'
 import { Effect } from 'effect'
 
@@ -310,13 +311,14 @@ export async function archiveLaboratory(id: string) {
 export async function unarchiveLaboratory(id: string) {
     return await Effect.runPromise(
         Effect.scoped(
-            archiveLaboratoryEffect(id)
+            unarchiveLaboratoryEffect(id)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
-                        onSuccess: () => ({
+                        onSuccess: laboratory => ({
                             status: 'success' as const,
+                            laboratory,
                         }),
                         onFailure: error => {
                             if (error instanceof NotFoundError) {
