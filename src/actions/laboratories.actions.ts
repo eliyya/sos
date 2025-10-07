@@ -254,8 +254,9 @@ export async function archiveLaboratory(id: string) {
                 .pipe(Effect.provide(AuthLive))
                 .pipe(
                     Effect.match({
-                        onSuccess: () => ({
+                        onSuccess: laboratory => ({
                             status: 'success' as const,
+                            laboratory,
                         }),
                         onFailure: error => {
                             if (error instanceof NotFoundError) {
