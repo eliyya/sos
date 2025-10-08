@@ -108,14 +108,31 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
     )
 })
 
-handler.set(/^\/dashboard.*$/, async ctx => {
+const managementRoutes = {
+    careers: PERMISSIONS_FLAGS.MANAGE_CAREERS,
+    classes: PERMISSIONS_FLAGS.MANAGE_CLASSES,
+    labs: PERMISSIONS_FLAGS.MANAGE_LABS,
+    machines: PERMISSIONS_FLAGS.MANAGE_MACHINES,
+    roles: PERMISSIONS_FLAGS.MANAGE_ROLES,
+    students: PERMISSIONS_FLAGS.MANAGE_STUDENTS,
+    subjects: PERMISSIONS_FLAGS.MANAGE_SUBJECTS,
+    users: PERMISSIONS_FLAGS.MANAGE_USERS,
+}
+type RouteKey = keyof typeof managementRoutes
+
+handler.set(/^\/dashboard\/management.*$/, async ctx => {
     const session = await auth.api.getSession(ctx.request)
 
     if (!session) return ctx.redirect(app.auth.login())
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),
     )
-    // TODO: cambiar a MANAGE_DASHBOARD
-    if (permissions.has(PERMISSIONS_FLAGS.MANAGE_CAREERS)) return ctx.next()
+
+    const [, , route] = ctx.request.nextUrl.pathname.split('/')
+    const permissionNeeded = managementRoutes[route as RouteKey]
+
+    if (!permissionNeeded) return ctx.next()
+    if (permissions.has(permissionNeeded)) return ctx.next()
+
     return ctx.redirect(app.schedule.null())
 })
