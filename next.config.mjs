@@ -1,19 +1,20 @@
 import { withTypeRoute } from '@eliyya/type-routes/next'
 import createNextIntlPlugin from 'next-intl/plugin'
 import { withTypeCSSModule } from '@eliyya/typed-css-modules'
-import withSerwistInit from '@serwist/next'
 
-export default withSerwistInit({
-    // Note: This is only an example. If you use Pages Router,
-    // use something else that works, such as "service-worker/index.ts".
-    swSrc: 'src/app/sw.ts',
-    swDest: 'public/sw.js',
-})(
-    withTypeCSSModule(
-        createNextIntlPlugin('./src/i18n.ts')(
-            withTypeRoute({
-                // la configuracion de nextjs
-            }),
-        ),
+export default withTypeCSSModule(
+    createNextIntlPlugin('./src/i18n.ts')(
+        withTypeRoute({
+            // la configuracion de nextjs
+            webpack: config => {
+                config.ignoreWarnings = [
+                    {
+                        message:
+                            /Critical dependency: the request of a dependency is an expression/,
+                    },
+                ]
+                return config
+            },
+        }),
     ),
 )
