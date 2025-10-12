@@ -1,5 +1,5 @@
 import { createSerializableLocaleStorage } from '@/lib/utils'
-import { Laboratory, LABORATORY_TYPE } from '@/prisma/generated/client'
+import { Laboratory, LABORATORY_TYPE } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
