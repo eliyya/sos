@@ -1,7 +1,7 @@
 'use client'
 
 import { Machine, MACHINE_STATUS } from '@/prisma/generated/browser'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import {
     MonitorCheckIcon,
     MonitorCogIcon,
@@ -9,7 +9,6 @@ import {
     Pencil,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { getLaboratories } from '@/actions/laboratory'
 import { getMachine } from '@/actions/machines'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -29,25 +28,22 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-    laboratoriesAtom,
 } from '@/global/management-machines'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
+import { useLaboratories } from '@/hooks/laboratories.hoohs'
 
 export function EntityTable() {
     const [entity, setEntity] = useState<Machine[]>([])
     const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
-    const [laboratories, setLaboratories] = useAtom(laboratoriesAtom)
+    const { laboratories } = useLaboratories()
 
     useEffect(() => {
         getMachine().then(setEntity)
     }, [update])
-    useEffect(() => {
-        getLaboratories().then(setLaboratories)
-    }, [setLaboratories])
 
     return (
         <>

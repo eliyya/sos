@@ -13,7 +13,12 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import { entityToEditAtom } from '@/global/management-laboratory'
+import {
+    openDialogAtom,
+    queryAtom,
+    showArchivedAtom,
+    selectedLaboratoryIdAtom,
+} from '@/global/laboratories.globals'
 import { secondsToTime } from '@/lib/utils'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -21,11 +26,6 @@ import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
-import {
-    openDialogAtom,
-    queryAtom,
-    showArchivedAtom,
-} from '@/global/laboratories.globals'
 
 export function EntityTable() {
     const { laboratories } = useLaboratories()
@@ -104,7 +104,7 @@ interface ButtonsProps {
     entity: Laboratory
 }
 function Buttons({ entity }: ButtonsProps) {
-    const setSubjectSelected = useSetAtom(entityToEditAtom)
+    const setSelectedLaboratoryId = useSetAtom(selectedLaboratoryIdAtom)
     const openDialog = useSetAtom(openDialogAtom)
 
     if (entity.status === STATUS.ACTIVE)
@@ -115,7 +115,7 @@ function Buttons({ entity }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         openDialog('EDIT')
-                        setSubjectSelected(entity)
+                        setSelectedLaboratoryId(entity.id)
                     }}
                 >
                     <Pencil className='text-xs' />
@@ -124,7 +124,7 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
+                        setSelectedLaboratoryId(entity.id)
                         openDialog('ARCHIVE')
                     }}
                 >
@@ -139,7 +139,7 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
+                        setSelectedLaboratoryId(entity.id)
                         openDialog('UNARCHIVE')
                     }}
                 >
@@ -149,7 +149,7 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
+                        setSelectedLaboratoryId(entity.id)
                         openDialog('DELETE')
                     }}
                 >

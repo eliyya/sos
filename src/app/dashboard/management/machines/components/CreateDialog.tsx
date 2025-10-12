@@ -1,10 +1,8 @@
 'use client'
 
-import { Laboratory } from '@/prisma/generated/browser'
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { getActiveLaboratories } from '@/actions/laboratory'
+import { useState, useTransition } from 'react'
 import { createMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import {
@@ -23,19 +21,16 @@ import {
     updateAtom,
 } from '@/global/management-machines'
 import { map, mapError } from '@/lib/error'
+import { useLaboratories } from '@/hooks/laboratories.hoohs'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
-    const [laboratories, setLaboratories] = useState<Laboratory[]>([])
     const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
     const setEntityToEdit = useSetAtom(entityToEditAtom)
-
-    useEffect(() => {
-        getActiveLaboratories().then(setLaboratories)
-    }, [])
+    const { laboratories } = useLaboratories()
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

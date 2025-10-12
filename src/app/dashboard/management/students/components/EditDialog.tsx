@@ -1,6 +1,5 @@
 'use client'
 
-import { Career } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     CalendarRangeIcon,
@@ -9,8 +8,7 @@ import {
     Save,
     UserIcon,
 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { getActiveCareers } from '@/actions/career'
+import { useState, useTransition } from 'react'
 import { editStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import {
@@ -28,6 +26,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-students'
+import { useCareers } from '@/hooks/careers.hooks'
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)
@@ -35,11 +34,7 @@ export function EditDialog() {
     const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
-    const [careers, setCareers] = useState<Career[]>([])
-
-    useEffect(() => {
-        getActiveCareers().then(setCareers)
-    }, [])
+    const { careers } = useCareers()
 
     if (!old) return null
 

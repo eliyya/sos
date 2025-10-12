@@ -4,7 +4,6 @@ import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 import { PrismaService } from '@/layers/db.layer'
 import {
     AlreadyArchivedError,
-    AlreadyExistsError,
     InvalidInputError,
     NotFoundError,
     PrismaError,

@@ -1,10 +1,8 @@
 'use client'
 
-import { Career } from '@/prisma/generated/browser'
 import { useSetAtom } from 'jotai'
 import { SquarePenIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-import { getActiveCareers } from '@/actions/career'
 import { registerVisit } from '@/actions/cc'
 import { findStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
@@ -13,6 +11,7 @@ import { CompletSelect } from '@/components/Select'
 import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
 import { useTranslations } from 'next-intl'
+import { useCareers } from '@/hooks/careers.hooks'
 
 interface RegisterVisitFormProps {
     laboratory_id: string
@@ -25,18 +24,10 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
     const [nc, setNc] = useState('')
     const [semester, setSemester] = useState('')
     const [career_id, setCareerId] = useState('')
-    const [careers, setCareers] = useState<Career[]>([])
     const setError = useSetAtom(errorAtom)
     const refreshTable = useSetAtom(updateTableAtom)
     const t = useTranslations('cc')
-
-    useEffect(() => {
-        async function fetchCareers() {
-            const response = await getActiveCareers()
-            setCareers(response)
-        }
-        fetchCareers()
-    }, [])
+    const { careers } = useCareers()
 
     // debounce findStudent
     useEffect(() => {

@@ -59,7 +59,7 @@ export function UnarchiveDialog() {
                 }
             }
         })
-    }, [openDialog, router, entity])
+    }, [openDialog, router, entity, setCareers])
 
     if (!entity) return null
 

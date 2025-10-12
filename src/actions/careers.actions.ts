@@ -1,7 +1,5 @@
 'use server'
 
-import { STATUS } from '@/prisma/generated/client'
-import { db } from '@/prisma/db'
 import { Effect } from 'effect'
 import {
     archiveCareerEffect,
@@ -15,7 +13,6 @@ import { PrismaLive } from '@/layers/db.layer'
 import { AuthLive } from '@/layers/auth.layer'
 import {
     AlreadyArchivedError,
-    AlreadyExistsError,
     InvalidInputError,
     NotFoundError,
     PermissionError,

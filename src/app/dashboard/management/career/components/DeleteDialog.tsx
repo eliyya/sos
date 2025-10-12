@@ -54,7 +54,7 @@ export function DeleteDialog() {
                 }
             }
         })
-    }, [setOpen, router, entity])
+    }, [setOpen, router, entity, setCareers])
 
     if (!entity) return null
 

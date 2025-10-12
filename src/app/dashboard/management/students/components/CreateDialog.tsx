@@ -1,6 +1,5 @@
 'use client'
 
-import { Career } from '@/prisma/generated/browser'
 import { useAtom, useSetAtom } from 'jotai'
 import {
     Save,
@@ -10,8 +9,7 @@ import {
     CalendarRangeIcon,
     GraduationCapIcon,
 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { getActiveCareers } from '@/actions/career'
+import { useState, useTransition } from 'react'
 import { createStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import {
@@ -28,20 +26,15 @@ import {
     updateAtom,
     entityToEditAtom,
 } from '@/global/management-students'
+import { useCareers } from '@/hooks/careers.hooks'
 
 export function CreateSubjectDialog() {
     const [open, setOpen] = useAtom(openCreateAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const updateUsersTable = useSetAtom(updateAtom)
-    const [careers, setCareers] = useState<Career[]>([])
     const setEntityToEdit = useSetAtom(entityToEditAtom)
-
-    useEffect(() => {
-        getActiveCareers().then(careers => {
-            setCareers(careers)
-        })
-    }, [])
+    const { careers } = useCareers()
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

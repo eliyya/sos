@@ -15,7 +15,7 @@ import {
 import { PrismaService } from '@/layers/db.layer'
 import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 import { requirePermission } from './auth.service'
-import { PrismaClientKnownRequestError } from '@/prisma/internal/prismaNamespace'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client'
 
 export const editRoleNameEffect = (id: string, name: string) =>
     Effect.gen(function* (_) {

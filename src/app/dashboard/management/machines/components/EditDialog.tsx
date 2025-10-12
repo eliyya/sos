@@ -1,10 +1,8 @@
 'use client'
 
-import { STATUS } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-import { findManyLaboratories } from '@/actions/laboratory'
+import { useState, useTransition } from 'react'
 import { editMachine } from '@/actions/machines'
 import { Button } from '@/components/Button'
 import {
@@ -22,6 +20,7 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-machines'
+import { useLaboratories } from '@/hooks/laboratories.hoohs'
 
 export function EditDialog() {
     const [open, setOpen] = useAtom(editDialogAtom)
@@ -29,18 +28,7 @@ export function EditDialog() {
     const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
-    const [laboratories, setLaboratories] = useState<
-        {
-            id: string
-            name: string
-        }[]
-    >([])
-
-    useEffect(() => {
-        findManyLaboratories({ where: { status: STATUS.ACTIVE } }).then(
-            laboratories => setLaboratories(laboratories),
-        )
-    }, [])
+    const { laboratories } = useLaboratories()
 
     if (!old) return null
 

@@ -80,7 +80,7 @@ export function EditDialog() {
                 }
             })
         },
-        [setOpen, router, old, setNameError, setAliasError],
+        [old, setCareers, setOpen, router, setNameError, setAliasError],
     )
 
     if (!old) return null

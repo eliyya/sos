@@ -1,6 +1,10 @@
 'use server'
 
 import {
+    PERMISSIONS_FLAGS,
+    PermissionsBitField,
+} from '@/bitfields/PermissionsBitField'
+import {
     AlreadyArchivedError,
     AlreadyExistsError,
     InvalidInputError,
@@ -12,6 +16,8 @@ import {
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
+import { auth } from '@/lib/auth'
+import { db } from '@/prisma/db'
 import {
     archiveLaboratoryEffect,
     createLaboratoryEffect,
@@ -20,7 +26,9 @@ import {
     getLaboratoriesEffect,
     unarchiveLaboratoryEffect,
 } from '@/services/laboratories.service'
+import { Temporal } from '@js-temporal/polyfill'
 import { Effect } from 'effect'
+import { headers } from 'next/headers'
 
 export async function createLaboratory({
     close_hour,
@@ -385,4 +393,87 @@ export async function getLaboratories() {
                 ),
         ),
     )
+}
+
+// TODO: Pending migrate
+export async function setAsideLaboratory(formData: FormData): Promise<{
+    message: string | null
+    errors: { class_id?: string; teacher_id?: string }
+}> {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    })
+    if (!session) return { message: 'No tienes acceso', errors: {} }
+    const permissions = new PermissionsBitField(
+        BigInt(session.user.permissions),
+    )
+    const teacher_id = formData.get('teacher_id') as string
+    let class_id: string | null = formData.get('class_id') as string
+    const laboratory_id = formData.get('laboratory_id') as string
+    const name = formData.get('name') as string
+    const topic = formData.get('topic') as string
+    const time = formData.get('time') as string
+    const password = formData.get('password') as string
+    const students = formData.get('students') as string
+    const starts_at = Temporal.Instant.fromEpochMilliseconds(
+        parseInt(formData.get('starts_at') as string),
+    )
+    const ends_at = starts_at.add({ hours: parseInt(time) })
+    if (!permissions.has(PERMISSIONS_FLAGS.MANAGE_LABS) && !class_id)
+        return {
+            message: 'Faltan datos',
+            errors: { class_id: 'Este campo es requerido' },
+        }
+    class_id ||= null
+    let registered_by = teacher_id
+    const authContext = await auth.$context
+    const teacher = await db.account.findFirst({
+        where: { user_id: teacher_id },
+        select: { password: true },
+    })
+    if (!teacher) return { message: 'El usuario no existe', errors: {} }
+    let passVerified = authContext.password.verify({
+        password,
+        hash: teacher.password ?? '',
+    })
+    if (!passVerified) {
+        if (
+            permissions.has(PERMISSIONS_FLAGS.MANAGE_LABS) &&
+            teacher_id !== session.user.id
+        ) {
+            const user = await db.account.findFirst({
+                where: { user_id: teacher_id },
+                select: { password: true },
+            })
+            if (!user) return { message: 'El usuario no existe', errors: {} }
+            passVerified = authContext.password.verify({
+                password,
+                hash: user.password ?? '',
+            })
+            registered_by = session.user.id
+            if (!passVerified)
+                return {
+                    message: 'La contraseña es incorrecta',
+                    errors: { teacher_id: 'La contraseña es incorrecta' },
+                }
+        } else
+            return {
+                message: 'La contraseña es incorrecta',
+                errors: { teacher_id: 'La contraseña es incorrecta' },
+            }
+    }
+    await db.practice.create({
+        data: {
+            topic,
+            name,
+            students: parseInt(students),
+            teacher_id,
+            class_id,
+            laboratory_id,
+            registered_by,
+            starts_at: new Date(starts_at.epochMilliseconds),
+            ends_at: new Date(ends_at.epochMilliseconds),
+        },
+    })
+    return { message: null, errors: {} }
 }

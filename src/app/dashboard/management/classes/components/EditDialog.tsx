@@ -1,6 +1,6 @@
 'use client'
 
-import { Career, Subject, User } from '@/prisma/generated/browser'
+import { Subject } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     BookAIcon,
@@ -11,10 +11,8 @@ import {
     UsersIcon,
 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
-import { getActiveCareers } from '@/actions/career'
 import { editClass } from '@/actions/class'
 import { getSubjectsActive } from '@/actions/subjects'
-import { getUsers } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -32,6 +30,8 @@ import {
     entityToEditAtom,
     updateAtom,
 } from '@/global/management-class'
+import { useCareers } from '@/hooks/careers.hooks'
+import { useUsers } from '@/hooks/users.hooks'
 
 export function EditDialog() {
     const t = useTranslations('classes')
@@ -40,20 +40,14 @@ export function EditDialog() {
     const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
-    const [careers, setCareers] = useState<Career[]>([])
-    const [teachers, setTeachers] = useState<User[]>([])
     const [subjects, setSubjects] = useState<Subject[]>([])
+    const { careers } = useCareers()
+    const { users } = useUsers()
 
     const subject = subjects.find(s => s.id === old.subject_id)
     const career = careers.find(c => c.id === old.career_id)
 
     useEffect(() => {
-        getActiveCareers().then(careers => {
-            setCareers(careers)
-        })
-        getUsers().then(users => {
-            setTeachers(users)
-        })
         getSubjectsActive().then(subjects => {
             setSubjects(subjects)
         })
@@ -103,13 +97,13 @@ export function EditDialog() {
                     <RetornableCompletSelect
                         originalValue={{
                             label:
-                                teachers.find(t => t.id === old.teacher_id)
+                                users.find(t => t.id === old.teacher_id)
                                     ?.name || '',
                             value: old.teacher_id,
                         }}
                         label={t('teacher')}
                         name='teacher_id'
-                        options={teachers.map(t => ({
+                        options={users.map(t => ({
                             label: t.name,
                             value: t.id,
                         }))}
