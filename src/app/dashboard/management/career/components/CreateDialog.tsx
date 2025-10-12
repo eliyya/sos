@@ -33,9 +33,6 @@ export function CreateSubjectDialog() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{t('create_career')}</DialogTitle>
-                    {/* <DialogDescription>
-                        Edit the user&apos;s information
-                    </DialogDescription> */}
                 </DialogHeader>
                 <form
                     action={data => {

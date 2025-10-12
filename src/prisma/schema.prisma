@@ -222,7 +222,7 @@ model Career {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
     status     STATUS   @default(ACTIVE)
-    alias      String?
+    alias      String?  @unique
 
     students Student[]
     classes  Class[]

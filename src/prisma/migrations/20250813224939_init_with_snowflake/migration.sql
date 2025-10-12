@@ -323,6 +323,9 @@ CREATE UNIQUE INDEX "laboratories_name_key" ON "public"."laboratories"("name");
 CREATE UNIQUE INDEX "careers_name_key" ON "public"."careers"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "careers_alias_key" ON "public"."careers"("alias");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "machines_serie_key" ON "public"."machines"("serie");
 
 -- CreateIndex
