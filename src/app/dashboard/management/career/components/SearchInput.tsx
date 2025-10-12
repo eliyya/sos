@@ -4,7 +4,7 @@ import { useAtom } from 'jotai'
 import { Search } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { queryAtom, showArchivedAtom } from '@/global/management-career'
+import { queryAtom, showArchivedAtom } from '@/global/careers.globals'
 import { useTranslations } from 'next-intl'
 
 export function Filters() {

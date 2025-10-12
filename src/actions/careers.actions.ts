@@ -45,14 +45,6 @@ export async function createCareer(props: CreateCareerProps) {
                                     message: String(error.cause),
                                 } as const
                             }
-                            if (error instanceof AlreadyExistsError) {
-                                return {
-                                    status: 'error' as const,
-                                    type: 'already-exists' as const,
-                                    message: error.message,
-                                    id: error.id,
-                                } as const
-                            }
                             if (error instanceof AlreadyArchivedError) {
                                 return {
                                     status: 'error' as const,
@@ -66,7 +58,7 @@ export async function createCareer(props: CreateCareerProps) {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
-                                    input: error.input,
+                                    field: error.input,
                                 } as const
                             }
                             if (error instanceof UnauthorizedError) {
@@ -136,15 +128,7 @@ export async function editCareer(props: EditCareerProps) {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
-                                    input: error.input,
-                                } as const
-                            }
-                            if (error instanceof AlreadyExistsError) {
-                                return {
-                                    status: 'error' as const,
-                                    type: 'already-exists' as const,
-                                    message: error.message,
-                                    id: error.id,
+                                    field: error.input,
                                 } as const
                             }
                             if (error instanceof UnauthorizedError) {

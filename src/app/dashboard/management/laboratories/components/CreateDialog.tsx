@@ -85,13 +85,13 @@ export function CreateLaboratoryDialog() {
                     } else if (response.type === 'permission') {
                         setMessage('No tienes permiso para crear laboratorios')
                     } else if (response.type === 'invalid-input') {
-                        if (response.input === 'name') {
+                        if (response.field === 'name') {
                             setNameError(response.message)
-                        } else if (response.input === 'open_hour') {
+                        } else if (response.field === 'open_hour') {
                             setOpenHourError(response.message)
-                        } else if (response.input === 'close_hour') {
+                        } else if (response.field === 'close_hour') {
                             setCloseHourError(response.message)
-                        } else if (response.input === 'type') {
+                        } else if (response.field === 'type') {
                             setTypeError(response.message)
                         }
                     } else if (response.type === 'already-exists') {

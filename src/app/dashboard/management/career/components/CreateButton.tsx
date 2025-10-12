@@ -3,15 +3,15 @@
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/Button'
-import { openCreateAtom } from '@/global/management-career'
+import { openDialogAtom } from '@/global/careers.globals'
 import { useTranslations } from 'next-intl'
 
 export function CreateButton() {
-    const openCreateUser = useSetAtom(openCreateAtom)
+    const openDialog = useSetAtom(openDialogAtom)
     const t = useTranslations('career')
 
     return (
-        <Button onClick={() => openCreateUser(true)}>
+        <Button onClick={() => openDialog('CREATE')}>
             <Plus className='mr-3' />
             {t('create_career')}
         </Button>
