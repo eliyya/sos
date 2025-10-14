@@ -53,7 +53,7 @@ export async function createLaboratory({
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
-                                    field: error.input,
+                                    field: error.field,
                                 } as const
                             }
                             if (error instanceof UnauthorizedError) {
@@ -136,7 +136,7 @@ export async function editLaboratory({
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
-                                    field: error.input,
+                                    field: error.field,
                                 }
                             }
                             if (error instanceof UnauthorizedError) {

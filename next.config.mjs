@@ -4,8 +4,11 @@ import createNextIntlPlugin from 'next-intl/plugin'
 
 export default withTypeCSSModule(
     createNextIntlPlugin()(
-        withTypeRoute({
-            // extraRoutes: ['/test'],
-        }),
+        withTypeRoute(
+            {},
+            {
+                definedParams: {},
+            },
+        ),
     ),
 )

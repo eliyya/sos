@@ -91,7 +91,7 @@ export async function editRoleName(id: string, name: string) {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
-                                    field: error.input,
+                                    field: error.field,
                                 }
                             if (error instanceof NotFoundError)
                                 return {
@@ -242,7 +242,7 @@ export async function deleteRole(id: string) {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
-                                    input: error.input,
+                                    input: error.field,
                                 }
                             return {
                                 status: 'error' as const,
