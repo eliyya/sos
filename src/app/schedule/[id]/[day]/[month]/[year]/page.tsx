@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import {
     PermissionsBitField,
-    PERMISSIONS_FLAGS,
+    ADMIN_BITS,
 } from '@/bitfields/PermissionsBitField'
 import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
@@ -30,11 +30,11 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     const session = await auth.api.getSession({
         headers: await headers(),
     })
-    const permissions = new PermissionsBitField(
-        BigInt(session?.user.permissions ?? 0n),
-    )
-    // TODO: cambiar a MANAGE_LABS
-    const isAdmin = !!session && permissions.has(PERMISSIONS_FLAGS.MANAGE_LABS)
+    const isAdmin =
+        !!session &&
+        new PermissionsBitField(BigInt(session.user.permissions)).any(
+            ADMIN_BITS,
+        )
 
     let users: { id: string; name: string }[] = []
 
@@ -68,7 +68,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
 
     return (
         <div className='bg-background min-h-screen'>
-            <ScheduleHeader permissions={permissions} lab_id={id} labs={labs} />
+            <ScheduleHeader lab_id={id} labs={labs} />
             <ScheduleBody
                 user={user?.[0] ?? null}
                 lab_id={id}
