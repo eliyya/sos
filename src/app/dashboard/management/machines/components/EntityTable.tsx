@@ -8,8 +8,6 @@ import {
     MonitorOffIcon,
     Pencil,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { getMachine } from '@/actions/machines'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import {
@@ -21,29 +19,21 @@ import {
     Table,
 } from '@/components/Table'
 import {
-    editDialogAtom,
-    openArchiveAtom,
-    openDeleteAtom,
-    openUnarchiveAtom,
+    openDialogAtom,
+    selectedMachineIdAtom,
     showArchivedAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-machines'
+} from '@/global/machines.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
+import { useMachines } from '@/hooks/machines.hooks'
 
 export function EntityTable() {
-    const [entity, setEntity] = useState<Machine[]>([])
-    const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
     const { laboratories } = useLaboratories()
-
-    useEffect(() => {
-        getMachine().then(setEntity)
-    }, [update])
+    const { machines } = useMachines()
 
     return (
         <>
@@ -59,7 +49,7 @@ export function EntityTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {entity
+                    {machines
                         .filter(u =>
                             archived ?
                                 u.status === MACHINE_STATUS.MAINTENANCE
@@ -103,11 +93,8 @@ interface ButtonsProps {
     entity: Machine
 }
 function Buttons({ entity }: ButtonsProps) {
-    const openEditDialog = useSetAtom(editDialogAtom)
-    const setSubjectSelected = useSetAtom(entityToEditAtom)
-    const setArchiveDialog = useSetAtom(openArchiveAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
-    const openDeleteDialog = useSetAtom(openDeleteAtom)
+    const openDialog = useSetAtom(openDialogAtom)
+    const setSubjectSelected = useSetAtom(selectedMachineIdAtom)
     if (
         entity.status === MACHINE_STATUS.AVAILABLE ||
         entity.status === MACHINE_STATUS.IN_USE
@@ -118,8 +105,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        openEditDialog(true)
-                        setSubjectSelected(entity)
+                        openDialog('EDIT')
+                        setSubjectSelected(entity.id)
                     }}
                 >
                     <Pencil className='text-xs' />
@@ -128,8 +115,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        setArchiveDialog(true)
+                        setSubjectSelected(entity.id)
+                        openDialog('ARCHIVE')
                     }}
                 >
                     <MonitorCogIcon className='w-xs text-xs' />
@@ -143,8 +130,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        openUnarchiveDialog(true)
+                        setSubjectSelected(entity.id)
+                        openDialog('UNARCHIVE')
                     }}
                 >
                     <MonitorCheckIcon className='w-xs text-xs' />
@@ -153,8 +140,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        openDeleteDialog(true)
+                        setSubjectSelected(entity.id)
+                        openDialog('DELETE')
                     }}
                 >
                     <MonitorOffIcon className='w-xs text-xs' />

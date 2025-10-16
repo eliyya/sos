@@ -9,14 +9,7 @@ import type { auth } from './auth'
 export const authClient = createAuthClient({
     plugins: [
         usernameClient(),
-        inferAdditionalFields({
-            user: {
-                role_id: {
-                    type: 'string',
-                    input: true,
-                },
-            },
-        }),
+        inferAdditionalFields<typeof auth>(),
         customSessionClient<typeof auth>(),
     ],
 })

@@ -1,9 +1,9 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { editMachine } from '@/actions/machines'
+import { useCallback, useState, useTransition } from 'react'
+import { editMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -15,25 +15,82 @@ import {
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
-import {
-    editDialogAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-machines'
+import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
+import { MACHINE_STATUS } from '@/prisma/generated/enums'
+import { useMachines } from '@/hooks/machines.hooks'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 export function EditDialog() {
-    const [open, setOpen] = useAtom(editDialogAtom)
+    const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(entityToEditAtom)
+    const old = useAtomValue(selectedMachineAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
     const { laboratories } = useLaboratories()
+    const router = useRouter()
+    const { setMachines, refetchMachines } = useMachines()
+
+    const onAction = useCallback(
+        (formData: FormData) => {
+            if (!old) return
+            const description = formData.get('description') as string
+            const laboratory_id = formData.get('laboratory_id') as string
+            const number = Number(formData.get('number'))
+            const processor = formData.get('processor') as string
+            const ram = formData.get('ram') as string
+            const serie = formData.get('serie') as string
+            const status = formData.get('status') as MACHINE_STATUS
+            const storage = formData.get('storage') as string
+
+            startTransition(async () => {
+                const res = await editMachine({
+                    id: old.id,
+                    description,
+                    laboratory_id,
+                    number,
+                    processor,
+                    ram,
+                    serie,
+                    status,
+                    storage,
+                })
+                if (res.status === 'success') {
+                    setMachines(prev =>
+                        prev.map(machine =>
+                            machine.id === old.id ? res.machine : machine,
+                        ),
+                    )
+                    openDialog(null)
+                    return
+                } else if (res.type === 'not-found') {
+                    refetchMachines()
+                    openDialog(null)
+                } else if (res.type === 'permission') {
+                    setMessage('No tienes permiso para editar esta máquina')
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.auth.login())
+                } else if (res.type === 'invalid-input') {
+                    if (res.field === 'serie') {
+                        setMessage('La serie debe ser unico')
+                    }
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
+                }
+            })
+        },
+        [old, openDialog, router, setMachines, refetchMachines],
+    )
 
     if (!old) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={dialogOpened === 'EDIT'}
+            onOpenChange={state => openDialog(state ? 'EDIT' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Editar Máquina</DialogTitle>
@@ -42,21 +99,7 @@ export function EditDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await editMachine(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage(''), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}

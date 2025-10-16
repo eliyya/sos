@@ -2,8 +2,8 @@
 
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { createMachine } from '@/actions/machines'
+import { useCallback, useState, useTransition } from 'react'
+import { createMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -15,25 +15,78 @@ import { MessageError } from '@/components/Error'
 import { CompletInput, CompletTextarea } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import {
-    entityToEditAtom,
-    openCreateAtom,
-    openUnarchiveOrDeleteAtom,
-    updateAtom,
-} from '@/global/management-machines'
-import { map, mapError } from '@/lib/error'
+    openDialogAtom,
+    selectedMachineIdAtom,
+} from '@/global/machines.globals'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
+import { MACHINE_STATUS } from '@/prisma/generated/enums'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
+import { useMachines } from '@/hooks/machines.hooks'
 
 export function CreateSubjectDialog() {
-    const [open, setOpen] = useAtom(openCreateAtom)
+    const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const updateUsersTable = useSetAtom(updateAtom)
-    const setOpenUnarchiveOrDelete = useSetAtom(openUnarchiveOrDeleteAtom)
-    const setEntityToEdit = useSetAtom(entityToEditAtom)
+    const setEntityToEdit = useSetAtom(selectedMachineIdAtom)
     const { laboratories } = useLaboratories()
+    const router = useRouter()
+    const [serieError, setSerieError] = useState('')
+    const { setMachines } = useMachines()
+
+    const onAction = useCallback(
+        (formData: FormData) => {
+            const description = formData.get('description') as string
+            const number = Number(formData.get('number'))
+            const processor = formData.get('processor') as string
+            const ram = formData.get('ram') as string
+            const storage = formData.get('storage') as string
+            const laboratory_id = formData.get('laboratory_id') as string
+            const serie = formData.get('serie') as string
+            const status = formData.get('status') as MACHINE_STATUS
+
+            startTransition(async () => {
+                const res = await createMachine({
+                    description,
+                    number,
+                    processor,
+                    ram,
+                    status,
+                    storage,
+                    laboratory_id,
+                    serie,
+                })
+                if (res.status === 'success') {
+                    setMachines(prev => [...prev, res.machine])
+                    openDialog(null)
+                    return
+                }
+                if (res.type === 'already-archived') {
+                    setEntityToEdit(res.id)
+                    openDialog('UNARCHIVE_OR_DELETE')
+                } else if (res.type === 'permission') {
+                    setMessage(res.message)
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.auth.login())
+                } else if (res.type === 'invalid-input') {
+                    if (res.field === 'serie') {
+                        setSerieError('Esta serie ya existe')
+                    }
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
+                }
+            })
+        },
+        [openDialog, router, setEntityToEdit, setMachines],
+    )
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={dialogOpened === 'CREATE'}
+            onOpenChange={state => openDialog(state ? 'CREATE' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Crear Máquina</DialogTitle>
@@ -42,35 +95,7 @@ export function CreateSubjectDialog() {
                     Edit the user&apos;s information
                 </DialogDescription> */}
                 <form
-                    action={formData => {
-                        startTransition(async () => {
-                            const result = await createMachine(formData)
-                            map(result, () => {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            })
-                            mapError(result, error => {
-                                switch (error.message) {
-                                    case 'La maquina se encuentra fuera de servicio':
-                                        setOpen(false)
-                                        setOpenUnarchiveOrDelete(true)
-                                        setEntityToEdit(error.machine)
-                                        break
-                                    case 'La maquina ya existe':
-                                        setMessage(error.message)
-                                        break
-                                    default:
-                                        setMessage(error.message)
-                                        break
-                                }
-                            })
-
-                            setTimeout(() => setMessage(''), 5000)
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}
@@ -108,6 +133,7 @@ export function CreateSubjectDialog() {
                         type='text'
                         name='serie'
                         icon={UserIcon}
+                        error={serieError}
                     />
                     <CompletTextarea
                         label='Descripcion'

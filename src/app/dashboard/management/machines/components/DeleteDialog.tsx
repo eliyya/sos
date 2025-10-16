@@ -1,9 +1,9 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { deleteMachine } from '@/actions/machines'
+import { useCallback, useState, useTransition } from 'react'
+import { deleteMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -13,24 +13,50 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openDeleteAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-machines'
-
+import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
+import { useRouter } from 'next/navigation'
+import { useMachines } from '@/hooks/machines.hooks'
+import app from '@eliyya/type-routes'
 
 export function DeleteDialog() {
-    const [open, setOpen] = useAtom(openDeleteAtom)
+    const [openedDialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedMachineAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const router = useRouter()
+    const { setMachines, refetchMachines } = useMachines()
+
+    const onAction = useCallback(() => {
+        if (!entity) return
+        startTransition(async () => {
+            const res = await deleteMachine(entity.id)
+            if (res.status === 'success') {
+                setMachines(prev =>
+                    prev.filter(machine => machine.id !== entity.id),
+                )
+                openDialog(null)
+                return
+            }
+            if (res.type === 'not-found') {
+                refetchMachines()
+                openDialog(null)
+            } else if (res.type === 'permission') {
+                setMessage('No tienes permiso para eliminar esta máquina')
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.auth.login())
+            } else if (res.type === 'unexpected') {
+                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+            }
+        })
+    }, [entity, openDialog, router, setMachines, refetchMachines])
 
     if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={openedDialog === 'DELETE'}
+            onOpenChange={state => openDialog(state ? 'DELETE' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Dar de baja</DialogTitle>
@@ -43,21 +69,7 @@ export function DeleteDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await deleteMachine(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}
@@ -67,7 +79,7 @@ export function DeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                openDialog(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
