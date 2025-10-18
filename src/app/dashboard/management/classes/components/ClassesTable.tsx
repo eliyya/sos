@@ -4,9 +4,7 @@ import { STATUS, Class } from '@/prisma/generated/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { getCareers } from '@/actions/careers.actions'
 import { getDisponibleClassesWithData } from '@/actions/class'
-import { getSubjects } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -24,8 +22,6 @@ import {
     showArchivedAtom,
     entityToEditAtom,
     updateAtom,
-    careersAtom,
-    subjectsAtom,
 } from '@/global/management-class'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -45,13 +41,6 @@ export function ClassesTable() {
         getDisponibleClassesWithData().then(setEntity)
     }, [update])
 
-    // las carreras, materias y usuarios se usan en varios componentes
-    const setCareers = useSetAtom(careersAtom)
-    const setSubjects = useSetAtom(subjectsAtom)
-    useEffect(() => {
-        getCareers().then(setCareers)
-        getSubjects().then(setSubjects)
-    }, [setCareers, setSubjects])
     const t = useTranslations('classes')
     return (
         <>

@@ -1,6 +1,5 @@
 'use client'
 
-import { Subject } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     BookAIcon,
@@ -10,9 +9,8 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { editClass } from '@/actions/class'
-import { getSubjectsActive } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -32,6 +30,7 @@ import {
 } from '@/global/management-class'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useUsers } from '@/hooks/users.hooks'
+import { useSubjects } from '@/hooks/subjects.hooks'
 
 export function EditDialog() {
     const t = useTranslations('classes')
@@ -40,18 +39,12 @@ export function EditDialog() {
     const old = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
-    const [subjects, setSubjects] = useState<Subject[]>([])
     const { careers } = useCareers()
     const { users } = useUsers()
+    const { subjects } = useSubjects()
 
     const subject = subjects.find(s => s.id === old.subject_id)
     const career = careers.find(c => c.id === old.career_id)
-
-    useEffect(() => {
-        getSubjectsActive().then(subjects => {
-            setSubjects(subjects)
-        })
-    }, [])
 
     if (!old) return null
     if (!subject) return null

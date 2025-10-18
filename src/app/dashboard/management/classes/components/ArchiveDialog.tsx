@@ -1,11 +1,9 @@
 'use client'
 
-import { Subject } from '@/prisma/generated/browser'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban, User as UserIcon } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { archiveClass } from '@/actions/class'
-import { getSubjectsActive } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -24,6 +22,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { useUsers } from '@/hooks/users.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
+import { useSubjects } from '@/hooks/subjects.hooks'
 
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(openArchiveAtom)
@@ -31,16 +30,10 @@ export function ArchiveDialog() {
     const entity = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
     const updateUsersTable = useSetAtom(updateAtom)
-    const [subjects, setSubjects] = useState<Subject[]>([])
+    const { subjects } = useSubjects()
     const { users } = useUsers()
     const { careers } = useCareers()
     const t = useTranslations('classes')
-
-    useEffect(() => {
-        getSubjectsActive().then(subjects => {
-            setSubjects(subjects)
-        })
-    }, [])
 
     if (!entity) return null
 
