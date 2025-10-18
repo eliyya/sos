@@ -5,6 +5,7 @@ import { MiddlewareHandler } from '@/classes/MiddlewareHandler'
 import {
     PermissionsBitField,
     PERMISSIONS_FLAGS,
+    ADMIN_BITS,
 } from './bitfields/PermissionsBitField'
 import { auth } from './lib/auth'
 import { db } from '@/prisma/db'
@@ -18,7 +19,24 @@ export const config = {
 const handler = new MiddlewareHandler()
 export const middleware = (request: NextRequest) => handler.handle(request)
 
-handler.use(/^\/(dashboard\/management)?$/, async ctx => {
+handler.set('/', async ctx => {
+    console.log(ctx.request.nextUrl.pathname)
+
+    return ctx.redirect(app.schedule.null())
+})
+
+handler.use(/^\/dashboard/, async ctx => {
+    const session = await auth.api.getSession(ctx.request)
+
+    if (!session) return ctx.redirect(app.auth.login())
+    const permissions = new PermissionsBitField(
+        BigInt(session.user.permissions),
+    )
+    if (permissions.any(ADMIN_BITS)) return ctx.next()
+    return ctx.redirect(app.schedule.null())
+})
+
+handler.use(/^\/dashboard\/management(\/.*)?$/, async ctx => {
     const referer = ctx.request.headers.get('referer') || ctx.request.nextUrl
     const origin = new URL(referer)
 

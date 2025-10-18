@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@eliyya/flagged-bitfield": "1.1.1",
-        "@eliyya/type-routes": "2.5.1",
+        "@eliyya/type-routes": "2.5.2",
         "@eliyya/typed-css-modules": "1.0.0",
         "@fullcalendar/core": "6.1.19",
         "@fullcalendar/interaction": "6.1.19",
