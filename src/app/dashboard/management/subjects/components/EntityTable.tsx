@@ -3,8 +3,6 @@
 import { Subject, STATUS } from '@/prisma/generated/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { getSubjects } from '@/actions/subjects'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -15,30 +13,22 @@ import {
     Table,
 } from '@/components/Table'
 import {
-    openEditDialogAtom,
-    openArchiveAtom,
-    openDeleteAtom,
-    openUnarchiveAtom,
+    openDialogAtom,
     queryAtom,
+    selectedSubjectIdAtom,
     showArchivedAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-subjects'
+} from '@/global/subjects.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { useSubjects } from '@/hooks/subjects.hooks'
 
 export function EntityTable() {
-    const [subjects, setSubjects] = useState<Subject[]>([])
-    const update = useAtomValue(updateAtom)
     const archived = useAtomValue(showArchivedAtom)
     const q = useAtomValue(queryAtom)
-
-    useEffect(() => {
-        getSubjects().then(setSubjects)
-    }, [update])
+    const { subjects } = useSubjects()
 
     return (
         <>
@@ -106,11 +96,9 @@ interface ButtonsProps {
     subject: Subject
 }
 function Buttons({ subject }: ButtonsProps) {
-    const openEditDialog = useSetAtom(openEditDialogAtom)
-    const setSubjectSelected = useSetAtom(entityToEditAtom)
-    const setArchiveDialog = useSetAtom(openArchiveAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
-    const openDeleteDialog = useSetAtom(openDeleteAtom)
+    const openDialog = useSetAtom(openDialogAtom)
+    const select = useSetAtom(selectedSubjectIdAtom)
+
     if (subject.status === STATUS.ACTIVE)
         return (
             <>
@@ -118,8 +106,8 @@ function Buttons({ subject }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        openEditDialog(true)
-                        setSubjectSelected(subject)
+                        openDialog('EDIT')
+                        select(subject.id)
                     }}
                 >
                     <Pencil className='text-xs' />
@@ -128,8 +116,8 @@ function Buttons({ subject }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(subject)
-                        setArchiveDialog(true)
+                        select(subject.id)
+                        openDialog('ARCHIVE')
                     }}
                 >
                     <Archive className='w-xs text-xs' />
@@ -143,8 +131,8 @@ function Buttons({ subject }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(subject)
-                        openUnarchiveDialog(true)
+                        select(subject.id)
+                        openDialog('UNARCHIVE')
                     }}
                 >
                     <ArchiveRestore className='w-xs text-xs' />
@@ -153,8 +141,8 @@ function Buttons({ subject }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(subject)
-                        openDeleteDialog(true)
+                        select(subject.id)
+                        openDialog('DELETE')
                     }}
                 >
                     <Trash2 className='w-xs text-xs' />

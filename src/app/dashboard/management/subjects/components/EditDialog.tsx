@@ -1,9 +1,9 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { editSubject } from '@/actions/subjects'
+import { useCallback, useState, useTransition } from 'react'
+import { editSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -14,24 +14,70 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
-import {
-    openEditDialogAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-subjects'
-
+import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
+import { useRouter } from 'next/router'
+import { useSubjects } from '@/hooks/subjects.hooks'
+import app from '@eliyya/type-routes'
 
 export function EditDialog() {
-    const [open, setOpen] = useAtom(openEditDialogAtom)
+    const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(entityToEditAtom)
+    const old = useAtomValue(selectedSubjectAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const { setSubjects, refetchSubjects } = useSubjects()
+    const router = useRouter()
+
+    const onAction = useCallback(
+        async (formData: FormData) => {
+            if (!old) return
+            const name = formData.get('name') as string
+            const theory_hours = Number(formData.get('theory_hours'))
+            const practice_hours = Number(formData.get('practice_hours'))
+            startTransition(async () => {
+                const res = await editSubject({
+                    id: old.id,
+                    name,
+                    theory_hours,
+                    practice_hours,
+                })
+                if (res.status === 'success') {
+                    openDialog(null)
+                    setSubjects(prev =>
+                        prev.map(subject =>
+                            subject.id !== old.id ? subject : res.subject,
+                        ),
+                    )
+                    return
+                }
+                if (res.type === 'not-found') {
+                    openDialog(null)
+                    refetchSubjects()
+                } else if (res.type === 'permission') {
+                    setMessage(
+                        'No tienes permiso para archivar esta asignatura',
+                    )
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.auth.login())
+                } else if (res.type === 'unexpected') {
+                    setMessage('Ha ocurrido un error, intentalo más tarde')
+                }
+            })
+        },
+        [old, openDialog, setSubjects, refetchSubjects, router],
+    )
 
     if (!old) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={dialog === 'EDIT'}
+            onOpenChange={open => {
+                openDialog(open ? 'EDIT' : null)
+                if (!open) {
+                    setMessage('')
+                }
+            }}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Editar Asignatura</DialogTitle>
@@ -40,25 +86,10 @@ export function EditDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await editSubject(data)
-                            if (error) setMessage(error)
-                            else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
-                    <input type='hidden' value={old.id} name='id' />
+                    {message && <MessageError>{message}</MessageError>}
                     <RetornableCompletInput
                         originalValue={old.name}
                         required

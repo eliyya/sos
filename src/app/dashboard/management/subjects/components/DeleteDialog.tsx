@@ -1,9 +1,9 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { deleteSubject } from '@/actions/subjects'
+import { useCallback, useState, useTransition } from 'react'
+import { deleteSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -13,59 +13,75 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openDeleteAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-subjects'
-
+import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
+import { useRouter } from 'next/router'
+import { useSubjects } from '@/hooks/subjects.hooks'
+import app from '@eliyya/type-routes'
 
 export function DeleteDialog() {
-    const [open, setOpen] = useAtom(openDeleteAtom)
+    const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const user = useAtomValue(entityToEditAtom)
+    const subject = useAtomValue(selectedSubjectAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const { setSubjects, refetchSubjects } = useSubjects()
+    const router = useRouter()
 
-    if (!user) return null
+    const onAction = useCallback(async () => {
+        if (!subject) return
+        startTransition(async () => {
+            const res = await deleteSubject(subject.id)
+            if (res.status === 'success') {
+                openDialog(null)
+                setSubjects(prev =>
+                    prev.filter(subject => subject.id !== subject.id),
+                )
+                return
+            }
+            if (res.type === 'not-found') {
+                openDialog(null)
+                refetchSubjects()
+            } else if (res.type === 'permission') {
+                setMessage('No tienes permiso para archivar esta asignatura')
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.auth.login())
+            } else if (res.type === 'unexpected') {
+                setMessage('Ha ocurrido un error, intentalo más tarde')
+            }
+        })
+    }, [subject, openDialog, refetchSubjects, router, setSubjects])
+
+    if (!subject) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={dialog === 'DELETE'}
+            onOpenChange={open => {
+                openDialog(open ? 'DELETE' : null)
+                if (!open) {
+                    setMessage('')
+                }
+            }}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Eliminar Asignatura</DialogTitle>
                     <DialogDescription>
                         ¿Está seguro de eliminar la asignatura{' '}
-                        <strong>{user.name}</strong>?
+                        <strong>{subject.name}</strong>?
                         <strong>Esta acción es irreversible</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await deleteSubject(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     {message && <MessageError>{message}</MessageError>}
-                    <input type='hidden' value={user.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                openDialog(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />

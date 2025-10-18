@@ -1,9 +1,9 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { unarchiveSubject } from '@/actions/subjects'
+import { useCallback, useState, useTransition } from 'react'
+import { unarchiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -13,60 +13,71 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openUnarchiveAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-subjects'
-
+import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
+import { useSubjects } from '@/hooks/subjects.hooks'
+import app from '@eliyya/type-routes'
+import { useRouter } from 'next/navigation'
 
 export function UnarchiveDialog() {
-    const [open, setOpen] = useAtom(openUnarchiveAtom)
+    const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const user = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedSubjectAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const { setSubjects, refetchSubjects } = useSubjects()
+    const router = useRouter()
 
-    if (!user) return null
+    const onAction = useCallback(async () => {
+        if (!entity) return
+        startTransition(async () => {
+            const res = await unarchiveSubject(entity.id)
+            if (res.status === 'success') {
+                openDialog(null)
+                setSubjects(prev =>
+                    prev.map(subject =>
+                        subject.id !== entity.id ? subject : res.subject,
+                    ),
+                )
+                return
+            }
+            if (res.type === 'not-found') {
+                openDialog(null)
+                refetchSubjects()
+            } else if (res.type === 'permission') {
+                setMessage('No tienes permiso para archivar esta asignatura')
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.auth.login())
+            } else if (res.type === 'unexpected') {
+                setMessage('Ha ocurrido un error, intentalo más tarde')
+            }
+        })
+    }, [entity, openDialog, refetchSubjects, router, setSubjects])
+
+    if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={dialog === 'UNARCHIVE'}
+            onOpenChange={open => openDialog(open ? 'UNARCHIVE' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Desarchivar Asignatura</DialogTitle>
                     <DialogDescription>
-                        ¿Está seguro de desarchivar la asignatura {user.name}?
+                        ¿Está seguro de desarchivar la asignatura {entity.name}?
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await unarchiveSubject(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && (
-                        <MessageError>{message}</MessageError>
-                    )}
-                    <input type='hidden' value={user.id} name='id' />
+                    {message && <MessageError>{message}</MessageError>}
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             variant={'secondary'}
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                openDialog(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
