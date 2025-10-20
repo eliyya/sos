@@ -23,7 +23,6 @@ import {
     nameErrorAtom,
     passwordAtom,
     passwordErrorAtom,
-    passwordFocusAtom,
     usernameAtom,
     usernameErrorAtom,
 } from '@/global/signup'
@@ -125,9 +124,14 @@ function checkPassword(password: string) {
 
 function PasswordInput() {
     const t = useTranslations('auth')
-    const [pass, setUsername] = useAtom(passwordAtom)
+    const [password, setPassword] = useAtom(passwordAtom)
     const [error, setError] = useAtom(passwordErrorAtom)
-    const setFocus = useSetAtom(passwordFocusAtom)
+
+    const onBlur = () => {
+        if (!password) return
+        const check = checkPassword(password)
+        if (check?.error) return setError(check.error)
+    }
 
     return (
         <CompletInput
@@ -136,17 +140,12 @@ function PasswordInput() {
             type='password'
             name='password'
             placeholder='* * * * * * * * * *'
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
-            value={pass}
+            onBlur={onBlur}
+            value={password}
             error={error}
             onChange={e => {
-                const password = e.target.value
-                setUsername(e.target.value)
+                setPassword(e.target.value)
                 setError('')
-                if (!password) return
-                const check = checkPassword(password)
-                if (check?.error) return setError(check.error)
             }}
             icon={RectangleEllipsisIcon}
         />
@@ -157,18 +156,14 @@ function ConfirmPasswordInput() {
     const t = useTranslations('auth')
     const [confirmPassword, setConfirmPassword] = useAtom(confirmPasswordAtom)
     const [error, setError] = useAtom(confirmPasswordErrorAtom)
-    const focus = useAtomValue(passwordFocusAtom)
     const password = useAtomValue(passwordAtom)
 
-    useEffect(() => {
-        const handler = setTimeout(async () => {
-            if (focus) return
-            if (confirmPassword !== password)
-                setError('Las contraseñas no coinciden')
-        }, 500)
-
-        return () => clearTimeout(handler)
-    }, [confirmPassword, password, setError, focus])
+    const onBlur = () => {
+        if (!confirmPassword || !password) return
+        if (confirmPassword !== password)
+            setError('Las contraseñas no coinciden')
+        else setError('')
+    }
 
     return (
         <CompletInput
@@ -179,6 +174,7 @@ function ConfirmPasswordInput() {
             placeholder='* * * * * * * *'
             value={confirmPassword}
             error={error}
+            onBlur={onBlur}
             onChange={e => {
                 setConfirmPassword(e.target.value)
                 setError('')

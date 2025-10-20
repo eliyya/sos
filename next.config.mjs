@@ -5,7 +5,9 @@ import createNextIntlPlugin from 'next-intl/plugin'
 export default withTypeCSSModule(
     createNextIntlPlugin()(
         withTypeRoute(
-            {},
+            {
+                allowedDevOrigins: ['dev.eliyya.dev'],
+            },
             {
                 definedParams: {},
             },

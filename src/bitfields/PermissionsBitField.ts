@@ -1,4 +1,4 @@
-import { brandFlags, KeysBrand } from '@/lib/types'
+import { brandFlags, type KeysBrand } from '../lib/type-utils.ts'
 import { FlaggedBitfield } from '@eliyya/flagged-bitfield'
 
 export const PERMISSIONS_FLAGS = brandFlags({
