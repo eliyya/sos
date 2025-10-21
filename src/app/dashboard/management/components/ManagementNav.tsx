@@ -59,7 +59,7 @@ const links: {
     },
     {
         title: 'Carreras',
-        href: mLinks.career(),
+        href: mLinks.careers(),
         icon: SquareUserRoundIcon,
         permission: PERMISSIONS_FLAGS.MANAGE_CAREERS,
     },
@@ -80,6 +80,12 @@ const links: {
         href: mLinks.machines(),
         icon: ComputerIcon,
         permission: PERMISSIONS_FLAGS.MANAGE_MACHINES,
+    },
+    {
+        title: 'Software',
+        href: mLinks.software(),
+        icon: ComputerIcon,
+        permission: PERMISSIONS_FLAGS.MANAGE_SOFTWARE,
     },
 ]
 

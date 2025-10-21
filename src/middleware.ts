@@ -6,6 +6,7 @@ import {
     PermissionsBitField,
     PERMISSIONS_FLAGS,
     ADMIN_BITS,
+    MANAGED_BITS,
 } from './bitfields/PermissionsBitField'
 import { auth } from './lib/auth'
 import { db } from '@/prisma/db'
@@ -20,8 +21,6 @@ const handler = new MiddlewareHandler()
 export const middleware = (request: NextRequest) => handler.handle(request)
 
 handler.set('/', async ctx => {
-    console.log(ctx.request.nextUrl.pathname)
-
     return ctx.redirect(app.schedule.null())
 })
 
@@ -34,15 +33,6 @@ handler.use(/^\/dashboard/, async ctx => {
     )
     if (permissions.any(ADMIN_BITS)) return ctx.next()
     return ctx.redirect(app.schedule.null())
-})
-
-handler.use(/^\/dashboard\/management(\/.*)?$/, async ctx => {
-    const referer = ctx.request.headers.get('referer') || ctx.request.nextUrl
-    const origin = new URL(referer)
-
-    if (origin.pathname.startsWith('/dashboard/management'))
-        return ctx.redirect(origin)
-    return ctx.redirect(app.dashboard.management.laboratories())
 })
 
 handler.set(/^\/(schedule.*)?$/, async ctx => {
@@ -126,15 +116,19 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
     )
 })
 
-const managementRoutes = {
+const managementRoutes: Record<
+    keyof typeof app.dashboard.management,
+    typeof MANAGED_BITS
+> = {
     careers: PERMISSIONS_FLAGS.MANAGE_CAREERS,
     classes: PERMISSIONS_FLAGS.MANAGE_CLASSES,
-    labs: PERMISSIONS_FLAGS.MANAGE_LABS,
+    laboratories: PERMISSIONS_FLAGS.MANAGE_LABS,
     machines: PERMISSIONS_FLAGS.MANAGE_MACHINES,
     roles: PERMISSIONS_FLAGS.MANAGE_ROLES,
     students: PERMISSIONS_FLAGS.MANAGE_STUDENTS,
     subjects: PERMISSIONS_FLAGS.MANAGE_SUBJECTS,
     users: PERMISSIONS_FLAGS.MANAGE_USERS,
+    software: PERMISSIONS_FLAGS.MANAGE_SOFTWARE,
 }
 type RouteKey = keyof typeof managementRoutes
 
