@@ -6,8 +6,10 @@ export default withTypeCSSModule(
     createNextIntlPlugin()(
         withTypeRoute(
             {
-                allowedDevOrigins: ['dev.eliyya.dev'],
                 // la configuracion de nextjs
+                allowedDevOrigins: ['dev.eliyya.dev'],
+                cacheComponents: true,
+                reactCompiler: true,
                 webpack: config => {
                     config.ignoreWarnings = [
                         {

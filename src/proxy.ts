@@ -12,13 +12,12 @@ import { auth } from './lib/auth'
 import { db } from '@/prisma/db'
 
 export const config = {
-    runtime: 'nodejs',
     matcher:
-        '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)'
 }
 
 const handler = new MiddlewareHandler()
-export const middleware = (request: NextRequest) => handler.handle(request)
+export const proxy = (request: NextRequest) => handler.handle(request)
 
 handler.set('/', async ctx => {
     return ctx.redirect(app.schedule.null())

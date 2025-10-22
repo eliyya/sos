@@ -1,8 +1,11 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { NextResponse } from 'next/server'
 import { db } from '@/prisma/db'
+import * as Sentry from '@sentry/nextjs'
 
-export async function POST(req: Request) {
+export const POST = Sentry.wrapApiHandlerWithSentry(async function POST(
+    req: Request,
+) {
     const body = await req.formData()
     const from = body.get('from') as string
     const to = body.get('to') as string
@@ -56,4 +59,4 @@ export async function POST(req: Request) {
             'Content-Disposition': `attachment; filename="visits-from-${from}-to-${to}.json"`,
         },
     })
-}
+}, 'GET /api/export/visits')
