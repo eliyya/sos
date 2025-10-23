@@ -170,7 +170,8 @@ export function Calendar({ lab, isAdmin, canSeeInfo }: CalendarProps) {
                         if (!selectedWeek.equals(currentWeek)) {
                             // Navigate to the current week's view
                             push(
-                                app.schedule.$id.$day.$month.$year(
+                                app.$locale.schedule.$id.$day.$month.$year(
+                                    'es',
                                     lab.id,
                                     currentWeek.day,
                                     currentWeek.month,
@@ -192,7 +193,8 @@ export function Calendar({ lab, isAdmin, canSeeInfo }: CalendarProps) {
                         })
 
                         return push(
-                            app.schedule.$id.$day.$month.$year(
+                            app.$locale.schedule.$id.$day.$month.$year(
+                                'es',
                                 lab.id,
                                 nextWeek.day,
                                 nextWeek.month,
@@ -212,7 +214,8 @@ export function Calendar({ lab, isAdmin, canSeeInfo }: CalendarProps) {
                             days: 7,
                         })
                         return push(
-                            app.schedule.$id.$day.$month.$year(
+                            app.$locale.schedule.$id.$day.$month.$year(
+                                'es',
                                 lab.id,
                                 prevWeek.day,
                                 prevWeek.month,

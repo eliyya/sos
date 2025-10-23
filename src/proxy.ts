@@ -10,17 +10,18 @@ import {
 } from './bitfields/PermissionsBitField'
 import { auth } from './lib/auth'
 import { db } from '@/prisma/db'
+import { Temporal } from '@js-temporal/polyfill'
 
 export const config = {
     matcher:
-        '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)'
+        '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
 }
 
 const handler = new MiddlewareHandler()
 export const proxy = (request: NextRequest) => handler.handle(request)
 
 handler.set('/', async ctx => {
-    return ctx.redirect(app.schedule.null())
+    return ctx.redirect(app.$locale.schedule.null('es'))
 })
 
 handler.use(/^\/dashboard/, async ctx => {
@@ -31,31 +32,48 @@ handler.use(/^\/dashboard/, async ctx => {
         BigInt(session.user.permissions),
     )
     if (permissions.any(ADMIN_BITS)) return ctx.next()
-    return ctx.redirect(app.schedule.null())
+    return ctx.redirect(app.$locale.schedule.null('es'))
+})
+
+handler.set('/schedule/null', async ctx => {
+    const lab = await db.laboratory.findFirst({
+        select: { id: true },
+        where: { type: LABORATORY_TYPE.LABORATORY },
+    })
+    if (!lab) return ctx.next()
+
+    const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+    return ctx.redirect(
+        app.$locale.schedule.$id.$day.$month.$year(
+            'es',
+            lab.id,
+            now.day,
+            now.month,
+            now.year,
+        ),
+    )
 })
 
 handler.set(/^\/(schedule.*)?$/, async ctx => {
-    const actual_date = new Date()
-    const now = {
-        day: actual_date.getDate(),
-        month: actual_date.getMonth() + 1,
-        year: actual_date.getFullYear(),
-    }
     const [, , lab_id, day, month, year] =
         ctx.request.nextUrl.pathname.split('/')
-    if (lab_id === 'null') return ctx.next()
+
+    const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+
     let l_id = lab_id
     if (!l_id) {
-        const did = await db.laboratory.findFirst({
+        const lab = await db.laboratory.findFirst({
             select: { id: true },
             where: { type: LABORATORY_TYPE.LABORATORY },
         })
-        if (!did?.id) return ctx.redirect(app.schedule.null())
-        l_id = did.id
+        if (!lab) return ctx.redirect(app.$locale.schedule.null('es'))
+        l_id = lab.id
     }
+
     if (!lab_id || !day || !month || !year)
         return ctx.redirect(
-            app.schedule.$id.$day.$month.$year(
+            app.$locale.schedule.$id.$day.$month.$year(
+                'es',
                 l_id,
                 day ?? now.day,
                 month ?? now.month,
@@ -80,12 +98,12 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
     let m = month
     let y = year
     if (!y) {
-        const actual_date = new Date()
-        y = String(actual_date.getFullYear())
+        const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+        y = String(now.year)
     }
     if (!m) {
-        const actual_date = new Date()
-        m = String(actual_date.getMonth() + 1)
+        const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+        m = String(now.month)
     }
     const l_id = lab_id
     if (l_id) return ctx.next()
@@ -110,7 +128,7 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
         )
     return ctx.redirect(
         l_type === 'lab' ?
-            app.schedule.null()
+            app.$locale.schedule.null('es')
         :   app.dashboard.reports.cc.null(),
     )
 })
@@ -145,5 +163,5 @@ handler.set(/^\/dashboard\/management.*$/, async ctx => {
     if (!permissionNeeded) return ctx.next()
     if (permissions.has(permissionNeeded)) return ctx.next()
 
-    return ctx.redirect(app.schedule.null())
+    return ctx.redirect(app.$locale.schedule.null('es'))
 })

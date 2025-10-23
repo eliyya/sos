@@ -8,7 +8,7 @@ export default withTypeCSSModule(
             {
                 // la configuracion de nextjs
                 allowedDevOrigins: ['dev.eliyya.dev'],
-                cacheComponents: true,
+                // cacheComponents: true,
                 reactCompiler: true,
                 webpack: config => {
                     config.ignoreWarnings = [
@@ -21,7 +21,9 @@ export default withTypeCSSModule(
                 },
             },
             {
-                definedParams: {},
+                definedParams: {
+                    locale: ['es'],
+                },
             },
         ),
     ),

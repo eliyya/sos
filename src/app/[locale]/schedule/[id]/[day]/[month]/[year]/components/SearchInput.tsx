@@ -30,7 +30,15 @@ export function SearchInput() {
                 const dateString = data.get('search')
                 if (!dateString || typeof dateString !== 'string') return
                 const [y, m, d] = dateString.split('-')
-                router.push(app.schedule.$id.$day.$month.$year(id, d, m, y))
+                router.push(
+                    app.$locale.schedule.$id.$day.$month.$year(
+                        'es',
+                        id,
+                        d,
+                        m,
+                        y,
+                    ),
+                )
             }}
         >
             <label htmlFor='search' className='text-nowrap'>

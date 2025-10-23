@@ -25,7 +25,8 @@ export function SelectLaboratory({ labs, lab_id }: SelectLaboratoryProps) {
             }))}
             onChange={value => {
                 push(
-                    app.schedule.$id.$day.$month.$year(
+                    app.$locale.schedule.$id.$day.$month.$year(
+                        'es',
                         value?.value ?? '',
                         day,
                         month,
