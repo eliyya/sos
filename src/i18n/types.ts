@@ -89,5 +89,16 @@ export type BaseMessage = {
         "unarchived_or_delete_description": "La clase {subject_name} - {career} {group}-{semester} de {teacher} está archivada. ¿Qué desea hacer con ella?",
         "classes": "Clases",
         "classes_management": "Gestión de Clases."
+    },
+    "schedule": {
+        "welcome": "Bienvenido a {APP_NAME}",
+        "first_steps": "Para que la plataforma funcione correctamente, debes registrar al menos un administrador",
+        "first_steps_button": "Registrar el Primer Administrador",
+        "login_or_contact_admin": "Inicia sesion o contacta a un administrador",
+        "login": "Iniciar sesion",
+        "register_new_lab": "Registrar nuevo laboratorio",
+        "contact_admin": "Por favor contacta con un administrador",
+        "no_labs": "No existen laboratorios aun",
+        "loading": "Cargando..."
     }
 }
