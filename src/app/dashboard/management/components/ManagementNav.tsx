@@ -16,7 +16,7 @@ import { ManagementNavLink } from './ManagementNavLink'
 import {
     PermissionsBitField,
     PERMISSIONS_FLAGS,
-    PermissionsFlags,
+    ManagedFlags,
 } from '@/bitfields/PermissionsBitField'
 import { authClient } from '@/lib/auth-client'
 
@@ -28,10 +28,19 @@ type MLinks = {
     :   never
 }
 const links: {
-    title: string
+    title:
+        | 'Laboratorios'
+        | 'Usuarios'
+        | 'Roles'
+        | 'Materias'
+        | 'Carreras'
+        | 'Clases'
+        | 'Estudiantes'
+        | 'Maquinas'
+        | 'Software'
     href: ReturnType<MLinks[keyof MLinks]>
     icon: LucideIcon
-    permission: PermissionsFlags
+    permission: ManagedFlags
 }[] = [
     {
         title: 'Laboratorios',
@@ -87,7 +96,7 @@ const links: {
         icon: ComputerIcon,
         permission: PERMISSIONS_FLAGS.MANAGE_SOFTWARE,
     },
-]
+] as const
 
 export function ManagementNav() {
     const { data: session } = authClient.useSession()
