@@ -24,15 +24,10 @@ handler.set('/', async ctx => {
     return ctx.redirect(app.$locale.schedule.null('es'))
 })
 
-handler.use(/^\/dashboard/, async ctx => {
-    const session = await auth.api.getSession(ctx.request)
-
-    if (!session) return ctx.redirect(app.auth.login())
-    const permissions = new PermissionsBitField(
-        BigInt(session.user.permissions),
-    )
-    if (permissions.any(ADMIN_BITS)) return ctx.next()
-    return ctx.redirect(app.$locale.schedule.null('es'))
+handler.set('/auth/login', async ctx => {
+    const usersCount = await db.user.count()
+    if (usersCount == 0) return ctx.redirect(app.auth.signup())
+    return ctx.next()
 })
 
 handler.set('/schedule/null', async ctx => {
@@ -81,6 +76,17 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
             ),
         )
     return ctx.done()
+})
+
+handler.use(/^\/dashboard/, async ctx => {
+    const session = await auth.api.getSession(ctx.request)
+
+    if (!session) return ctx.redirect(app.auth.login())
+    const permissions = new PermissionsBitField(
+        BigInt(session.user.permissions),
+    )
+    if (permissions.any(ADMIN_BITS)) return ctx.next()
+    return ctx.redirect(app.$locale.schedule.null('es'))
 })
 
 handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {

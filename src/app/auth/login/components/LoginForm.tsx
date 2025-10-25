@@ -5,14 +5,17 @@ import { useAtom, useSetAtom } from 'jotai'
 import { AtSignIcon, LogIn, RectangleEllipsisIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useState, useTransition } from 'react'
+import { ReactNode, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { usernameAtom, passwordAtom } from '@/global/login'
 import { authClient } from '@/lib/auth-client'
 import { CompletInput } from '@/components/Inputs'
 
-export function LoginForm() {
+type Props = {
+    children?: ReactNode
+}
+export function LoginForm({ children }: Props) {
     const t = useTranslations('auth')
 
     const [error, setError] = useState('')
@@ -54,6 +57,7 @@ export function LoginForm() {
             <p className='text-sm text-gray-600 dark:text-gray-400'>
                 {t('welcome_message')}
             </p>
+            {children}
 
             {error && <MessageError>{error}</MessageError>}
 
