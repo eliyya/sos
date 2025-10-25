@@ -5,5 +5,7 @@ import { auth } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
     await auth.api.signOut({ headers: await headers() })
-    return NextResponse.redirect(new URL(app.auth.login(), request.nextUrl))
+    return NextResponse.redirect(
+        new URL(app.$locale.auth.login('es'), request.nextUrl),
+    )
 }

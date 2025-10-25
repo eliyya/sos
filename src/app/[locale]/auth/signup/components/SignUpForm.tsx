@@ -92,7 +92,7 @@ export function SignUpForm() {
                 type='submit'
                 disabled={pending}
                 className={cn(
-                    'w-full rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 py-3 font-semibold text-white',
+                    'w-full rounded-lg bg-linear-to-r from-yellow-500 to-yellow-600 py-3 font-semibold text-white',
                     'hover:from-yellow-600 hover:to-yellow-700 focus:ring-4 focus:ring-yellow-400',
                 )}
             >
