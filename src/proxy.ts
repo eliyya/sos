@@ -26,7 +26,7 @@ handler.set('/', async ctx => {
 
 handler.set('/auth/login', async ctx => {
     const usersCount = await db.user.count()
-    if (usersCount == 0) return ctx.redirect(app.auth.signup())
+    if (usersCount == 0) return ctx.redirect(app.$locale.auth.signup('es'))
     return ctx.next()
 })
 
@@ -81,7 +81,7 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
 handler.use(/^\/dashboard/, async ctx => {
     const session = await auth.api.getSession(ctx.request)
 
-    if (!session) return ctx.redirect(app.auth.login())
+    if (!session) return ctx.redirect(app.$locale.auth.login('es'))
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),
     )
@@ -125,22 +125,28 @@ handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
     if (did?.id)
         return ctx.redirect(
             l_type === 'lab' ?
-                app.dashboard.reports.lab.$lab_id.$month.$year(
+                app.$locale.dashboard.reports.lab.$lab_id.$month.$year(
+                    'es',
                     `${did.id}`,
                     m,
                     y,
                 )
-            :   app.dashboard.reports.cc.$cc_id.$month.$year(`${did.id}`, m, y),
+            :   app.$locale.dashboard.reports.cc.$cc_id.$month.$year(
+                    'es',
+                    `${did.id}`,
+                    m,
+                    y,
+                ),
         )
     return ctx.redirect(
         l_type === 'lab' ?
             app.$locale.schedule.null('es')
-        :   app.dashboard.reports.cc.null(),
+        :   app.$locale.dashboard.reports.cc.null('es'),
     )
 })
 
 const managementRoutes: Record<
-    keyof typeof app.dashboard.management,
+    keyof typeof app.$locale.dashboard.management,
     typeof MANAGED_BITS
 > = {
     careers: PERMISSIONS_FLAGS.MANAGE_CAREERS,
@@ -158,7 +164,7 @@ type RouteKey = keyof typeof managementRoutes
 handler.set(/^\/dashboard\/management.*$/, async ctx => {
     const session = await auth.api.getSession(ctx.request)
 
-    if (!session) return ctx.redirect(app.auth.login())
+    if (!session) return ctx.redirect(app.$locale.auth.login('es'))
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),
     )

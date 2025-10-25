@@ -29,7 +29,7 @@ function AdminButtons() {
 }
 
 function GuestButtons() {
-    return <ButtonLink href={app.auth.login()}>Login</ButtonLink>
+    return <ButtonLink href={app.$locale.auth.login('es')}>Login</ButtonLink>
 }
 
 function Buttons() {

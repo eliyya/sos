@@ -48,7 +48,7 @@ async function GetContent({}: GetContentProps) {
                     {t('welcome', { APP_NAME })}
                 </h2>
                 <p className='mb-8 text-lg'>{t('first_steps')}</p>
-                <ButtonLink href={app.auth.signup()}>
+                <ButtonLink href={app.$locale.auth.signup('es')}>
                     <UserIcon className='mr-2 h-4 w-4' />
                     {t('first_steps_button')}
                 </ButtonLink>
@@ -59,7 +59,7 @@ async function GetContent({}: GetContentProps) {
         return (
             <>
                 <p className='mb-8 text-lg'>{t('login_or_contact_admin')}</p>
-                <ButtonLink href={app.dashboard.management.laboratories()}>
+                <ButtonLink href={app.$locale.dashboard.management.laboratories('es')}>
                     <UserIcon className='mr-2 h-4 w-4' />
                     {t('login')}
                 </ButtonLink>
@@ -70,7 +70,7 @@ async function GetContent({}: GetContentProps) {
         return <p>{t('contact_admin')}</p>
     // es admin
     return (
-        <ButtonLink href={app.dashboard.management.laboratories()}>
+        <ButtonLink href={app.$locale.dashboard.management.laboratories('es')}>
             <PlusIcon className='mr-2 h-4 w-4' />
             {t('register_new_lab')}
         </ButtonLink>

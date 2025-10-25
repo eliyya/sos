@@ -3,5 +3,5 @@ import { atomWithStorage } from 'jotai/utils'
 
 export const managementRouteSelected = atomWithStorage<string>(
     'managementRouteSelected',
-    app.dashboard.management.laboratories(),
+    app.$locale.dashboard.management.laboratories('es'),
 )

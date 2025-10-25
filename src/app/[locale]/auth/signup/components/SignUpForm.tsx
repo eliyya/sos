@@ -67,7 +67,7 @@ export function SignUpForm() {
                         username,
                         role_id: adminRole.id,
                     })
-                    if (!error) return push(app.dashboard())
+                    if (!error) return push(app.$locale.dashboard('es'))
                     setError('Algo salió mal')
                     console.log(error)
                 })

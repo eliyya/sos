@@ -39,7 +39,7 @@ export function LoginForm({ children }: Props) {
                     if (!error) {
                         setUsername('')
                         setPassword('')
-                        replace(app.dashboard())
+                        replace(app.$locale.dashboard('es'))
                         return
                     }
                     console.log(error)
