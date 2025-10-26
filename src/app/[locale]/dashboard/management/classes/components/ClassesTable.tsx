@@ -3,8 +3,6 @@
 import { STATUS, Class } from '@/prisma/generated/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { getDisponibleClassesWithData } from '@/actions/class'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -15,31 +13,27 @@ import {
     Table,
 } from '@/components/Table'
 import {
-    editDialogAtom,
-    openArchiveAtom,
-    openDeleteAtom,
-    openUnarchiveAtom,
+    openDialogAtom,
     showArchivedAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-class'
+    selectedClassIdAtom,
+} from '@/global/classes.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useTranslations } from 'next-intl'
+import { useClasses } from '@/hooks/classes.hooks'
+import { useUsers } from '@/hooks/users.hooks'
+import { useSubjects } from '@/hooks/subjects.hooks'
+import { useCareers } from '@/hooks/careers.hooks'
 
 export function ClassesTable() {
-    const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getDisponibleClassesWithData>>
-    >([])
     const archived = useAtomValue(showArchivedAtom)
-
-    const update = useAtomValue(updateAtom)
-    useEffect(() => {
-        getDisponibleClassesWithData().then(setEntity)
-    }, [update])
+    const { classes } = useClasses()
+    const { users } = useUsers()
+    const { subjects } = useSubjects()
+    const { careers } = useCareers()
 
     const t = useTranslations('classes')
     return (
@@ -54,7 +48,8 @@ export function ClassesTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {entity
+                    {classes
+                        // TODO: implement search
                         .filter(
                             u =>
                                 (u.status === STATUS.ACTIVE && !archived) ||
@@ -62,10 +57,27 @@ export function ClassesTable() {
                         )
                         .map(entity => (
                             <TableRow key={entity.id}>
-                                <TableCell>{entity.subject.name}</TableCell>
-                                <TableCell>{entity.teacher.name}</TableCell>
                                 <TableCell>
-                                    {entity.career.alias || entity.career.name}
+                                    {
+                                        subjects.find(
+                                            s => s.id === entity.subject_id,
+                                        )?.name
+                                    }
+                                </TableCell>
+                                <TableCell>
+                                    {
+                                        users.find(
+                                            u => u.id === entity.teacher_id,
+                                        )?.name
+                                    }
+                                </TableCell>
+                                <TableCell>
+                                    {careers.find(
+                                        c => c.id === entity.career_id,
+                                    )?.alias ||
+                                        careers.find(
+                                            c => c.id === entity.career_id,
+                                        )?.name}
                                     {entity.group}-{entity.semester}
                                 </TableCell>
                                 <TableCell className='flex gap-1'>
@@ -88,11 +100,8 @@ interface ButtonsProps {
     entity: Class
 }
 function Buttons({ entity }: ButtonsProps) {
-    const openEditDialog = useSetAtom(editDialogAtom)
-    const setSubjectSelected = useSetAtom(entityToEditAtom)
-    const setArchiveDialog = useSetAtom(openArchiveAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
-    const openDeleteDialog = useSetAtom(openDeleteAtom)
+    const openDialog = useSetAtom(openDialogAtom)
+    const selectClass = useSetAtom(selectedClassIdAtom)
     if (entity.status === STATUS.ACTIVE)
         return (
             <>
@@ -100,8 +109,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        openEditDialog(true)
-                        setSubjectSelected(entity)
+                        openDialog('EDIT')
+                        selectClass(entity.id)
                     }}
                 >
                     <Pencil className='text-xs' />
@@ -110,8 +119,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        setArchiveDialog(true)
+                        selectClass(entity.id)
+                        openDialog('ARCHIVE')
                     }}
                 >
                     <Archive className='w-xs text-xs' />
@@ -125,8 +134,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        openUnarchiveDialog(true)
+                        selectClass(entity.id)
+                        openDialog('UNARCHIVE')
                     }}
                 >
                     <ArchiveRestore className='w-xs text-xs' />
@@ -135,8 +144,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        openDeleteDialog(true)
+                        selectClass(entity.id)
+                        openDialog('DELETE')
                     }}
                 >
                     <Trash2 className='w-xs text-xs' />

@@ -128,8 +128,8 @@ model Class {
     subject_id String
     teacher_id String
     career_id  String
-    group      Int      @default(0)
-    semester   Int      @default(0)
+    group      Int      @default(1)
+    semester   Int      @default(1)
     status     STATUS   @default(ACTIVE)
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt

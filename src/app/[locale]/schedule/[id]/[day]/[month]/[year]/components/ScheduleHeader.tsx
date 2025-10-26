@@ -37,7 +37,6 @@ function Buttons() {
     const permissions = new PermissionsBitField(
         BigInt(session?.data?.user.permissions ?? 0n),
     )
-    // TODO: agregar GENERATE_REPORTS
     if (permissions.any(ADMIN_BITS)) return <AdminButtons />
     return <GuestButtons />
 }

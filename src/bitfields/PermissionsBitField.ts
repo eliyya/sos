@@ -14,23 +14,23 @@ export const PERMISSIONS_FLAGS = brandFlags({
     SESSION_CC: 1n << 4n, // TODO: implementar
 
     /** Crear/editar/eliminar laboratorios */
-    MANAGE_LABS: 1n << 8n, // TODO: implementar
+    MANAGE_LABS: 1n << 8n,
     /** Crear/editar/eliminar usuarios */
     MANAGE_USERS: 1n << 9n,
     /** Crear/editar/eliminar roles */
     MANAGE_ROLES: 1n << 10n,
     /** Crear/editar/eliminar materias */
-    MANAGE_SUBJECTS: 1n << 11n, // TODO: implementar
+    MANAGE_SUBJECTS: 1n << 11n,
     /** Crear/editar/eliminar carreras */
-    MANAGE_CAREERS: 1n << 12n, // TODO: implementar
+    MANAGE_CAREERS: 1n << 12n,
     /** Crear/editar/eliminar clases */
-    MANAGE_CLASSES: 1n << 13n, // TODO: implementar
+    MANAGE_CLASSES: 1n << 13n,
     /** Crear/editar/eliminar estudiantes */
-    MANAGE_STUDENTS: 1n << 14n, // TODO: implementar
+    MANAGE_STUDENTS: 1n << 14n,
     /** Crear/editar/eliminar maquinas */
-    MANAGE_MACHINES: 1n << 15n, // TODO: implementar
+    MANAGE_MACHINES: 1n << 15n,
     /** Crear/editar/eliminar software */
-    MANAGE_SOFTWARE: 1n << 16n, // TODO: implementar
+    MANAGE_SOFTWARE: 1n << 16n,
 
     /** Generar reportes */
     GENERATE_REPORTS: 1n << 32n, // TODO: implementar

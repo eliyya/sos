@@ -2,8 +2,8 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
-import { Activity, useState, useTransition } from 'react'
-import { unarchiveClass } from '@/actions/class'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import { unarchiveClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -13,68 +13,103 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    entityToEditAtom,
-    updateAtom,
-    openUnarchiveOrDeleteAtom,
-    openDeleteAtom,
-    careersAtom,
-    subjectsAtom,
-} from '@/global/management-class'
+import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
 import { useUsers } from '@/hooks/users.hooks'
 import { useTranslations } from 'next-intl'
+import { useCareers } from '@/hooks/careers.hooks'
+import { useSubjects } from '@/hooks/subjects.hooks'
+import { useRouter } from 'next/navigation'
+import { STATUS } from '@/prisma/generated/enums'
+import { useClasses } from '@/hooks/classes.hooks'
+import app from '@eliyya/type-routes'
 
 export function UnarchiveOrDeleteDialog() {
-    const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
+    const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
-    const setOpenDelete = useSetAtom(openDeleteAtom)
-    const careers = useAtomValue(careersAtom)
-    const subjects = useAtomValue(subjectsAtom)
-    const { users } = useUsers()
     const t = useTranslations('classes')
-    const career = careers.find(c => c.id === entity.career_id)
-    const subject = subjects.find(s => s.id === entity.subject_id)
-    const teacher = users.find(t => t.id === entity.teacher_id)
+    const { users } = useUsers()
+    const { careers } = useCareers()
+    const { subjects } = useSubjects()
+    const { refetchClasses, setClasses } = useClasses()
+    const router = useRouter()
+
+    const subject = useMemo(() => {
+        if (!entity) return ''
+        const subject = subjects.find(s => s.id === entity.subject_id)
+        if (!subject) return 'Deleted Subject'
+        if (subject.status === STATUS.ARCHIVED)
+            return `(Archived) ${subject.name}`
+        return subject.name
+    }, [entity, subjects])
+
+    const career = useMemo(() => {
+        if (!entity) return ''
+        const career = careers.find(c => c.id === entity.career_id)
+        if (!career) return 'Deleted Career'
+        if (career.status === STATUS.ARCHIVED)
+            return `(Archived) ${career.alias}`
+        return career.alias
+    }, [entity, careers])
+
+    const teacher = useMemo(() => {
+        if (!entity) return ''
+        const teacher = users.find(u => u.id === entity.teacher_id)
+        if (!teacher) return 'Deleted Teacher'
+        if (teacher.status === STATUS.ARCHIVED)
+            return `(Archived) ${teacher.name}`
+        return teacher.name
+    }, [entity, users])
+
+    const onAction = useCallback(() => {
+        if (!entity) return
+        startTransition(async () => {
+            const res = await unarchiveClass(entity.id)
+            if (res.status === 'success') {
+                setOpen(null)
+                setClasses(prev =>
+                    prev.map(c => (c.id === entity.id ? res.class : c)),
+                )
+                return
+            }
+            if (res.type === 'not-found') {
+                refetchClasses()
+                setOpen(null)
+            } else if (res.type === 'permission') {
+                setMessage(res.message)
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (res.type === 'unexpected') {
+                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+            }
+        })
+    }, [entity, setOpen, router])
 
     if (!entity) return null
-    if (!subject) return null
-    if (!career) return null
-    if (!teacher) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'UNARCHIVE_OR_DELETE'}
+            onOpenChange={status =>
+                setOpen(status ? 'UNARCHIVE_OR_DELETE' : null)
+            }
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{t('archived_class')}</DialogTitle>
                     <DialogDescription>
                         {t('unarchived_or_delete_description', {
-                            subject_name: subject.name,
-                            career: career.alias ?? career.name,
+                            subject_name: subject,
+                            career: career,
                             group: entity.group + '',
                             semester: entity.semester + '',
-                            teacher: teacher?.name,
+                            teacher: teacher,
                         })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await unarchiveClass(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     <Activity mode={message ? 'visible' : 'hidden'}>
@@ -88,7 +123,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                setOpen(null)
                             }}
                         >
                             <BanIcon className='mr-2 h-5 w-5' />
@@ -108,8 +143,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
-                                setOpenDelete(true)
+                                setOpen('DELETE')
                             }}
                         >
                             <TrashIcon className='mr-2 h-5 w-5' />

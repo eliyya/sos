@@ -9,8 +9,8 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useState, useTransition } from 'react'
-import { editClass } from '@/actions/class'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import { editClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -23,113 +23,166 @@ import { MessageError } from '@/components/Error'
 import { useTranslations } from 'next-intl'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
-import {
-    editDialogAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-class'
+import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useUsers } from '@/hooks/users.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
+import { useClasses } from '@/hooks/classes.hooks'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function EditDialog() {
     const t = useTranslations('classes')
-    const [open, setOpen] = useAtom(editDialogAtom)
+    const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(entityToEditAtom)
+    const old = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
-    const { careers } = useCareers()
-    const { users } = useUsers()
-    const { subjects } = useSubjects()
+    const { careers, activeCareers } = useCareers()
+    const { users, activeUsers } = useUsers()
+    const { subjects, activeSubjects } = useSubjects()
+    const { refetchClasses, setClasses } = useClasses()
+    const router = useRouter()
 
-    const subject = subjects.find(s => s.id === old.subject_id)
-    const career = careers.find(c => c.id === old.career_id)
+    const teachersOptions = useMemo(() => {
+        return activeUsers.map(u => ({
+            label: u.name,
+            value: u.id,
+        }))
+    }, [activeUsers])
+
+    const subjectsOptions = useMemo(() => {
+        return activeSubjects.map(s => ({
+            label: s.name,
+            value: s.id,
+        }))
+    }, [activeSubjects])
+
+    const careersOptions = useMemo(() => {
+        return activeCareers.map(c => ({
+            label: c.name,
+            value: c.id,
+        }))
+    }, [activeCareers])
+
+    const originalCareer = useMemo(() => {
+        if (!old) return null
+        const career = careers.find(c => c.id === old.career_id)
+        if (!career) return { label: 'Deleted Career', value: old.career_id }
+        if (career.status === STATUS.ARCHIVED)
+            return { label: `(Archived) ${career.alias}`, value: career.id }
+        return { label: career.alias, value: career.id }
+    }, [old, careers])
+
+    const originalSubject = useMemo(() => {
+        if (!old) return null
+        const subject = subjects.find(s => s.id === old.subject_id)
+        if (!subject) return { label: 'Deleted Subject', value: old.subject_id }
+        if (subject.status === STATUS.ARCHIVED)
+            return { label: `(Archived) ${subject.name}`, value: subject.id }
+        return { label: subject.name, value: subject.id }
+    }, [old, subjects])
+
+    const originalTeacher = useMemo(() => {
+        if (!old) return null
+        const teacher = users.find(u => u.id === old.teacher_id)
+        if (!teacher) return { label: 'Deleted Teacher', value: old.teacher_id }
+        if (teacher.status === STATUS.ARCHIVED)
+            return { label: `(Archived) ${teacher.name}`, value: teacher.id }
+        return { label: teacher.name, value: teacher.id }
+    }, [old, users])
+
+    const onAction = useCallback(
+        (formData: FormData) => {
+            if (!old) return
+            const career_id = formData.get('career_id') as string
+            const group = Number(formData.get('group'))
+            const semester = Number(formData.get('semester'))
+            const subject_id = formData.get('subject_id') as string
+            const teacher_id = formData.get('teacher_id') as string
+
+            startTransition(async () => {
+                const res = await editClass({
+                    career_id,
+                    group,
+                    id: old.id,
+                    semester,
+                    subject_id,
+                    teacher_id,
+                })
+                if (res.status === 'success') {
+                    setClasses(prev =>
+                        prev.map(c => (c.id === old.id ? res.class : c)),
+                    )
+                    openDialog(null)
+                    return
+                } else if (res.type === 'not-found') {
+                    refetchClasses()
+                    openDialog(null)
+                } else if (res.type === 'permission') {
+                    setMessage('No tienes permiso para editar esta máquina')
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.$locale.auth.login('es'))
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
+                }
+            })
+        },
+        [old, openDialog, router, setClasses, refetchClasses],
+    )
 
     if (!old) return null
-    if (!subject) return null
-    if (!career) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'EDIT'}
+            onOpenChange={state => openDialog(state ? 'EDIT' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
                         {t('edit_class', {
-                            subject: subject.name,
-                            career: career.alias ?? career.name,
+                            subject: originalCareer?.label ?? '',
+                            career: originalCareer?.label ?? '',
                             group: old.group + '',
                         })}
                     </DialogTitle>
                     <DialogDescription>
                         {t('edit_class', {
-                            subject: subject.name,
-                            career: career.alias ?? career.name,
+                            subject: originalSubject?.label ?? '',
+                            career: originalCareer?.label ?? '',
                             group: old.group + '',
                         })}
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await editClass(data)
-                            if (error) setMessage(error)
-                            else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={old.id} name='nc' />
                     <RetornableCompletSelect
-                        originalValue={{
-                            label:
-                                users.find(t => t.id === old.teacher_id)
-                                    ?.name || '',
-                            value: old.teacher_id,
-                        }}
+                        originalValue={originalTeacher}
                         label={t('teacher')}
                         name='teacher_id'
-                        options={users.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
+                        options={teachersOptions}
                         icon={UserIcon}
                     />
                     <RetornableCompletSelect
-                        originalValue={{
-                            label: subjects.find(t => t.id === old.subject_id)
-                                ?.name,
-                            value: old.career_id,
-                        }}
+                        originalValue={originalSubject}
                         label={t('subject')}
                         name='subject_id'
-                        options={subjects.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
+                        options={subjectsOptions}
                         icon={BookAIcon}
                     />
                     <RetornableCompletSelect
-                        originalValue={{
-                            label: careers.find(t => t.id === old.career_id)
-                                ?.name,
-                            value: old.career_id,
-                        }}
+                        originalValue={originalCareer}
                         label={t('career')}
                         name='career_id'
-                        options={careers.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
+                        options={careersOptions}
                         icon={GraduationCapIcon}
                     />
                     <RetornableCompletInput

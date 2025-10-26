@@ -2,8 +2,8 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban, User as UserIcon } from 'lucide-react'
-import { Activity, useState, useTransition } from 'react'
-import { archiveClass } from '@/actions/class'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import { archiveClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -14,31 +14,85 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import {
-    openArchiveAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-class'
+import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
 import { useTranslations } from 'next-intl'
 import { useUsers } from '@/hooks/users.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
+import { useRouter } from 'next/navigation'
+import { useClasses } from '@/hooks/classes.hooks'
+import app from '@eliyya/type-routes'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function ArchiveDialog() {
-    const [open, setOpen] = useAtom(openArchiveAtom)
+    const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
     const { subjects } = useSubjects()
     const { users } = useUsers()
     const { careers } = useCareers()
     const t = useTranslations('classes')
+    const { setClasses, refetchClasses } = useClasses()
+    const router = useRouter()
+
+    const teacher = useMemo(() => {
+        if (!entity) return ''
+        const user = users.find(u => u.id === entity.teacher_id)
+        if (!user) return 'Deleted user'
+        if (user.status === STATUS.ARCHIVED) return `(Archived) ${user.name}`
+        return user.name
+    }, [entity, users])
+
+    const subject = useMemo(() => {
+        if (!entity) return ''
+        const subject = subjects.find(s => s.id === entity.subject_id)
+        if (!subject) return 'Deleted subject'
+        if (subject.status === STATUS.ARCHIVED)
+            return `(Archived) ${subject.name}`
+        return subject.name
+    }, [entity, subjects])
+
+    const career = useMemo(() => {
+        if (!entity) return ''
+        const career = careers.find(c => c.id === entity.career_id)
+        if (!career) return 'Deleted career'
+        if (career.status === STATUS.ARCHIVED)
+            return `(Archived) ${career.name}`
+        return career.name
+    }, [entity, careers])
+
+    const onAction = useCallback(() => {
+        if (!entity) return
+        startTransition(async () => {
+            const res = await archiveClass(entity.id)
+            if (res.status === 'success') {
+                openDialog(null)
+                setClasses(prev =>
+                    prev.map(c => (c.id === entity.id ? res.class : c)),
+                )
+                return
+            }
+            if (res.type === 'not-found') {
+                refetchClasses()
+                openDialog(null)
+            } else if (res.type === 'permission') {
+                setMessage(res.message)
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (res.type === 'unexpected') {
+                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+            }
+        })
+    }, [entity, openDialog, router, setClasses, refetchClasses])
 
     if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'ARCHIVE'}
+            onOpenChange={state => openDialog(state ? 'ARCHIVE' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{t('archive_class')}</DialogTitle>
@@ -47,52 +101,29 @@ export function ArchiveDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await archiveClass(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={entity.id} name='id' />
+                    {/* TODO: implement this for all managements */}
                     <CompletInput
                         label={t('teacher')}
-                        name='teacher_id'
                         disabled
-                        value={
-                            users.find(t => t.id === entity.teacher_id)?.name
-                        }
+                        value={teacher}
                         icon={UserIcon}
                     />
                     <CompletInput
                         label={t('subject')}
-                        name='subject_id'
                         disabled
-                        value={
-                            subjects.find(s => s.id === entity.subject_id)?.name
-                        }
+                        value={subject}
                         icon={UserIcon}
                     />
                     <CompletInput
                         label={t('career')}
-                        name='career_id'
                         disabled
-                        value={
-                            careers.find(c => c.id === entity.career_id)?.name
-                        }
+                        value={career}
                         icon={UserIcon}
                     />
                     <CompletInput
@@ -114,7 +145,7 @@ export function ArchiveDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                openDialog(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />
