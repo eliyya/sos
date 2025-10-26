@@ -49,7 +49,7 @@ handler.set(/^\/[^/]+\/schedule\/null$/, async ctx => {
     )
 })
 
-handler.set(/^\/[^/]+\/schedule\/(.*)?$/, async ctx => {
+handler.set(/^\/[^/]+\/schedule(\/.*)?$/, async ctx => {
     const [, , lab_id, day, month, year] =
         ctx.request.nextUrl.pathname.split('/')
 
