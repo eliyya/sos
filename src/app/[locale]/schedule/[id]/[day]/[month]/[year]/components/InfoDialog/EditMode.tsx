@@ -6,7 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import { Temporal } from '@js-temporal/polyfill'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { SaveIcon, UserIcon } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { Activity, useEffect, useState, useTransition } from 'react'
 import { editPractice, findFirstPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
@@ -19,7 +19,6 @@ import {
 } from '@/global/management-practices'
 import { secondsToTime, setTime } from '@/lib/utils'
 import { getClassName } from './InfoDialog'
-
 
 interface EditModeProps {
     practice: Exclude<
@@ -183,7 +182,9 @@ export function EditMode({ practice, lab, remainingHours }: EditModeProps) {
             }}
         >
             <div className='flex w-full max-w-md flex-col justify-center gap-6'>
-                {error && <MessageError>{error}</MessageError>}
+                <Activity mode={error ? 'visible' : 'hidden'}>
+                    <MessageError>{error}</MessageError>
+                </Activity>
                 <input type='hidden' value={lab.id} name='laboratory_id' />
                 <CompletInput
                     label='Docente'

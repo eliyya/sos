@@ -8,7 +8,7 @@ import {
     UserIcon,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { Activity, useEffect, useState, useTransition } from 'react'
 import { getAdminRole } from '@/actions/roles.actions'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
@@ -81,7 +81,9 @@ export function SignUpForm() {
                 Crear tu cuenta de administrador
             </p>
 
-            {error && <MessageError>{error}</MessageError>}
+            <Activity mode={error ? 'visible' : 'hidden'}>
+                <MessageError>{error}</MessageError>
+            </Activity>
 
             <NameInput />
             <UsernameInput />

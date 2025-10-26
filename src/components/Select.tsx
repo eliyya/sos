@@ -8,7 +8,9 @@ import {
     useRef,
     useImperativeHandle,
     useEffect,
- useState } from 'react'
+    useState,
+    Activity,
+} from 'react'
 import ReactSelect, {
     MultiValue,
     OnChangeValue,
@@ -63,7 +65,9 @@ export function CompletSelect<
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
             >
                 {label}
-                {required && <span className='ml-1'>*</span>}
+                <Activity mode={required ? 'visible' : 'hidden'}>
+                    <span className='ml-1'>*</span>
+                </Activity>
             </label>
             <div className='relative'>
                 {children}
@@ -128,14 +132,14 @@ export function CompletSelect<
                     aria-describedby={error ? `${id ?? rid}-error` : undefined}
                 />
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }
@@ -204,7 +208,9 @@ export function RetornableCompletSelect<
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
             >
                 {label}
-                {required && <span className='ml-1'>*</span>}
+                <Activity mode={required ? 'visible' : 'hidden'}>
+                    <span className='ml-1'>*</span>
+                </Activity>
             </label>
             <div className='relative block'>
                 {children}
@@ -294,7 +300,7 @@ export function RetornableCompletSelect<
                     id={id ?? rid}
                     aria-describedby={error ? `${id ?? rid}-error` : undefined}
                 />
-                {isChanged && (
+                <Activity mode={isChanged ? 'visible' : 'hidden'}>
                     <button
                         className='absolute top-0.5 right-1 cursor-pointer p-2'
                         onClick={e => {
@@ -305,16 +311,16 @@ export function RetornableCompletSelect<
                     >
                         <Undo2Icon className='h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </button>
-                )}
+                </Activity>
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }
@@ -354,7 +360,9 @@ export function CompletCreatableSelect<
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
             >
                 {label}
-                {required && <span className='ml-1'>*</span>}
+                <Activity mode={required ? 'visible' : 'hidden'}>
+                    <span className='ml-1'>*</span>
+                </Activity>
             </label>
             <div className='relative'>
                 {children}
@@ -416,14 +424,14 @@ export function CompletCreatableSelect<
                     aria-describedby={error ? `${id ?? rid}-error` : undefined}
                 />
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }
@@ -482,7 +490,9 @@ export function RetornableCompletCreatableSelect<
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
             >
                 {label}
-                {required && <span className='ml-1'>*</span>}
+                <Activity mode={required ? 'visible' : 'hidden'}>
+                    <span className='ml-1'>*</span>
+                </Activity>
             </label>
             <div className='relative'>
                 {children}
@@ -571,7 +581,7 @@ export function RetornableCompletCreatableSelect<
                     id={id ?? rid}
                     aria-describedby={error ? `${id ?? rid}-error` : undefined}
                 />
-                {isChanged && (
+                <Activity mode={isChanged ? 'visible' : 'hidden'}>
                     <button
                         className='absolute top-0.5 right-1 cursor-pointer p-2'
                         onClick={e => {
@@ -582,16 +592,16 @@ export function RetornableCompletCreatableSelect<
                     >
                         <Undo2Icon className='h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </button>
-                )}
+                </Activity>
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }

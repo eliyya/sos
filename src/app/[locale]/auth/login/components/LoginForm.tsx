@@ -5,7 +5,7 @@ import { useAtom, useSetAtom } from 'jotai'
 import { AtSignIcon, LogIn, RectangleEllipsisIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ReactNode, useState, useTransition } from 'react'
+import { Activity, ReactNode, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { usernameAtom, passwordAtom } from '@/global/login'
@@ -59,7 +59,9 @@ export function LoginForm({ children }: Props) {
             </p>
             {children}
 
-            {error && <MessageError>{error}</MessageError>}
+            <Activity mode={error ? 'visible' : 'hidden'}>
+                <MessageError>{error}</MessageError>
+            </Activity>
 
             <UsernameInput />
             <PasswordInput />

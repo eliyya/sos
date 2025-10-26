@@ -2,7 +2,7 @@
 
 import { useSetAtom } from 'jotai'
 import { SaveIcon, TrashIcon, UserIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { Activity, useState, useTransition } from 'react'
 import { deletePractice, findFirstPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
@@ -62,7 +62,9 @@ export function DeleteMode({ practice }: InfoModeProps) {
             }}
             className='flex flex-col gap-4'
         >
-            {error && <MessageError>{error}</MessageError>}
+            <Activity mode={error ? 'visible' : 'hidden'}>
+                <MessageError>{error}</MessageError>
+            </Activity>
             <input type='hidden' value={practice.id} name='practice_id' />
             <CompletInput
                 label='Practica'
