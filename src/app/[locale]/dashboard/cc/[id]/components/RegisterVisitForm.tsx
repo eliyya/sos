@@ -4,7 +4,6 @@ import { useSetAtom } from 'jotai'
 import { SquarePenIcon } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { registerVisit } from '@/actions/cc'
-import { findStudent } from '@/actions/students'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
@@ -12,6 +11,7 @@ import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
 import { useTranslations } from 'next-intl'
 import { useCareers } from '@/hooks/careers.hooks'
+import { useStudents } from '@/hooks/students.hooks'
 
 interface RegisterVisitFormProps {
     laboratory_id: string
@@ -28,12 +28,13 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
     const refreshTable = useSetAtom(updateTableAtom)
     const t = useTranslations('cc')
     const { careers } = useCareers()
+    const { students } = useStudents()
 
     // debounce findStudent
     useEffect(() => {
         const timeout = setTimeout(() => {
             startTransition(async () => {
-                const student = await findStudent(nc)
+                const student = students.find(s => s.nc === nc)
                 if (!student) return setModified(true)
                 setName(student.firstname)
                 setLastname(student.lastname)

@@ -157,7 +157,7 @@ const managementRoutes: Record<
     students: PERMISSIONS_FLAGS.MANAGE_STUDENTS,
     subjects: PERMISSIONS_FLAGS.MANAGE_SUBJECTS,
     users: PERMISSIONS_FLAGS.MANAGE_USERS,
-    software: PERMISSIONS_FLAGS.MANAGE_SOFTWARE,
+    // software: PERMISSIONS_FLAGS.MANAGE_SOFTWARE,
 }
 type RouteKey = keyof typeof managementRoutes
 

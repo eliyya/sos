@@ -9,10 +9,11 @@ import {
     PrismaError,
 } from '@/errors'
 import { STATUS } from '@/prisma/generated/enums'
+import { Career } from '@/prisma/generated/browser'
 
 interface CreateCareerProps {
-    name: string
-    alias: string | null
+    name: Career['name']
+    alias: Career['alias']
 }
 export const createCareerEffect = ({ name, alias }: CreateCareerProps) =>
     Effect.gen(function* (_) {
@@ -65,7 +66,7 @@ export const createCareerEffect = ({ name, alias }: CreateCareerProps) =>
     })
 
 interface EditCarrerEffectProps extends Partial<CreateCareerProps> {
-    id: string
+    id: Career['id']
 }
 export const editCareerEffect = ({ id, name, alias }: EditCarrerEffectProps) =>
     Effect.gen(function* (_) {
@@ -121,7 +122,7 @@ export const editCareerEffect = ({ id, name, alias }: EditCarrerEffectProps) =>
         return yield* _(Effect.succeed(career))
     })
 
-export const deleteCareerEffect = (id: string) =>
+export const deleteCareerEffect = (id: Career['id']) =>
     Effect.gen(function* (_) {
         yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_CAREERS))
 
@@ -144,7 +145,7 @@ export const deleteCareerEffect = (id: string) =>
                         where: { id },
                         data: {
                             status: STATUS.DELETED,
-                            alias: null,
+                            alias: id,
                             name: id,
                         },
                     }),
@@ -154,7 +155,7 @@ export const deleteCareerEffect = (id: string) =>
         // TODO: manage career dependents
     })
 
-export const archiveCareerEffect = (id: string) =>
+export const archiveCareerEffect = (id: Career['id']) =>
     Effect.gen(function* (_) {
         yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_CAREERS))
 
@@ -185,7 +186,7 @@ export const archiveCareerEffect = (id: string) =>
         )
     })
 
-export const unarchiveCareerEffect = (id: string) =>
+export const unarchiveCareerEffect = (id: Career['id']) =>
     Effect.gen(function* (_) {
         yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_CAREERS))
 

@@ -1,6 +1,6 @@
 'use server'
 import { db } from '@/prisma/db'
-import { createStudent } from './students'
+import { createStudent } from './students.actions'
 
 export async function registerVisit(formData: FormData) {
     const nc = formData.get('student_nc') as string
@@ -12,8 +12,19 @@ export async function registerVisit(formData: FormData) {
     })
 
     if (!student) {
-        formData.set('nc', nc)
-        await createStudent(formData)
+        const career_id = formData.get('career_id') as string
+        const firstname = formData.get('firstname') as string
+        const lastname = formData.get('lastname') as string
+        const group = Number(formData.get('group'))
+        const semester = Number(formData.get('semester'))
+        await createStudent({
+            nc,
+            career_id,
+            firstname,
+            lastname,
+            group,
+            semester,
+        })
     }
 
     const today = new Date()
