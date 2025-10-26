@@ -10,7 +10,7 @@ import {
     UsersIcon,
     HashIcon,
 } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { Activity, useState, useTransition } from 'react'
 import { checkClassDisponibility, createClass } from '@/actions/class'
 import { Button } from '@/components/Button'
 import {

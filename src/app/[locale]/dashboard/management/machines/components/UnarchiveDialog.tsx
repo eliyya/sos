@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, MonitorCheckIcon } from 'lucide-react'
-import { useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useState, useTransition } from 'react'
 import { availableMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {

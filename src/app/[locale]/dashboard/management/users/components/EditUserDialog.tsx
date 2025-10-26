@@ -8,7 +8,7 @@ import {
     TriangleIcon,
     UserIcon,
 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { Activity, useEffect, useState, useTransition } from 'react'
 import { editUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {

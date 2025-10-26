@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestore, Ban } from 'lucide-react'
-import { useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useState, useTransition } from 'react'
 import { unarchiveCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {

@@ -2,7 +2,7 @@
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, TagIcon, SquarePenIcon } from 'lucide-react'
-import { useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useState, useTransition } from 'react'
 import { createCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {

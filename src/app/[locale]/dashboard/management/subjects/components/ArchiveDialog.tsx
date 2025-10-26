@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
-import { useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useState, useTransition } from 'react'
 import { archiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {

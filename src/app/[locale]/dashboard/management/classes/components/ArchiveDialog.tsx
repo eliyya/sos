@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban, User as UserIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { Activity, useState, useTransition } from 'react'
 import { archiveClass } from '@/actions/class'
 import { Button } from '@/components/Button'
 import {

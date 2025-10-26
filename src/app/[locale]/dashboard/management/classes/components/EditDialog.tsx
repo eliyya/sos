@@ -9,7 +9,7 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { Activity, useState, useTransition } from 'react'
 import { editClass } from '@/actions/class'
 import { Button } from '@/components/Button'
 import {
