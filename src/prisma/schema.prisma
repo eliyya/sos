@@ -4,7 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 generator client {
     provider               = "prisma-client"
     engineType             = "client"
@@ -23,7 +22,7 @@ datasource db {
 }
 
 model States {
-    name String @id
+    name  String @id
     value Int
 
     @@map("states")
@@ -112,7 +111,7 @@ model Verification {
 
 model Subject {
     id             String   @id @default(dbgenerated("snowflake()"))
-    name           String @unique
+    name           String   @unique
     created_at     DateTime @default(now())
     practice_hours Int
     theory_hours   Int
@@ -222,7 +221,7 @@ model Career {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
     status     STATUS   @default(ACTIVE)
-    alias      String?  @unique
+    alias      String   @unique
 
     students Student[]
     classes  Class[]

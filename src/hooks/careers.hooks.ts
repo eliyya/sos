@@ -1,7 +1,8 @@
 import { getCareers } from '@/actions/careers.actions'
 import { careersAtom } from '@/global/careers.globals'
+import { STATUS } from '@/prisma/generated/enums'
 import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 const isCareersFetchedAtom = atom(false)
 
@@ -14,6 +15,10 @@ export function useCareers() {
         [setCareers],
     )
 
+    const activeCareers = useMemo(() => {
+        return careers.filter(t => t.status === STATUS.ACTIVE)
+    }, [careers])
+
     useEffect(() => {
         if (!isFetched) {
             refetchCareers()
@@ -24,6 +29,7 @@ export function useCareers() {
     return {
         careers,
         setCareers,
+        activeCareers,
         refetchCareers,
     } as const
 }

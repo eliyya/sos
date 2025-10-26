@@ -1,7 +1,8 @@
 import { getUsers } from '@/actions/users.actions'
 import { usersAtom } from '@/global/users.globals'
+import { STATUS } from '@/prisma/generated/enums'
 import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 const isUsersFetchedAtom = atom(false)
 
@@ -14,6 +15,10 @@ export function useUsers() {
         [setUsers],
     )
 
+    const activeUsers = useMemo(() => {
+        return users.filter(t => t.status === STATUS.ACTIVE)
+    }, [users])
+
     useEffect(() => {
         if (!isFetched) {
             refetchUsers()
@@ -24,6 +29,7 @@ export function useUsers() {
     return {
         users,
         setUsers,
+        activeUsers,
         refetchUsers,
     } as const
 }

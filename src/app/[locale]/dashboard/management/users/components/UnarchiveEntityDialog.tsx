@@ -66,7 +66,9 @@ export function UnarchiveEntityDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

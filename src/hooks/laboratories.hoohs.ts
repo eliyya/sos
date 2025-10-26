@@ -1,7 +1,8 @@
 import { getLaboratories } from '@/actions/laboratories.actions'
 import { laboratoriesAtom } from '@/global/laboratories.globals'
+import { STATUS } from '@/prisma/generated/enums'
 import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 const isLaboratoriesFetchedAtom = atom(false)
 
@@ -14,6 +15,10 @@ export function useLaboratories() {
         [setLaboratories],
     )
 
+    const activeLaboratories = useMemo(() => {
+        return laboratories.filter(t => t.status === STATUS.ACTIVE)
+    }, [laboratories])
+
     useEffect(() => {
         if (!isFetched) {
             refetchLaboratories()
@@ -24,6 +29,7 @@ export function useLaboratories() {
     return {
         laboratories,
         setLaboratories,
+        activeLaboratories,
         refetchLaboratories,
     } as const
 }

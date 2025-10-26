@@ -85,7 +85,9 @@ export function EditDialog() {
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <input type='hidden' value={old.id} name='nc' />
                     <RetornableCompletSelect
                         originalValue={{
@@ -147,7 +149,6 @@ export function EditDialog() {
                         originalValue={old.semester}
                     />
                     <Button type='submit' disabled={inTransition}>
-                        <MessageError>{message}</MessageError>
                         <Save className='mr-2 h-5 w-5' />
                         {t('save')}
                     </Button>

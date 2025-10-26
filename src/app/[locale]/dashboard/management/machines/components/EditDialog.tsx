@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useState, useTransition } from 'react'
 import { editMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -102,7 +102,9 @@ export function EditDialog() {
                     action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <input type='hidden' value={old.id} name='id' />
                     <RetornableCompletInput
                         originalValue={old.number}

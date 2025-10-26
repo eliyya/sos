@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     Save,
     UserIcon,
@@ -9,8 +9,8 @@ import {
     CalendarRangeIcon,
     GraduationCapIcon,
 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { createStudent } from '@/actions/students'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import { createStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -22,89 +22,103 @@ import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import {
-    openCreateAtom,
-    updateAtom,
-    entityToEditAtom,
-} from '@/global/management-students'
+    openDialogAtom,
+    selectedStudentNCAtom,
+} from '@/global/students.globals'
 import { useCareers } from '@/hooks/careers.hooks'
+import { useRouter } from 'next/navigation'
+import { useStudents } from '@/hooks/students.hooks'
+import app from '@eliyya/type-routes'
+import { atom } from 'jotai'
+
+const ncAtom = atom('')
+const firstnameAtom = atom('')
+const lastnameAtom = atom('')
+const careerAtom = atom('')
+const groupAtom = atom(1)
+const semesterAtom = atom(1)
+const errorNcAtom = atom('')
+const errorFirstnameAtom = atom('')
+const errorLastnameAtom = atom('')
+const errorCareerAtom = atom('')
+const errorGroupAtom = atom('')
+const errorSemesterAtom = atom('')
 
 export function CreateSubjectDialog() {
-    const [open, setOpen] = useAtom(openCreateAtom)
+    const [open, openDialog] = useAtom(openDialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const updateUsersTable = useSetAtom(updateAtom)
-    const setEntityToEdit = useSetAtom(entityToEditAtom)
-    const { careers } = useCareers()
+    const setEntityToEdit = useSetAtom(selectedStudentNCAtom)
+    const { setStudents } = useStudents()
+    const router = useRouter()
+
+    const onAction = useCallback(
+        (formData: FormData) => {
+            const nc = formData.get('nc') as string
+            const career_id = formData.get('career_id') as string
+            const firstname = formData.get('firstname') as string
+            const lastname = formData.get('lastname') as string
+            const group = Number(formData.get('group'))
+            const semester = Number(formData.get('semester'))
+
+            startTransition(async () => {
+                const res = await createStudent({
+                    nc,
+                    career_id,
+                    firstname,
+                    lastname,
+                    group,
+                    semester,
+                })
+                if (res.status === 'success') {
+                    setStudents(prev => [...prev, res.student])
+                    openDialog(null)
+                    return
+                }
+                if (res.type === 'already-archived') {
+                    setEntityToEdit(res.nc)
+                    openDialog('UNARCHIVE_OR_DELETE')
+                } else if (res.type === 'permission') {
+                    setMessage(res.message)
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.$locale.auth.login('es'))
+                } else if (res.type === 'invalid-input') {
+                    if (res.field === 'firstname') {
+                        setMessage('El nombre es requerido')
+                    }
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
+                }
+            })
+        },
+        [openDialog, router, setEntityToEdit, setStudents],
+    )
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'CREATE'}
+            onOpenChange={status => openDialog(status ? 'CREATE' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Crear Estudiante</DialogTitle>
                 </DialogHeader>
-                {/* <DialogDescription>
-                    Edit the user&apos;s information
-                </DialogDescription> */}
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error, student } = await createStudent(data)
-                            if (error === 'El estudiante esta archivado') {
-                                setEntityToEdit(student)
-                                setOpen(false)
-                            } else if (error) setMessage(error)
-                            else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                            setTimeout(() => {
-                                setMessage('')
-                            }, 5_000)
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
-                    <CompletInput
-                        required
-                        label='Numero de Control'
-                        type='text'
-                        name='nc'
-                        icon={HashIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='Nombres'
-                        type='text'
-                        name='firstname'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='Apellidos'
-                        type='text'
-                        name='lastname'
-                        icon={IdCardIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='Semestre'
-                        type='number'
-                        name='semester'
-                        icon={CalendarRangeIcon}
-                    />
-                    <CompletSelect
-                        label='Carrera'
-                        name='career_id'
-                        options={careers.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
-                        icon={GraduationCapIcon}
-                    />
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
+
+                    <NCInput />
+                    <FirstnameInput />
+                    <LastnameInput />
+                    <SemesterInput />
+                    <GroupInput />
+                    <CareerInput />
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
@@ -113,5 +127,126 @@ export function CreateSubjectDialog() {
                 </form>
             </DialogContent>
         </Dialog>
+    )
+}
+
+export function NCInput() {
+    const [nc, setNc] = useAtom(ncAtom)
+    const error = useAtomValue(errorNcAtom)
+
+    return (
+        <CompletInput
+            required
+            label='Numero de Control'
+            type='text'
+            name='nc'
+            icon={HashIcon}
+            value={nc}
+            onChange={e => setNc(e.target.value)}
+            error={error}
+        />
+    )
+}
+
+export function FirstnameInput() {
+    const [firstname, setFirstname] = useAtom(firstnameAtom)
+    const error = useAtomValue(errorFirstnameAtom)
+
+    return (
+        <CompletInput
+            required
+            label='Nombres'
+            type='text'
+            name='firstname'
+            icon={UserIcon}
+            value={firstname}
+            onChange={e => setFirstname(e.target.value)}
+            error={error}
+        />
+    )
+}
+
+export function LastnameInput() {
+    const [lastname, setLastname] = useAtom(lastnameAtom)
+    const error = useAtomValue(errorLastnameAtom)
+
+    return (
+        <CompletInput
+            required
+            label='Apellidos'
+            type='text'
+            name='lastname'
+            icon={IdCardIcon}
+            value={lastname}
+            onChange={e => setLastname(e.target.value)}
+            error={error}
+        />
+    )
+}
+
+export function SemesterInput() {
+    const [semester, setSemester] = useAtom(semesterAtom)
+    const error = useAtomValue(errorSemesterAtom)
+
+    return (
+        <CompletInput
+            required
+            label='Semestre'
+            type='number'
+            name='semester'
+            icon={CalendarRangeIcon}
+            value={semester}
+            onChange={e => setSemester(Number(e.target.value))}
+            error={error}
+        />
+    )
+}
+
+export function GroupInput() {
+    const [group, setGroup] = useAtom(groupAtom)
+    const error = useAtomValue(errorGroupAtom)
+
+    return (
+        <CompletInput
+            required
+            label='Grupo'
+            type='number'
+            name='group'
+            icon={IdCardIcon}
+            value={group}
+            onChange={e => setGroup(Number(e.target.value))}
+            error={error}
+        />
+    )
+}
+
+export function CareerInput() {
+    const [careerId, setCareerId] = useAtom(careerAtom)
+    const error = useAtomValue(errorCareerAtom)
+    const { activeCareers } = useCareers()
+
+    const activeCareersOptions = useMemo(() => {
+        return activeCareers.map(t => ({
+            label: t.name,
+            value: t.id,
+        }))
+    }, [activeCareers])
+
+    const careerValue = useMemo(() => {
+        const career = activeCareers.find(t => t.id === careerId)
+        if (!career) return activeCareersOptions[0]
+        return { label: career.name, value: career.id }
+    }, [careerId, activeCareers])
+
+    return (
+        <CompletSelect
+            label='Carrera'
+            name='career_id'
+            options={activeCareersOptions}
+            icon={GraduationCapIcon}
+            value={careerValue}
+            onChange={e => setCareerId(e?.value!)}
+            error={error}
+        />
     )
 }

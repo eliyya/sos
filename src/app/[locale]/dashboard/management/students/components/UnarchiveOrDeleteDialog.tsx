@@ -2,8 +2,8 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { unarchiveStudent } from '@/actions/students'
+import { Activity, useCallback, useState, useTransition } from 'react'
+import { unarchiveStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -13,25 +13,57 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    entityToEditAtom,
-    updateAtom,
-    openUnarchiveOrDeleteAtom,
-    openDeleteAtom,
-} from '@/global/management-students'
+import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
+import { useRouter } from 'next/navigation'
+import { useStudents } from '@/hooks/students.hooks'
+import app from '@eliyya/type-routes'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function UnarchiveOrDeleteDialog() {
-    const [open, setOpen] = useAtom(openUnarchiveOrDeleteAtom)
+    const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
-    const setOpenDelete = useSetAtom(openDeleteAtom)
+    const router = useRouter()
+    const { setStudents, refetchStudents } = useStudents()
+
+    const onAction = useCallback(() => {
+        if (!entity) return
+        startTransition(async () => {
+            const res = await unarchiveStudent(entity.nc)
+            if (res.status === 'success') {
+                openDialog(null)
+                setStudents(prev =>
+                    prev.map(student =>
+                        student.nc === entity.nc ?
+                            { ...student, status: STATUS.ACTIVE }
+                        :   student,
+                    ),
+                )
+                return
+            }
+            if (res.type === 'not-found') {
+                refetchStudents()
+                openDialog(null)
+            } else if (res.type === 'permission') {
+                setMessage(res.message)
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (res.type === 'unexpected') {
+                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+            }
+        })
+    }, [entity, openDialog, router])
 
     if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'UNARCHIVE_OR_DELETE'}
+            onOpenChange={state =>
+                openDialog(state ? 'UNARCHIVE_OR_DELETE' : null)
+            }
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Estudiante archivado</DialogTitle>
@@ -42,25 +74,12 @@ export function UnarchiveOrDeleteDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await unarchiveStudent(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
-                    <input type='hidden' value={entity.nc} name='nc' />
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             type='button'
@@ -68,7 +87,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                openDialog(null)
                             }}
                         >
                             <BanIcon className='mr-2 h-5 w-5' />
@@ -88,8 +107,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
-                                setOpenDelete(true)
+                                openDialog('DELETE')
                             }}
                         >
                             <TrashIcon className='mr-2 h-5 w-5' />

@@ -2,8 +2,8 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { archiveStudent } from '@/actions/students'
+import { Activity, useCallback, useState, useTransition } from 'react'
+import { archiveStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -13,24 +13,57 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openArchiveAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-students'
-
+import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
+import { useStudents } from '@/hooks/students.hooks'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 export function ArchiveDialog() {
-    const [open, setOpen] = useAtom(openArchiveAtom)
+    const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entity = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
+    const { setStudents, refetchStudents } = useStudents()
+    const router = useRouter()
+
+    const onAction = useCallback(() => {
+        if (!entity) return
+        startTransition(async () => {
+            const res = await archiveStudent(entity.nc)
+            if (res.status === 'success') {
+                openDialog(null)
+                setStudents(prev =>
+                    prev.map(student =>
+                        student.nc === entity.nc ? res.student : student,
+                    ),
+                )
+                return
+            }
+            if (res.type === 'not-found') {
+                refetchStudents()
+                openDialog(null)
+            } else if (res.type === 'permission') {
+                setMessage(res.message)
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (res.type === 'unexpected') {
+                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+            }
+        })
+    }, [entity, openDialog, router, setStudents, refetchStudents])
 
     if (!entity) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'ARCHIVE'}
+            onOpenChange={status => {
+                if (!status) {
+                    openDialog(null)
+                    setMessage('')
+                }
+            }}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Archivar Estudiante</DialogTitle>
@@ -41,31 +74,18 @@ export function ArchiveDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await archiveStudent(data)
-                            if (error) {
-                                setMessage(error)
-                                setTimeout(() => setMessage('error'), 5_000)
-                            } else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
-                    <input type='hidden' value={entity.nc} name='nc' />
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen(false)
+                                openDialog(null)
                             }}
                         >
                             <Ban className='mr-2 h-5 w-5' />

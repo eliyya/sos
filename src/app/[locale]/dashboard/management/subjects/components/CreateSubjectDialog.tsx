@@ -111,7 +111,9 @@ export function CreateSubjectDialog() {
                     action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <NameInput />
                     <div className='flex w-full gap-4'>
                         <TehoryHoursInput />

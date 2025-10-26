@@ -75,7 +75,9 @@ export function DeleteDialog() {
                     action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

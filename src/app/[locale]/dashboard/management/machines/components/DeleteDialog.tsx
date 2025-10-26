@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
-import { useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useState, useTransition } from 'react'
 import { deleteMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -72,7 +72,9 @@ export function DeleteDialog() {
                     action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <input type='hidden' value={entity.id} name='id' />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

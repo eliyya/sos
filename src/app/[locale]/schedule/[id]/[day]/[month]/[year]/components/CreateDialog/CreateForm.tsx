@@ -182,7 +182,9 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
                 })
             }}
         >
-            {message && <MessageError>{message}</MessageError>}
+            <Activity mode={message ? 'visible' : 'hidden'}>
+                <MessageError>{message}</MessageError>
+            </Activity>
             <input type='hidden' value={lab.id} name='laboratory_id' />
             <input type='hidden' value={timestampStartHour} name='starts_at' />
             <DocenteSelect

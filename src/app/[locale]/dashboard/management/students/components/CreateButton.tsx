@@ -3,13 +3,13 @@
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/Button'
-import { openCreateAtom } from '@/global/management-students'
+import { openDialogAtom } from '@/global/students.globals'
 
 export function CreateButton() {
-    const openCreateUser = useSetAtom(openCreateAtom)
+    const openDialog = useSetAtom(openDialogAtom)
 
     return (
-        <Button onClick={() => openCreateUser(true)}>
+        <Button onClick={() => openDialog('CREATE')}>
             <Plus className='mr-3' />
             Crear Estudiante
         </Button>

@@ -85,12 +85,12 @@ const links: {
         icon: ComputerIcon,
         permission: PERMISSIONS_FLAGS.MANAGE_MACHINES,
     },
-    {
-        title: 'Software',
-        href: mLinks.software('es'),
-        icon: ComputerIcon,
-        permission: PERMISSIONS_FLAGS.MANAGE_SOFTWARE,
-    },
+    // {
+    //     title: 'Software',
+    //     href: mLinks.software('es'),
+    //     icon: ComputerIcon,
+    //     permission: PERMISSIONS_FLAGS.MANAGE_SOFTWARE,
+    // },
 ] as const
 
 export function ManagementNav() {

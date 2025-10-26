@@ -8,8 +8,8 @@ import {
     Save,
     UserIcon,
 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { editStudent } from '@/actions/students'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import { editStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -21,25 +21,89 @@ import {
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
-import {
-    editDialogAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-students'
+import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
 import { useCareers } from '@/hooks/careers.hooks'
+import { useStudents } from '@/hooks/students.hooks'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function EditDialog() {
-    const [open, setOpen] = useAtom(editDialogAtom)
+    const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(entityToEditAtom)
+    const old = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
-    const updateUsersTable = useSetAtom(updateAtom)
-    const { careers } = useCareers()
+    const { careers, activeCareers } = useCareers()
+    const { setStudents, refetchStudents } = useStudents()
+    const router = useRouter()
+
+    const originalCareer = useMemo(() => {
+        if (!old) return null
+        const career = careers.find(c => c.id === old.career_id)
+        if (!career) return { label: 'Deleted Career', value: old.career_id }
+        if (career.status === STATUS.ARCHIVED)
+            return { label: `(Archived) ${career.name}`, value: career.id }
+        return { label: career.name, value: career.id }
+    }, [old, careers])
+
+    const careerOptions = useMemo(() => {
+        return activeCareers.map(c => ({
+            label: c.name,
+            value: c.id,
+        }))
+    }, [activeCareers])
+
+    const onAction = useCallback(
+        (formData: FormData) => {
+            if (!old) return
+            const career_id = formData.get('career_id') as string
+            const firstname = formData.get('firstname') as string
+            const group = Number(formData.get('group'))
+            const lastname = formData.get('lastname') as string
+            const nc = formData.get('nc') as string
+            const semester = Number(formData.get('semester'))
+
+            startTransition(async () => {
+                const res = await editStudent({
+                    career_id,
+                    firstname,
+                    group,
+                    lastname,
+                    nc,
+                    semester,
+                })
+                if (res.status === 'success') {
+                    setStudents(prev =>
+                        prev.map(student =>
+                            student.nc === old.nc ? res.student : student,
+                        ),
+                    )
+                    openDialog(null)
+                    return
+                } else if (res.type === 'not-found') {
+                    refetchStudents()
+                    openDialog(null)
+                } else if (res.type === 'permission') {
+                    setMessage('No tienes permiso para editar esta máquina')
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.$locale.auth.login('es'))
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
+                }
+            })
+        },
+        [old, openDialog, router, setStudents, refetchStudents],
+    )
 
     if (!old) return null
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open === 'EDIT'}
+            onOpenChange={state => openDialog(state ? 'EDIT' : null)}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Editar Estudiante</DialogTitle>
@@ -48,23 +112,12 @@ export function EditDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const { error } = await editStudent(data)
-                            if (error) setMessage(error)
-                            else {
-                                setTimeout(
-                                    () => updateUsersTable(Symbol()),
-                                    500,
-                                )
-                                setOpen(false)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
-                    {message && <MessageError>{message}</MessageError>}
-                    <input type='hidden' value={old.nc} name='id' />
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
                     <RetornableCompletInput
                         originalValue={old.nc}
                         required
@@ -98,15 +151,8 @@ export function EditDialog() {
                         icon={CalendarRangeIcon}
                     />
                     <RetornableCompletSelect
-                        originalValue={{
-                            label: careers.find(c => c.id === old.career_id)
-                                ?.name,
-                            value: old.career_id,
-                        }}
-                        options={careers.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
+                        originalValue={originalCareer}
+                        options={careerOptions}
                         required
                         label='Carrera'
                         name='career_id'

@@ -4,7 +4,6 @@ import { Student, STATUS } from '@/prisma/generated/browser'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { getStudentsWithCareer } from '@/actions/students'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -15,30 +14,22 @@ import {
     Table,
 } from '@/components/Table'
 import {
-    editDialogAtom,
-    openArchiveAtom,
-    openDeleteAtom,
-    openUnarchiveAtom,
+    openDialogAtom,
+    selectedStudentNCAtom,
     showArchivedAtom,
-    entityToEditAtom,
-    updateAtom,
-} from '@/global/management-students'
+} from '@/global/students.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
+import { useStudents } from '@/hooks/students.hooks'
+import { useCareers } from '@/hooks/careers.hooks'
 
 export function EntityTable() {
-    const [entity, setEntity] = useState<
-        Awaited<ReturnType<typeof getStudentsWithCareer>>
-    >([])
-    const update = useAtomValue(updateAtom)
+    const { students } = useStudents()
     const archived = useAtomValue(showArchivedAtom)
-
-    useEffect(() => {
-        getStudentsWithCareer().then(setEntity)
-    }, [update])
+    const { careers } = useCareers()
 
     return (
         <>
@@ -53,7 +44,7 @@ export function EntityTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {entity
+                    {students
                         .filter(
                             u =>
                                 (u.status === STATUS.ACTIVE && !archived) ||
@@ -64,7 +55,9 @@ export function EntityTable() {
                                 <TableCell>{entity.firstname}</TableCell>
                                 <TableCell>{entity.lastname}</TableCell>
                                 <TableCell>
-                                    {entity.career.alias ?? entity.career.name}
+                                    {careers.find(
+                                        c => c.id === entity.career_id,
+                                    )?.alias ?? 'Deleted Career'}
                                 </TableCell>
                                 <TableCell>{entity.semester}</TableCell>
                                 <TableCell className='flex gap-1'>
@@ -87,11 +80,8 @@ interface ButtonsProps {
     entity: Student
 }
 function Buttons({ entity }: ButtonsProps) {
-    const openEditDialog = useSetAtom(editDialogAtom)
-    const setSubjectSelected = useSetAtom(entityToEditAtom)
-    const setArchiveDialog = useSetAtom(openArchiveAtom)
-    const openUnarchiveDialog = useSetAtom(openUnarchiveAtom)
-    const openDeleteDialog = useSetAtom(openDeleteAtom)
+    const openDialog = useSetAtom(openDialogAtom)
+    const selectStudent = useSetAtom(selectedStudentNCAtom)
     if (entity.status === STATUS.ACTIVE)
         return (
             <>
@@ -99,8 +89,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        openEditDialog(true)
-                        setSubjectSelected(entity)
+                        openDialog('EDIT')
+                        selectStudent(entity.nc)
                     }}
                 >
                     <Pencil className='text-xs' />
@@ -109,8 +99,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        setArchiveDialog(true)
+                        selectStudent(entity.nc)
+                        openDialog('ARCHIVE')
                     }}
                 >
                     <Archive className='w-xs text-xs' />
@@ -124,8 +114,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        openUnarchiveDialog(true)
+                        selectStudent(entity.nc)
+                        openDialog('UNARCHIVE')
                     }}
                 >
                     <ArchiveRestore className='w-xs text-xs' />
@@ -134,8 +124,8 @@ function Buttons({ entity }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(entity)
-                        openDeleteDialog(true)
+                        selectStudent(entity.nc)
+                        openDialog('DELETE')
                     }}
                 >
                     <Trash2 className='w-xs text-xs' />

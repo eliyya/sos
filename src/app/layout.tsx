@@ -17,10 +17,6 @@ export const metadata: Metadata = {
     description: 'sistemas de reserva',
 }
 
-export function generateStaticParams() {
-    return [{ locale: 'es' }]
-}
-
 export default async function RootLayout({
     children,
 }: {

@@ -210,7 +210,7 @@ CREATE TABLE "public"."careers" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
-    "alias" TEXT,
+    "alias" TEXT NOT NULL,
 
     CONSTRAINT "careers_pkey" PRIMARY KEY ("id")
 );
