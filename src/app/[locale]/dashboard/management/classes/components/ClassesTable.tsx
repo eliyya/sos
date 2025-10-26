@@ -12,11 +12,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import {
-    openDialogAtom,
-    showArchivedAtom,
-    selectedClassIdAtom,
-} from '@/global/classes.globals'
+import { openDialogAtom, selectedClassIdAtom } from '@/global/classes.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
@@ -27,9 +23,10 @@ import { useClasses } from '@/hooks/classes.hooks'
 import { useUsers } from '@/hooks/users.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
+import { useQueryParam } from '@/hooks/query.hooks'
 
 export function ClassesTable() {
-    const archived = useAtomValue(showArchivedAtom)
+    const [archived] = useQueryParam('archived', false)
     const { classes } = useClasses()
     const { users } = useUsers()
     const { subjects } = useSubjects()

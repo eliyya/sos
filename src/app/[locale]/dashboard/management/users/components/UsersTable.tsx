@@ -1,7 +1,7 @@
 'use client'
 
 import { User, STATUS } from '@/prisma/generated/browser'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -13,12 +13,7 @@ import {
     TableCell,
     Table,
 } from '@/components/Table'
-import {
-    showArchivedAtom,
-    entityToEditAtom,
-    queryAtom,
-    dialogOpenedAtom,
-} from '@/global/users.globals'
+import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { ArchiveEntityDialog } from './ArchiveEntityDialog'
 import { DeleteEntityDialog } from './DeleteEntityDialog'
 import { EditUserDialog } from './EditUserDialog'
@@ -27,11 +22,12 @@ import { UnarchiveEntityDialog } from './UnarchiveEntityDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useRoles } from '@/hooks/roles.hooks'
 import { useUsers } from '@/hooks/users.hooks'
+import { useQueryParam } from '@/hooks/query.hooks'
 
 export function UsersTable() {
     const { users } = useUsers()
-    const archived = useAtomValue(showArchivedAtom)
-    const q = useAtomValue(queryAtom)
+    const [archived] = useQueryParam('archived', false)
+    const [q] = useQueryParam('q', '')
     const { roles } = useRoles()
 
     return (

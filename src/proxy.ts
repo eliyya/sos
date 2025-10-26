@@ -24,13 +24,13 @@ handler.set('/', async ctx => {
     return ctx.redirect(app.$locale.schedule.null('es'))
 })
 
-handler.set('/auth/login', async ctx => {
+handler.set(/^\/[^/]+\/auth\/login$/, async ctx => {
     const usersCount = await db.user.count()
     if (usersCount == 0) return ctx.redirect(app.$locale.auth.signup('es'))
     return ctx.next()
 })
 
-handler.set('/schedule/null', async ctx => {
+handler.set(/^\/[^/]+\/schedule\/null$/, async ctx => {
     const lab = await db.laboratory.findFirst({
         select: { id: true },
         where: { type: LABORATORY_TYPE.LABORATORY },
@@ -49,7 +49,7 @@ handler.set('/schedule/null', async ctx => {
     )
 })
 
-handler.set(/^\/(schedule.*)?$/, async ctx => {
+handler.set(/^\/[^/]+\/schedule\/(.*)?$/, async ctx => {
     const [, , lab_id, day, month, year] =
         ctx.request.nextUrl.pathname.split('/')
 
@@ -78,7 +78,7 @@ handler.set(/^\/(schedule.*)?$/, async ctx => {
     return ctx.done()
 })
 
-handler.use(/^\/dashboard/, async ctx => {
+handler.use(/^\/[^/]+\/dashboard/, async ctx => {
     const session = await auth.api.getSession(ctx.request)
 
     if (!session) return ctx.redirect(app.$locale.auth.login('es'))
@@ -89,7 +89,7 @@ handler.use(/^\/dashboard/, async ctx => {
     return ctx.redirect(app.$locale.schedule.null('es'))
 })
 
-handler.use(/\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
+handler.use(/\/[^/]+\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
     const [, , , l_type, lab_id, month, year] =
         ctx.request.nextUrl.pathname.split('/') as [
             string,
@@ -161,7 +161,7 @@ const managementRoutes: Record<
 }
 type RouteKey = keyof typeof managementRoutes
 
-handler.set(/^\/dashboard\/management.*$/, async ctx => {
+handler.set(/^\/[^/]+\/dashboard\/management.*$/, async ctx => {
     const session = await auth.api.getSession(ctx.request)
 
     if (!session) return ctx.redirect(app.$locale.auth.login('es'))

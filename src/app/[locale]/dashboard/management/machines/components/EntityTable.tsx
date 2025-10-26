@@ -21,7 +21,6 @@ import {
 import {
     openDialogAtom,
     selectedMachineIdAtom,
-    showArchivedAtom,
 } from '@/global/machines.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -29,9 +28,10 @@ import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { useMachines } from '@/hooks/machines.hooks'
+import { useQueryParam } from '@/hooks/query.hooks'
 
 export function EntityTable() {
-    const archived = useAtomValue(showArchivedAtom)
+    const [archived] = useQueryParam('archived', false)
     const { laboratories } = useLaboratories()
     const { machines } = useMachines()
 
@@ -50,6 +50,7 @@ export function EntityTable() {
                 </TableHeader>
                 <TableBody>
                     {machines
+                        // TODO: implement search
                         .filter(u =>
                             archived ?
                                 u.status === MACHINE_STATUS.MAINTENANCE

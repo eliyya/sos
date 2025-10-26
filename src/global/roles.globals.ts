@@ -12,7 +12,6 @@ export const rolesAtom = atomWithStorage<Role[]>(
     createSerializableLocaleStorage(),
 )
 
-export const queryAtom = atom('')
 export const selectedRoleIdAtom = atomWithStorage<id>('selectedRoleId', '')
 export const selectedRoleAtom = atom(get => {
     const roles = get(rolesAtom)

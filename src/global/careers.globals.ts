@@ -8,9 +8,6 @@ export const careersAtom = atomWithStorage<Career[]>(
     [],
     createSerializableLocaleStorage(),
 )
-// filters
-export const queryAtom = atom('')
-export const showArchivedAtom = atom(false)
 // dialogs
 export const openDialogAtom = atom<
     | 'CREATE'

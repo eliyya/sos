@@ -14,9 +14,7 @@ import {
 } from '@/components/Table'
 import {
     openDialogAtom,
-    queryAtom,
     selectedSubjectIdAtom,
-    showArchivedAtom,
 } from '@/global/subjects.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -24,10 +22,11 @@ import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useSubjects } from '@/hooks/subjects.hooks'
+import { useQueryParam } from '@/hooks/query.hooks'
 
 export function EntityTable() {
-    const archived = useAtomValue(showArchivedAtom)
-    const q = useAtomValue(queryAtom)
+    const [archived] = useQueryParam('archived', false)
+    const [q] = useQueryParam('q', '')
     const { subjects } = useSubjects()
 
     return (

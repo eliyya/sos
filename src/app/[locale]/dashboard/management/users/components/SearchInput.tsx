@@ -1,13 +1,12 @@
 'use client'
 
-import { useAtom } from 'jotai'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { queryAtom, showArchivedAtom } from '@/global/users.globals'
+import { useQueryParam } from '@/hooks/query.hooks'
 
 export function Filters() {
-    const [query, setQuery] = useAtom(queryAtom)
-    const [archived, setArchived] = useAtom(showArchivedAtom)
+    const [query, setQuery] = useQueryParam('q', '')
+    const [archived, setArchived] = useQueryParam('archived', false)
 
     return (
         <div className='flex items-center gap-4'>

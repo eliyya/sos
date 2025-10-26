@@ -1,14 +1,29 @@
+import * as Sentry from '@sentry/nextjs'
 import { toNextJsHandler } from 'better-auth/next-js'
 import { auth } from '@/lib/auth'
-import * as Sentry from '@sentry/nextjs'
+import { NextResponse } from 'next/server'
 
 const handlers = toNextJsHandler(auth)
 
-export const POST = Sentry.wrapApiHandlerWithSentry(
-    handlers.POST,
-    'POST /api/auth/[...all]',
-)
-export const GET = Sentry.wrapApiHandlerWithSentry(
-    handlers.GET,
-    'GET /api/auth/[...all]',
-)
+// Wrapper genérico para Sentry
+function withSentry(handler: typeof handlers.GET | typeof handlers.POST) {
+    return async (req: Request) => {
+        try {
+            return await handler(req)
+        } catch (error) {
+            Sentry.captureException(error)
+            console.error(error)
+            return NextResponse.json(
+                {
+                    error: 'Internal Server Error',
+                },
+                {
+                    status: 500,
+                },
+            )
+        }
+    }
+}
+
+export const GET = withSentry(handlers.GET)
+export const POST = withSentry(handlers.POST)

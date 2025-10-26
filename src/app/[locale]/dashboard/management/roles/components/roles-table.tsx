@@ -9,7 +9,6 @@ import { Card, CardContent } from '@/components/Card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import {
-    queryAtom,
     selectedRoleAtom,
     selectedRoleIdAtom,
     usersCountAtom,
@@ -17,11 +16,12 @@ import {
 import { useRoles } from '@/hooks/roles.hooks'
 import { PermissionsList } from './permissions-list'
 import { cn } from '@/lib/utils'
+import { useQueryParam } from '@/hooks/query.hooks'
 
 export function RolesTable() {
     const { roles } = useRoles()
     const selectedRole = useAtomValue(selectedRoleAtom)
-    const [query, setQuery] = useAtom(queryAtom)
+    const [query, setQuery] = useQueryParam('q', '')
     const selectRole = useSetAtom(selectedRoleIdAtom)
     const [usersCount, setUsersCount] = useAtom(usersCountAtom)
 

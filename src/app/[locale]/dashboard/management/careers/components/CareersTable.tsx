@@ -1,7 +1,7 @@
 'use client'
 
 import { Career, STATUS } from '@/prisma/generated/browser'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/Button'
 import {
@@ -18,17 +18,13 @@ import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useTranslations } from 'next-intl'
-import {
-    openDialogAtom,
-    queryAtom,
-    selectedCareerIdAtom,
-    showArchivedAtom,
-} from '@/global/careers.globals'
+import { openDialogAtom, selectedCareerIdAtom } from '@/global/careers.globals'
 import { useCareers } from '@/hooks/careers.hooks'
+import { useQueryParam } from '@/hooks/query.hooks'
 
 export function CareersTable() {
-    const archived = useAtomValue(showArchivedAtom)
-    const q = useAtomValue(queryAtom)
+    const [archived] = useQueryParam('archived', false)
+    const [q] = useQueryParam('q', '')
     const { careers } = useCareers()
     const t = useTranslations('career')
 

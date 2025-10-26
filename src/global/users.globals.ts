@@ -19,7 +19,6 @@ export const usersAtom = atomWithStorage<User[]>(
     [],
     createSerializableLocaleStorage(),
 )
-export const queryAtom = atom('')
 export const dialogOpenedAtom = atom<
     | 'create'
     | 'edit'
@@ -31,7 +30,6 @@ export const dialogOpenedAtom = atom<
     | null
 >(null)
 export const entityToEditAtom = atom(default_user)
-export const showArchivedAtom = atom(false)
 export const usernameAtom = atom('')
 export const usernameErrorAtom = atom('')
 export const canSuggestUsernameAtom = atom(false)

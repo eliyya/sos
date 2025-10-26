@@ -1,9 +1,7 @@
 'use client'
 
 import { Student, STATUS } from '@/prisma/generated/browser'
-import { useAtomValue, useSetAtom } from 'jotai'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { Button } from '@/components/Button'
 import {
     TableHeader,
@@ -16,7 +14,6 @@ import {
 import {
     openDialogAtom,
     selectedStudentNCAtom,
-    showArchivedAtom,
 } from '@/global/students.globals'
 import { ArchiveDialog } from './ArchiveDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -25,10 +22,12 @@ import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useStudents } from '@/hooks/students.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
+import { useQueryParam } from '@/hooks/query.hooks'
+import { useSetAtom } from 'jotai'
 
 export function EntityTable() {
+    const [archived] = useQueryParam('archived', false)
     const { students } = useStudents()
-    const archived = useAtomValue(showArchivedAtom)
     const { careers } = useCareers()
 
     return (
@@ -45,6 +44,7 @@ export function EntityTable() {
                 </TableHeader>
                 <TableBody>
                     {students
+                        // TODO: implement search
                         .filter(
                             u =>
                                 (u.status === STATUS.ACTIVE && !archived) ||
