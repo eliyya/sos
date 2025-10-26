@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import {
     ArchiveRestore,
     Ban,
@@ -29,7 +29,7 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
-import { STATUS } from '@/prisma/client/enums'
+import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
 
 export function UnarchiveDialog() {
