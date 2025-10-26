@@ -2,7 +2,7 @@
 
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { getRemainingHours } from '@/actions/class'
+import { getRemainingHours } from '@/actions/classes.actions'
 import { findFirstPractice } from '@/actions/practices'
 import {
     Dialog,
@@ -112,7 +112,8 @@ export function InfoDialog({ lab, isAdmin, userId }: InfoDialogProps) {
                     </DialogTitle>
                     {mode === DialogMode.DELETE && (
                         <DialogDescription>
-                            ¿Estas seguro de eliminar la practica? esta accion es irreversible
+                            ¿Estas seguro de eliminar la practica? esta accion
+                            es irreversible
                         </DialogDescription>
                     )}
                 </DialogHeader>

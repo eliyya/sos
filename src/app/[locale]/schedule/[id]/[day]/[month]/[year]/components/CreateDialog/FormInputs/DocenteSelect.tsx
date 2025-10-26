@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { TransitionStartFunction } from 'react'
-import { getClassesWithDataFromUser, getRemainingHours } from '@/actions/class'
+import { getRemainingHours } from '@/actions/classes.actions'
 import { CompletSelect } from '@/components/Select'
 import {
     classesAtom,
@@ -11,6 +11,7 @@ import {
     selectedClassAtom,
     selectedUserAtom,
 } from '@/global/management-practices'
+import { useClasses } from '@/hooks/classes.hooks'
 
 interface DocenteSelectProps {
     options: { label: string; value: string }[]
@@ -27,6 +28,7 @@ export function DocenteSelect({
     const setSelectedClass = useSetAtom(selectedClassAtom)
     const setRemainingHours = useSetAtom(remainingHoursAtom)
     const timestampStartHour = useAtomValue(createDayAtom)
+    const { classes } = useClasses()
 
     return (
         <CompletSelect
@@ -45,12 +47,10 @@ export function DocenteSelect({
                     id: o.value,
                 })
                 startLoadingClasses(async () => {
-                    const classes = await getClassesWithDataFromUser(o.value, [
-                        'subject',
-                        'career',
-                    ])
-                    setClasses(classes)
-                    const [firstClass] = classes
+                    setClasses(classes.filter(c => c.teacher_id === o.value))
+                    const [firstClass] = classes.filter(
+                        c => c.teacher_id === o.value,
+                    )
                     if (firstClass) {
                         setSelectedClass(firstClass)
                         startLoadingHours(async () => {

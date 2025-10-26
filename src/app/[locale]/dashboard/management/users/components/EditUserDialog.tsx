@@ -8,7 +8,7 @@ import {
     TriangleIcon,
     UserIcon,
 } from 'lucide-react'
-import { Activity, useEffect, useState, useTransition } from 'react'
+import { Activity, useEffect, useMemo, useState, useTransition } from 'react'
 import { editUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -138,6 +138,18 @@ export function EditUsernameInput() {
 export function EditRoleSelect() {
     const oldUser = useAtomValue(entityToEditAtom)
     const { roles } = useRoles()
+    const rolesOptions = useMemo(() => {
+        return roles.map(role => ({
+            value: role.id,
+            label: role.name,
+        }))
+    }, [roles])
+    const originalRole = useMemo(() => {
+        if (!oldUser) return null
+        const role = roles.find(role => role.id === oldUser.role_id)
+        if (!role) return null
+        return { value: role.id, label: role.name }
+    }, [oldUser, roles])
 
     if (!oldUser) return null
 
@@ -145,16 +157,8 @@ export function EditRoleSelect() {
         <RetornableCompletSelect
             label='Rol'
             name='role_id'
-            originalValue={{
-                label:
-                    roles.find(r => r.id === oldUser.role_id)?.name ??
-                    oldUser.role_id,
-                value: oldUser.role_id,
-            }}
-            options={roles.map(r => ({
-                label: r.name,
-                value: r.id,
-            }))}
+            originalValue={originalRole}
+            options={rolesOptions}
             icon={TriangleIcon}
         />
     )

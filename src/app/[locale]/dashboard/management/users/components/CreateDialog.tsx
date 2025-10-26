@@ -8,7 +8,7 @@ import {
     TriangleIcon,
     UserIcon,
 } from 'lucide-react'
-import { Activity, useEffect, useState, useTransition } from 'react'
+import { Activity, useEffect, useMemo, useState, useTransition } from 'react'
 import { usernameIsTaken } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -141,16 +141,19 @@ export function CreateUserDialog() {
 
 export function RoleSelect() {
     const { roles } = useRoles()
+    const rolesOptions = useMemo(() => {
+        return roles.map(role => ({
+            value: role.id,
+            label: role.name,
+        }))
+    }, [roles])
 
     return (
         <CompletSelect
             required
             label='Rol'
             name='role_id'
-            options={roles.map(r => ({
-                label: r.name,
-                value: r.id,
-            }))}
+            options={rolesOptions}
             icon={TriangleIcon}
         />
     )

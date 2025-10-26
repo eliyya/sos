@@ -1,5 +1,4 @@
 import { atom } from 'jotai'
-import { type getClassesWithDataFromUser } from '@/actions/class'
 import { ScheduleEvent } from '@/types/schedule'
 
 export enum DialogMode {
@@ -28,11 +27,9 @@ export const selectedUserAtom = atom({
     name: '',
     id: '',
 })
-export type ClassForSelect = Awaited<
-    ReturnType<typeof getClassesWithDataFromUser<['subject', 'career']>>
->[number]
-export const classesAtom = atom<ClassForSelect[]>([])
-export const selectedClassAtom = atom<ClassForSelect | null>(null)
+
+export const classesAtom = atom<any[]>([])
+export const selectedClassAtom = atom<any | null>(null)
 export const remainingHoursAtom = atom({
     leftHours: Infinity,
     allowedHours: 0,

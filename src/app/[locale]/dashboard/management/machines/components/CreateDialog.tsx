@@ -2,7 +2,7 @@
 
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
 import { createMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -29,10 +29,17 @@ export function CreateSubjectDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedMachineIdAtom)
-    const { laboratories } = useLaboratories()
+    const { activeLaboratories } = useLaboratories()
     const router = useRouter()
     const [serieError, setSerieError] = useState('')
     const { setMachines } = useMachines()
+
+    const laboratoriesOptions = useMemo(() => {
+        return activeLaboratories.map(laboratory => ({
+            value: laboratory.id,
+            label: laboratory.name,
+        }))
+    }, [activeLaboratories])
 
     const onAction = useCallback(
         (formData: FormData) => {
@@ -145,10 +152,7 @@ export function CreateSubjectDialog() {
                     <CompletSelect
                         label='Laboratorio Asignado'
                         name='laboratory_id'
-                        options={laboratories.map(t => ({
-                            label: t.name,
-                            value: t.id,
-                        }))}
+                        options={laboratoriesOptions}
                         icon={UserIcon}
                     />
 

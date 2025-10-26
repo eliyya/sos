@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
 import { editMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -17,7 +17,7 @@ import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
-import { MACHINE_STATUS } from '@/prisma/generated/enums'
+import { MACHINE_STATUS, STATUS } from '@/prisma/generated/enums'
 import { useMachines } from '@/hooks/machines.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
@@ -27,9 +27,26 @@ export function EditDialog() {
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedMachineAtom)
     const [message, setMessage] = useState('')
-    const { laboratories } = useLaboratories()
+    const { laboratories, activeLaboratories } = useLaboratories()
     const router = useRouter()
     const { setMachines, refetchMachines } = useMachines()
+    const laboratoriesOptions = useMemo(() => {
+        return activeLaboratories.map(laboratory => ({
+            value: laboratory.id,
+            label: laboratory.name,
+        }))
+    }, [activeLaboratories])
+    const originalLaboratory = useMemo(() => {
+        if (!old) return null
+        const lab = laboratories.find(
+            laboratory => laboratory.id === old?.laboratory_id,
+        )
+        if (!lab)
+            return { value: old.laboratory_id, label: 'Laboratorio eliminado' }
+        if (lab.status === STATUS.ARCHIVED)
+            return { value: lab.id, label: `(Archivado) ${lab.name}` }
+        return { value: lab.id, label: lab.name }
+    }, [laboratories, old])
 
     const onAction = useCallback(
         (formData: FormData) => {
@@ -154,23 +171,12 @@ export function EditDialog() {
                     ></RetornableCompletInput>
                     <RetornableCompletSelect
                         isClearable
-                        originalValue={
-                            laboratories
-                                .map(l => ({
-                                    label: l.name,
-                                    value: l.id,
-                                }))
-                                .find(l => l.value === old.laboratory_id) ??
-                            null
-                        }
+                        originalValue={originalLaboratory}
                         label='Laboratorio Asignado'
-                        options={laboratories.map(l => ({
-                            label: l.name,
-                            value: l.id,
-                        }))}
+                        options={laboratoriesOptions}
                         name='laboratory_id'
                         icon={User}
-                    ></RetornableCompletSelect>
+                    />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save
