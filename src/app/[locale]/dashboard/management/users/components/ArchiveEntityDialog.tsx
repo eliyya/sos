@@ -18,7 +18,7 @@ import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { useUsers } from '@/hooks/users.hooks'
 import { STATUS } from '@/prisma/generated/browser'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 

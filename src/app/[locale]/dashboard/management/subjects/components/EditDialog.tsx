@@ -15,7 +15,7 @@ import {
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import app from '@eliyya/type-routes'
 
