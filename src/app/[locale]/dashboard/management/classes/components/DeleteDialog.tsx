@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Ban, Trash2, User as UserIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
 import { deleteClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
@@ -22,6 +22,7 @@ import { useSubjects } from '@/hooks/subjects.hooks'
 import { useClasses } from '@/hooks/classes.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function DeleteDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
@@ -33,6 +34,33 @@ export function DeleteDialog() {
     const { careers } = useCareers()
     const { setClasses, refetchClasses } = useClasses()
     const router = useRouter()
+
+    const subjectName = useMemo(() => {
+        if (!entity) return ''
+        const subject = subjects.find(s => s.id === entity.subject_id)
+        if (!subject) return 'Deleted subject'
+        if (subject.status === STATUS.ARCHIVED)
+            return `(Archived) ${subject.name}`
+        return subject.name
+    }, [entity, subjects])
+
+    const teacherName = useMemo(() => {
+        if (!entity) return ''
+        const teacher = users.find(t => t.id === entity.teacher_id)
+        if (!teacher) return 'Deleted teacher'
+        if (teacher.status === STATUS.ARCHIVED)
+            return `(Archived) ${teacher.name}`
+        return teacher.name
+    }, [entity, users])
+
+    const careerName = useMemo(() => {
+        if (!entity) return ''
+        const career = careers.find(c => c.id === entity.career_id)
+        if (!career) return 'Deleted career'
+        if (career.status === STATUS.ARCHIVED)
+            return `(Archived) ${career.name}`
+        return career.name
+    }, [entity, careers])
 
     const onAction = useCallback(() => {
         if (!entity) return
@@ -60,9 +88,6 @@ export function DeleteDialog() {
 
     if (!entity) return null
 
-    const subjectName = subjects.find(s => s.id === entity.subject_id)?.name
-    const teacherName = users.find(t => t.id === entity.teacher_id)?.name
-
     return (
         <Dialog
             open={open === 'DELETE'}
@@ -73,8 +98,8 @@ export function DeleteDialog() {
                     <DialogTitle>{t('delete_class')}</DialogTitle>
                     <DialogDescription>
                         {t('confirm_delete_class', {
-                            subjectName: subjectName!,
-                            teacherName: teacherName!,
+                            subjectName,
+                            teacherName,
                         })}{' '}
                         <strong>{t('is_irreversible')}</strong>
                     </DialogDescription>
@@ -89,25 +114,19 @@ export function DeleteDialog() {
                     <CompletInput
                         label={t('teacher')}
                         disabled
-                        value={
-                            users.find(t => t.id === entity.teacher_id)?.name
-                        }
+                        value={teacherName}
                         icon={UserIcon}
                     />
                     <CompletInput
                         label={t('subject')}
                         disabled
-                        value={
-                            subjects.find(s => s.id === entity.subject_id)?.name
-                        }
+                        value={subjectName}
                         icon={UserIcon}
                     />
                     <CompletInput
                         label={t('career')}
                         disabled
-                        value={
-                            careers.find(c => c.id === entity.career_id)?.name
-                        }
+                        value={careerName}
                         icon={UserIcon}
                     />
                     <CompletInput

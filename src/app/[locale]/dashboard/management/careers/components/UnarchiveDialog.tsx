@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 import { useCareers } from '@/hooks/careers.hooks'
+import { CompletInput } from '@/components/Inputs'
 
 export function UnarchiveDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
@@ -84,6 +85,16 @@ export function UnarchiveDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+                    <CompletInput
+                        label={t('name')}
+                        disabled
+                        value={entity.name}
+                    />
+                    <CompletInput
+                        label={t('alias')}
+                        disabled
+                        value={entity.alias}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             variant={'secondary'}

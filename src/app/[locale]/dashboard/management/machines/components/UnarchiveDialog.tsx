@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, MonitorCheckIcon } from 'lucide-react'
+import { Ban, MonitorCheckIcon, UserIcon } from 'lucide-react'
 import { Activity, useCallback, useState, useTransition } from 'react'
 import { availableMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
@@ -18,6 +18,7 @@ import { useMachines } from '@/hooks/machines.hooks'
 import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { CompletInput } from '@/components/Inputs'
 
 export function UnarchiveDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
@@ -76,7 +77,36 @@ export function UnarchiveDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={entity.id} name='id' />
+                    <CompletInput
+                        disabled
+                        value={entity.number}
+                        label='Numero'
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={entity.processor}
+                        label='Procesador'
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={entity.ram}
+                        label='RAM'
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        label='Almacenamiento'
+                        value={entity.storage}
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        label='Serie'
+                        value={entity?.serie ?? ''}
+                        icon={UserIcon}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             variant={'secondary'}

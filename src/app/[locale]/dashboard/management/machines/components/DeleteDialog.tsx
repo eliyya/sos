@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
+import { Ban, Trash2, UserIcon } from 'lucide-react'
 import { Activity, useCallback, useState, useTransition } from 'react'
 import { deleteMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
@@ -17,6 +17,7 @@ import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
 import { useRouter } from 'next/navigation'
 import { useMachines } from '@/hooks/machines.hooks'
 import app from '@eliyya/type-routes'
+import { CompletInput } from '@/components/Inputs'
 
 export function DeleteDialog() {
     const [openedDialog, openDialog] = useAtom(openDialogAtom)
@@ -75,7 +76,36 @@ export function DeleteDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={entity.id} name='id' />
+                    <CompletInput
+                        disabled
+                        value={entity.number}
+                        label='Numero'
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={entity.processor}
+                        label='Procesador'
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={entity.ram}
+                        label='RAM'
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        label='Almacenamiento'
+                        value={entity.storage}
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        label='Serie'
+                        value={entity?.serie ?? ''}
+                        icon={UserIcon}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Archive, Ban } from 'lucide-react'
+import { Archive, Ban, ClockFadingIcon, SquarePenIcon } from 'lucide-react'
 import { Activity, useCallback, useState, useTransition } from 'react'
 import { archiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
@@ -17,6 +17,7 @@ import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { CompletInput } from '@/components/Inputs'
 
 export function ArchiveDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
@@ -75,6 +76,26 @@ export function ArchiveDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+                    <CompletInput
+                        disabled
+                        value={entity.name}
+                        label='Nombre'
+                        icon={SquarePenIcon}
+                    />
+                    <div className='flex w-full gap-4'>
+                        <CompletInput
+                            disabled
+                            value={entity.theory_hours}
+                            label='Horas Teoricas'
+                            icon={ClockFadingIcon}
+                        />
+                        <CompletInput
+                            disabled
+                            value={entity.practice_hours}
+                            label='Horas Prácticas'
+                            icon={ClockFadingIcon}
+                        />
+                    </div>
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

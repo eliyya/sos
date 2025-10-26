@@ -1,8 +1,8 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
-import { Activity, useState, useTransition } from 'react'
+import { AtSignIcon, Ban, Trash2, UserIcon } from 'lucide-react'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
 import { deleteUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -17,6 +17,7 @@ import { dialogOpenedAtom, entityToEditAtom } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { useUsers } from '@/hooks/users.hooks'
+import { CompletInput } from '@/components/Inputs'
 
 export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
@@ -26,6 +27,39 @@ export function DeleteEntityDialog() {
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
     const { setUsers } = useUsers()
+
+    const role = useMemo(() => {
+        if (!entity) return ''
+        const role = roles.find(r => r.id === entity.role_id)
+        if (!role) return 'Deleted Role'
+        return role.name
+    }, [entity.role_id])
+
+    const onAction = useCallback(() => {
+        if (!entity) return
+        startTransition(async () => {
+            const response = await deleteUser(entity.id)
+            if (response.status === 'error') {
+                if (
+                    response.type === 'not-allowed' &&
+                    response.message === 'Unique admin cannot be deleted'
+                ) {
+                    setOpen('preventArchiveAdmin')
+                    return
+                }
+                if (response.type === 'not-found') {
+                    setMessage('El usuario no se encontro')
+                    setTimeout(() => setMessage(''), 5_000)
+                    return
+                }
+                setMessage('Algo sucedio mal, intente nuevamente')
+                setTimeout(() => setMessage(''), 5_000)
+            } else {
+                setUsers(users => users.filter(user => user.id !== entity.id))
+                setOpen(null)
+            }
+        })
+    }, [entity, startTransition, setOpen, setUsers])
 
     if (!entity || !adminRole) return null
 
@@ -46,42 +80,30 @@ export function DeleteEntityDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const id = data.get('user_id') as string
-                            const response = await deleteUser(id)
-                            if (response.status === 'error') {
-                                if (
-                                    response.type === 'not-allowed' &&
-                                    response.message ===
-                                        'Unique admin cannot be deleted'
-                                ) {
-                                    setOpen('preventArchiveAdmin')
-                                    return
-                                }
-                                if (response.type === 'not-found') {
-                                    setMessage('El usuario no se encontro')
-                                    setTimeout(() => setMessage(''), 5_000)
-                                    return
-                                }
-                                setMessage(
-                                    'Algo sucedio mal, intente nuevamente',
-                                )
-                                setTimeout(() => setMessage(''), 5_000)
-                            } else {
-                                setUsers(users =>
-                                    users.filter(user => user.id !== id),
-                                )
-                                setOpen(null)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={entity.id} name='user_id' />
+                    <CompletInput
+                        label='Name'
+                        disabled
+                        icon={UserIcon}
+                        value={entity.name}
+                    />
+                    <CompletInput
+                        label='Username'
+                        disabled
+                        icon={AtSignIcon}
+                        value={entity.username}
+                    />
+                    <CompletInput
+                        label='Role'
+                        disabled
+                        icon={UserIcon}
+                        value={role}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

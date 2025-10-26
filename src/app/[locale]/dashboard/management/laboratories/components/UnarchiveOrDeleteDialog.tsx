@@ -1,7 +1,14 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
+import {
+    ArchiveRestoreIcon,
+    BanIcon,
+    Clock8Icon,
+    MicroscopeIcon,
+    SquarePenIcon,
+    TrashIcon,
+} from 'lucide-react'
 import { Activity, useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
@@ -19,6 +26,8 @@ import {
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { useRouter } from 'next/navigation'
 import { unarchiveLaboratory } from '@/actions/laboratories.actions'
+import { CompletInput } from '@/components/Inputs'
+import { LABORATORY_TYPE } from '@/prisma/generated/enums'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
@@ -28,35 +37,33 @@ export function UnarchiveOrDeleteDialog() {
     const { setLaboratories, refetchLaboratories } = useLaboratories()
     const router = useRouter()
 
-    const onAction = useCallback(
-        async (id: string) => {
-            startTransition(async () => {
-                const response = await unarchiveLaboratory(id)
-                if (response.status === 'success') {
-                    setLaboratories(labs =>
-                        labs.map(lab =>
-                            lab.id !== id ? lab : response.laboratory,
-                        ),
-                    )
+    const onAction = useCallback(async () => {
+        if (!entity) return
+        startTransition(async () => {
+            const response = await unarchiveLaboratory(entity.id)
+            if (response.status === 'success') {
+                setLaboratories(labs =>
+                    labs.map(lab =>
+                        lab.id !== entity.id ? lab : response.laboratory,
+                    ),
+                )
+                setOpen(null)
+            } else {
+                if (response.type === 'not-found') {
+                    await refetchLaboratories()
                     setOpen(null)
-                } else {
-                    if (response.type === 'not-found') {
-                        await refetchLaboratories()
-                        setOpen(null)
-                    } else if (response.type === 'unexpected') {
-                        setMessage('Ha ocurrido un error, intente más tarde')
-                    } else if (response.type === 'permission') {
-                        setMessage(
-                            'No tienes permiso para archivar este laboratorio',
-                        )
-                    } else if (response.type === 'unauthorized') {
-                        router.replace('/login')
-                    }
+                } else if (response.type === 'unexpected') {
+                    setMessage('Ha ocurrido un error, intente más tarde')
+                } else if (response.type === 'permission') {
+                    setMessage(
+                        'No tienes permiso para archivar este laboratorio',
+                    )
+                } else if (response.type === 'unauthorized') {
+                    router.replace('/login')
                 }
-            })
-        },
-        [setLaboratories, setOpen, refetchLaboratories, router],
-    )
+            }
+        })
+    }, [setLaboratories, setOpen, refetchLaboratories, router])
 
     if (!entity) return null
 
@@ -76,16 +83,40 @@ export function UnarchiveOrDeleteDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        const id = data.get('id') as string
-                        onAction(id)
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={entity.id} name='id' />
+                    <CompletInput
+                        label='Nombre'
+                        disabled
+                        value={entity.name}
+                        icon={SquarePenIcon}
+                    />
+                    <CompletInput
+                        label='Tipo de Laboratorio'
+                        disabled
+                        value={
+                            entity.type === LABORATORY_TYPE.LABORATORY ?
+                                'Laboratorio'
+                            :   'Centro de Computo'
+                        }
+                        icon={MicroscopeIcon}
+                    />
+                    <CompletInput
+                        label='Horario de Apertura'
+                        disabled
+                        value={entity.open_hour}
+                        icon={Clock8Icon}
+                    />
+                    <CompletInput
+                        label='Horario de Cierre'
+                        disabled
+                        value={entity.close_hour}
+                        icon={Clock8Icon}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             type='button'

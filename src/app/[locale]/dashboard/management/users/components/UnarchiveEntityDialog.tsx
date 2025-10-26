@@ -1,8 +1,8 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { ArchiveRestore, Ban } from 'lucide-react'
-import { Activity, useState, useTransition } from 'react'
+import { ArchiveRestore, AtSignIcon, Ban, UserIcon } from 'lucide-react'
+import { Activity, useMemo, useState, useTransition } from 'react'
 import { unarchiveUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -16,6 +16,8 @@ import { MessageError } from '@/components/Error'
 import { dialogOpenedAtom, entityToEditAtom } from '@/global/users.globals'
 import { useUsers } from '@/hooks/users.hooks'
 import { STATUS } from '@/prisma/generated/enums'
+import { CompletInput } from '@/components/Inputs'
+import { useRoles } from '@/hooks/roles.hooks'
 
 export function UnarchiveEntityDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
@@ -23,6 +25,14 @@ export function UnarchiveEntityDialog() {
     const entity = useAtomValue(entityToEditAtom)
     const { setUsers } = useUsers()
     const [message, setMessage] = useState('')
+    const { roles } = useRoles()
+
+    const role = useMemo(() => {
+        if (!entity) return ''
+        const role = roles.find(r => r.id === entity.role_id)
+        if (!role) return 'Deleted Role'
+        return role.name
+    }, [entity.role_id])
 
     if (!entity) return null
 
@@ -69,7 +79,24 @@ export function UnarchiveEntityDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={entity.id} name='id' />
+                    <CompletInput
+                        label='Name'
+                        disabled
+                        icon={UserIcon}
+                        value={entity.name}
+                    />
+                    <CompletInput
+                        label='Username'
+                        disabled
+                        icon={AtSignIcon}
+                        value={entity.username}
+                    />
+                    <CompletInput
+                        label='Role'
+                        disabled
+                        icon={UserIcon}
+                        value={role}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             variant={'secondary'}

@@ -1,8 +1,16 @@
 'use client'
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import {
+    Ban,
+    CalendarRangeIcon,
+    GraduationCapIcon,
+    HashIcon,
+    Trash2,
+    UserIcon,
+    UsersIcon,
+} from 'lucide-react'
+import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
 import { deleteStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -17,6 +25,9 @@ import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
 import { useRouter } from 'next/navigation'
 import { useStudents } from '@/hooks/students.hooks'
 import app from '@eliyya/type-routes'
+import { CompletInput } from '@/components/Inputs'
+import { useCareers } from '@/hooks/careers.hooks'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function DeleteDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
@@ -25,6 +36,16 @@ export function DeleteDialog() {
     const [message, setMessage] = useState('')
     const router = useRouter()
     const { setStudents, refetchStudents } = useStudents()
+    const { careers } = useCareers()
+
+    const career = useMemo(() => {
+        if (!entity) return ''
+        const career = careers.find(career => career.id === entity.career_id)
+        if (!career) return 'Deleted Career'
+        if (career.status === STATUS.ARCHIVED)
+            return `(Archived) ${career.alias}`
+        return career.alias
+    }, [entity, careers])
 
     const onAction = useCallback(() => {
         if (!entity) return
@@ -73,6 +94,36 @@ export function DeleteDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+                    <CompletInput
+                        disabled
+                        value={entity.nc}
+                        label='Numero de Control'
+                        icon={HashIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={`${entity.firstname} ${entity.lastname}`}
+                        label='Nombres'
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={entity.semester}
+                        label='Semestre'
+                        icon={CalendarRangeIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={career}
+                        label='Carrera'
+                        icon={GraduationCapIcon}
+                    />
+                    <CompletInput
+                        disabled
+                        value={entity.group}
+                        label='Grupo'
+                        icon={UsersIcon}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

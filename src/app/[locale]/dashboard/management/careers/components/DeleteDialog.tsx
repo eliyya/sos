@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'
 import { useCareers } from '@/hooks/careers.hooks'
+import { CompletInput } from '@/components/Inputs'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
@@ -80,6 +81,16 @@ export function DeleteDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+                    <CompletInput
+                        label={t('name')}
+                        disabled
+                        value={entity.name}
+                    />
+                    <CompletInput
+                        label={t('alias')}
+                        disabled
+                        value={entity.alias}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}

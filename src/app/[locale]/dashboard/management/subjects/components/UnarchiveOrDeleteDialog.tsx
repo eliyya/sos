@@ -1,7 +1,13 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
+import {
+    ArchiveRestoreIcon,
+    BanIcon,
+    ClockFadingIcon,
+    SquarePenIcon,
+    TrashIcon,
+} from 'lucide-react'
 import { Activity, useCallback, useState, useTransition } from 'react'
 import { unarchiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
@@ -17,6 +23,7 @@ import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'
+import { CompletInput } from '@/components/Inputs'
 
 export function UnarchiveOrDeleteDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
@@ -76,6 +83,26 @@ export function UnarchiveOrDeleteDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+                    <CompletInput
+                        disabled
+                        value={entity.name}
+                        label='Nombre'
+                        icon={SquarePenIcon}
+                    />
+                    <div className='flex w-full gap-4'>
+                        <CompletInput
+                            disabled
+                            value={entity.theory_hours}
+                            label='Horas Teoricas'
+                            icon={ClockFadingIcon}
+                        />
+                        <CompletInput
+                            disabled
+                            value={entity.practice_hours}
+                            label='Horas Prácticas'
+                            icon={ClockFadingIcon}
+                        />
+                    </div>
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             type='button'

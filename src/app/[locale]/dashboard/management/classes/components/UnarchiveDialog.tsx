@@ -1,7 +1,15 @@
 'use client'
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { ArchiveRestore, Ban } from 'lucide-react'
+import {
+    ArchiveRestore,
+    Ban,
+    BookAIcon,
+    GraduationCapIcon,
+    HashIcon,
+    UserIcon,
+    UsersIcon,
+} from 'lucide-react'
 import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
 import { unarchiveClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
@@ -22,6 +30,7 @@ import app from '@eliyya/type-routes'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import { STATUS } from '@/prisma/client/enums'
+import { CompletInput } from '@/components/Inputs'
 
 export function UnarchiveDialog() {
     const t = useTranslations('classes')
@@ -113,6 +122,36 @@ export function UnarchiveDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+                    <CompletInput
+                        label={t('group')}
+                        disabled
+                        value={entity.group + ''}
+                        icon={UsersIcon}
+                    />
+                    <CompletInput
+                        label={t('semester')}
+                        disabled
+                        value={entity.semester + ''}
+                        icon={HashIcon}
+                    />
+                    <CompletInput
+                        label={t('teacher')}
+                        disabled
+                        value={teacher}
+                        icon={UserIcon}
+                    />
+                    <CompletInput
+                        label={t('subject')}
+                        disabled
+                        value={subject}
+                        icon={BookAIcon}
+                    />
+                    <CompletInput
+                        label={t('career')}
+                        disabled
+                        value={career}
+                        icon={GraduationCapIcon}
+                    />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             variant={'secondary'}

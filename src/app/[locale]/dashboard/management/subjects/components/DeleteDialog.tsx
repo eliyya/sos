@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
+import { Ban, ClockFadingIcon, SquarePenIcon, Trash2 } from 'lucide-react'
 import { Activity, useCallback, useState, useTransition } from 'react'
 import { deleteSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
@@ -17,6 +17,7 @@ import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
 import { useRouter } from 'next/router'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import app from '@eliyya/type-routes'
+import { CompletInput } from '@/components/Inputs'
 
 export function DeleteDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
@@ -78,6 +79,26 @@ export function DeleteDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+                    <CompletInput
+                        disabled
+                        value={subject.name}
+                        label='Nombre'
+                        icon={SquarePenIcon}
+                    />
+                    <div className='flex w-full gap-4'>
+                        <CompletInput
+                            disabled
+                            value={subject.theory_hours}
+                            label='Horas Teoricas'
+                            icon={ClockFadingIcon}
+                        />
+                        <CompletInput
+                            disabled
+                            value={subject.practice_hours}
+                            label='Horas Prácticas'
+                            icon={ClockFadingIcon}
+                        />
+                    </div>
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
                             disabled={inTransition}
