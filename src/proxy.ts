@@ -30,12 +30,16 @@ handler.set(/^\/[^/]+\/auth\/login$/, async ctx => {
     return ctx.next()
 })
 
-handler.set(/^\/[^/]+\/schedule\/null$/, async ctx => {
+handler.set(/^\/([^/]+\/)?schedule\/null$/, async ctx => {
     const lab = await db.laboratory.findFirst({
         select: { id: true },
         where: { type: LABORATORY_TYPE.LABORATORY },
     })
-    if (!lab) return ctx.next()
+    if (!lab) {
+        if (!ctx.request.nextUrl.pathname.startsWith('/schedule'))
+            return ctx.next()
+        return ctx.redirect(app.$locale.schedule.null('es'))
+    }
 
     const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
     return ctx.redirect(
@@ -49,27 +53,33 @@ handler.set(/^\/[^/]+\/schedule\/null$/, async ctx => {
     )
 })
 
-handler.set(/^\/[^/]+\/schedule(\/.*)?$/, async ctx => {
-    const [, , lab_id, day, month, year] =
+handler.set(/^\/([^/]+\/)?schedule(\/.*)?$/, async ctx => {
+    let [, locale, sch, lab_id, day, month, year] =
         ctx.request.nextUrl.pathname.split('/')
-
+    if (sch !== 'schedule') {
+        year = month
+        month = day
+        day = lab_id
+        lab_id = sch
+        sch = locale
+        locale = 'es'
+    }
     const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
 
-    let l_id = lab_id
-    if (!l_id) {
+    if (!lab_id) {
         const lab = await db.laboratory.findFirst({
             select: { id: true },
             where: { type: LABORATORY_TYPE.LABORATORY },
         })
         if (!lab) return ctx.redirect(app.$locale.schedule.null('es'))
-        l_id = lab.id
+        lab_id = lab.id
     }
 
     if (!lab_id || !day || !month || !year)
         return ctx.redirect(
             app.$locale.schedule.$id.$day.$month.$year(
                 'es',
-                l_id,
+                lab_id,
                 day ?? now.day,
                 month ?? now.month,
                 year ?? now.year,
@@ -78,15 +88,17 @@ handler.set(/^\/[^/]+\/schedule(\/.*)?$/, async ctx => {
     return ctx.done()
 })
 
-handler.use(/^\/[^/]+\/dashboard/, async ctx => {
+handler.use(/^\/([^/]+\/)?dashboard/, async ctx => {
     const session = await auth.api.getSession(ctx.request)
-
     if (!session) return ctx.redirect(app.$locale.auth.login('es'))
     const permissions = new PermissionsBitField(
         BigInt(session.user.permissions),
     )
-    if (permissions.any(ADMIN_BITS)) return ctx.next()
-    return ctx.redirect(app.$locale.schedule.null('es'))
+    if (!permissions.any(ADMIN_BITS))
+        return ctx.redirect(app.$locale.schedule.null('es'))
+    const path = ctx.request.nextUrl.pathname
+    if (!path.startsWith('/dashboard')) return ctx.next()
+    return ctx.redirect(`/es${path}`)
 })
 
 handler.use(/\/[^/]+\/dashboard\/reports\/(lab|cc)\/?/, async ctx => {
