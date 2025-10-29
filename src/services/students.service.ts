@@ -288,3 +288,46 @@ export const getStudentsEffect = () =>
             }),
         )
     })
+
+interface SearchStudentsProps {
+    query?: string
+    archived?: boolean
+}
+export const searchStudentsEffect = ({
+    query = '',
+    archived = false,
+}: SearchStudentsProps) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const students = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.student.findMany({
+                        where: {
+                            status: archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                            OR: [
+                                {
+                                    nc: {
+                                        contains: query,
+                                    },
+                                },
+                                {
+                                    lastname: {
+                                        contains: query,
+                                    },
+                                },
+                                {
+                                    firstname: {
+                                        contains: query,
+                                    },
+                                },
+                            ],
+                        },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+
+        return students
+    })
