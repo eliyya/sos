@@ -20,15 +20,16 @@ import { DeleteDialog } from './DeleteDialog'
 import { EditDialog } from './EditDialog'
 import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
-import { useStudents } from '@/hooks/students.hooks'
+import { useSearchStudents, useStudents } from '@/hooks/students.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useQueryParam } from '@/hooks/query.hooks'
 import { useSetAtom } from 'jotai'
+import { use } from 'react'
 
 export function EntityTable() {
-    const [archived] = useQueryParam('archived', false)
-    const { students } = useStudents()
     const { careers } = useCareers()
+    const { studentsPromise } = useSearchStudents()
+    const students = use(studentsPromise)
 
     return (
         <>
@@ -43,28 +44,20 @@ export function EntityTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {students
-                        // TODO: implement search
-                        .filter(
-                            u =>
-                                (u.status === STATUS.ACTIVE && !archived) ||
-                                (u.status === STATUS.ARCHIVED && archived),
-                        )
-                        .map(entity => (
-                            <TableRow key={entity.nc}>
-                                <TableCell>{entity.firstname}</TableCell>
-                                <TableCell>{entity.lastname}</TableCell>
-                                <TableCell>
-                                    {careers.find(
-                                        c => c.id === entity.career_id,
-                                    )?.alias ?? 'Deleted Career'}
-                                </TableCell>
-                                <TableCell>{entity.semester}</TableCell>
-                                <TableCell className='flex gap-1'>
-                                    <Buttons entity={entity} />
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                    {students.map(entity => (
+                        <TableRow key={entity.nc}>
+                            <TableCell>{entity.firstname}</TableCell>
+                            <TableCell>{entity.lastname}</TableCell>
+                            <TableCell>
+                                {careers.find(c => c.id === entity.career_id)
+                                    ?.alias ?? 'Deleted Career'}
+                            </TableCell>
+                            <TableCell>{entity.semester}</TableCell>
+                            <TableCell className='flex gap-1'>
+                                <Buttons entity={entity} />
+                            </TableCell>
+                        </TableRow>
+                    ))}
                 </TableBody>
             </Table>
             <EditDialog />

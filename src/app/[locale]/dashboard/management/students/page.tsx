@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'
@@ -16,7 +17,9 @@ export default async function StudentsPage() {
                 <CreateSubjectDialog />
             </div>
             <Filters />
-            <EntityTable />
+            <Suspense fallback={<div>loading...</div>}>
+                <EntityTable />
+            </Suspense>
         </>
     )
 }

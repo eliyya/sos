@@ -1,4 +1,4 @@
-import { getStudents } from '@/actions/students.actions'
+import { getStudents, searchStudents } from '@/actions/students.actions'
 import { studentsAtom } from '@/global/students.globals'
 import { STATUS } from '@/prisma/generated/enums'
 import { atom, useAtom } from 'jotai'
@@ -35,8 +35,14 @@ export function useStudents() {
 }
 
 export function useSearchStudents() {
-    const [q] = useQueryParam('q', '')
-    const [a] = useQueryParam('archived', false)
-    const studentsPromise = getStudents({ q, archived: a })
-    return { query: q, archived: a, studentsPromise } as const
+    const [query] = useQueryParam('q', '')
+    const [archived] = useQueryParam('archived', false)
+
+    const studentsPromise = getSearchStudents(query, archived)
+
+    return { query, archived, studentsPromise } as const
+}
+
+function getSearchStudents(query: string, archived: boolean) {
+    return searchStudents({ query, archived })
 }

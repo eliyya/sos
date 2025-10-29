@@ -18,6 +18,7 @@ import {
     deleteStudentEffect,
     editStudentEffect,
     getStudentsEffect,
+    searchStudentsEffect,
     unarchiveStudentEffect,
 } from '@/services/students.service'
 import { Effect } from 'effect'
@@ -375,6 +376,25 @@ export async function getStudents() {
     return await Effect.runPromise(
         Effect.scoped(
             getStudentsEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: students => students,
+                        onFailure: error => {
+                            console.log(error)
+                            return []
+                        },
+                    }),
+                ),
+        ),
+    )
+}
+
+type SearchStudentsProps = Parameters<typeof searchStudentsEffect>[0]
+export async function searchStudents(props: SearchStudentsProps) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            searchStudentsEffect(props)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
                     Effect.match({
