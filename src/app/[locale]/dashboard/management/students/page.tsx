@@ -4,6 +4,7 @@ import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'
 import { EntityTable } from './components/EntityTable'
 import { Filters } from './components/SearchInput'
+import { SearchStudentsProvider } from '@/contexts/students.context'
 
 export default async function StudentsPage() {
     return (
@@ -17,9 +18,11 @@ export default async function StudentsPage() {
                 <CreateSubjectDialog />
             </div>
             <Filters />
-            <Suspense fallback={<div>loading...</div>}>
-                <EntityTable />
-            </Suspense>
+            <SearchStudentsProvider>
+                <Suspense fallback={<div>loading...</div>}>
+                    <EntityTable />
+                </Suspense>
+            </SearchStudentsProvider>
         </>
     )
 }

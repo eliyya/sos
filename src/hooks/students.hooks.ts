@@ -2,8 +2,9 @@ import { getStudents, searchStudents } from '@/actions/students.actions'
 import { studentsAtom } from '@/global/students.globals'
 import { STATUS } from '@/prisma/generated/enums'
 import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect, useMemo } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
+import { Student } from '@/prisma/generated/browser'
 
 const isStudentsFetchedAtom = atom(false)
 
@@ -37,12 +38,13 @@ export function useStudents() {
 export function useSearchStudents() {
     const [query] = useQueryParam('q', '')
     const [archived] = useQueryParam('archived', false)
+    const [studentsPromise, setStudentsPromise] = useState<Promise<Student[]>>(
+        Promise.resolve([]),
+    )
 
-    const studentsPromise = getSearchStudents(query, archived)
+    useEffect(() => {
+        setStudentsPromise(searchStudents({ query, archived }))
+    }, [query, archived])
 
     return { query, archived, studentsPromise } as const
-}
-
-function getSearchStudents(query: string, archived: boolean) {
-    return searchStudents({ query, archived })
 }
