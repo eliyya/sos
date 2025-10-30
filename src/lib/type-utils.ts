@@ -1,3 +1,8 @@
+import type { Effect } from 'effect'
+
+export type SuccessOf<T> =
+    T extends Effect.Effect<infer A, any, any> ? A : never
+
 export type Branded<T extends Record<string, bigint>> = {
     [K in keyof T]: T[K] & { __tag: K }
 }

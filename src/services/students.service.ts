@@ -315,19 +315,47 @@ export const searchStudentsEffect = ({
                                 {
                                     lastname: {
                                         contains: query,
+                                        mode: 'insensitive',
                                     },
                                 },
                                 {
                                     firstname: {
                                         contains: query,
+                                        mode: 'insensitive',
                                     },
                                 },
                             ],
+                        },
+                        include: {
+                            career: {
+                                select: {
+                                    alias: true,
+                                    id: true,
+                                    status: true,
+                                },
+                            },
                         },
                     }),
                 catch: err => new PrismaError(err),
             }),
         )
 
-        return students
+        const studentsParsed = students.map(student => {
+            if (student.career.status === STATUS.DELETED)
+                return {
+                    ...student,
+                    career: null,
+                }
+            if (student.career.status === STATUS.ARCHIVED)
+                return {
+                    ...student,
+                    career: {
+                        ...student.career,
+                        alias: `(Archived) ${student.career.alias}`,
+                    },
+                }
+            return student
+        })
+
+        return studentsParsed
     })

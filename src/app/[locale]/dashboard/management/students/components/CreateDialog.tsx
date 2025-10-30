@@ -51,6 +51,13 @@ export function CreateSubjectDialog() {
     const setEntityToEdit = useSetAtom(selectedStudentNCAtom)
     const { setStudents } = useStudents()
     const router = useRouter()
+    // errors
+    const setErrorNc = useSetAtom(errorNcAtom)
+    const setErrorFirstname = useSetAtom(errorFirstnameAtom)
+    const setErrorLastname = useSetAtom(errorLastnameAtom)
+    const setErrorCareer = useSetAtom(errorCareerAtom)
+    const setErrorGroup = useSetAtom(errorGroupAtom)
+    const setErrorSemester = useSetAtom(errorSemesterAtom)
 
     const onAction = useCallback(
         (formData: FormData) => {
@@ -84,7 +91,15 @@ export function CreateSubjectDialog() {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'invalid-input') {
                     if (res.field === 'firstname') {
-                        setMessage('El nombre es requerido')
+                        setErrorFirstname(res.message)
+                    } else if (res.field === 'lastname') {
+                        setErrorLastname(res.message)
+                    } else if (res.field === 'career_id') {
+                        setErrorCareer(res.message)
+                    } else if (res.field === 'group') {
+                        setErrorGroup(res.message)
+                    } else if (res.field === 'semester') {
+                        setErrorSemester(res.message)
                     }
                 } else if (res.type === 'unexpected') {
                     setMessage(
@@ -241,6 +256,7 @@ export function CareerInput() {
     return (
         <CompletSelect
             label='Carrera'
+            required
             name='career_id'
             options={activeCareersOptions}
             icon={GraduationCapIcon}

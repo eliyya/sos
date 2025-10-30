@@ -9,6 +9,7 @@ import { ReactNode } from 'react'
 import { ToastProvider, ToastViewport } from '@/components/Toast'
 import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
+import { MantineProvider } from '@mantine/core'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -37,7 +38,9 @@ export default async function RootLayout({
                 >
                     <ToastProvider swipeDirection='up' duration={3000}>
                         <NextIntlClientProvider>
-                            <Provider>{children}</Provider>
+                            <Provider>
+                                <MantineProvider>{children}</MantineProvider>
+                            </Provider>
                         </NextIntlClientProvider>
                         <ToastViewport />
                     </ToastProvider>

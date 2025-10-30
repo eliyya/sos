@@ -1,6 +1,6 @@
 'use client'
 
-import { Student, STATUS, Career } from '@/prisma/generated/browser'
+import { Student, STATUS } from '@/prisma/generated/browser'
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/Button'
 import {
@@ -8,21 +8,27 @@ import {
     selectedStudentNCAtom,
 } from '@/global/students.globals'
 import { useSetAtom } from 'jotai'
-import { TableCell, TableRow } from '@/components/Table'
+import { SearchStudentsPromise } from '@/hooks/students.hooks'
+import { use } from 'react'
+import { SearchStudentsContext } from '@/contexts/students.context'
+import {
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
+    TableCell,
+} from '@/components/Table'
 
 interface StudentItemListProps {
-    student: Student
-    careers: Career[]
+    student: Awaited<SearchStudentsPromise>[number]
 }
-export function StudentItemList({ student, careers }: StudentItemListProps) {
+export function StudentItemList({ student }: StudentItemListProps) {
     return (
         <TableRow key={student.nc}>
             <TableCell>{student.firstname}</TableCell>
             <TableCell>{student.lastname}</TableCell>
-            <TableCell>
-                {careers.find(c => c.id === student.career_id)?.alias ??
-                    'Deleted Career'}
-            </TableCell>
+            <TableCell>{student.career?.alias || 'Deleted Career'}</TableCell>
             <TableCell>{student.semester}</TableCell>
             <TableCell className='flex gap-1'>
                 <Buttons entity={student} />
@@ -88,4 +94,30 @@ function Buttons({ entity }: ButtonsProps) {
             </>
         )
     return <></>
+}
+
+export function StudentsTable() {
+    const { studentsPromise } = use(SearchStudentsContext)
+    const students = use(studentsPromise)
+
+    return (
+        <>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Apellido</TableHead>
+                        <TableHead>Carrera</TableHead>
+                        <TableHead>Semestre</TableHead>
+                        <TableHead>Options</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {students.map(entity => (
+                        <StudentItemList key={entity.nc} student={entity} />
+                    ))}
+                </TableBody>
+            </Table>
+        </>
+    )
 }

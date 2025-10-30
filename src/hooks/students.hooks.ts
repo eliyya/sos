@@ -35,12 +35,12 @@ export function useStudents() {
     } as const
 }
 
+export type SearchStudentsPromise = ReturnType<typeof searchStudents>
 export function useSearchStudents() {
     const [query] = useQueryParam('q', '')
     const [archived] = useQueryParam('archived', false)
-    const [studentsPromise, setStudentsPromise] = useState<Promise<Student[]>>(
-        Promise.resolve([]),
-    )
+    const [studentsPromise, setStudentsPromise] =
+        useState<SearchStudentsPromise>(Promise.resolve([]))
 
     useEffect(() => {
         setStudentsPromise(searchStudents({ query, archived }))

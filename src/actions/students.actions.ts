@@ -12,6 +12,7 @@ import {
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
+import { SuccessOf } from '@/lib/type-utils'
 import {
     archiveStudentEffect,
     createStudentEffect,
@@ -22,6 +23,7 @@ import {
     unarchiveStudentEffect,
 } from '@/services/students.service'
 import { Effect } from 'effect'
+import { setTimeout } from 'node:timers/promises'
 
 export async function createStudent({
     career_id,
@@ -391,7 +393,9 @@ export async function getStudents() {
 }
 
 type SearchStudentsProps = Parameters<typeof searchStudentsEffect>[0]
-export async function searchStudents(props: SearchStudentsProps) {
+export async function searchStudents(
+    props: SearchStudentsProps,
+): Promise<SuccessOf<ReturnType<typeof searchStudentsEffect>>> {
     return await Effect.runPromise(
         Effect.scoped(
             searchStudentsEffect(props)
