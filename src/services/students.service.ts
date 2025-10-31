@@ -292,50 +292,84 @@ export const getStudentsEffect = () =>
 interface SearchStudentsProps {
     query?: string
     archived?: boolean
+    page?: number
+    limit?: number
 }
 export const searchStudentsEffect = ({
     query = '',
     archived = false,
+    page = 1,
+    limit = 10,
 }: SearchStudentsProps) =>
     Effect.gen(function* (_) {
         const prisma = yield* _(PrismaService)
 
-        const students = yield* _(
+        const [students, count] = yield* _(
             Effect.tryPromise({
                 try: () =>
-                    prisma.student.findMany({
-                        where: {
-                            status: archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
-                            OR: [
-                                {
-                                    nc: {
-                                        contains: query,
+                    Promise.all([
+                        prisma.student.findMany({
+                            skip: (page - 1) * limit,
+                            take: limit,
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        nc: {
+                                            contains: query,
+                                        },
                                     },
-                                },
-                                {
-                                    lastname: {
-                                        contains: query,
-                                        mode: 'insensitive',
+                                    {
+                                        lastname: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
                                     },
-                                },
-                                {
-                                    firstname: {
-                                        contains: query,
-                                        mode: 'insensitive',
+                                    {
+                                        firstname: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
                                     },
-                                },
-                            ],
-                        },
-                        include: {
-                            career: {
-                                select: {
-                                    alias: true,
-                                    id: true,
-                                    status: true,
+                                ],
+                            },
+                            include: {
+                                career: {
+                                    select: {
+                                        alias: true,
+                                        id: true,
+                                        status: true,
+                                    },
                                 },
                             },
-                        },
-                    }),
+                        }),
+                        prisma.student.count({
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        nc: {
+                                            contains: query,
+                                        },
+                                    },
+                                    {
+                                        lastname: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        firstname: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
                 catch: err => new PrismaError(err),
             }),
         )
@@ -357,7 +391,10 @@ export const searchStudentsEffect = ({
             return student
         })
 
-        return studentsParsed
+        return {
+            students: studentsParsed,
+            count,
+        }
     })
 
 export const getStudentEffect = (nc: string) =>

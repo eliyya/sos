@@ -406,7 +406,7 @@ export async function searchStudents(
                         onSuccess: students => students,
                         onFailure: error => {
                             console.log(error)
-                            return []
+                            return { students: [], count: 0 }
                         },
                     }),
                 ),

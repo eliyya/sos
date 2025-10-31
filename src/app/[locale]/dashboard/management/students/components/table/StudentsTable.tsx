@@ -21,7 +21,7 @@ import {
 } from '@/components/Table'
 
 interface StudentItemListProps {
-    student: Awaited<SearchStudentsPromise>[number]
+    student: Awaited<SearchStudentsPromise>['students'][number]
 }
 export function StudentItem({ student }: StudentItemListProps) {
     return (
@@ -98,7 +98,16 @@ function Buttons({ entity }: ButtonsProps) {
 
 export function StudentsList() {
     const { studentsPromise } = use(SearchStudentsContext)
-    const students = use(studentsPromise)
+    const { students } = use(studentsPromise)
+
+    if (!students.length)
+        return (
+            <TableRow>
+                <TableCell className='text-center' colSpan={5}>
+                    No se encontraron resultados
+                </TableCell>
+            </TableRow>
+        )
 
     return students.map(entity => (
         <StudentItem key={entity.nc} student={entity} />
