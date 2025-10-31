@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import {
     ArchiveRestoreIcon,
     BanIcon,
@@ -31,7 +31,6 @@ import {
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
 import { useRouter } from 'next/navigation'
-import { useStudents } from '@/hooks/students.hooks'
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'

@@ -359,3 +359,22 @@ export const searchStudentsEffect = ({
 
         return studentsParsed
     })
+
+export const getStudentEffect = (nc: string) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const student = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.student.findUnique({
+                        where: { nc },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        if (!student) return null
+        if (student.status === STATUS.DELETED) return null
+
+        return student
+    })

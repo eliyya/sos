@@ -11,7 +11,7 @@ import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
 import { useTranslations } from 'next-intl'
 import { useCareers } from '@/hooks/careers.hooks'
-import { useStudents } from '@/hooks/students.hooks'
+import { getStudent } from '@/actions/students.actions'
 
 interface RegisterVisitFormProps {
     laboratory_id: string
@@ -28,13 +28,12 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
     const refreshTable = useSetAtom(updateTableAtom)
     const t = useTranslations('cc')
     const { careers } = useCareers()
-    const { students } = useStudents()
 
     // debounce findStudent
     useEffect(() => {
         const timeout = setTimeout(() => {
             startTransition(async () => {
-                const student = students.find(s => s.nc === nc)
+                const student = await getStudent(nc)
                 if (!student) return setModified(true)
                 setName(student.firstname)
                 setLastname(student.lastname)

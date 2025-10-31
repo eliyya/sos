@@ -18,6 +18,7 @@ import {
     createStudentEffect,
     deleteStudentEffect,
     editStudentEffect,
+    getStudentEffect,
     getStudentsEffect,
     searchStudentsEffect,
     unarchiveStudentEffect,
@@ -414,4 +415,22 @@ export async function searchStudents(
     )
     console.log(students)
     return students
+}
+
+export async function getStudent(nc: string) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            getStudentEffect(nc)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: student => student,
+                        onFailure: error => {
+                            console.log(error)
+                            return null
+                        },
+                    }),
+                ),
+        ),
+    )
 }
