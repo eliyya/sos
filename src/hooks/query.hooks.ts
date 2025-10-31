@@ -32,15 +32,24 @@ export function useQueryParam<T extends string | boolean | number>(
         return (raw ?? defaultValue ?? '') as string
     }, [key, defaultValue, searchParams])
 
-    const [value, setValue] =
-        useState<T extends boolean ? boolean : string>(getInitialValue)
+    const [value, setValue] = useState<
+        T extends boolean ? boolean
+        : T extends number ? number
+        : string
+    >(getInitialValue)
 
     useEffect(() => {
         setValue(getInitialValue())
     }, [searchParams])
 
     const setQueryParam = useCallback(
-        (newValue: SetValue<T extends boolean ? boolean : string>) => {
+        (
+            newValue: SetValue<
+                T extends boolean ? boolean
+                : T extends number ? number
+                : string
+            >,
+        ) => {
             const resolved =
                 typeof newValue === 'function' ?
                     (newValue as (prev: any) => any)(value)
