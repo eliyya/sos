@@ -140,7 +140,7 @@ export function FoooterTable() {
                     </Button>
                     <div className='text-sm font-medium'>
                         Página {filters.page} de{' '}
-                        {Math.ceil(count / filters.size)}
+                        {Math.ceil(count || 1 / filters.size)}
                     </div>
                     <Button
                         variant='outline'

@@ -293,13 +293,13 @@ interface SearchStudentsProps {
     query?: string
     archived?: boolean
     page?: number
-    limit?: number
+    size?: number
 }
 export const searchStudentsEffect = ({
     query = '',
     archived = false,
     page = 1,
-    limit = 10,
+    size = 10,
 }: SearchStudentsProps) =>
     Effect.gen(function* (_) {
         const prisma = yield* _(PrismaService)
@@ -309,8 +309,8 @@ export const searchStudentsEffect = ({
                 try: () =>
                     Promise.all([
                         prisma.student.findMany({
-                            skip: (page - 1) * limit,
-                            take: limit,
+                            skip: (page - 1) * size,
+                            take: size,
                             where: {
                                 status:
                                     archived ? STATUS.ARCHIVED : STATUS.ACTIVE,

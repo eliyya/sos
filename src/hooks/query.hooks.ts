@@ -3,12 +3,20 @@ import { useCallback, useEffect, useState } from 'react'
 
 type SetValue<T> = T | ((prev: T) => T)
 
-export function useQueryParam<T extends string | boolean>(
+export function useQueryParam<T extends string | boolean | number>(
     key: string,
     defaultValue: T,
 ): [
-    T extends boolean ? boolean : string,
-    (value: SetValue<T extends boolean ? boolean : string>) => void,
+    T extends boolean ? boolean
+    : T extends number ? number
+    : string,
+    (
+        value: SetValue<
+            T extends boolean ? boolean
+            : T extends number ? number
+            : string
+        >,
+    ) => void,
 ] {
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -17,6 +25,9 @@ export function useQueryParam<T extends string | boolean>(
         const raw = searchParams.get(key)
         if (typeof defaultValue === 'boolean') {
             return (raw !== null && raw !== '0') as boolean
+        }
+        if (typeof defaultValue === 'number') {
+            return Number(raw ?? defaultValue)
         }
         return (raw ?? defaultValue ?? '') as string
     }, [key, defaultValue, searchParams])
@@ -40,6 +51,8 @@ export function useQueryParam<T extends string | boolean>(
             if (typeof resolved === 'boolean') {
                 if (resolved) params.set(key, '1')
                 else params.delete(key)
+            } else if (typeof resolved === 'number') {
+                params.set(key, resolved.toString())
             } else {
                 if (resolved) params.set(key, resolved)
                 else params.delete(key)

@@ -1,12 +1,10 @@
 import * as Sentry from '@sentry/nextjs'
-import { toNextJsHandler } from 'better-auth/next-js'
-import { auth } from '@/lib/auth'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-const handlers = toNextJsHandler(auth)
-
-function withSentry(handler: typeof handlers.GET | typeof handlers.POST) {
-    return async (req: Request) => {
+export function withSentry(
+    handler: (req: NextRequest) => Promise<NextResponse>,
+) {
+    return async (req: NextRequest) => {
         try {
             return await handler(req)
         } catch (error) {
@@ -23,6 +21,3 @@ function withSentry(handler: typeof handlers.GET | typeof handlers.POST) {
         }
     }
 }
-
-export const GET = withSentry(handlers.GET)
-export const POST = withSentry(handlers.POST)
