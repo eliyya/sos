@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import {
     ArchiveRestore,
     Ban,
@@ -10,7 +10,14 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { unarchiveStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -23,19 +30,19 @@ import {
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
 import { useRouter } from 'next/navigation'
-import { useStudents } from '@/hooks/students.hooks'
 import { STATUS } from '@/prisma/generated/enums'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { useCareers } from '@/hooks/careers.hooks'
+import { SearchStudentsContext } from '@/contexts/students.context'
 
 export function UnarchiveDialog() {
+    const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { setStudents, refetchStudents } = useStudents()
     const { careers } = useCareers()
 
     const career = useMemo(() => {
@@ -52,18 +59,12 @@ export function UnarchiveDialog() {
         startTransition(async () => {
             const res = await unarchiveStudent(entity.nc)
             if (res.status === 'success') {
+                refreshStudents()
                 openDialog(null)
-                setStudents(prev =>
-                    prev.map(student =>
-                        student.nc === entity.nc ?
-                            { ...student, status: STATUS.ACTIVE }
-                        :   student,
-                    ),
-                )
                 return
             }
             if (res.type === 'not-found') {
-                refetchStudents()
+                refreshStudents()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -73,7 +74,7 @@ export function UnarchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router])
+    }, [entity, openDialog, router, refreshStudents])
 
     if (!entity) return null
 

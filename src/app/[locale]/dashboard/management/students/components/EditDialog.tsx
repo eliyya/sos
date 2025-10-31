@@ -8,7 +8,14 @@ import {
     Save,
     UserIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { editStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -23,18 +30,18 @@ import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
 import { useCareers } from '@/hooks/careers.hooks'
-import { useStudents } from '@/hooks/students.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
+import { SearchStudentsContext } from '@/contexts/students.context'
 
 export function EditDialog() {
+    const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
     const { careers, activeCareers } = useCareers()
-    const { setStudents, refetchStudents } = useStudents()
     const router = useRouter()
 
     const originalCareer = useMemo(() => {
@@ -73,15 +80,11 @@ export function EditDialog() {
                     semester,
                 })
                 if (res.status === 'success') {
-                    setStudents(prev =>
-                        prev.map(student =>
-                            student.nc === old.nc ? res.student : student,
-                        ),
-                    )
+                    refreshStudents()
                     openDialog(null)
                     return
                 } else if (res.type === 'not-found') {
-                    refetchStudents()
+                    refreshStudents()
                     openDialog(null)
                 } else if (res.type === 'permission') {
                     setMessage('No tienes permiso para editar esta máquina')
@@ -94,7 +97,7 @@ export function EditDialog() {
                 }
             })
         },
-        [old, openDialog, router, setStudents, refetchStudents],
+        [old, openDialog, router, refreshStudents],
     )
 
     if (!old) return null

@@ -3,27 +3,33 @@
 import { CornerDownLeftIcon, Search } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { useQueryParam } from '@/hooks/query.hooks'
-import { FormEvent, useCallback } from 'react'
+import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
 import { Button } from '@/components/Button'
+import { SearchStudentsContext } from '@/contexts/students.context'
 
 export function Filters() {
-    const [, setQuery] = useQueryParam('q', '')
-    const [archived, setArchived] = useQueryParam('archived', false)
+    const { changeFilters, filters } = use(SearchStudentsContext)
+    const queryInputRef = useRef<HTMLInputElement>(null)
 
-    const onSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        const q = formData.get('q') as string
-        setQuery(q.trim())
-    }, [])
+    const onSubmit = useCallback(
+        (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
+            const query = queryInputRef.current?.value.trim() || ''
+            changeFilters({ query })
+        },
+        [queryInputRef],
+    )
+
+    useEffect(() => {
+        if (queryInputRef.current) queryInputRef.current.value = filters.query
+    }, [filters.query, queryInputRef])
 
     return (
         <form className='flex items-center' onSubmit={onSubmit}>
             <div className='relative flex-1 flex-row'>
                 <SimpleInput
                     placeholder='Buscar estudiante...'
-                    name='q'
+                    ref={queryInputRef}
                     className='rounded-r-none pl-10'
                 />
                 <Search className='absolute top-1/2 left-3 -translate-y-1/2' />
@@ -39,8 +45,8 @@ export function Filters() {
             <div className='ml-4'>
                 <LabeledSwitch
                     label='Archivados'
-                    checked={archived}
-                    onCheckedChange={() => setArchived(v => !v)}
+                    checked={filters.archived}
+                    onCheckedChange={archived => changeFilters({ archived })}
                 />
             </div>
         </form>

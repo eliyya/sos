@@ -292,3 +292,35 @@ export const getClassesEffect = () =>
             }),
         )
     })
+
+export const searchClassesEffect = ({ query = '', archived = false }) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const classes = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.career.findMany({
+                        where: {
+                            status: archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                            OR: [
+                                {
+                                    name: {
+                                        contains: query,
+                                        mode: 'insensitive',
+                                    },
+                                },
+                                {
+                                    alias: {
+                                        contains: query,
+                                        mode: 'insensitive',
+                                    },
+                                },
+                            ],
+                        },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        return classes
+    })

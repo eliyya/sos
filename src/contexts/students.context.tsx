@@ -7,7 +7,6 @@ export const SearchStudentsContext = createContext<
     ReturnType<typeof useSearchStudents>
 >(undefined!)
 
-/* searchdata { offers, filters, page, changeFilter, pageChange, offersPromise }*/
 interface SearchStudentsProviderProps {
     children: React.ReactNode
 }

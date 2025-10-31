@@ -236,3 +236,35 @@ export const getCareersEffect = () =>
         )
         return yield* _(Effect.succeed(careers))
     })
+
+export const searchCareersEffect = ({ query = '', archived = false }) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const careers = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.career.findMany({
+                        where: {
+                            status: archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                            OR: [
+                                {
+                                    name: {
+                                        contains: query,
+                                        mode: 'insensitive',
+                                    },
+                                },
+                                {
+                                    alias: {
+                                        contains: query,
+                                        mode: 'insensitive',
+                                    },
+                                },
+                            ],
+                        },
+                    }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+        return yield* _(Effect.succeed(careers))
+    })

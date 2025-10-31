@@ -9,7 +9,14 @@ import {
     CalendarRangeIcon,
     GraduationCapIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { createStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -27,9 +34,9 @@ import {
 } from '@/global/students.globals'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useRouter } from 'next/navigation'
-import { useStudents } from '@/hooks/students.hooks'
 import app from '@eliyya/type-routes'
 import { atom } from 'jotai'
+import { SearchStudentsContext } from '@/contexts/students.context'
 
 const ncAtom = atom('')
 const firstnameAtom = atom('')
@@ -45,14 +52,13 @@ const errorGroupAtom = atom('')
 const errorSemesterAtom = atom('')
 
 export function CreateSubjectDialog() {
+    const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedStudentNCAtom)
-    const { setStudents } = useStudents()
     const router = useRouter()
     // errors
-    const setErrorNc = useSetAtom(errorNcAtom)
     const setErrorFirstname = useSetAtom(errorFirstnameAtom)
     const setErrorLastname = useSetAtom(errorLastnameAtom)
     const setErrorCareer = useSetAtom(errorCareerAtom)
@@ -78,7 +84,7 @@ export function CreateSubjectDialog() {
                     semester,
                 })
                 if (res.status === 'success') {
-                    setStudents(prev => [...prev, res.student])
+                    refreshStudents()
                     openDialog(null)
                     return
                 }
@@ -108,7 +114,7 @@ export function CreateSubjectDialog() {
                 }
             })
         },
-        [openDialog, router, setEntityToEdit, setStudents],
+        [openDialog, router, setEntityToEdit, refreshStudents],
     )
 
     return (

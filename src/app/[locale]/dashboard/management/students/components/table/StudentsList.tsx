@@ -6,21 +6,10 @@ import {
     Table,
 } from '@/components/Table'
 import { Suspense } from 'react'
-import { SearchStudentsProvider } from '@/contexts/students.context'
-import { StudentsTable } from './StudentsTable'
+import { StudentsList } from './StudentsTable'
 import { Skeleton } from '@mantine/core'
 
-export function StudentsList() {
-    return (
-        <SearchStudentsProvider>
-            <Suspense fallback={<StudentListSkeleton />}>
-                <StudentsTable />
-            </Suspense>
-        </SearchStudentsProvider>
-    )
-}
-
-function StudentListSkeleton() {
+export function StudentsTable() {
     return (
         <Table>
             <TableHeader>
@@ -33,24 +22,32 @@ function StudentListSkeleton() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow>
-                    <TableHead>
-                        <Skeleton>Lorem ipsum dolor</Skeleton>
-                    </TableHead>
-                    <TableHead>
-                        <Skeleton>Lorem ipsum</Skeleton>
-                    </TableHead>
-                    <TableHead>
-                        <Skeleton>Lorem</Skeleton>
-                    </TableHead>
-                    <TableHead>
-                        <Skeleton>Lorem</Skeleton>
-                    </TableHead>
-                    <TableHead>
-                        <Skeleton>Lorem ipsum</Skeleton>
-                    </TableHead>
-                </TableRow>
+                <Suspense fallback={<StudentListSkeleton />}>
+                    <StudentsList />
+                </Suspense>
             </TableBody>
         </Table>
+    )
+}
+
+function StudentListSkeleton() {
+    return (
+        <TableRow>
+            <TableHead>
+                <Skeleton>Lorem ipsum dolor</Skeleton>
+            </TableHead>
+            <TableHead>
+                <Skeleton>Lorem ipsum</Skeleton>
+            </TableHead>
+            <TableHead>
+                <Skeleton>Lorem</Skeleton>
+            </TableHead>
+            <TableHead>
+                <Skeleton>Lorem</Skeleton>
+            </TableHead>
+            <TableHead>
+                <Skeleton>Lorem ipsum</Skeleton>
+            </TableHead>
+        </TableRow>
     )
 }

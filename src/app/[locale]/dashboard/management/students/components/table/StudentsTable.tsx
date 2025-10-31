@@ -23,12 +23,12 @@ import {
 interface StudentItemListProps {
     student: Awaited<SearchStudentsPromise>[number]
 }
-export function StudentItemList({ student }: StudentItemListProps) {
+export function StudentItem({ student }: StudentItemListProps) {
     return (
-        <TableRow key={student.nc}>
+        <TableRow>
             <TableCell>{student.firstname}</TableCell>
             <TableCell>{student.lastname}</TableCell>
-            <TableCell>{student.career?.alias || 'Deleted Career'}</TableCell>
+            <TableCell>{student.career?.alias ?? 'Deleted Career'}</TableCell>
             <TableCell>{student.semester}</TableCell>
             <TableCell className='flex gap-1'>
                 <Buttons entity={student} />
@@ -96,28 +96,11 @@ function Buttons({ entity }: ButtonsProps) {
     return <></>
 }
 
-export function StudentsTable() {
+export function StudentsList() {
     const { studentsPromise } = use(SearchStudentsContext)
     const students = use(studentsPromise)
 
-    return (
-        <>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Apellido</TableHead>
-                        <TableHead>Carrera</TableHead>
-                        <TableHead>Semestre</TableHead>
-                        <TableHead>Options</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {students.map(entity => (
-                        <StudentItemList key={entity.nc} student={entity} />
-                    ))}
-                </TableBody>
-            </Table>
-        </>
-    )
+    return students.map(entity => (
+        <StudentItem key={entity.nc} student={entity} />
+    ))
 }

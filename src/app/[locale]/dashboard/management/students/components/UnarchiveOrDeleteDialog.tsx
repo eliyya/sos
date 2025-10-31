@@ -11,7 +11,14 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { unarchiveStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -29,14 +36,15 @@ import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
 import { useCareers } from '@/hooks/careers.hooks'
+import { SearchStudentsContext } from '@/contexts/students.context'
 
 export function UnarchiveOrDeleteDialog() {
+    const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { setStudents, refetchStudents } = useStudents()
     const { careers } = useCareers()
 
     const career = useMemo(() => {
@@ -54,17 +62,11 @@ export function UnarchiveOrDeleteDialog() {
             const res = await unarchiveStudent(entity.nc)
             if (res.status === 'success') {
                 openDialog(null)
-                setStudents(prev =>
-                    prev.map(student =>
-                        student.nc === entity.nc ?
-                            { ...student, status: STATUS.ACTIVE }
-                        :   student,
-                    ),
-                )
+                refreshStudents()
                 return
             }
             if (res.type === 'not-found') {
-                refetchStudents()
+                refreshStudents()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -74,7 +76,7 @@ export function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router])
+    }, [entity, openDialog, router, refreshStudents])
 
     if (!entity) return null
 

@@ -5,6 +5,7 @@ import { atom, useAtom } from 'jotai'
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import { Student } from '@/prisma/generated/browser'
+import { useSearchParams } from 'next/navigation'
 
 const isStudentsFetchedAtom = atom(false)
 
@@ -37,14 +38,34 @@ export function useStudents() {
 
 export type SearchStudentsPromise = ReturnType<typeof searchStudents>
 export function useSearchStudents() {
-    const [query] = useQueryParam('q', '')
-    const [archived] = useQueryParam('archived', false)
+    const [query, setQuery] = useQueryParam('q', '')
+    const [archived, setArchived] = useQueryParam('archived', false)
     const [studentsPromise, setStudentsPromise] =
         useState<SearchStudentsPromise>(Promise.resolve([]))
 
-    useEffect(() => {
-        setStudentsPromise(searchStudents({ query, archived }))
-    }, [query, archived])
+    const filters = useMemo(() => ({ query, archived }), [query, archived])
 
-    return { query, archived, studentsPromise } as const
+    const refreshStudents = useCallback(
+        () => setStudentsPromise(searchStudents(filters)),
+        [filters],
+    )
+
+    const changeFilters = useCallback(
+        ({ query, archived }: { query?: string; archived?: boolean }) => {
+            if (typeof query === 'string') setQuery(query)
+            if (typeof archived === 'boolean') setArchived(archived)
+            refreshStudents()
+        },
+        [setQuery, setArchived, refreshStudents],
+    )
+    useEffect(() => {
+        refreshStudents()
+    }, [])
+
+    return {
+        filters,
+        changeFilters,
+        studentsPromise,
+        refreshStudents,
+    }
 }

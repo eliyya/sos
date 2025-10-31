@@ -1,8 +1,9 @@
-import { getCareers } from '@/actions/careers.actions'
+import { getCareers, searchCareers } from '@/actions/careers.actions'
 import { careersAtom } from '@/global/careers.globals'
 import { STATUS } from '@/prisma/generated/enums'
 import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useQueryParam } from './query.hooks'
 
 const isCareersFetchedAtom = atom(false)
 
@@ -31,5 +32,30 @@ export function useCareers() {
         setCareers,
         activeCareers,
         refetchCareers,
+    } as const
+}
+
+export type SearchCareersPromise = ReturnType<typeof searchCareers>
+export function useSearchCareers() {
+    const [query] = useQueryParam('q', '')
+    const [archived] = useQueryParam('archived', false)
+    const [careersPromise, setCareersPromise] = useState<SearchCareersPromise>(
+        Promise.resolve([]),
+    )
+
+    const filters = useMemo(() => ({ query, archived }), [query, archived])
+
+    const refreshCareers = useCallback(() => {
+        setCareersPromise(searchCareers(filters))
+    }, [filters])
+
+    useEffect(() => {
+        refreshCareers()
+    }, [filters])
+
+    return {
+        filters,
+        careersPromise,
+        refreshCareers,
     } as const
 }

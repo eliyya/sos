@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import {
     Ban,
     CalendarRangeIcon,
@@ -10,7 +10,14 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { deleteStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -23,19 +30,19 @@ import {
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
 import { useRouter } from 'next/navigation'
-import { useStudents } from '@/hooks/students.hooks'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { useCareers } from '@/hooks/careers.hooks'
 import { STATUS } from '@/prisma/generated/enums'
+import { SearchStudentsContext } from '@/contexts/students.context'
 
 export function DeleteDialog() {
+    const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { setStudents, refetchStudents } = useStudents()
     const { careers } = useCareers()
 
     const career = useMemo(() => {
@@ -52,14 +59,12 @@ export function DeleteDialog() {
         startTransition(async () => {
             const res = await deleteStudent(entity.nc)
             if (res.status === 'success') {
-                setStudents(prev =>
-                    prev.filter(student => student.nc !== entity.nc),
-                )
+                refreshStudents()
                 openDialog(null)
                 return
             }
             if (res.type === 'not-found') {
-                refetchStudents()
+                refreshStudents()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para eliminar esta estudiante')
@@ -69,7 +74,7 @@ export function DeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, setStudents, refetchStudents])
+    }, [entity, openDialog, router, refreshStudents])
 
     if (!entity) return null
 

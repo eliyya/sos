@@ -396,7 +396,8 @@ type SearchStudentsProps = Parameters<typeof searchStudentsEffect>[0]
 export async function searchStudents(
     props: SearchStudentsProps,
 ): Promise<SuccessOf<ReturnType<typeof searchStudentsEffect>>> {
-    return await Effect.runPromise(
+    await setTimeout(2000)
+    const students = await Effect.runPromise(
         Effect.scoped(
             searchStudentsEffect(props)
                 .pipe(Effect.provide(PrismaLive))
@@ -411,4 +412,6 @@ export async function searchStudents(
                 ),
         ),
     )
+    console.log(students)
+    return students
 }

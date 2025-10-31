@@ -10,7 +10,14 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { archiveStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -22,19 +29,19 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
-import { useStudents } from '@/hooks/students.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { useCareers } from '@/hooks/careers.hooks'
 import { STATUS } from '@/prisma/generated/enums'
+import { SearchStudentsContext } from '@/contexts/students.context'
 
 export function ArchiveDialog() {
+    const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedStudentAtom)
     const [message, setMessage] = useState('')
-    const { setStudents, refetchStudents } = useStudents()
     const router = useRouter()
     const { careers } = useCareers()
 
@@ -53,15 +60,11 @@ export function ArchiveDialog() {
             const res = await archiveStudent(entity.nc)
             if (res.status === 'success') {
                 openDialog(null)
-                setStudents(prev =>
-                    prev.map(student =>
-                        student.nc === entity.nc ? res.student : student,
-                    ),
-                )
+                refreshStudents()
                 return
             }
             if (res.type === 'not-found') {
-                refetchStudents()
+                refreshStudents()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -71,7 +74,7 @@ export function ArchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, setStudents, refetchStudents])
+    }, [entity, openDialog, router, refreshStudents])
 
     if (!entity) return null
 

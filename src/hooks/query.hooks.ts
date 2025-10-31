@@ -3,10 +3,6 @@ import { useCallback, useEffect, useState } from 'react'
 
 type SetValue<T> = T | ((prev: T) => T)
 
-function removeEmptyParams(params: URLSearchParams) {
-    return params.toString().replace(/([?&][^=]+)=(&|$)/g, '$1$2')
-}
-
 export function useQueryParam<T extends string | boolean>(
     key: string,
     defaultValue: T,
@@ -17,13 +13,13 @@ export function useQueryParam<T extends string | boolean>(
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const getInitialValue = (): any => {
+    const getInitialValue = useCallback((): any => {
         const raw = searchParams.get(key)
         if (typeof defaultValue === 'boolean') {
-            return (raw !== null && raw !== 'false') as boolean
+            return (raw !== null && raw !== '0') as boolean
         }
         return (raw ?? defaultValue ?? '') as string
-    }
+    }, [key, defaultValue, searchParams])
 
     const [value, setValue] =
         useState<T extends boolean ? boolean : string>(getInitialValue)
@@ -36,27 +32,23 @@ export function useQueryParam<T extends string | boolean>(
         (newValue: SetValue<T extends boolean ? boolean : string>) => {
             const resolved =
                 typeof newValue === 'function' ?
-                    (
-                        newValue as (
-                            prev: T extends boolean ? boolean : string,
-                        ) => T extends boolean ? boolean : string
-                    )(value)
+                    (newValue as (prev: any) => any)(value)
                 :   newValue
 
-            const params = new URLSearchParams(searchParams.toString())
+            const params = new URLSearchParams(window.location.search)
 
             if (typeof resolved === 'boolean') {
-                if (resolved) params.set(key, '')
+                if (resolved) params.set(key, '1')
                 else params.delete(key)
             } else {
                 if (resolved) params.set(key, resolved)
                 else params.delete(key)
             }
-            router.replace(`?${removeEmptyParams(params)}`)
 
+            router.replace(`?${params.toString()}`)
             setValue(resolved)
         },
-        [key, router, searchParams, value],
+        [key, router, value],
     )
 
     return [value, setQueryParam]
