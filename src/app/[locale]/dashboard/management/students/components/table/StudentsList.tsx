@@ -4,9 +4,10 @@ import {
     TableHead,
     TableBody,
     Table,
+    TableFooter,
 } from '@/components/Table'
 import { Suspense } from 'react'
-import { StudentsList } from './StudentsTable'
+import { FoooterTable, StudentsList } from './StudentsTable'
 import { Skeleton } from '@mantine/core'
 
 export function StudentsTable() {
@@ -26,6 +27,9 @@ export function StudentsTable() {
                     <StudentsList />
                 </Suspense>
             </TableBody>
+            <Suspense fallback={<></>}>
+                <FoooterTable />
+            </Suspense>
         </Table>
     )
 }

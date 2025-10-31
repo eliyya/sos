@@ -1,7 +1,14 @@
 'use client'
 
 import { Student, STATUS } from '@/prisma/generated/browser'
-import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-react'
+import {
+    Archive,
+    ArchiveRestore,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    Pencil,
+    Trash2,
+} from 'lucide-react'
 import { Button } from '@/components/Button'
 import {
     openDialogAtom,
@@ -11,14 +18,7 @@ import { useSetAtom } from 'jotai'
 import { SearchStudentsPromise } from '@/hooks/students.hooks'
 import { use } from 'react'
 import { SearchStudentsContext } from '@/contexts/students.context'
-import {
-    Table,
-    TableBody,
-    TableHead,
-    TableHeader,
-    TableRow,
-    TableCell,
-} from '@/components/Table'
+import { TableRow, TableCell, TableFooter } from '@/components/Table'
 
 interface StudentItemListProps {
     student: Awaited<SearchStudentsPromise>['students'][number]
@@ -112,4 +112,51 @@ export function StudentsList() {
     return students.map(entity => (
         <StudentItem key={entity.nc} student={entity} />
     ))
+}
+
+export function FoooterTable() {
+    const { changeFilters, filters, studentsPromise } = use(
+        SearchStudentsContext,
+    )
+    const { count, students } = use(studentsPromise)
+
+    return (
+        <TableFooter>
+            <TableRow>
+                <TableCell
+                    className='flex items-center justify-between'
+                    colSpan={5}
+                >
+                    <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={() =>
+                            changeFilters({ page: filters.page - 1 })
+                        }
+                        disabled={filters.page === 1}
+                    >
+                        <ChevronLeftIcon className='h-4 w-4' />
+                        Anterior
+                    </Button>
+                    <div className='text-sm font-medium'>
+                        Página {filters.page} de{' '}
+                        {Math.ceil(count / filters.size)}
+                    </div>
+                    <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={() =>
+                            changeFilters({ page: filters.page + 1 })
+                        }
+                        disabled={
+                            filters.page === Math.ceil(count / filters.size)
+                        }
+                    >
+                        Siguiente
+                        <ChevronRightIcon className='h-4 w-4' />
+                    </Button>
+                </TableCell>
+            </TableRow>
+        </TableFooter>
+    )
 }
