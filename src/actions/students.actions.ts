@@ -397,7 +397,6 @@ type SearchStudentsProps = Parameters<typeof searchStudentsEffect>[0]
 export async function searchStudents(
     props: SearchStudentsProps,
 ): Promise<SuccessOf<ReturnType<typeof searchStudentsEffect>>> {
-    await setTimeout(2000)
     const students = await Effect.runPromise(
         Effect.scoped(
             searchStudentsEffect(props)
@@ -413,7 +412,6 @@ export async function searchStudents(
                 ),
         ),
     )
-    console.log(students)
     return students
 }
 
