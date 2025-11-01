@@ -24,12 +24,8 @@ interface StudentItemListProps {
 export function UserItem({ user }: StudentItemListProps) {
     return (
         <TableRow>
-            <TableCell>
-                <div className='flex flex-col'>
-                    <label>{user.name}</label>
-                    <span>@{user.username}</span>
-                </div>
-            </TableCell>
+            <TableCell>@{user.username}</TableCell>
+            <TableCell>{user.name}</TableCell>
             <TableCell>
                 <Badge variant='outline'>{user.role.name}</Badge>
             </TableCell>

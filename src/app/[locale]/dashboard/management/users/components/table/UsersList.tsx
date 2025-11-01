@@ -17,6 +17,7 @@ export function UsersTable() {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Usuario</TableHead>
                         <TableHead>Nombre</TableHead>
                         <TableHead>Role</TableHead>
                         <TableHead>Options</TableHead>
@@ -38,6 +39,9 @@ export function UsersTable() {
 function UserListSkeleton() {
     return (
         <TableRow>
+            <TableHead>
+                <Skeleton>Lorem</Skeleton>
+            </TableHead>
             <TableHead>
                 <Skeleton>Lorem ipsum dolor</Skeleton>
             </TableHead>
