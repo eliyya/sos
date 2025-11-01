@@ -7,7 +7,7 @@ import {
 } from '@/errors'
 import { PrismaService } from '@/layers/db.layer'
 import { STATUS } from '@/prisma/generated/enums'
-import { DEFAULT_ROLES } from '@/constants/client'
+import { DEFAULT_PAGINATION, DEFAULT_ROLES } from '@/constants/client'
 import { AuthService } from '@/layers/auth.layer'
 import { db } from '@/prisma/db'
 import { requirePermission } from './auth.service'
@@ -308,3 +308,89 @@ export function validatePasswordEffect(password: string) {
             )
     })
 }
+
+interface SearchUsersProps {
+    query?: string
+    archived?: boolean
+    page?: number
+    size?: number
+}
+export const searchUsersEffect = ({
+    query = '',
+    archived = false,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
+}: SearchUsersProps) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const [users, count] = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    Promise.all([
+                        prisma.user.findMany({
+                            skip: (page - 1) * size,
+                            take: size,
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        username: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                            include: {
+                                role: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                            },
+                        }),
+                        prisma.user.count({
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        username: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
+                catch: err => new PrismaError(err),
+            }),
+        )
+
+        const usersMapped = users.map(user => ({
+            ...user,
+            role: {
+                name: user.role.name,
+            },
+        }))
+
+        return {
+            users: usersMapped,
+            count,
+        }
+    })

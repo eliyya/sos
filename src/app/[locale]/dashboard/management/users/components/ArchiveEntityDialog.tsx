@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Archive, AtSignIcon, Ban, UserIcon } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { archiveUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -16,11 +23,10 @@ import { MessageError } from '@/components/Error'
 import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
-import { useUsers } from '@/hooks/users.hooks'
-import { STATUS } from '@/prisma/generated/browser'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
+import { SearchUsersContext } from '@/contexts/users.context'
 
 export function ArchiveEntityDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
@@ -29,7 +35,7 @@ export function ArchiveEntityDialog() {
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
-    const { setUsers, refetchUsers } = useUsers()
+    const { refreshUsers } = use(SearchUsersContext)
     const router = useRouter()
 
     const role = useMemo(() => {
@@ -37,26 +43,20 @@ export function ArchiveEntityDialog() {
         const role = roles.find(r => r.id === entity.role_id)
         if (!role) return 'Deleted Role'
         return role.name
-    }, [entity.role_id])
+    }, [entity, roles])
 
     const onAction = useCallback(async () => {
         startTransition(async () => {
             const response = await archiveUser(entity.id)
             if (response.status === 'success') {
-                setUsers(users =>
-                    users.map(u =>
-                        u.id !== entity.id ?
-                            u
-                        :   { ...u, status: STATUS.ARCHIVED },
-                    ),
-                )
+                refreshUsers()
                 setOpen(null)
                 return
             }
             if (response.type === 'not-allowed') {
                 setOpen('preventArchiveAdmin')
             } else if (response.type === 'not-found') {
-                refetchUsers()
+                refreshUsers()
                 setOpen(null)
             } else if (response.type === 'permission') {
                 setMessage('No tienes permiso para archivar a este usuario')
@@ -65,8 +65,9 @@ export function ArchiveEntityDialog() {
             } else if (response.type === 'unexpected') {
                 setMessage('Algo salio mal, intente mas tarde')
             }
+            setTimeout(setMessage, 5_000, '')
         })
-    }, [entity.id])
+    }, [entity.id, refreshUsers, setOpen, router])
 
     if (!entity || !adminRole) return null
 

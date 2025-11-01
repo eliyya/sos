@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { AtSignIcon, Ban, Trash2, UserIcon } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { deleteUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -16,8 +23,10 @@ import { MessageError } from '@/components/Error'
 import { dialogOpenedAtom, entityToEditAtom } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
-import { useUsers } from '@/hooks/users.hooks'
 import { CompletInput } from '@/components/Inputs'
+import { SearchUsersContext } from '@/contexts/users.context'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
@@ -26,40 +35,47 @@ export function DeleteEntityDialog() {
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
-    const { setUsers } = useUsers()
+    const { refreshUsers } = use(SearchUsersContext)
+    const router = useRouter()
 
     const role = useMemo(() => {
         if (!entity) return ''
         const role = roles.find(r => r.id === entity.role_id)
         if (!role) return 'Deleted Role'
         return role.name
-    }, [entity.role_id])
+    }, [entity, roles])
 
     const onAction = useCallback(() => {
         if (!entity) return
         startTransition(async () => {
             const response = await deleteUser(entity.id)
-            if (response.status === 'error') {
-                if (
-                    response.type === 'not-allowed' &&
-                    response.message === 'Unique admin cannot be deleted'
-                ) {
+            if (response.status === 'success') {
+                refreshUsers()
+                setOpen(null)
+                return
+            }
+            if (response.type === 'not-allowed') {
+                if (response.message === 'Unique admin cannot be deleted') {
                     setOpen('preventArchiveAdmin')
-                    return
-                }
-                if (response.type === 'not-found') {
-                    setMessage('El usuario no se encontro')
+                } else {
+                    setMessage('Operacion no permitida')
                     setTimeout(() => setMessage(''), 5_000)
-                    return
                 }
+            } else if (response.type === 'not-found') {
+                setMessage('El usuario no se encontro')
+                setTimeout(() => setMessage(''), 5_000)
+            } else if (response.type === 'permission') {
+                setMessage('No tienes permiso para eliminar este usuario')
+                setTimeout(() => setMessage(''), 5_000)
+            } else if (response.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+                setTimeout(() => setMessage(''), 5_000)
+            } else if (response.type === 'unexpected') {
                 setMessage('Algo sucedio mal, intente nuevamente')
                 setTimeout(() => setMessage(''), 5_000)
-            } else {
-                setUsers(users => users.filter(user => user.id !== entity.id))
-                setOpen(null)
             }
         })
-    }, [entity, startTransition, setOpen, setUsers])
+    }, [entity, startTransition, setOpen, refreshUsers, router])
 
     if (!entity || !adminRole) return null
 

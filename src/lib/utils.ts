@@ -216,3 +216,11 @@ export function createSearchParams(filters: Record<string, unknown>) {
 
     return params
 }
+
+export type ChangeProps<T> = Partial<T> | ((filters: T) => Partial<T>)
+export function propsParser<T>(props: ChangeProps<T>, filters: T) {
+    if (typeof props === 'function') {
+        return props(filters) as Partial<T>
+    }
+    return props as Partial<T>
+}

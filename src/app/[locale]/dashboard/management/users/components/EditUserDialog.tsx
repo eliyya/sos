@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     AtSignIcon,
     KeyIcon,
@@ -8,7 +8,14 @@ import {
     TriangleIcon,
     UserIcon,
 } from 'lucide-react'
-import { Activity, useEffect, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useEffect,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { editUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -23,22 +30,24 @@ import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
     entityToEditAtom,
-    editPasswordAtom,
-    editPasswordErrorAtom,
-    editConfirmPasswordAtom,
-    editConfirmPasswordErrorAtom,
     passwordFocusAtom,
     dialogOpenedAtom,
 } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
-import { useUsers } from '@/hooks/users.hooks'
+import { SearchUsersContext } from '@/contexts/users.context'
+
+const editPasswordAtom = atom('')
+const editPasswordErrorAtom = atom('')
+const editConfirmPasswordAtom = atom('')
+const editConfirmPasswordErrorAtom = atom('')
 
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
     const oldUser = useAtomValue(entityToEditAtom)
     const [message, setMessage] = useState('')
-    const { setUsers } = useUsers()
+    const { refreshUsers } = use(SearchUsersContext)
+    const setPasswordError = useSetAtom(editPasswordErrorAtom)
 
     if (!oldUser) return null
 
@@ -57,42 +66,36 @@ export function EditUserDialog() {
                 <form
                     action={data => {
                         startTransition(async () => {
-                            const user_id = data.get('user_id') as string
                             const name = data.get('name') as string
                             const username = data.get('username') as string
                             const role_id = data.get('role_id') as string
                             const password = data.get('password') as string
                             const response = await editUser({
-                                id: user_id,
+                                id: oldUser.id,
                                 name,
                                 username,
                                 role_id,
                                 password,
                             })
-                            if (response.status === 'error') {
-                                if (response.type === 'not-found') {
-                                    setMessage(response.message)
-                                    setTimeout(() => {
-                                        setMessage('')
-                                    }, 5_000)
-                                    return
+                            if (response.status === 'success') {
+                                setOpen(null)
+                                refreshUsers()
+                            } else if (response.type === 'not-found') {
+                                setMessage(response.message)
+                                setTimeout(setMessage, 5_000, '')
+                            } else if (response.type === 'invalid-input') {
+                                if (response.field === 'password') {
+                                    setPasswordError(response.message)
                                 }
+                            } else if (response.type === 'unexpected') {
                                 setMessage(
                                     'Algo sucedio mal, intente nuevamente',
                                 )
-                                setTimeout(() => {
-                                    setMessage('')
-                                }, 5_000)
+                                setTimeout(setMessage, 5_000, '')
                                 return
                             }
-                            setUsers(users =>
-                                users.map(user =>
-                                    user.id === user_id ?
-                                        { ...user, name, username, role_id }
-                                    :   user,
-                                ),
-                            )
-                            setOpen(null)
+                            setMessage('Algo sucedio mal, intente nuevamente')
+                            setTimeout(setMessage, 5_000, '')
                         })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
@@ -101,7 +104,6 @@ export function EditUserDialog() {
                         <MessageError>{message}</MessageError>
                     </Activity>
 
-                    <input type='hidden' value={oldUser.id} name='user_id' />
                     <EditNameInput />
                     <EditUsernameInput />
                     <EditRoleSelect />

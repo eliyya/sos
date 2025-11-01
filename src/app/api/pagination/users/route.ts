@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withSentry } from '@/lib/sentry'
-import { searchStudents } from '@/actions/students.actions'
+import { searchUsers } from '@/actions/users.actions'
 import { DEFAULT_PAGINATION } from '@/constants/client'
 
 export const GET = withSentry(async function GET(req: NextRequest) {
@@ -11,12 +11,12 @@ export const GET = withSentry(async function GET(req: NextRequest) {
     const page = searchParams.get('page')
     const size = searchParams.get('size')
 
-    const students = await searchStudents({
+    const users = await searchUsers({
         query: query ?? '',
         archived: archived === '1',
         page: Number(page) || DEFAULT_PAGINATION.PAGE,
         size: Number(size) || DEFAULT_PAGINATION.SIZE,
     })
 
-    return NextResponse.json(students)
+    return NextResponse.json(users)
 })

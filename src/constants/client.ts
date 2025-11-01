@@ -5,8 +5,6 @@ import {
 
 export const APP_NAME = 'SOS'
 
-export const IDB_NAME = APP_NAME + '_idb'
-
 export const HEADERS = {
     PATHNAME: 'pathname',
 } as const
@@ -29,4 +27,9 @@ export const DEFAULT_PERMISSIONS = {
 
 export const DB_STATES = {
     ROLES_COUNT: 'roles_count',
+} as const
+
+export const DEFAULT_PAGINATION = {
+    PAGE: 1,
+    SIZE: 50,
 } as const

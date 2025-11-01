@@ -1,6 +1,6 @@
 'use client'
 
-import { CornerDownLeftIcon, Search } from 'lucide-react'
+import { CornerDownLeftIcon, SearchIcon } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
 import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
@@ -32,7 +32,7 @@ export function Filters() {
                     ref={queryInputRef}
                     className='rounded-r-none pl-10'
                 />
-                <Search className='absolute top-1/2 left-3 -translate-y-1/2' />
+                <SearchIcon className='absolute top-1/2 left-3 -translate-y-1/2' />
             </div>
             <Button
                 type='submit'

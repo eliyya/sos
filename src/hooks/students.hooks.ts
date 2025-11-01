@@ -2,7 +2,7 @@ import { searchStudents } from '@/actions/students.actions'
 import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import app from '@eliyya/type-routes'
-import { createSearchParams } from '@/lib/utils'
+import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 
 export type SearchStudentsPromise = ReturnType<typeof searchStudents>
 
@@ -12,9 +12,6 @@ type Filters = {
     page: number
     size: number
 }
-type ChangeFiltersProps =
-    | Partial<Filters>
-    | ((filters: Filters) => Partial<Filters>)
 export function useSearchStudents() {
     const [query, setQuery] = useQueryParam('q', '')
     const [archived, setArchived] = useQueryParam('archived', false)
@@ -28,14 +25,14 @@ export function useSearchStudents() {
     )
 
     const changeFilters = useCallback(
-        (props: ChangeFiltersProps) => {
+        (props: ChangeProps<Filters>) => {
             props = propsParser(props, filters)
             if (typeof props.query === 'string') setQuery(props.query)
             if (typeof props.archived === 'boolean') setArchived(props.archived)
             if (typeof props.page === 'number') setPage(props.page)
             if (typeof props.size === 'number') setSize(props.size)
         },
-        [setQuery, setArchived, setPage, setSize],
+        [filters, setArchived, setPage, setQuery, setSize],
     )
 
     const refreshStudents = useCallback(
@@ -50,7 +47,9 @@ export function useSearchStudents() {
             )
                 .then(res => res.json())
                 .catch(() => ({ students: [], count: 0 })),
-        [refresh, filters],
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [filters, refresh],
     )
 
     return {
@@ -59,11 +58,4 @@ export function useSearchStudents() {
         studentsPromise,
         refreshStudents,
     }
-}
-
-function propsParser(props: ChangeFiltersProps, filters: Filters) {
-    if (typeof props === 'function') {
-        return props(filters) as Partial<Filters>
-    }
-    return props as Partial<Filters>
 }

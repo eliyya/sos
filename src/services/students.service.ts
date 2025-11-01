@@ -10,6 +10,7 @@ import {
     NotFoundError,
     PrismaError,
 } from '@/errors'
+import { DEFAULT_PAGINATION } from '@/constants/client'
 
 interface CreateStudentProps {
     nc: string
@@ -298,8 +299,8 @@ interface SearchStudentsProps {
 export const searchStudentsEffect = ({
     query = '',
     archived = false,
-    page = 1,
-    size = 10,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
 }: SearchStudentsProps) =>
     Effect.gen(function* (_) {
         const prisma = yield* _(PrismaService)

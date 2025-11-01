@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     AtSignIcon,
     KeyIcon,
@@ -8,7 +8,14 @@ import {
     TriangleIcon,
     UserIcon,
 } from 'lucide-react'
-import { Activity, useEffect, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useEffect,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { usernameIsTaken } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -21,23 +28,24 @@ import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import {
-    canSuggestUsernameAtom,
-    confirmPasswordAtom,
-    confirmPasswordErrorAtom,
     entityToEditAtom,
-    nameAtom,
-    nameErrorAtom,
     dialogOpenedAtom,
-    passwordAtom,
-    passwordErrorAtom,
     passwordFocusAtom,
-    usernameAtom,
-    usernameErrorAtom,
 } from '@/global/users.globals'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
 import { useRoles } from '@/hooks/roles.hooks'
-import { useUsers } from '@/hooks/users.hooks'
+import { SearchUsersContext } from '@/contexts/users.context'
+
+const usernameAtom = atom('')
+const usernameErrorAtom = atom('')
+const canSuggestUsernameAtom = atom(false)
+const nameAtom = atom('')
+const nameErrorAtom = atom('')
+const passwordAtom = atom('')
+const passwordErrorAtom = atom('')
+const confirmPasswordAtom = atom('')
+const confirmPasswordErrorAtom = atom('')
 
 export function CreateUserDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
@@ -49,7 +57,7 @@ export function CreateUserDialog() {
     const setUsername = useSetAtom(usernameAtom)
     const setPassword = useSetAtom(passwordAtom)
     const setConfirmPassword = useSetAtom(confirmPasswordAtom)
-    const { refetchUsers } = useUsers()
+    const { refreshUsers } = use(SearchUsersContext)
 
     return (
         <Dialog
@@ -111,7 +119,7 @@ export function CreateUserDialog() {
                                 } else setMessage('Algo salio mal')
                                 console.log(error)
                             } else {
-                                refetchUsers()
+                                refreshUsers()
                                 setOpen(null)
                             }
                             setTimeout(() => {

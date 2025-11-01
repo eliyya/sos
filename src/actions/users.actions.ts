@@ -8,6 +8,7 @@ import {
     deleteUserEffect,
     editUserEffect,
     getUsersEffect,
+    searchUsersEffect,
     unarchiveUserEffect,
 } from '@/services/users.service'
 import {
@@ -18,6 +19,7 @@ import {
     UnauthorizedError,
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
+import { SuccessOf } from '@/lib/type-utils'
 
 export async function getUsers() {
     return Effect.runPromise(
@@ -283,6 +285,7 @@ export async function editUser({
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
+                                    field: error.field,
                                 }
                             }
                             console.error(error)
@@ -296,4 +299,26 @@ export async function editUser({
                 ),
         ),
     )
+}
+
+type SearchUsersProps = Parameters<typeof searchUsersEffect>[0]
+export async function searchUsers(
+    props: SearchUsersProps,
+): Promise<SuccessOf<ReturnType<typeof searchUsersEffect>>> {
+    const users = await Effect.runPromise(
+        Effect.scoped(
+            searchUsersEffect(props)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: users => users,
+                        onFailure: error => {
+                            console.log(error)
+                            return { users: [], count: 0 }
+                        },
+                    }),
+                ),
+        ),
+    )
+    return users
 }

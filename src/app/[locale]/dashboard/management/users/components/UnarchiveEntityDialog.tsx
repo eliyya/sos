@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestore, AtSignIcon, Ban, UserIcon } from 'lucide-react'
-import { Activity, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { unarchiveUser } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
@@ -14,25 +21,48 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { dialogOpenedAtom, entityToEditAtom } from '@/global/users.globals'
-import { useUsers } from '@/hooks/users.hooks'
-import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
 import { useRoles } from '@/hooks/roles.hooks'
+import { SearchUsersContext } from '@/contexts/users.context'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 export function UnarchiveEntityDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(entityToEditAtom)
-    const { setUsers } = useUsers()
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
+    const { refreshUsers } = use(SearchUsersContext)
+    const router = useRouter()
 
     const role = useMemo(() => {
         if (!entity) return ''
         const role = roles.find(r => r.id === entity.role_id)
         if (!role) return 'Deleted Role'
         return role.name
-    }, [entity.role_id])
+    }, [entity, roles])
+
+    const onAction = useCallback(() => {
+        startTransition(async () => {
+            const response = await unarchiveUser(entity.id)
+            if (response.status === 'success') {
+                refreshUsers()
+                setOpen(null)
+                return
+            }
+            if (response.type === 'not-found') {
+                setMessage(response.message)
+            } else if (response.type === 'permission') {
+                setMessage('No tienes permiso para desarchivar este usuario')
+            } else if (response.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (response.type === 'unexpected') {
+                setMessage('Algo sucedio mal, intente nuevamente')
+            }
+            setTimeout(setMessage, 5_000, '')
+        })
+    }, [entity, startTransition, setOpen, refreshUsers, router])
 
     if (!entity) return null
 
@@ -49,31 +79,7 @@ export function UnarchiveEntityDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    action={data => {
-                        startTransition(async () => {
-                            const id = data.get('id') as string
-                            const response = await unarchiveUser(id)
-                            if (response.status === 'error') {
-                                if (response.type === 'not-found') {
-                                    setMessage(response.message)
-                                } else {
-                                    setMessage(
-                                        'Algo sucedio mal, intente nuevamente',
-                                    )
-                                }
-                                setTimeout(() => setMessage(''), 5_000)
-                            } else {
-                                setUsers(users =>
-                                    users.map(user =>
-                                        user.id === id ?
-                                            { ...user, status: STATUS.ACTIVE }
-                                        :   user,
-                                    ),
-                                )
-                                setOpen(null)
-                            }
-                        })
-                    }}
+                    action={onAction}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
                     <Activity mode={message ? 'visible' : 'hidden'}>

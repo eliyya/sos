@@ -1,5 +1,5 @@
 import { createSerializableLocaleStorage } from '@/lib/utils'
-import { Role, User, STATUS } from '@/prisma/generated/browser'
+import { User, STATUS, Role } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
@@ -30,18 +30,6 @@ export const dialogOpenedAtom = atom<
     | null
 >(null)
 export const entityToEditAtom = atom(default_user)
-export const usernameAtom = atom('')
-export const usernameErrorAtom = atom('')
-export const canSuggestUsernameAtom = atom(false)
-export const nameAtom = atom('')
-export const nameErrorAtom = atom('')
-export const passwordAtom = atom('')
-export const passwordErrorAtom = atom('')
-export const passwordFocusAtom = atom(false)
-export const confirmPasswordAtom = atom('')
-export const confirmPasswordErrorAtom = atom('')
-export const editPasswordAtom = atom('')
-export const editPasswordErrorAtom = atom('')
-export const editConfirmPasswordAtom = atom('')
-export const editConfirmPasswordErrorAtom = atom('')
+
 export const adminRoleAtom = atom<Role | null>(null)
+export const passwordFocusAtom = atom(false)
