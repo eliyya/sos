@@ -1,23 +1,26 @@
 'use client'
 
 import app from '@eliyya/type-routes'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { SimpleSelect } from '@/components/Select'
 
 interface SelectLaboratoryProps {
     labs: { id: string; name: string }[]
-    lab_id: string
 }
-export function SelectLaboratory({ labs, lab_id }: SelectLaboratoryProps) {
+export function SelectLaboratory({ labs }: SelectLaboratoryProps) {
     const { push } = useRouter()
-    const pathname = usePathname()
-    const [year, month, day] = pathname.split('/').toReversed()
+    const { id, year, month, day } = useParams<{
+        id: string
+        year: string
+        month: string
+        day: string
+    }>()
 
     return (
         <SimpleSelect
             value={{
-                label: labs.find(l => l.id === lab_id)?.name ?? lab_id,
-                value: lab_id,
+                label: labs.find(l => l.id === id)?.name ?? id,
+                value: id,
             }}
             options={labs.map(l => ({
                 label: l.name,

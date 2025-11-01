@@ -5,17 +5,17 @@ import {
 } from '@/bitfields/PermissionsBitField'
 import { ButtonLink } from '@/components/Links'
 import { SelectLaboratory } from './SelectLaboratory'
-import { authClient } from '@/lib/auth-client'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
 
 interface ScheduleHeaderProps {
     labs: { id: string; name: string }[]
-    lab_id: string
 }
-export function ScheduleHeader({ labs, lab_id }: ScheduleHeaderProps) {
+export function ScheduleHeader({ labs }: ScheduleHeaderProps) {
     return (
         <div className='container mx-auto flex items-center justify-between p-2'>
             <div>
-                <SelectLaboratory lab_id={lab_id} labs={labs} />
+                <SelectLaboratory labs={labs} />
             </div>
             <div className='flex items-center justify-end gap-4'>
                 <Buttons />
@@ -32,10 +32,10 @@ function GuestButtons() {
     return <ButtonLink href={app.$locale.auth.login('es')}>Login</ButtonLink>
 }
 
-function Buttons() {
-    const session = authClient.useSession()
+async function Buttons() {
+    const session = await auth.api.getSession({ headers: await headers() })
     const permissions = new PermissionsBitField(
-        BigInt(session?.data?.user.permissions ?? 0n),
+        BigInt(session?.user.permissions ?? 0n),
     )
     if (permissions.any(ADMIN_BITS)) return <AdminButtons />
     return <GuestButtons />

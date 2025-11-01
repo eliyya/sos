@@ -8,17 +8,14 @@ import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { DialogMode, modeAtom } from '@/global/management-practices'
 import { getClassName } from './InfoDialog'
-
+import {
+    PERMISSIONS_FLAGS,
+    PermissionsBitField,
+} from '@/bitfields/PermissionsBitField'
+import { authClient } from '@/lib/auth-client'
+import { useParams } from 'next/navigation'
 
 interface InfoModeProps {
-    isAdmin?: boolean
-    isOwner?: boolean
-    lab: {
-        name: string
-        id: string
-        close_hour: number
-        open_hour: number
-    }
     practice: Exclude<
         Awaited<
             ReturnType<
@@ -38,11 +35,18 @@ interface InfoModeProps {
         null
     >
 }
-export function InfoMode({ lab, practice, isAdmin, isOwner }: InfoModeProps) {
+export function InfoMode({ practice }: InfoModeProps) {
+    const { id: lab_id } = useParams<{ id: string }>()
     const setEditMode = useSetAtom(modeAtom)
+    const session = authClient.useSession()
+    const canEdit = new PermissionsBitField(
+        BigInt(session.data?.user.permissions ?? 0n),
+    ).has(PERMISSIONS_FLAGS.SESSION_MANAGE)
+    const isOwner = session.data?.user.id === practice.teacher_id
+
     return (
         <>
-            <input type='hidden' value={lab.id} name='laboratory_id' />
+            <input type='hidden' value={lab_id} name='laboratory_id' />
             <CompletInput
                 label='Docente'
                 disabled
@@ -107,7 +111,7 @@ export function InfoMode({ lab, practice, isAdmin, isOwner }: InfoModeProps) {
                 value={practice.students ?? 1}
                 icon={UserIcon}
             />
-            {(isAdmin || isOwner) && (
+            {(canEdit || isOwner) && (
                 <>
                     <Button onClick={() => setEditMode(DialogMode.EDIT)}>
                         <Save className='mr-2 h-5 w-5' />

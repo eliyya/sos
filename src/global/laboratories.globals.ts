@@ -18,22 +18,6 @@ export const openDialogAtom = atom<
     | 'UNARCHIVE_OR_DELETE'
     | null
 >(null)
-// create
-export const nameAtom = atom('')
-export const errorNameAtom = atom('')
-export const openHourAtom = atom('')
-export const errorOpenHourAtom = atom('')
-export const closeHourAtom = atom('')
-export const errorCloseHourAtom = atom('')
-const defaultTypeAtom: {
-    value: LABORATORY_TYPE
-    label: string
-} = {
-    value: LABORATORY_TYPE.LABORATORY,
-    label: 'Laboratorio',
-}
-export const typeAtom = atom(defaultTypeAtom)
-export const errorTypeAtom = atom('')
 // edit
 type id = Laboratory['id']
 export const selectedLaboratoryIdAtom = atomWithStorage<id>(

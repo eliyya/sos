@@ -18,7 +18,7 @@ import { useSetAtom } from 'jotai'
 import { SearchStudentsPromise } from '@/hooks/students.hooks'
 import { use } from 'react'
 import { SearchStudentsContext } from '@/contexts/students.context'
-import { TableRow, TableCell, TableFooter } from '@/components/Table'
+import { TableRow, TableCell } from '@/components/Table'
 
 interface StudentItemListProps {
     student: Awaited<SearchStudentsPromise>['students'][number]
@@ -118,45 +118,39 @@ export function FoooterTable() {
     const { changeFilters, filters, studentsPromise } = use(
         SearchStudentsContext,
     )
-    const { count, students } = use(studentsPromise)
+    const { count } = use(studentsPromise)
 
     return (
-        <TableFooter>
-            <TableRow>
-                <TableCell
-                    className='flex items-center justify-between'
-                    colSpan={5}
-                >
-                    <Button
-                        variant='outline'
-                        size='sm'
-                        onClick={() =>
-                            changeFilters({ page: filters.page - 1 })
-                        }
-                        disabled={filters.page === 1}
-                    >
-                        <ChevronLeftIcon className='h-4 w-4' />
-                        Anterior
-                    </Button>
-                    <div className='text-sm font-medium'>
-                        Página {filters.page} de{' '}
-                        {Math.ceil(count || 1 / filters.size)}
-                    </div>
-                    <Button
-                        variant='outline'
-                        size='sm'
-                        onClick={() =>
-                            changeFilters({ page: filters.page + 1 })
-                        }
-                        disabled={
-                            filters.page === Math.ceil(count / filters.size)
-                        }
-                    >
-                        Siguiente
-                        <ChevronRightIcon className='h-4 w-4' />
-                    </Button>
-                </TableCell>
-            </TableRow>
-        </TableFooter>
+        <div className='flex items-center justify-center gap-5'>
+            <Button
+                variant='outline'
+                size='sm'
+                onClick={() =>
+                    changeFilters({
+                        page: filters.page - 1,
+                    })
+                }
+                disabled={filters.page === 1}
+            >
+                <ChevronLeftIcon className='h-4 w-4' />
+                Anterior
+            </Button>
+            <div className='text-sm font-medium'>
+                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+            </div>
+            <Button
+                variant='outline'
+                size='sm'
+                onClick={() =>
+                    changeFilters({
+                        page: filters.page + 1,
+                    })
+                }
+                disabled={filters.page === Math.ceil(count / filters.size)}
+            >
+                Siguiente
+                <ChevronRightIcon className='h-4 w-4' />
+            </Button>
+        </div>
     )
 }

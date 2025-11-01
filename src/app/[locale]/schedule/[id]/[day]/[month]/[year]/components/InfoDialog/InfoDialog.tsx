@@ -28,10 +28,8 @@ interface InfoDialogProps {
         close_hour: number
         open_hour: number
     }
-    userId: string
-    isAdmin?: boolean
 }
-export function InfoDialog({ lab, isAdmin, userId }: InfoDialogProps) {
+export function InfoDialog({ lab }: InfoDialogProps) {
     const [mode, setMode] = useAtom(modeAtom)
     const [currentEvent, setCurrentEvent] = useAtom(eventInfoAtom)
     const [practice, setPractice] = useState<Awaited<
@@ -124,20 +122,9 @@ export function InfoDialog({ lab, isAdmin, userId }: InfoDialogProps) {
                         remainingHours={remainingHours}
                     />
                 : mode === DialogMode.INFO ?
-                    <InfoMode
-                        lab={lab}
-                        practice={practice}
-                        isAdmin={isAdmin}
-                        isOwner={
-                            !!(
-                                userId &&
-                                currentEvent &&
-                                userId === currentEvent.ownerId
-                            )
-                        }
-                    />
+                    <InfoMode practice={practice} />
                 : mode === DialogMode.DELETE ?
-                    <DeleteMode lab={lab} practice={practice} />
+                    <DeleteMode practice={practice} />
                 :   null}
             </DialogContent>
         </Dialog>

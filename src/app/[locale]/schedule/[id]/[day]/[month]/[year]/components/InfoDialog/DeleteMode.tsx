@@ -14,14 +14,6 @@ import {
 } from '@/global/management-practices'
 
 interface InfoModeProps {
-    isAdmin?: boolean
-    isOwner?: boolean
-    lab: {
-        name: string
-        id: string
-        close_hour: number
-        open_hour: number
-    }
     practice: Exclude<
         Awaited<
             ReturnType<

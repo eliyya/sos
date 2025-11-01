@@ -68,7 +68,7 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
 
     return (
         <div className='bg-background min-h-screen'>
-            <ScheduleHeader lab_id={id} labs={labs} />
+            <ScheduleHeader labs={labs} />
             <ScheduleBody
                 user={user?.[0] ?? null}
                 lab_id={id}

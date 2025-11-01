@@ -36,7 +36,7 @@ export default async function ScheduleBody({
                 user={user}
                 users={users}
             />
-            <InfoDialog userId={user?.id ?? ''} lab={lab} isAdmin={isAdmin} />
+            <InfoDialog lab={lab} />
         </main>
     )
 }

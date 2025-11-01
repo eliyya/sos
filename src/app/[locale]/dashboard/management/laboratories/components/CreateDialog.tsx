@@ -1,7 +1,7 @@
 'use client'
 
 import { LABORATORY_TYPE } from '@/prisma/generated/browser'
-import { useAtom, useSetAtom } from 'jotai'
+import { atom, useAtom, useSetAtom } from 'jotai'
 import {
     Clock8Icon,
     MicroscopeIcon,
@@ -21,21 +21,30 @@ import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
 import {
-    closeHourAtom,
-    errorCloseHourAtom,
-    errorNameAtom,
-    errorOpenHourAtom,
-    errorTypeAtom,
-    nameAtom,
     openDialogAtom,
-    openHourAtom,
     selectedLaboratoryIdAtom,
-    typeAtom,
 } from '@/global/laboratories.globals'
 import { createLaboratory } from '@/actions/laboratories.actions'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { timeToMinutes } from '@/lib/utils'
+
+const nameAtom = atom('')
+const errorNameAtom = atom('')
+const openHourAtom = atom('')
+const errorOpenHourAtom = atom('')
+const closeHourAtom = atom('')
+const errorCloseHourAtom = atom('')
+const defaultTypeAtom: {
+    value: LABORATORY_TYPE
+    label: string
+} = {
+    value: LABORATORY_TYPE.LABORATORY,
+    label: 'Laboratorio',
+}
+const typeAtom = atom(defaultTypeAtom)
+const errorTypeAtom = atom('')
 
 export function CreateLaboratoryDialog() {
     const [message, setMessage] = useState('')
@@ -98,6 +107,7 @@ export function CreateLaboratoryDialog() {
                         setNameError('El laboratorio ya existe')
                     } else if (response.type === 'unexpected') {
                         setMessage('Ha ocurrido un error, intente más tarde')
+                        console.log(response)
                     } else if (response.type === 'already-archived') {
                         selectLaboratory(response.id)
                         openDialog('UNARCHIVE_OR_DELETE')
@@ -138,10 +148,19 @@ export function CreateLaboratoryDialog() {
                 <form
                     action={data => {
                         const name = data.get('name') as string
-                        const close_hour = Number(data.get('close_hour'))
-                        const open_hour = Number(data.get('open_hour'))
+                        const close_hour = timeToMinutes(
+                            data.get('close_hour') as string,
+                        )
+                        const open_hour = timeToMinutes(
+                            data.get('open_hour') as string,
+                        )
                         const type = data.get('type') as LABORATORY_TYPE
-                        onAction({ name, close_hour, open_hour, type })
+                        onAction({
+                            name,
+                            close_hour,
+                            open_hour,
+                            type,
+                        })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
                 >
@@ -149,8 +168,10 @@ export function CreateLaboratoryDialog() {
                         <MessageError>{message}</MessageError>
                     </Activity>
                     <NameInput />
-                    <OpenHourInput />
-                    <CloseHourInput />
+                    <div className='flex gap-6'>
+                        <OpenHourInput />
+                        <CloseHourInput />
+                    </div>
                     <LaboratoryTypeSelect />
 
                     <Button type='submit' disabled={inTransition}>

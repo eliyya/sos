@@ -203,3 +203,16 @@ export function createSerializableLocaleStorage<T>(keyPrefix = '') {
         },
     }
 }
+
+export function createSearchParams(filters: Record<string, unknown>) {
+    const params = new URLSearchParams()
+
+    for (const [key, value] of Object.entries(filters)) {
+        if (typeof value === 'string' && value !== '') params.set(key, value)
+        if (typeof value === 'boolean' && value) params.set(key, '1')
+        if (typeof value === 'number' && value !== 0)
+            params.set(key, String(value))
+    }
+
+    return params
+}

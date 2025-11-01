@@ -65,7 +65,7 @@ export const createLaboratoryEffect = ({
                     ),
                 ),
             )
-        if (open_hour <= close_hour)
+        if (open_hour >= close_hour)
             return yield* _(
                 Effect.fail(
                     new InvalidInputError(
