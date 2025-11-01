@@ -1,6 +1,5 @@
 'use client'
 
-import { STATUS } from '@/prisma/generated/browser'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     UserIcon,
@@ -47,9 +46,6 @@ export function CreateSubjectDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedClassIdAtom)
-    const { activeUsers } = useUsers()
-    const { subjects } = useSubjects()
-    const { careers } = useCareers()
     const { setClasses } = useClasses()
     const t = useTranslations('classes')
     const router = useRouter()
@@ -58,27 +54,6 @@ export function CreateSubjectDialog() {
     const setCareerError = useSetAtom(errorCareerIdAtom)
     const setGroupError = useSetAtom(errorGroupAtom)
     const setSemesterError = useSetAtom(errorSemesterAtom)
-
-    const teachersOptions = useMemo(() => {
-        return activeUsers.map(u => ({
-            label: u.name,
-            value: u.id,
-        }))
-    }, [activeUsers])
-
-    const subjectsOptions = useMemo(() => {
-        return subjects.map(s => ({
-            label: s.name,
-            value: s.id,
-        }))
-    }, [subjects])
-
-    const careersOptions = useMemo(() => {
-        return careers.map(c => ({
-            label: c.name,
-            value: c.id,
-        }))
-    }, [careers])
 
     const onAction = useCallback(
         (data: FormData) => {
@@ -126,7 +101,17 @@ export function CreateSubjectDialog() {
                 }
             })
         },
-        [openDialog],
+        [
+            openDialog,
+            router,
+            setCareerError,
+            setClasses,
+            setEntityToEdit,
+            setGroupError,
+            setSemesterError,
+            setSubjectError,
+            setTeacherError,
+        ],
     )
 
     return (
@@ -180,7 +165,7 @@ export function TeacherInput() {
         const teacher = activeUsers.find(u => u.id === teacherId)
         if (!teacher) return activeUsersOptions[0]
         return { label: teacher.name, value: teacher.id }
-    }, [teacherId, activeUsers])
+    }, [activeUsers, activeUsersOptions, teacherId])
 
     return (
         <CompletSelect
@@ -189,7 +174,7 @@ export function TeacherInput() {
             options={activeUsersOptions}
             icon={UserIcon}
             value={teacherValue}
-            onChange={e => setTeacherId(e?.value!)}
+            onChange={e => e && setTeacherId(e.value)}
             error={error}
         />
     )
@@ -211,7 +196,7 @@ export function SubjectInput() {
         const subject = subjects.find(s => s.id === subjectId)
         if (!subject) return subjectsOptions[0]
         return { label: subject.name, value: subject.id }
-    }, [subjectId, subjects])
+    }, [subjectId, subjects, subjectsOptions])
 
     return (
         <CompletSelect
@@ -220,7 +205,7 @@ export function SubjectInput() {
             options={subjectsOptions}
             icon={BookAIcon}
             value={subjectValue}
-            onChange={e => setSubjectId(e?.value!)}
+            onChange={e => e && setSubjectId(e.value)}
             error={error}
         />
     )
@@ -242,7 +227,7 @@ export function CareerInput() {
         const career = careers.find(c => c.id === careerId)
         if (!career) return careersOptions[0]
         return { label: career.name, value: career.id }
-    }, [careerId, careers])
+    }, [careerId, careers, careersOptions])
 
     return (
         <CompletSelect
@@ -251,7 +236,7 @@ export function CareerInput() {
             options={careersOptions}
             icon={GraduationCapIcon}
             value={careerValue}
-            onChange={e => setCareerId(e?.value!)}
+            onChange={e => e && setCareerId(e.value)}
             error={error}
         />
     )

@@ -24,7 +24,6 @@ import {
     unarchiveStudentEffect,
 } from '@/services/students.service'
 import { Effect } from 'effect'
-import { setTimeout } from 'node:timers/promises'
 
 export async function createStudent({
     career_id,

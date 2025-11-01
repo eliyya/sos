@@ -187,20 +187,6 @@ export function RetornableCompletSelect<
             ?.setCustomValidity(error ?? '')
     }, [error, required])
 
-    useEffect(() => {
-        if (
-            selectRef.current &&
-            JSON.stringify(normalizeValue(currentValue), (k, v) =>
-                typeof v === 'bigint' ? v.toString() : v,
-            ) !==
-                JSON.stringify(normalizeValue(originalValue), (k, v) =>
-                    typeof v === 'bigint' ? v.toString() : v,
-                )
-        ) {
-            setIsChanged(true)
-        }
-    }, [currentValue, originalValue])
-
     return (
         <div className={cn('w-full space-y-2', containerClassName)}>
             <label
@@ -468,20 +454,6 @@ export function RetornableCompletCreatableSelect<
             ?.querySelector('input')
             ?.setCustomValidity(error ?? '')
     }, [error, required])
-
-    useEffect(() => {
-        if (
-            selectRef.current &&
-            JSON.stringify(normalizeValue(currentValue), (k, v) =>
-                typeof v === 'bigint' ? v.toString() : v,
-            ) !==
-                JSON.stringify(normalizeValue(defaultValue), (k, v) =>
-                    typeof v === 'bigint' ? v.toString() : v,
-                )
-        ) {
-            setIsChanged(true)
-        }
-    }, [currentValue, defaultValue])
 
     return (
         <div className={cn('w-full space-y-2', containerClassName)}>

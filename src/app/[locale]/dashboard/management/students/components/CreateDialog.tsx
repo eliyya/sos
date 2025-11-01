@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom, atom } from 'jotai'
 import {
     Save,
     UserIcon,
@@ -35,7 +35,7 @@ import {
 import { useCareers } from '@/hooks/careers.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { atom } from 'jotai'
+
 import { SearchStudentsContext } from '@/contexts/students.context'
 
 const ncAtom = atom('')
@@ -114,7 +114,17 @@ export function CreateSubjectDialog() {
                 }
             })
         },
-        [openDialog, router, setEntityToEdit, refreshStudents],
+        [
+            refreshStudents,
+            openDialog,
+            setEntityToEdit,
+            router,
+            setErrorFirstname,
+            setErrorLastname,
+            setErrorCareer,
+            setErrorGroup,
+            setErrorSemester,
+        ],
     )
 
     return (
@@ -257,7 +267,7 @@ export function CareerInput() {
         const career = activeCareers.find(t => t.id === careerId)
         if (!career) return activeCareersOptions[0]
         return { label: career.name, value: career.id }
-    }, [careerId, activeCareers])
+    }, [activeCareers, activeCareersOptions, careerId])
 
     return (
         <CompletSelect
@@ -267,7 +277,7 @@ export function CareerInput() {
             options={activeCareersOptions}
             icon={GraduationCapIcon}
             value={careerValue}
-            onChange={e => setCareerId(e?.value!)}
+            onChange={e => e && setCareerId(e.value)}
             error={error}
         />
     )

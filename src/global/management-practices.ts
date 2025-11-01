@@ -28,8 +28,10 @@ export const selectedUserAtom = atom({
     id: '',
 })
 
-export const classesAtom = atom<any[]>([])
-export const selectedClassAtom = atom<any | null>(null)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const classesAtom = atom<any[]>([]) // TODO: fix type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const selectedClassAtom = atom<any | null>(null) // TODO: fix type
 export const remainingHoursAtom = atom({
     leftHours: Infinity,
     allowedHours: 0,

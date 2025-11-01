@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import {
     ArchiveRestoreIcon,
     BanIcon,
@@ -94,7 +94,7 @@ export function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, setOpen, router])
+    }, [entity, setOpen, setClasses, refetchClasses, router])
 
     if (!entity) return null
 

@@ -62,7 +62,7 @@ export function ArchiveDialog() {
                 }
             }
         })
-    }, [setLaboratories, setOpen, refetchLaboratories, router])
+    }, [entity, setLaboratories, setOpen, refetchLaboratories, router])
 
     if (!entity) return null
 

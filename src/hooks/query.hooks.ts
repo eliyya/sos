@@ -40,7 +40,7 @@ export function useQueryParam<T extends string | boolean | number>(
 
     useEffect(() => {
         setValue(getInitialValue())
-    }, [searchParams])
+    }, [getInitialValue])
 
     const setQueryParam = useCallback(
         (
@@ -51,9 +51,7 @@ export function useQueryParam<T extends string | boolean | number>(
             >,
         ) => {
             const resolved =
-                typeof newValue === 'function' ?
-                    (newValue as (prev: any) => any)(value)
-                :   newValue
+                typeof newValue === 'function' ? newValue(value) : newValue
 
             const params = new URLSearchParams(window.location.search)
 

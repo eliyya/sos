@@ -60,7 +60,7 @@ export function DeleteDialog() {
                 }
             }
         })
-    }, [setLaboratories, setOpen, refetchLaboratories, router])
+    }, [entity, setLaboratories, setOpen, refetchLaboratories, router])
 
     if (!entity) return null
 

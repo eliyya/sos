@@ -1,6 +1,6 @@
 'use client'
 
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2, User as UserIcon } from 'lucide-react'
 import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
 import { deleteClass } from '@/actions/classes.actions'

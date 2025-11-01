@@ -93,7 +93,7 @@ export function UnarchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, setOpen, router])
+    }, [entity, setOpen, setClasses, refetchClasses, router])
 
     if (!entity) return null
 

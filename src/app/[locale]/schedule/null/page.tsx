@@ -27,8 +27,7 @@ export default async function NullPage() {
     )
 }
 
-interface GetContentProps {}
-async function GetContent({}: GetContentProps) {
+async function GetContent() {
     const t = await getTranslations('schedule')
     const session = await auth.api.getSession({ headers: await headers() })
 
@@ -59,7 +58,9 @@ async function GetContent({}: GetContentProps) {
         return (
             <>
                 <p className='mb-8 text-lg'>{t('login_or_contact_admin')}</p>
-                <ButtonLink href={app.$locale.dashboard.management.laboratories('es')}>
+                <ButtonLink
+                    href={app.$locale.dashboard.management.laboratories('es')}
+                >
                     <UserIcon className='mr-2 h-4 w-4' />
                     {t('login')}
                 </ButtonLink>

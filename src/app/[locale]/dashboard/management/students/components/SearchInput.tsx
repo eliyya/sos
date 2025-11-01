@@ -17,7 +17,7 @@ export function Filters() {
             const query = queryInputRef.current?.value.trim() || ''
             changeFilters({ query })
         },
-        [queryInputRef],
+        [queryInputRef, changeFilters],
     )
 
     useEffect(() => {

@@ -51,7 +51,8 @@ export function useSearchCareers() {
 
     useEffect(() => {
         refreshCareers()
-    }, [filters])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return {
         filters,
