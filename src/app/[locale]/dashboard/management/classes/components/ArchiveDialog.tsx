@@ -16,7 +16,6 @@ import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
 import { useTranslations } from 'next-intl'
-import { useUsers } from '@/hooks/users.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import { useRouter } from 'next/navigation'
@@ -30,19 +29,10 @@ export function ArchiveDialog() {
     const entity = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
     const { subjects } = useSubjects()
-    const { users } = useUsers()
     const { careers } = useCareers()
     const t = useTranslations('classes')
-    const { setClasses, refetchClasses } = useClasses()
+    const { refetchClasses } = useClasses()
     const router = useRouter()
-
-    const teacher = useMemo(() => {
-        if (!entity) return ''
-        const user = users.find(u => u.id === entity.teacher_id)
-        if (!user) return 'Deleted user'
-        if (user.status === STATUS.ARCHIVED) return `(Archived) ${user.name}`
-        return user.name
-    }, [entity, users])
 
     const subject = useMemo(() => {
         if (!entity) return ''
@@ -68,9 +58,7 @@ export function ArchiveDialog() {
             const res = await archiveClass(entity.id)
             if (res.status === 'success') {
                 openDialog(null)
-                setClasses(prev =>
-                    prev.map(c => (c.id === entity.id ? res.class : c)),
-                )
+                refetchClasses()
                 return
             }
             if (res.type === 'not-found') {
@@ -84,7 +72,7 @@ export function ArchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, setClasses, refetchClasses])
+    }, [entity, openDialog, router, refetchClasses])
 
     if (!entity) return null
 
@@ -111,7 +99,7 @@ export function ArchiveDialog() {
                     <CompletInput
                         label={t('teacher')}
                         disabled
-                        value={teacher}
+                        value={entity.teacher.displayname}
                         icon={UserIcon}
                     />
                     <CompletInput

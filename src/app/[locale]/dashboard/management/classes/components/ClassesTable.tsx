@@ -20,7 +20,6 @@ import { UnarchiveDialog } from './UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './UnarchiveOrDeleteDialog'
 import { useTranslations } from 'next-intl'
 import { useClasses } from '@/hooks/classes.hooks'
-import { useUsers } from '@/hooks/users.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useQueryParam } from '@/hooks/query.hooks'
@@ -28,7 +27,6 @@ import { useQueryParam } from '@/hooks/query.hooks'
 export function ClassesTable() {
     const [archived] = useQueryParam('archived', false)
     const { classes } = useClasses()
-    const { users } = useUsers()
     const { subjects } = useSubjects()
     const { careers } = useCareers()
 
@@ -62,11 +60,7 @@ export function ClassesTable() {
                                     }
                                 </TableCell>
                                 <TableCell>
-                                    {
-                                        users.find(
-                                            u => u.id === entity.teacher_id,
-                                        )?.name
-                                    }
+                                    {entity.teacher.displayname}
                                 </TableCell>
                                 <TableCell>
                                     {careers.find(

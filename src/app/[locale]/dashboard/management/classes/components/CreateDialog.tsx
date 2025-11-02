@@ -46,7 +46,7 @@ export function CreateSubjectDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedClassIdAtom)
-    const { setClasses } = useClasses()
+    const { refetchClasses } = useClasses()
     const t = useTranslations('classes')
     const router = useRouter()
     const setTeacherError = useSetAtom(errorTeacherIdAtom)
@@ -72,7 +72,7 @@ export function CreateSubjectDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    setClasses(prev => [...prev, res.class])
+                    refetchClasses()
                     return
                 }
                 if (res.type === 'already-archived') {
@@ -103,9 +103,9 @@ export function CreateSubjectDialog() {
         },
         [
             openDialog,
+            refetchClasses,
             router,
             setCareerError,
-            setClasses,
             setEntityToEdit,
             setGroupError,
             setSemesterError,

@@ -12,6 +12,7 @@ import {
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
+import { SuccessOf } from '@/lib/type-utils'
 import { getStartOfWeek } from '@/lib/utils'
 import { db } from '@/prisma/db'
 import {
@@ -372,7 +373,9 @@ export async function unarchiveClass(id: string) {
     )
 }
 
-export async function getClasses() {
+export async function getClasses(): Promise<
+    SuccessOf<ReturnType<typeof getClassesEffect>>
+> {
     return await Effect.runPromise(
         Effect.scoped(
             getClassesEffect()

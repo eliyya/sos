@@ -30,7 +30,6 @@ export function DeleteDialog() {
     const entity = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
     const { subjects } = useSubjects()
-    const { users } = useUsers()
     const { careers } = useCareers()
     const { setClasses, refetchClasses } = useClasses()
     const router = useRouter()
@@ -43,15 +42,6 @@ export function DeleteDialog() {
             return `(Archived) ${subject.name}`
         return subject.name
     }, [entity, subjects])
-
-    const teacherName = useMemo(() => {
-        if (!entity) return ''
-        const teacher = users.find(t => t.id === entity.teacher_id)
-        if (!teacher) return 'Deleted teacher'
-        if (teacher.status === STATUS.ARCHIVED)
-            return `(Archived) ${teacher.name}`
-        return teacher.name
-    }, [entity, users])
 
     const careerName = useMemo(() => {
         if (!entity) return ''
@@ -99,7 +89,7 @@ export function DeleteDialog() {
                     <DialogDescription>
                         {t('confirm_delete_class', {
                             subjectName,
-                            teacherName,
+                            teacherName: entity.teacher.displayname,
                         })}{' '}
                         <strong>{t('is_irreversible')}</strong>
                     </DialogDescription>
@@ -114,7 +104,7 @@ export function DeleteDialog() {
                     <CompletInput
                         label={t('teacher')}
                         disabled
-                        value={teacherName}
+                        value={entity.teacher.displayname}
                         icon={UserIcon}
                     />
                     <CompletInput

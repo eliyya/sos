@@ -278,7 +278,7 @@ export const getClassesEffect = () =>
     Effect.gen(function* (_) {
         const prisma = yield* _(PrismaService)
 
-        return yield* _(
+        const classes = yield* _(
             Effect.tryPromise({
                 try: () =>
                     prisma.class.findMany({
@@ -287,10 +287,34 @@ export const getClassesEffect = () =>
                                 not: STATUS.DELETED,
                             },
                         },
+                        include: {
+                            teacher: {
+                                select: {
+                                    name: true,
+                                    status: true,
+                                },
+                            },
+                        },
                     }),
                 catch: err => new PrismaError(err),
             }),
         )
+
+        const classProcessed = classes.map(class_ => ({
+            ...class_,
+            teacher: {
+                name: class_.teacher.name,
+                displayname:
+                    class_.teacher.status === STATUS.ACTIVE ?
+                        class_.teacher.name
+                    : class_.teacher.status === STATUS.ARCHIVED ?
+                        `(Archived) ${class_.teacher.name}`
+                    : class_.teacher.status === STATUS.DELETED ? `Deleted user`
+                    : class_.teacher.name,
+            },
+        }))
+
+        return classProcessed
     })
 
 export const searchClassesEffect = ({ query = '', archived = false }) =>

@@ -6,7 +6,7 @@ import {
     Table,
 } from '@/components/Table'
 import { Suspense } from 'react'
-import { FoooterTable, UsersList } from './UsersTable'
+import { FoooterTable, UsersList } from './users-list'
 import { Skeleton } from '@mantine/core'
 import { Button } from '@/components/Button'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'

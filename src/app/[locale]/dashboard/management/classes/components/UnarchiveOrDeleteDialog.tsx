@@ -23,7 +23,6 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
-import { useUsers } from '@/hooks/users.hooks'
 import { useTranslations } from 'next-intl'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
@@ -39,10 +38,9 @@ export function UnarchiveOrDeleteDialog() {
     const entity = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('classes')
-    const { users } = useUsers()
     const { careers } = useCareers()
     const { subjects } = useSubjects()
-    const { refetchClasses, setClasses } = useClasses()
+    const { refetchClasses } = useClasses()
     const router = useRouter()
 
     const subject = useMemo(() => {
@@ -63,24 +61,13 @@ export function UnarchiveOrDeleteDialog() {
         return career.alias
     }, [entity, careers])
 
-    const teacher = useMemo(() => {
-        if (!entity) return ''
-        const teacher = users.find(u => u.id === entity.teacher_id)
-        if (!teacher) return 'Deleted Teacher'
-        if (teacher.status === STATUS.ARCHIVED)
-            return `(Archived) ${teacher.name}`
-        return teacher.name
-    }, [entity, users])
-
     const onAction = useCallback(() => {
         if (!entity) return
         startTransition(async () => {
             const res = await unarchiveClass(entity.id)
             if (res.status === 'success') {
                 setOpen(null)
-                setClasses(prev =>
-                    prev.map(c => (c.id === entity.id ? res.class : c)),
-                )
+                refetchClasses()
                 return
             }
             if (res.type === 'not-found') {
@@ -94,7 +81,7 @@ export function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, setOpen, setClasses, refetchClasses, router])
+    }, [entity, setOpen, refetchClasses, router])
 
     if (!entity) return null
 
@@ -114,7 +101,7 @@ export function UnarchiveOrDeleteDialog() {
                             career: career,
                             group: entity.group + '',
                             semester: entity.semester + '',
-                            teacher: teacher,
+                            teacher: entity.teacher.displayname,
                         })}
                     </DialogDescription>
                 </DialogHeader>
@@ -140,7 +127,7 @@ export function UnarchiveOrDeleteDialog() {
                     <CompletInput
                         label={t('teacher')}
                         disabled
-                        value={teacher}
+                        value={entity.teacher.displayname}
                         icon={UserIcon}
                     />
                     <CompletInput

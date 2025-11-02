@@ -39,9 +39,9 @@ export function EditDialog() {
     const old = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
     const { careers, activeCareers } = useCareers()
-    const { users, activeUsers } = useUsers()
+    const { activeUsers } = useUsers()
     const { subjects, activeSubjects } = useSubjects()
-    const { refetchClasses, setClasses } = useClasses()
+    const { refetchClasses } = useClasses()
     const router = useRouter()
 
     const teachersOptions = useMemo(() => {
@@ -85,12 +85,8 @@ export function EditDialog() {
 
     const originalTeacher = useMemo(() => {
         if (!old) return null
-        const teacher = users.find(u => u.id === old.teacher_id)
-        if (!teacher) return { label: 'Deleted Teacher', value: old.teacher_id }
-        if (teacher.status === STATUS.ARCHIVED)
-            return { label: `(Archived) ${teacher.name}`, value: teacher.id }
-        return { label: teacher.name, value: teacher.id }
-    }, [old, users])
+        return { label: old.teacher.displayname, value: old.teacher_id }
+    }, [old])
 
     const onAction = useCallback(
         (formData: FormData) => {
@@ -111,9 +107,7 @@ export function EditDialog() {
                     teacher_id,
                 })
                 if (res.status === 'success') {
-                    setClasses(prev =>
-                        prev.map(c => (c.id === old.id ? res.class : c)),
-                    )
+                    refetchClasses()
                     openDialog(null)
                     return
                 } else if (res.type === 'not-found') {
@@ -130,7 +124,7 @@ export function EditDialog() {
                 }
             })
         },
-        [old, openDialog, router, setClasses, refetchClasses],
+        [old, openDialog, router, refetchClasses],
     )
 
     if (!old) return null

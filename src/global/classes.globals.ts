@@ -1,9 +1,11 @@
+import { getClasses } from '@/actions/classes.actions'
 import { createSerializableLocaleStorage } from '@/lib/utils'
 import { Class } from '@/prisma/generated/browser'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
-export const classesAtom = atomWithStorage<Class[]>(
+type Classes = Awaited<ReturnType<typeof getClasses>>
+export const classesAtom = atomWithStorage<Classes>(
     'classes',
     [],
     createSerializableLocaleStorage(),

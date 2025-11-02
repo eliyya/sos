@@ -8,7 +8,7 @@ import { ArchiveEntityDialog } from './components/ArchiveEntityDialog'
 import { UnarchiveEntityDialog } from './components/UnarchiveEntityDialog'
 import { DeleteEntityDialog } from './components/DeleteEntityDialog'
 import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
-import { UsersTable } from './components/table/UsersList'
+import { UsersTable } from './components/table/users-table'
 
 export default async function UserManagementPage() {
     return (
