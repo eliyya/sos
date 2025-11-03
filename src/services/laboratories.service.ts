@@ -14,6 +14,7 @@ import {
     NotFoundError,
     PrismaError,
 } from '@/errors'
+import { DEFAULT_PAGINATION } from '@/constants/client'
 
 interface CreateLaboratoryProps {
     name: string
@@ -371,4 +372,64 @@ export const getLaboratoriesEffect = () =>
                 catch: err => new PrismaError(err),
             }),
         )
+    })
+
+interface SearchLaboratoriesProps {
+    query?: string
+    archived?: boolean
+    page?: number
+    size?: number
+}
+export const searchLaboratoriesEffect = ({
+    query = '',
+    archived = false,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
+}: SearchLaboratoriesProps) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const [laboratories, count] = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    Promise.all([
+                        prisma.laboratory.findMany({
+                            skip: (page - 1) * size,
+                            take: size,
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                        prisma.laboratory.count({
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
+                catch: err => new PrismaError(err),
+            }),
+        )
+
+        return {
+            laboratories,
+            count,
+        }
     })

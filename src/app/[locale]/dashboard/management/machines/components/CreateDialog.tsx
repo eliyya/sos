@@ -20,33 +20,26 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput, CompletTextarea } from '@/components/Inputs'
-import { CompletSelect } from '@/components/Select'
+import { CompletAsyncSelect } from '@/components/Select'
 import {
+    laboratoriesSelectOptionsAtom,
     openDialogAtom,
     selectedMachineIdAtom,
 } from '@/global/machines.globals'
-import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchMachinesContext } from '@/contexts/machines.context'
+import { searchLaboratories } from '@/actions/laboratories.actions'
 
 export function CreateSubjectDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedMachineIdAtom)
-    const { activeLaboratories } = useLaboratories()
     const router = useRouter()
     const [serieError, setSerieError] = useState('')
     const { refreshMachines } = use(SearchMachinesContext)
-
-    const laboratoriesOptions = useMemo(() => {
-        return activeLaboratories.map(laboratory => ({
-            value: laboratory.id,
-            label: laboratory.name,
-        }))
-    }, [activeLaboratories])
 
     const onAction = useCallback(
         (formData: FormData) => {
@@ -156,12 +149,7 @@ export function CreateSubjectDialog() {
                         name='description'
                         icon={UserIcon}
                     ></CompletTextarea>
-                    <CompletSelect
-                        label='Laboratorio Asignado'
-                        name='laboratory_id'
-                        options={laboratoriesOptions}
-                        icon={UserIcon}
-                    />
+                    <LaboratoryInput />
 
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
@@ -170,5 +158,40 @@ export function CreateSubjectDialog() {
                 </form>
             </DialogContent>
         </Dialog>
+    )
+}
+
+function LaboratoryInput() {
+    const [defaultlaboratoriesOptions, setLaboratoriesSelectOptions] = useAtom(
+        laboratoriesSelectOptionsAtom,
+    )
+
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchLaboratories({
+                query: inputValue,
+            }).then(res => {
+                const options = res.laboratories.map(laboratory => ({
+                    label: laboratory.name,
+                    value: laboratory.id,
+                }))
+                setLaboratoriesSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setLaboratoriesSelectOptions],
+    )
+
+    return (
+        <CompletAsyncSelect
+            label='Laboratorio Asignado'
+            name='laboratory_id'
+            loadOptions={loadOptions}
+            defaultOptions={defaultlaboratoriesOptions}
+            icon={UserIcon}
+        />
     )
 }

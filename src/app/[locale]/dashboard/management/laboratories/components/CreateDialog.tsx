@@ -8,7 +8,7 @@ import {
     SaveIcon,
     SquarePenIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -25,10 +25,10 @@ import {
     selectedLaboratoryIdAtom,
 } from '@/global/laboratories.globals'
 import { createLaboratory } from '@/actions/laboratories.actions'
-import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { timeToMinutes } from '@/lib/utils'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 const nameAtom = atom('')
 const errorNameAtom = atom('')
@@ -50,7 +50,7 @@ export function CreateLaboratoryDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
-    const { setLaboratories } = useLaboratories()
+    const { refreshLaboratories } = use(SearchLaboratoriesContext)
     const router = useRouter()
     const selectLaboratory = useSetAtom(selectedLaboratoryIdAtom)
     // inputs
@@ -82,7 +82,7 @@ export function CreateLaboratoryDialog() {
                     type,
                 })
                 if (response.status === 'success') {
-                    setLaboratories(labs => [...labs, response.laboratory])
+                    refreshLaboratories()
                     openDialog(null)
                     setName('')
                     setNameError('')
@@ -115,15 +115,15 @@ export function CreateLaboratoryDialog() {
                 }
             }),
         [
+            refreshLaboratories,
             openDialog,
-            router,
-            setCloseHour,
-            setCloseHourError,
-            setLaboratories,
             setName,
             setNameError,
             setOpenHour,
+            setCloseHour,
+            router,
             setOpenHourError,
+            setCloseHourError,
             setTypeError,
             selectLaboratory,
         ],

@@ -8,7 +8,7 @@ import {
     SaveIcon,
     SquarePenIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -26,8 +26,8 @@ import {
     selectedLaboratoryAtom,
 } from '@/global/laboratories.globals'
 import { editLaboratory } from '@/actions/laboratories.actions'
-import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { useRouter } from 'next/navigation'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 const labTypeLabel = {
     [LABORATORY_TYPE.LABORATORY]: 'Laboratorio',
@@ -39,7 +39,7 @@ export function EditDialog() {
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedLaboratoryAtom)
     const [message, setMessage] = useState('')
-    const { setLaboratories, refetchLaboratories } = useLaboratories()
+    const { refreshLaboratories } = use(SearchLaboratoriesContext)
     const router = useRouter()
 
     const onAction = useCallback(
@@ -63,11 +63,7 @@ export function EditDialog() {
                     type,
                 })
                 if (response.status === 'success') {
-                    setLaboratories(labs =>
-                        labs.map(lab =>
-                            lab.id !== old.id ? lab : response.laboratory,
-                        ),
-                    )
+                    refreshLaboratories()
                     openDialog(null)
                 } else {
                     if (response.type === 'already-exists') {
@@ -75,7 +71,7 @@ export function EditDialog() {
                     } else if (response.type === 'invalid-input') {
                         setMessage(response.message)
                     } else if (response.type === 'not-found') {
-                        await refetchLaboratories()
+                        refreshLaboratories()
                         openDialog(null)
                     } else if (response.type === 'permission') {
                         setMessage(
@@ -89,7 +85,7 @@ export function EditDialog() {
                 }
             })
         },
-        [old, openDialog, setLaboratories, router, refetchLaboratories],
+        [old, openDialog, router, refreshLaboratories],
     )
 
     if (!old) return null

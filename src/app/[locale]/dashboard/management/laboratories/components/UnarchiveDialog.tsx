@@ -8,7 +8,7 @@ import {
     MicroscopeIcon,
     SquarePenIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -22,18 +22,18 @@ import {
     openDialogAtom,
     selectedLaboratoryAtom,
 } from '@/global/laboratories.globals'
-import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { unarchiveLaboratory } from '@/actions/laboratories.actions'
 import { useRouter } from 'next/navigation'
 import { CompletInput } from '@/components/Inputs'
 import { LABORATORY_TYPE } from '@/prisma/generated/enums'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 export function UnarchiveDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedLaboratoryAtom)
     const [message, setMessage] = useState('')
-    const { setLaboratories, refetchLaboratories } = useLaboratories()
+    const { refreshLaboratories } = use(SearchLaboratoriesContext)
     const router = useRouter()
 
     const onAction = useCallback(async () => {
@@ -41,15 +41,11 @@ export function UnarchiveDialog() {
         startTransition(async () => {
             const response = await unarchiveLaboratory(entity.id)
             if (response.status === 'success') {
-                setLaboratories(labs =>
-                    labs.map(lab =>
-                        lab.id !== entity.id ? lab : response.laboratory,
-                    ),
-                )
+                refreshLaboratories()
                 setOpen(null)
             } else {
                 if (response.type === 'not-found') {
-                    await refetchLaboratories()
+                    refreshLaboratories()
                     setOpen(null)
                 } else if (response.type === 'unexpected') {
                     setMessage('Ha ocurrido un error, intente más tarde')
@@ -62,7 +58,7 @@ export function UnarchiveDialog() {
                 }
             }
         })
-    }, [entity, setLaboratories, setOpen, refetchLaboratories, router])
+    }, [entity, refreshLaboratories, setOpen, router])
 
     if (!entity) return null
 

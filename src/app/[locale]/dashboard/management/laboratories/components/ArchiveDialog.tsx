@@ -8,7 +8,7 @@ import {
     MicroscopeIcon,
     SquarePenIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -23,33 +23,29 @@ import {
     selectedLaboratoryAtom,
 } from '@/global/laboratories.globals'
 import { archiveLaboratory } from '@/actions/laboratories.actions'
-import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { useRouter } from 'next/navigation'
 import { CompletInput } from '@/components/Inputs'
 import { LABORATORY_TYPE } from '@/prisma/generated/enums'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedLaboratoryAtom)
     const [message, setMessage] = useState('')
-    const { setLaboratories, refetchLaboratories } = useLaboratories()
     const router = useRouter()
+    const { refreshLaboratories } = use(SearchLaboratoriesContext)
 
     const onAction = useCallback(async () => {
         if (!entity) return
         startTransition(async () => {
             const response = await archiveLaboratory(entity.id)
             if (response.status === 'success') {
-                setLaboratories(labs =>
-                    labs.map(lab =>
-                        lab.id !== entity.id ? lab : response.laboratory,
-                    ),
-                )
+                refreshLaboratories()
                 setOpen(null)
             } else {
                 if (response.type === 'not-found') {
-                    await refetchLaboratories()
+                    refreshLaboratories()
                     setOpen(null)
                 } else if (response.type === 'unexpected') {
                     setMessage('Ha ocurrido un error, intente más tarde')
@@ -62,7 +58,7 @@ export function ArchiveDialog() {
                 }
             }
         })
-    }, [entity, setLaboratories, setOpen, refetchLaboratories, router])
+    }, [entity, refreshLaboratories, setOpen, router])
 
     if (!entity) return null
 

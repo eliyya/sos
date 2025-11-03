@@ -2,14 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import {
-    Activity,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { editMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -21,39 +14,47 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
-import { RetornableCompletSelect } from '@/components/Select'
-import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
-import { useLaboratories } from '@/hooks/laboratories.hoohs'
-import { MACHINE_STATUS, STATUS } from '@/prisma/generated/enums'
+import { RetornableCompletAsyncSelect } from '@/components/Select'
+import {
+    laboratoriesSelectOptionsAtom,
+    openDialogAtom,
+    selectedMachineAtom,
+} from '@/global/machines.globals'
+import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchMachinesContext } from '@/contexts/machines.context'
+import { searchLaboratories } from '@/actions/laboratories.actions'
 
 export function EditDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedMachineAtom)
     const [message, setMessage] = useState('')
-    const { laboratories, activeLaboratories } = useLaboratories()
     const router = useRouter()
     const { refreshMachines } = use(SearchMachinesContext)
-    const laboratoriesOptions = useMemo(() => {
-        return activeLaboratories.map(laboratory => ({
-            value: laboratory.id,
-            label: laboratory.name,
-        }))
-    }, [activeLaboratories])
-    const originalLaboratory = useMemo(() => {
-        if (!old) return null
-        const lab = laboratories.find(
-            laboratory => laboratory.id === old?.laboratory_id,
-        )
-        if (!lab)
-            return { value: old.laboratory_id, label: 'Laboratorio eliminado' }
-        if (lab.status === STATUS.ARCHIVED)
-            return { value: lab.id, label: `(Archivado) ${lab.name}` }
-        return { value: lab.id, label: lab.name }
-    }, [laboratories, old])
+    const [defaultlaboratoriesOptions, setLaboratoriesSelectOptions] = useAtom(
+        laboratoriesSelectOptionsAtom,
+    )
+
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchLaboratories({
+                query: inputValue,
+            }).then(res => {
+                const options = res.laboratories.map(laboratory => ({
+                    label: laboratory.name,
+                    value: laboratory.id,
+                }))
+                setLaboratoriesSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setLaboratoriesSelectOptions],
+    )
 
     const onAction = useCallback(
         (formData: FormData) => {
@@ -172,11 +173,13 @@ export function EditDialog() {
                         name='description'
                         icon={User}
                     ></RetornableCompletInput>
-                    <RetornableCompletSelect
+                    <RetornableCompletAsyncSelect
                         isClearable
-                        originalValue={originalLaboratory}
+                        // TODO: fix this
+                        originalValue={{ label: '', value: old.laboratory_id }}
                         label='Laboratorio Asignado'
-                        options={laboratoriesOptions}
+                        loadOptions={loadOptions}
+                        defaultOptions={defaultlaboratoriesOptions}
                         name='laboratory_id'
                         icon={User}
                     />

@@ -214,7 +214,7 @@ export function SubjectInput() {
 
     return (
         <CompletSelect
-            label='Tema'
+            label='Materia'
             name='subject_id'
             options={subjectsOptions}
             icon={BookAIcon}

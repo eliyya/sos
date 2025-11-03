@@ -1,35 +1,60 @@
-import { getLaboratories } from '@/actions/laboratories.actions'
-import { laboratoriesAtom } from '@/global/laboratories.globals'
-import { STATUS } from '@/prisma/generated/enums'
-import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect, useMemo } from 'react'
+import { searchLaboratories } from '@/actions/laboratories.actions'
+import { useCallback, useMemo, useState } from 'react'
+import { useQueryParam } from './query.hooks'
+import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
+import app from '@eliyya/type-routes'
 
-const isLaboratoriesFetchedAtom = atom(false)
+export type SearchLaboratoriesPromise = ReturnType<typeof searchLaboratories>
 
-export function useLaboratories() {
-    const [laboratories, setLaboratories] = useAtom(laboratoriesAtom)
-    const [isFetched, setIsFetched] = useAtom(isLaboratoriesFetchedAtom)
+type Filters = {
+    query: string
+    archived: boolean
+    page: number
+    size: number
+}
+export function useSearchLaboratories() {
+    const [query, setQuery] = useQueryParam('q', '')
+    const [archived, setArchived] = useQueryParam('archived', false)
+    const [page, setPage] = useQueryParam('page', 1)
+    const [size, setSize] = useQueryParam('size', 10)
+    const [refresh, setRefresh] = useState(Symbol())
 
-    const refetchLaboratories = useCallback(
-        () => getLaboratories().then(setLaboratories),
-        [setLaboratories],
+    const filters = useMemo(
+        () => ({ query, archived, page, size }),
+        [query, archived, page, size],
     )
 
-    const activeLaboratories = useMemo(() => {
-        return laboratories.filter(t => t.status === STATUS.ACTIVE)
-    }, [laboratories])
+    const changeFilters = useCallback(
+        (props: ChangeProps<Filters>) => {
+            props = propsParser(props, filters)
+            if (typeof props.query === 'string') setQuery(props.query)
+            if (typeof props.archived === 'boolean') setArchived(props.archived)
+            if (typeof props.page === 'number') setPage(props.page)
+            if (typeof props.size === 'number') setSize(props.size)
+        },
+        [filters, setQuery, setArchived, setPage, setSize],
+    )
 
-    useEffect(() => {
-        if (!isFetched) {
-            refetchLaboratories()
-            setIsFetched(true)
-        }
-    }, [setLaboratories, isFetched, setIsFetched, refetchLaboratories])
+    const refreshLaboratories = useCallback(
+        () => setRefresh(Symbol()),
+        [setRefresh],
+    )
+
+    const laboratoriesPromise: SearchLaboratoriesPromise = useMemo(
+        () =>
+            fetch(
+                `${app.api.pagination.laboratories()}?${createSearchParams(filters)}`,
+            )
+                .then(res => res.json())
+                .catch(() => ({ users: [], count: 0 })),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [refresh, filters],
+    )
 
     return {
-        laboratories,
-        setLaboratories,
-        activeLaboratories,
-        refetchLaboratories,
-    } as const
+        filters,
+        changeFilters,
+        laboratoriesPromise,
+        refreshLaboratories,
+    }
 }

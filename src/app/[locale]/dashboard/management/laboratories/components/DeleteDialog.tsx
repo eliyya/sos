@@ -8,7 +8,7 @@ import {
     SquarePenIcon,
     Trash2Icon,
 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -22,18 +22,18 @@ import {
     openDialogAtom,
     selectedLaboratoryAtom,
 } from '@/global/laboratories.globals'
-import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { deleteLaboratory } from '@/actions/laboratories.actions'
 import { useRouter } from 'next/navigation'
 import { CompletInput } from '@/components/Inputs'
 import { LABORATORY_TYPE } from '@/prisma/generated/enums'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 export function DeleteDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedLaboratoryAtom)
     const [message, setMessage] = useState('')
-    const { setLaboratories, refetchLaboratories } = useLaboratories()
+    const { refreshLaboratories } = use(SearchLaboratoriesContext)
     const router = useRouter()
 
     const onAction = useCallback(async () => {
@@ -41,13 +41,11 @@ export function DeleteDialog() {
         startTransition(async () => {
             const response = await deleteLaboratory(entity.id)
             if (response.status === 'success') {
-                setLaboratories(labs =>
-                    labs.filter(lab => lab.id !== entity.id),
-                )
+                refreshLaboratories()
                 setOpen(null)
             } else {
                 if (response.type === 'not-found') {
-                    await refetchLaboratories()
+                    refreshLaboratories()
                     setOpen(null)
                 } else if (response.type === 'unexpected') {
                     setMessage('Ha ocurrido un error, intente más tarde')
@@ -60,7 +58,7 @@ export function DeleteDialog() {
                 }
             }
         })
-    }, [entity, setLaboratories, setOpen, refetchLaboratories, router])
+    }, [entity, setOpen, refreshLaboratories, router])
 
     if (!entity) return null
 
