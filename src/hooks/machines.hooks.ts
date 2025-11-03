@@ -47,7 +47,7 @@ export function useSearchMachines() {
                 `${app.api.pagination.machines()}?${createSearchParams(filters)}`,
             )
                 .then(res => res.json())
-                .catch(() => ({ users: [], count: 0 })),
+                .catch(() => ({ machines: [], count: 0 })),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [refresh, filters],
     )
