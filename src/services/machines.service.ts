@@ -2,13 +2,14 @@ import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 import { Effect } from 'effect'
 import { requirePermission } from './auth.service'
 import { PrismaService } from '@/layers/db.layer'
-import { MACHINE_STATUS } from '@/prisma/generated/enums'
+import { MACHINE_STATUS, STATUS } from '@/prisma/generated/enums'
 import {
     AlreadyArchivedError,
     InvalidInputError,
     NotFoundError,
     PrismaError,
 } from '@/errors'
+import { DEFAULT_PAGINATION } from '@/constants/client'
 
 interface CreateMachineProps {
     number: number
@@ -270,3 +271,121 @@ export const getMachinesEffect = () => {
         return yield* _(Effect.succeed(machines))
     })
 }
+
+interface SearchMachinesProps {
+    query?: string
+    maintenance?: boolean
+    page?: number
+    size?: number
+}
+export const searchMachinesEffect = ({
+    query = '',
+    maintenance = false,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
+}: SearchMachinesProps) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const [machines, count] = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    Promise.all([
+                        prisma.machine.findMany({
+                            skip: (page - 1) * size,
+                            take: size,
+                            where: {
+                                status: {
+                                    in:
+                                        maintenance ?
+                                            [MACHINE_STATUS.MAINTENANCE]
+                                        :   [
+                                                MACHINE_STATUS.AVAILABLE,
+                                                MACHINE_STATUS.IN_USE,
+                                            ],
+                                },
+                                OR: [
+                                    {
+                                        serie: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        number: Number(query),
+                                    },
+                                    {
+                                        description: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                            include: {
+                                laboratory: {
+                                    select: {
+                                        name: true,
+                                        status: true,
+                                    },
+                                },
+                            },
+                        }),
+                        prisma.machine.count({
+                            where: {
+                                status: {
+                                    in:
+                                        maintenance ?
+                                            [MACHINE_STATUS.MAINTENANCE]
+                                        :   [
+                                                MACHINE_STATUS.AVAILABLE,
+                                                MACHINE_STATUS.IN_USE,
+                                            ],
+                                },
+                                OR: [
+                                    {
+                                        serie: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        number: Number(query),
+                                    },
+                                    {
+                                        description: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
+                catch: err => new PrismaError(err),
+            }),
+        )
+
+        const machinesMapped = machines.map(machine => ({
+            ...machine,
+            laboratory:
+                machine.laboratory ?
+                    {
+                        name: machine.laboratory.name,
+                        displayname:
+                            machine.laboratory.status === STATUS.ACTIVE ?
+                                machine.laboratory.name
+                            : machine.laboratory.status === STATUS.ARCHIVED ?
+                                `(Archived) ${machine.laboratory.name}`
+                            : machine.laboratory.status === STATUS.DELETED ?
+                                `Laboratory deleted`
+                            :   machine.laboratory.name,
+                    }
+                :   null,
+        }))
+
+        return {
+            machines: machinesMapped,
+            count,
+        }
+    })

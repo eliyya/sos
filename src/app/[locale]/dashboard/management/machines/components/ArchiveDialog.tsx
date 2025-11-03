@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, MonitorCogIcon, UserIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { maintainanceMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -14,18 +14,17 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
-import { useMachines } from '@/hooks/machines.hooks'
-import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
+import { SearchMachinesContext } from '@/contexts/machines.context'
 
 export function ArchiveDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedMachineAtom)
     const [message, setMessage] = useState('')
-    const { setMachines, refetchMachines } = useMachines()
+    const { refreshMachines } = use(SearchMachinesContext)
     const router = useRouter()
 
     const onAction = useCallback(() => {
@@ -34,17 +33,11 @@ export function ArchiveDialog() {
             const res = await maintainanceMachine(entity.id)
             if (res.status === 'success') {
                 openDialog(null)
-                setMachines(prev =>
-                    prev.map(machine =>
-                        machine.id === entity.id ?
-                            { ...machine, status: MACHINE_STATUS.MAINTENANCE }
-                        :   machine,
-                    ),
-                )
+                refreshMachines()
                 return
             }
             if (res.type === 'not-found') {
-                refetchMachines()
+                refreshMachines()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -54,7 +47,7 @@ export function ArchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, setMachines, refetchMachines])
+    }, [entity, openDialog, router, refreshMachines])
 
     if (!entity) return null
 

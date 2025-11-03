@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { editMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -18,9 +25,9 @@ import { RetornableCompletSelect } from '@/components/Select'
 import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
 import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { MACHINE_STATUS, STATUS } from '@/prisma/generated/enums'
-import { useMachines } from '@/hooks/machines.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { SearchMachinesContext } from '@/contexts/machines.context'
 
 export function EditDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
@@ -29,7 +36,7 @@ export function EditDialog() {
     const [message, setMessage] = useState('')
     const { laboratories, activeLaboratories } = useLaboratories()
     const router = useRouter()
-    const { setMachines, refetchMachines } = useMachines()
+    const { refreshMachines } = use(SearchMachinesContext)
     const laboratoriesOptions = useMemo(() => {
         return activeLaboratories.map(laboratory => ({
             value: laboratory.id,
@@ -73,15 +80,11 @@ export function EditDialog() {
                     storage,
                 })
                 if (res.status === 'success') {
-                    setMachines(prev =>
-                        prev.map(machine =>
-                            machine.id === old.id ? res.machine : machine,
-                        ),
-                    )
+                    refreshMachines()
                     openDialog(null)
                     return
                 } else if (res.type === 'not-found') {
-                    refetchMachines()
+                    refreshMachines()
                     openDialog(null)
                 } else if (res.type === 'permission') {
                     setMessage('No tienes permiso para editar esta máquina')
@@ -98,7 +101,7 @@ export function EditDialog() {
                 }
             })
         },
-        [old, openDialog, router, setMachines, refetchMachines],
+        [old, openDialog, refreshMachines, router],
     )
 
     if (!old) return null

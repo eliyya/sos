@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2, UserIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { deleteMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -15,9 +15,9 @@ import {
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
 import { useRouter } from 'next/navigation'
-import { useMachines } from '@/hooks/machines.hooks'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
+import { SearchMachinesContext } from '@/contexts/machines.context'
 
 export function DeleteDialog() {
     const [openedDialog, openDialog] = useAtom(openDialogAtom)
@@ -25,21 +25,19 @@ export function DeleteDialog() {
     const entity = useAtomValue(selectedMachineAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { setMachines, refetchMachines } = useMachines()
+    const { refreshMachines } = use(SearchMachinesContext)
 
     const onAction = useCallback(() => {
         if (!entity) return
         startTransition(async () => {
             const res = await deleteMachine(entity.id)
             if (res.status === 'success') {
-                setMachines(prev =>
-                    prev.filter(machine => machine.id !== entity.id),
-                )
+                refreshMachines()
                 openDialog(null)
                 return
             }
             if (res.type === 'not-found') {
-                refetchMachines()
+                refreshMachines()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para eliminar esta máquina')
@@ -49,7 +47,7 @@ export function DeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, setMachines, refetchMachines])
+    }, [entity, openDialog, router, refreshMachines])
 
     if (!entity) return null
 

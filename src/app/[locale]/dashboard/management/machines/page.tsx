@@ -1,12 +1,13 @@
+import { SearchMachinesProvider } from '@/contexts/machines.context'
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateDialog'
-import { EntityTable } from './components/EntityTable'
+import { MachineTable } from './components/table/machine-table'
 import { Filters } from './components/SearchInput'
 
 export default async function MachinePage() {
     return (
-        <>
+        <SearchMachinesProvider>
             <div className='flex justify-between'>
                 <DashboardHeader
                     heading='Maquinas'
@@ -16,7 +17,7 @@ export default async function MachinePage() {
                 <CreateSubjectDialog />
             </div>
             <Filters />
-            <EntityTable />
-        </>
+            <MachineTable />
+        </SearchMachinesProvider>
     )
 }

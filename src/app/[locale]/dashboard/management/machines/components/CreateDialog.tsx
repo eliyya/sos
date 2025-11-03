@@ -2,7 +2,14 @@
 
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { createMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -22,7 +29,7 @@ import { useLaboratories } from '@/hooks/laboratories.hoohs'
 import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useMachines } from '@/hooks/machines.hooks'
+import { SearchMachinesContext } from '@/contexts/machines.context'
 
 export function CreateSubjectDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
@@ -32,7 +39,7 @@ export function CreateSubjectDialog() {
     const { activeLaboratories } = useLaboratories()
     const router = useRouter()
     const [serieError, setSerieError] = useState('')
-    const { setMachines } = useMachines()
+    const { refreshMachines } = use(SearchMachinesContext)
 
     const laboratoriesOptions = useMemo(() => {
         return activeLaboratories.map(laboratory => ({
@@ -64,7 +71,7 @@ export function CreateSubjectDialog() {
                     serie,
                 })
                 if (res.status === 'success') {
-                    setMachines(prev => [...prev, res.machine])
+                    refreshMachines()
                     openDialog(null)
                     return
                 }
@@ -86,7 +93,7 @@ export function CreateSubjectDialog() {
                 }
             })
         },
-        [openDialog, router, setEntityToEdit, setMachines],
+        [openDialog, refreshMachines, router, setEntityToEdit],
     )
 
     return (
