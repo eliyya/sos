@@ -20,19 +20,23 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { CompletSelect } from '@/components/Select'
-import { openDialogAtom, selectedClassIdAtom } from '@/global/classes.globals'
-import { useUsers } from '@/hooks/users.hooks'
+import { CompletAsyncSelect, CompletSelect } from '@/components/Select'
+import {
+    openDialogAtom,
+    selectedClassIdAtom,
+    usersSelectOptionsAtom,
+} from '@/global/classes.globals'
 import { useTranslations } from 'next-intl'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useClasses } from '@/hooks/classes.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { searchUsers } from '@/actions/users.actions'
 
 const careerIdAtom = atom('')
 const subjectIdAtom = atom('')
-const teacherIdAtom = atom('')
+const teacherAtom = atom<{ label: string; value: string } | null>(null)
 const errorCareerIdAtom = atom('')
 const errorSubjectIdAtom = atom('')
 const errorTeacherIdAtom = atom('')
@@ -150,32 +154,42 @@ export function CreateSubjectDialog() {
 }
 
 export function TeacherInput() {
-    const [teacherId, setTeacherId] = useAtom(teacherIdAtom)
+    const [teacher, setTeacher] = useAtom(teacherAtom)
     const error = useAtomValue(errorTeacherIdAtom)
-    const { activeUsers } = useUsers()
+    const [defaultOptions, setUsersSelectOptions] = useAtom(
+        usersSelectOptionsAtom,
+    )
 
-    const activeUsersOptions = useMemo(() => {
-        return activeUsers.map(u => ({
-            label: u.name,
-            value: u.id,
-        }))
-    }, [activeUsers])
-
-    const teacherValue = useMemo(() => {
-        const teacher = activeUsers.find(u => u.id === teacherId)
-        if (!teacher) return activeUsersOptions[0]
-        return { label: teacher.name, value: teacher.id }
-    }, [activeUsers, activeUsersOptions, teacherId])
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchUsers({
+                query: inputValue,
+            }).then(res => {
+                const options = res.users.map(u => ({
+                    label: u.name,
+                    value: u.id,
+                }))
+                setUsersSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setUsersSelectOptions],
+    )
 
     return (
-        <CompletSelect
+        <CompletAsyncSelect
             label='Profesor'
             name='teacher_id'
-            options={activeUsersOptions}
+            loadOptions={loadOptions}
             icon={UserIcon}
-            value={teacherValue}
-            onChange={e => e && setTeacherId(e.value)}
+            value={teacher}
+            onChange={e => setTeacher(e)}
+            defaultOptions={defaultOptions}
             error={error}
+            cacheOptions={true}
         />
     )
 }

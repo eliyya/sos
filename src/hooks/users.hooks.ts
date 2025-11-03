@@ -1,41 +1,8 @@
-import { getUsers, searchUsers } from '@/actions/users.actions'
-import { usersAtom } from '@/global/users.globals'
-import { STATUS } from '@/prisma/generated/enums'
-import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
+import { searchUsers } from '@/actions/users.actions'
+import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import app from '@eliyya/type-routes'
-import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
-
-const isUsersFetchedAtom = atom(false)
-
-export function useUsers() {
-    const [users, setUsers] = useAtom(usersAtom)
-    const [isFetched, setIsFetched] = useAtom(isUsersFetchedAtom)
-
-    const refetchUsers = useCallback(
-        () => getUsers().then(setUsers),
-        [setUsers],
-    )
-
-    const activeUsers = useMemo(() => {
-        return users.filter(t => t.status === STATUS.ACTIVE)
-    }, [users])
-
-    useEffect(() => {
-        if (!isFetched) {
-            refetchUsers()
-            setIsFetched(true)
-        }
-    }, [setUsers, isFetched, setIsFetched, refetchUsers])
-
-    return {
-        users,
-        setUsers,
-        activeUsers,
-        refetchUsers,
-    } as const
-}
 
 export type SearchUsersPromise = ReturnType<typeof searchUsers>
 

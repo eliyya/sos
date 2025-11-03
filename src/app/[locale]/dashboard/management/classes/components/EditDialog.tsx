@@ -22,15 +22,22 @@ import {
 import { MessageError } from '@/components/Error'
 import { useTranslations } from 'next-intl'
 import { RetornableCompletInput } from '@/components/Inputs'
-import { RetornableCompletSelect } from '@/components/Select'
-import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
+import {
+    RetornableCompletAsyncSelect,
+    RetornableCompletSelect,
+} from '@/components/Select'
+import {
+    openDialogAtom,
+    selectedClassAtom,
+    usersSelectOptionsAtom,
+} from '@/global/classes.globals'
 import { useCareers } from '@/hooks/careers.hooks'
-import { useUsers } from '@/hooks/users.hooks'
 import { useSubjects } from '@/hooks/subjects.hooks'
 import { useClasses } from '@/hooks/classes.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
+import { searchUsers } from '@/actions/users.actions'
 
 export function EditDialog() {
     const t = useTranslations('classes')
@@ -39,17 +46,12 @@ export function EditDialog() {
     const old = useAtomValue(selectedClassAtom)
     const [message, setMessage] = useState('')
     const { careers, activeCareers } = useCareers()
-    const { activeUsers } = useUsers()
     const { subjects, activeSubjects } = useSubjects()
     const { refetchClasses } = useClasses()
     const router = useRouter()
-
-    const teachersOptions = useMemo(() => {
-        return activeUsers.map(u => ({
-            label: u.name,
-            value: u.id,
-        }))
-    }, [activeUsers])
+    const [usersSelectOptions, setUsersSelectOptions] = useAtom(
+        usersSelectOptionsAtom,
+    )
 
     const subjectsOptions = useMemo(() => {
         return activeSubjects.map(s => ({
@@ -127,6 +129,25 @@ export function EditDialog() {
         [old, openDialog, router, refetchClasses],
     )
 
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchUsers({
+                query: inputValue,
+            }).then(res => {
+                const options = res.users.map(u => ({
+                    label: u.name,
+                    value: u.id,
+                }))
+                setUsersSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setUsersSelectOptions],
+    )
+
     if (!old) return null
 
     return (
@@ -158,11 +179,12 @@ export function EditDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <RetornableCompletSelect
+                    <RetornableCompletAsyncSelect
                         originalValue={originalTeacher}
                         label={t('teacher')}
                         name='teacher_id'
-                        options={teachersOptions}
+                        loadOptions={loadOptions}
+                        defaultOptions={usersSelectOptions}
                         icon={UserIcon}
                     />
                     <RetornableCompletSelect

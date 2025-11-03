@@ -28,3 +28,9 @@ export const selectedClassAtom = atom(get => {
     const selectedId = get(selectedClassIdAtom)
     return classes.find(student => student.id === selectedId)
 })
+export const usersSelectOptionsAtom = atomWithStorage<
+    {
+        label: string
+        value: string
+    }[]
+>('users-select-options', [], createSerializableLocaleStorage())
