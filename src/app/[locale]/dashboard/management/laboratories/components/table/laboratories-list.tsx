@@ -17,8 +17,10 @@ import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 import { SearchLaboratoriesPromise } from '@/hooks/laboratories.hoohs'
 import { secondsToTime } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
-import { selectedLaboratoryIdAtom } from '@/global/laboratories.globals'
-import { openDialogAtom } from '@/global/careers.globals'
+import {
+    openDialogAtom,
+    selectedLaboratoryIdAtom,
+} from '@/global/laboratories.globals'
 
 interface LaboratoryItemListProps {
     laboratory: Awaited<SearchLaboratoriesPromise>['laboratories'][number]
