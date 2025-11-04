@@ -1,19 +1,26 @@
 'use client'
 
 import { LABORATORY_TYPE } from '@/prisma/generated/enums'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
     ClockIcon,
     MicroscopeIcon,
     SaveIcon,
     SquarePenIcon,
 } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
@@ -23,11 +30,12 @@ import { RetornableCompletSelect } from '@/components/Select'
 import { secondsToTime } from '@/lib/utils'
 import {
     openDialogAtom,
-    selectedLaboratoryAtom,
+    selectedLaboratoryIdAtom,
 } from '@/global/laboratories.globals'
 import { editLaboratory } from '@/actions/laboratories.actions'
 import { useRouter } from 'next/navigation'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
+import { Skeleton } from '@mantine/core'
 
 const labTypeLabel = {
     [LABORATORY_TYPE.LABORATORY]: 'Laboratorio',
@@ -36,11 +44,44 @@ const labTypeLabel = {
 
 export function EditDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
+
+    return (
+        <Dialog
+            open={dialogOpened === 'EDIT'}
+            onOpenChange={state => {
+                if (!state) openDialog(null)
+            }}
+        >
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Editar Laboratorio</DialogTitle>
+                    {/* <DialogDescription>
+                        Edita el laboratorio {old.name}
+                    </DialogDescription> */}
+                </DialogHeader>
+                <Suspense fallback={<EditFormSkeleton />}>
+                    <EditForm />
+                </Suspense>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+function EditForm() {
+    const openDialog = useSetAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(selectedLaboratoryAtom)
     const [message, setMessage] = useState('')
-    const { refreshLaboratories } = use(SearchLaboratoriesContext)
+    const labId = useAtomValue(selectedLaboratoryIdAtom)
     const router = useRouter()
+    const { refreshLaboratories, laboratoriesPromise } = use(
+        SearchLaboratoriesContext,
+    )
+    const { laboratories } = use(laboratoriesPromise)
+
+    const old = useMemo(
+        () => laboratories.find(lab => lab.id === labId),
+        [labId, laboratories],
+    )
 
     const onAction = useCallback(
         ({
@@ -91,84 +132,80 @@ export function EditDialog() {
     if (!old) return null
 
     return (
-        <Dialog
-            open={dialogOpened === 'EDIT'}
-            onOpenChange={state => {
-                if (!state) openDialog(null)
+        <form
+            action={data => {
+                const name = data.get('name') as string
+                const close_hour = Number(data.get('close_hour'))
+                const open_hour = Number(data.get('open_hour'))
+                const type = data.get('type') as LABORATORY_TYPE
+                onAction({ name, close_hour, open_hour, type })
             }}
+            className='flex w-full max-w-md flex-col justify-center gap-6'
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Editar Laboratorio</DialogTitle>
-                    <DialogDescription>
-                        Edita el laboratorio {old.name}
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={data => {
-                        const name = data.get('name') as string
-                        const close_hour = Number(data.get('close_hour'))
-                        const open_hour = Number(data.get('open_hour'))
-                        const type = data.get('type') as LABORATORY_TYPE
-                        onAction({ name, close_hour, open_hour, type })
-                    }}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <input type='hidden' value={old.id} name='id' />
-                    <RetornableCompletInput
-                        required
-                        label='Nombre'
-                        type='text'
-                        name='name'
-                        originalValue={old.name}
-                        icon={SquarePenIcon}
-                    ></RetornableCompletInput>
-                    <RetornableCompletInput
-                        required
-                        label='Apertura'
-                        type='time'
-                        name='open_hour'
-                        originalValue={secondsToTime(old.open_hour * 60)}
-                        icon={ClockIcon}
-                    ></RetornableCompletInput>
-                    <RetornableCompletInput
-                        required
-                        label='Cierre'
-                        type='time'
-                        name='close_hour'
-                        originalValue={secondsToTime(old.close_hour * 60)}
-                        icon={ClockIcon}
-                    ></RetornableCompletInput>
-                    <RetornableCompletSelect
-                        label='Tipo de Laboratorio'
-                        name='type'
-                        originalValue={{
-                            value: old.type,
-                            label: labTypeLabel[old.type],
-                        }}
-                        options={[
-                            {
-                                value: LABORATORY_TYPE.LABORATORY,
-                                label: labTypeLabel[LABORATORY_TYPE.LABORATORY],
-                            },
-                            {
-                                value: LABORATORY_TYPE.COMPUTER_CENTER,
-                                label: labTypeLabel[
-                                    LABORATORY_TYPE.COMPUTER_CENTER
-                                ],
-                            },
-                        ]}
-                        icon={MicroscopeIcon}
-                    />
-                    <Button type='submit' disabled={inTransition}>
-                        <SaveIcon className='mr-2 h-5 w-5' />
-                        Save
-                    </Button>
-                </form>
-            </DialogContent>
-        </Dialog>
+            <Activity mode={message ? 'visible' : 'hidden'}>
+                <MessageError>{message}</MessageError>
+            </Activity>
+            <input type='hidden' value={old.id} name='id' />
+            <RetornableCompletInput
+                required
+                label='Nombre'
+                type='text'
+                name='name'
+                originalValue={old.name}
+                icon={SquarePenIcon}
+            ></RetornableCompletInput>
+            <RetornableCompletInput
+                required
+                label='Apertura'
+                type='time'
+                name='open_hour'
+                originalValue={secondsToTime(old.open_hour * 60)}
+                icon={ClockIcon}
+            ></RetornableCompletInput>
+            <RetornableCompletInput
+                required
+                label='Cierre'
+                type='time'
+                name='close_hour'
+                originalValue={secondsToTime(old.close_hour * 60)}
+                icon={ClockIcon}
+            ></RetornableCompletInput>
+            <RetornableCompletSelect
+                label='Tipo de Laboratorio'
+                name='type'
+                originalValue={{
+                    value: old.type,
+                    label: labTypeLabel[old.type],
+                }}
+                options={[
+                    {
+                        value: LABORATORY_TYPE.LABORATORY,
+                        label: labTypeLabel[LABORATORY_TYPE.LABORATORY],
+                    },
+                    {
+                        value: LABORATORY_TYPE.COMPUTER_CENTER,
+                        label: labTypeLabel[LABORATORY_TYPE.COMPUTER_CENTER],
+                    },
+                ]}
+                icon={MicroscopeIcon}
+            />
+            <Button type='submit' disabled={inTransition}>
+                <SaveIcon className='mr-2 h-5 w-5' />
+                Save
+            </Button>
+        </form>
+    )
+}
+
+function EditFormSkeleton() {
+    return (
+        <div className='flex w-full max-w-md flex-col justify-center gap-6'>
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+        </div>
     )
 }
