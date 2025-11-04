@@ -43,13 +43,19 @@ export const createCareerEffect = ({ name, alias }: CreateCareerProps) =>
             if (exists.name === name)
                 return yield* _(
                     Effect.fail(
-                        new InvalidInputError('name', 'Career already exists'),
+                        new InvalidInputError({
+                            field: 'name',
+                            message: 'Career already exists',
+                        }),
                     ),
                 )
             if (exists.alias === alias)
                 return yield* _(
                     Effect.fail(
-                        new InvalidInputError('alias', 'Career already exists'),
+                        new InvalidInputError({
+                            field: 'alias',
+                            message: 'Career already exists',
+                        }),
                     ),
                 )
         }
@@ -97,13 +103,19 @@ export const editCareerEffect = ({ id, name, alias }: EditCarrerEffectProps) =>
             if (repeat.name === name)
                 return yield* _(
                     Effect.fail(
-                        new InvalidInputError('name', 'Career already exists'),
+                        new InvalidInputError({
+                            field: 'name',
+                            message: 'Career already exists',
+                        }),
                     ),
                 )
             if (repeat.alias === alias)
                 return yield* _(
                     Effect.fail(
-                        new InvalidInputError('alias', 'Career already exists'),
+                        new InvalidInputError({
+                            field: 'alias',
+                            message: 'Career already exists',
+                        }),
                     ),
                 )
         }

@@ -56,10 +56,10 @@ export const createMachineEffect = ({
                 }
                 return yield* _(
                     Effect.fail(
-                        new InvalidInputError(
-                            'serie',
-                            'Machine already exists',
-                        ),
+                        new InvalidInputError({
+                            field: 'serie',
+                            message: 'Machine already exists',
+                        }),
                     ),
                 )
             }
@@ -125,10 +125,10 @@ export const editMachineEffect = ({
             if (machine) {
                 return yield* _(
                     Effect.fail(
-                        new InvalidInputError(
-                            'serie',
-                            'Machine already exists',
-                        ),
+                        new InvalidInputError({
+                            field: 'serie',
+                            message: 'Machine already exists',
+                        }),
                     ),
                 )
             }

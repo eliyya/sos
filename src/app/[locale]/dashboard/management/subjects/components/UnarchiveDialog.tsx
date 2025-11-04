@@ -2,12 +2,12 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import {
-    ArchiveRestore,
-    Ban,
+    ArchiveRestoreIcon,
+    BanIcon,
     ClockFadingIcon,
     SquarePenIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { unarchiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -19,17 +19,17 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
-import { useSubjects } from '@/hooks/subjects.hooks'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'
 import { CompletInput } from '@/components/Inputs'
+import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
 export function UnarchiveDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedSubjectAtom)
     const [message, setMessage] = useState('')
-    const { setSubjects, refetchSubjects } = useSubjects()
+    const { refreshSubjects } = use(SearchSubjectsContext)
     const router = useRouter()
 
     const onAction = useCallback(async () => {
@@ -38,16 +38,12 @@ export function UnarchiveDialog() {
             const res = await unarchiveSubject(entity.id)
             if (res.status === 'success') {
                 openDialog(null)
-                setSubjects(prev =>
-                    prev.map(subject =>
-                        subject.id !== entity.id ? subject : res.subject,
-                    ),
-                )
+                refreshSubjects()
                 return
             }
             if (res.type === 'not-found') {
                 openDialog(null)
-                refetchSubjects()
+                refreshSubjects()
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para archivar esta asignatura')
             } else if (res.type === 'unauthorized') {
@@ -56,7 +52,7 @@ export function UnarchiveDialog() {
                 setMessage('Ha ocurrido un error, intentalo más tarde')
             }
         })
-    }, [entity, openDialog, refetchSubjects, router, setSubjects])
+    }, [entity, openDialog, refreshSubjects, router])
 
     if (!entity) return null
 
@@ -108,7 +104,7 @@ export function UnarchiveDialog() {
                                 openDialog(null)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
@@ -116,7 +112,7 @@ export function UnarchiveDialog() {
                             variant={'default'}
                             disabled={inTransition}
                         >
-                            <ArchiveRestore className='mr-2 h-5 w-5' />
+                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
                             Desarchivar
                         </Button>
                     </div>

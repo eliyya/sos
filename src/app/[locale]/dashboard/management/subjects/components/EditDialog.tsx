@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { editSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -16,7 +16,7 @@ import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
 import { useRouter } from 'next/navigation'
-import { useSubjects } from '@/hooks/subjects.hooks'
+import { SearchSubjectsContext } from '@/contexts/subjects.context'
 import app from '@eliyya/type-routes'
 
 export function EditDialog() {
@@ -24,8 +24,8 @@ export function EditDialog() {
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedSubjectAtom)
     const [message, setMessage] = useState('')
-    const { setSubjects, refetchSubjects } = useSubjects()
     const router = useRouter()
+    const { refreshSubjects } = use(SearchSubjectsContext)
 
     const onAction = useCallback(
         async (formData: FormData) => {
@@ -42,16 +42,12 @@ export function EditDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    setSubjects(prev =>
-                        prev.map(subject =>
-                            subject.id !== old.id ? subject : res.subject,
-                        ),
-                    )
+                    refreshSubjects()
                     return
                 }
                 if (res.type === 'not-found') {
                     openDialog(null)
-                    refetchSubjects()
+                    refreshSubjects()
                 } else if (res.type === 'permission') {
                     setMessage(
                         'No tienes permiso para archivar esta asignatura',
@@ -63,7 +59,7 @@ export function EditDialog() {
                 }
             })
         },
-        [old, openDialog, setSubjects, refetchSubjects, router],
+        [old, openDialog, refreshSubjects, router],
     )
 
     if (!old) return null

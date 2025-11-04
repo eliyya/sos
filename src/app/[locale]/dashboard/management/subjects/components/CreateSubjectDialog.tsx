@@ -2,7 +2,7 @@
 
 import { atom, useAtom, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -18,8 +18,8 @@ import {
     selectedSubjectIdAtom,
 } from '@/global/subjects.globals'
 import { useRouter } from 'next/navigation'
-import { useSubjects } from '@/hooks/subjects.hooks'
 import app from '@eliyya/type-routes'
+import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
 const nameAtom = atom('')
 const errorNameAtom = atom('')
@@ -38,7 +38,7 @@ export function CreateSubjectDialog() {
     const setErrorPracticeHours = useSetAtom(errorPracticeHoursAtom)
     const setUserToEdit = useSetAtom(selectedSubjectIdAtom)
     const router = useRouter()
-    const { setSubjects } = useSubjects()
+    const { refreshSubjects } = use(SearchSubjectsContext)
 
     const onAction = useCallback(
         async (formData: FormData) => {
@@ -54,7 +54,7 @@ export function CreateSubjectDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    setSubjects(prev => [...prev, res.subject])
+                    refreshSubjects()
                     return
                 }
                 if (res.type === 'permission') {
@@ -81,11 +81,11 @@ export function CreateSubjectDialog() {
         },
         [
             openDialog,
+            refreshSubjects,
             router,
             setErrorName,
-            setSubjects,
-            setErrorPracticeHours,
             setErrorTheoryHours,
+            setErrorPracticeHours,
             setUserToEdit,
         ],
     )

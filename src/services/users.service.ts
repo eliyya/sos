@@ -258,52 +258,58 @@ export function validatePasswordEffect(password: string) {
         if (!password)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('password', 'Password is required'),
+                    new InvalidInputError({
+                        field: 'password',
+                        message: 'Password is required',
+                    }),
                 ),
             )
         if (!/[A-Z]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'password',
-                        'Password must contain at least one uppercase letter',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message:
+                            'Password must contain at least one uppercase letter',
+                    }),
                 ),
             )
         if (!/[a-z]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'password',
-                        'Password must contain at least one lowercase letter',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message:
+                            'Password must contain at least one lowercase letter',
+                    }),
                 ),
             )
         if (!/[0-9]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'password',
-                        'Password must contain at least one number',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message: 'Password must contain at least one number',
+                    }),
                 ),
             )
         if (!/[!@#$%^&*]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'password',
-                        'Password must contain at least one special character',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message:
+                            'Password must contain at least one special character',
+                    }),
                 ),
             )
         if (password.length < 10)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'password',
-                        'Password must be at least 10 characters long',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message: 'Password must be at least 10 characters long',
+                    }),
                 ),
             )
     })

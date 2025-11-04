@@ -489,12 +489,9 @@ export async function searchLaboratories(
             searchLaboratoriesEffect(props)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: laboratories => laboratories,
-                        onFailure: error => {
-                            console.log(error)
-                            return { laboratories: [], count: 0 }
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed({ laboratories: [], count: 0 })
                     }),
                 ),
         ),

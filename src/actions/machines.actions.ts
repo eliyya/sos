@@ -374,12 +374,9 @@ export async function searchMachines(
             searchMachinesEffect(props)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: machines => machines,
-                        onFailure: error => {
-                            console.log(error)
-                            return { machines: [], count: 0 }
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed({ machines: [], count: 0 })
                     }),
                 ),
         ),

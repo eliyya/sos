@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Archive, Ban, ClockFadingIcon, SquarePenIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { archiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -14,17 +14,17 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
-import { useSubjects } from '@/hooks/subjects.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
+import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
 export function ArchiveDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedSubjectAtom)
     const [message, setMessage] = useState('')
-    const { setSubjects, refetchSubjects } = useSubjects()
+    const { refreshSubjects } = use(SearchSubjectsContext)
     const router = useRouter()
 
     const onAction = useCallback(async () => {
@@ -33,16 +33,12 @@ export function ArchiveDialog() {
             const res = await archiveSubject(entity.id)
             if (res.status === 'success') {
                 openDialog(null)
-                setSubjects(prev =>
-                    prev.map(subject =>
-                        subject.id !== entity.id ? subject : res.subject,
-                    ),
-                )
+                refreshSubjects()
                 return
             }
             if (res.type === 'not-found') {
                 openDialog(null)
-                refetchSubjects()
+                refreshSubjects()
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para archivar esta asignatura')
             } else if (res.type === 'unauthorized') {
@@ -51,7 +47,7 @@ export function ArchiveDialog() {
                 setMessage('Ha ocurrido un error, intentalo más tarde')
             }
         })
-    }, [entity, openDialog, refetchSubjects, router, setSubjects])
+    }, [entity, openDialog, refreshSubjects, router])
 
     if (!entity) return null
 

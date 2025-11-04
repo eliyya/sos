@@ -380,12 +380,9 @@ export async function getStudents() {
             getStudentsEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: students => students,
-                        onFailure: error => {
-                            console.log(error)
-                            return []
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed([])
                     }),
                 ),
         ),
@@ -401,12 +398,9 @@ export async function searchStudents(
             searchStudentsEffect(props)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: students => students,
-                        onFailure: error => {
-                            console.log(error)
-                            return { students: [], count: 0 }
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed({ students: [], count: 0 })
                     }),
                 ),
         ),
@@ -420,12 +414,9 @@ export async function getStudent(nc: string) {
             getStudentEffect(nc)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: student => student,
-                        onFailure: error => {
-                            console.log(error)
-                            return null
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed(null)
                     }),
                 ),
         ),

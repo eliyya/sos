@@ -23,7 +23,12 @@ export const editRoleNameEffect = (id: string, name: string) =>
 
         if (!name) {
             return yield* _(
-                Effect.fail(new InvalidInputError('name', 'Required Name')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'name',
+                        message: 'Required Name',
+                    }),
+                ),
             )
         }
         if (
@@ -32,12 +37,22 @@ export const editRoleNameEffect = (id: string, name: string) =>
                 .includes(name.toLowerCase())
         ) {
             return yield* _(
-                Effect.fail(new InvalidInputError('name', 'Reserved Name')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'name',
+                        message: 'Reserved Name',
+                    }),
+                ),
             )
         }
         if (!id) {
             return yield* _(
-                Effect.fail(new InvalidInputError('id', 'Required ID')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'id',
+                        message: 'Required ID',
+                    }),
+                ),
             )
         }
 
@@ -60,7 +75,12 @@ export const editRoleNameEffect = (id: string, name: string) =>
                 .includes(actual.name.toLowerCase())
         ) {
             return yield* _(
-                Effect.fail(new InvalidInputError('name', 'Reserved Role')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'name',
+                        message: 'Reserved Role',
+                    }),
+                ),
             )
         }
 
@@ -180,7 +200,12 @@ export const deleteRoleEffect = (id: string) =>
             role.name === DEFAULT_ROLES.DELETED
         ) {
             return yield* _(
-                Effect.fail(new InvalidInputError('id', 'Reserved Role')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'id',
+                        message: 'Reserved Role',
+                    }),
+                ),
             )
         }
         yield* _(
@@ -213,7 +238,12 @@ export const changuePermissionsEffect = (id: string, permissions: bigint) =>
         }
         if (actual.name === DEFAULT_ROLES.ADMIN) {
             return yield* _(
-                Effect.fail(new InvalidInputError('name', 'Reserved Role')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'name',
+                        message: 'Reserved Role',
+                    }),
+                ),
             )
         }
         const updated = yield* _(

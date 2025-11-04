@@ -12,12 +12,14 @@ import {
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
+import { SuccessOf } from '@/lib/type-utils'
 import {
     archiveSubjectEffect,
     createSubjectEffect,
     deleteSubjectEffect,
     editSubjectEffect,
     getSubjectsEffect,
+    searchSubjectsEffect,
     unarchiveSubjectEffect,
 } from '@/services/subjects.service'
 import { Effect } from 'effect'
@@ -376,14 +378,30 @@ export async function getSubjects() {
             getSubjectsEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: subjects => subjects,
-                        onFailure: error => {
-                            console.log(error)
-                            return []
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed([])
                     }),
                 ),
         ),
     )
+}
+
+type SearchSubjectsProps = Parameters<typeof searchSubjectsEffect>[0]
+export async function searchSubjects(
+    props: SearchSubjectsProps,
+): Promise<SuccessOf<ReturnType<typeof searchSubjectsEffect>>> {
+    const subjects = await Effect.runPromise(
+        Effect.scoped(
+            searchSubjectsEffect(props)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed({ subjects: [], count: 0 })
+                    }),
+                ),
+        ),
+    )
+    return subjects
 }

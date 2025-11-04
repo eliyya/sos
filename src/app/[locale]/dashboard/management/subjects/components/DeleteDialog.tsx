@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, ClockFadingIcon, SquarePenIcon, Trash2 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { deleteSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -15,16 +15,16 @@ import {
 import { MessageError } from '@/components/Error'
 import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
 import { useRouter } from 'next/navigation'
-import { useSubjects } from '@/hooks/subjects.hooks'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
+import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
 export function DeleteDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const subject = useAtomValue(selectedSubjectAtom)
     const [message, setMessage] = useState('')
-    const { setSubjects, refetchSubjects } = useSubjects()
+    const { refreshSubjects } = use(SearchSubjectsContext)
     const router = useRouter()
 
     const onAction = useCallback(async () => {
@@ -33,14 +33,12 @@ export function DeleteDialog() {
             const res = await deleteSubject(subject.id)
             if (res.status === 'success') {
                 openDialog(null)
-                setSubjects(prev =>
-                    prev.filter(subject => subject.id !== subject.id),
-                )
+                refreshSubjects()
                 return
             }
             if (res.type === 'not-found') {
                 openDialog(null)
-                refetchSubjects()
+                refreshSubjects()
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para archivar esta asignatura')
             } else if (res.type === 'unauthorized') {
@@ -49,7 +47,7 @@ export function DeleteDialog() {
                 setMessage('Ha ocurrido un error, intentalo más tarde')
             }
         })
-    }, [subject, openDialog, refetchSubjects, router, setSubjects])
+    }, [subject, openDialog, refreshSubjects, router])
 
     if (!subject) return null
 

@@ -381,12 +381,9 @@ export async function getClasses(): Promise<
             getClassesEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: classes => classes,
-                        onFailure: error => {
-                            console.log(error)
-                            return []
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed([])
                     }),
                 ),
         ),

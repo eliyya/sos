@@ -352,12 +352,9 @@ export async function getCareers() {
             getCareersEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: careers => careers,
-                        onFailure: error => {
-                            console.log(error)
-                            return []
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed([])
                     }),
                 ),
         ),
@@ -373,12 +370,9 @@ export async function searchCareers(
             searchCareersEffect(props)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: students => students,
-                        onFailure: error => {
-                            console.log(error)
-                            return []
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed([])
                     }),
                 ),
         ),

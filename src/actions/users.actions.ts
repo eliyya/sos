@@ -245,6 +245,7 @@ export async function deleteUser(id: string) {
     )
 }
 
+// TODO: CatchTag Prisma https://effect.website/docs/error-management/expected-errors/#catchtag
 interface EditUserProps {
     id: string
     name: string
@@ -310,12 +311,9 @@ export async function searchUsers(
             searchUsersEffect(props)
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess: users => users,
-                        onFailure: error => {
-                            console.log(error)
-                            return { users: [], count: 0 }
-                        },
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed({ users: [], count: 0 })
                     }),
                 ),
         ),

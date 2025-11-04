@@ -10,6 +10,7 @@ import {
     PrismaError,
 } from '@/errors'
 import { STATUS } from '@/prisma/generated/client'
+import { DEFAULT_PAGINATION } from '@/constants/client'
 
 interface CreateSubjectProps {
     name: string
@@ -28,24 +29,29 @@ export const createSubjectEffect = ({
 
         if (!name)
             return yield* _(
-                Effect.fail(new InvalidInputError('name', 'Name is required')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'name',
+                        message: 'Name is required',
+                    }),
+                ),
             )
         if (theory_hours < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'theory_hours',
-                        'Theory hours must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'theory_hours',
+                        message: 'Theory hours must be positive',
+                    }),
                 ),
             )
         if (practice_hours < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'practice_hours',
-                        'Practice hours must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'practice_hours',
+                        message: 'Practice hours must be positive',
+                    }),
                 ),
             )
 
@@ -271,4 +277,64 @@ export const getSubjectsEffect = () =>
                 catch: err => new PrismaError(err),
             }),
         )
+    })
+
+interface SearchSubjectsProps {
+    query?: string
+    archived?: boolean
+    page?: number
+    size?: number
+}
+export const searchSubjectsEffect = ({
+    query = '',
+    archived = false,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
+}: SearchSubjectsProps) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const [subjects, count] = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    Promise.all([
+                        prisma.subject.findMany({
+                            skip: (page - 1) * size,
+                            take: size,
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                        prisma.subject.count({
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
+                catch: err => new PrismaError(err),
+            }),
+        )
+
+        return {
+            subjects,
+            count,
+        }
     })

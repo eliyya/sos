@@ -32,14 +32,9 @@ export async function getAdminRole() {
             getAdminRoleEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess(value) {
-                            return value
-                        },
-                        onFailure(error) {
-                            console.error(error)
-                            return null
-                        },
+                    Effect.catchAll(error => {
+                        console.error(error)
+                        return Effect.succeed(null)
                     }),
                 ),
         ),
@@ -55,14 +50,9 @@ export async function getRoles() {
             getRolesEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess(value) {
-                            return value
-                        },
-                        onFailure(error) {
-                            console.error(error)
-                            return []
-                        },
+                    Effect.catchAll(error => {
+                        console.error(error)
+                        return Effect.succeed([])
                     }),
                 ),
         ),

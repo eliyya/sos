@@ -34,34 +34,46 @@ export const createClassEffect = ({
         if (!teacher_id)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('teacher_id', 'Teacher is required'),
+                    new InvalidInputError({
+                        field: 'teacher_id',
+                        message: 'Teacher is required',
+                    }),
                 ),
             )
         if (!subject_id)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('subject_id', 'Subject is required'),
+                    new InvalidInputError({
+                        field: 'subject_id',
+                        message: 'Subject is required',
+                    }),
                 ),
             )
         if (!career_id)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('career_id', 'Career is required'),
+                    new InvalidInputError({
+                        field: 'career_id',
+                        message: 'Career is required',
+                    }),
                 ),
             )
         if (semester && semester < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'semester',
-                        'Semester must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'semester',
+                        message: 'Semester must be positive',
+                    }),
                 ),
             )
         if (group && group < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('group', 'Group must be positive'),
+                    new InvalidInputError({
+                        field: 'group',
+                        message: 'Group must be positive',
+                    }),
                 ),
             )
 

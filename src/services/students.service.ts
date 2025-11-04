@@ -36,34 +36,46 @@ export const createStudentEffect = ({
         if (!lastname)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('lastname', 'Lastname is required'),
+                    new InvalidInputError({
+                        field: 'lastname',
+                        message: 'Lastname is required',
+                    }),
                 ),
             )
         if (!firstname)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('firstname', 'Firstname is required'),
+                    new InvalidInputError({
+                        field: 'firstname',
+                        message: 'Firstname is required',
+                    }),
                 ),
             )
         if (!career_id)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('career_id', 'Career is required'),
+                    new InvalidInputError({
+                        field: 'career_id',
+                        message: 'Career is required',
+                    }),
                 ),
             )
         if (semester && semester < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'semester',
-                        'Semester must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'semester',
+                        message: 'Semester must be positive',
+                    }),
                 ),
             )
         if (group && group < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError('group', 'Group must be positive'),
+                    new InvalidInputError({
+                        field: 'group',
+                        message: 'Group must be positive',
+                    }),
                 ),
             )
 

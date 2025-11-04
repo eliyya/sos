@@ -35,44 +35,59 @@ export const createLaboratoryEffect = ({
 
         if (!name)
             return yield* _(
-                Effect.fail(new InvalidInputError('name', 'Name is required')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'name',
+                        message: 'Name is required',
+                    }),
+                ),
             )
         if (!type)
             return yield* _(
-                Effect.fail(new InvalidInputError('type', 'Type is required')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'type',
+                        message: 'Type is required',
+                    }),
+                ),
             )
         if (
             type !== LABORATORY_TYPE.LABORATORY &&
             type !== LABORATORY_TYPE.COMPUTER_CENTER
         )
             return yield* _(
-                Effect.fail(new InvalidInputError('type', 'Type is required')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'type',
+                        message: 'Type is required',
+                    }),
+                ),
             )
         if (open_hour < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'open_hour',
-                        'Hours must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'open_hour',
+                        message: 'Hours must be positive',
+                    }),
                 ),
             )
         if (close_hour < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'close_hour',
-                        'Hours must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'close_hour',
+                        message: 'Hours must be positive',
+                    }),
                 ),
             )
         if (open_hour >= close_hour)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'close_hour',
-                        'Close hour must be greater than open hour',
-                    ),
+                    new InvalidInputError({
+                        field: 'close_hour',
+                        message: 'Close hour must be greater than open hour',
+                    }),
                 ),
             )
 
@@ -151,10 +166,10 @@ export const editLaboratoryEffect = ({
         if (open_hour <= close_hour)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'close_hour',
-                        'Close hour must be greater than open hour',
-                    ),
+                    new InvalidInputError({
+                        field: 'close_hour',
+                        message: 'Close hour must be greater than open hour',
+                    }),
                 ),
             )
 
@@ -184,25 +199,30 @@ export const editLaboratoryEffect = ({
             lab.type !== LABORATORY_TYPE.COMPUTER_CENTER
         )
             return yield* _(
-                Effect.fail(new InvalidInputError('type', 'Type is not valid')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'type',
+                        message: 'Type is not valid',
+                    }),
+                ),
             )
 
         if (open_hour < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'open_hour',
-                        'Open hour must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'open_hour',
+                        message: 'Open hour must be positive',
+                    }),
                 ),
             )
         if (close_hour < 0)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'close_hour',
-                        'Close hour must be positive',
-                    ),
+                    new InvalidInputError({
+                        field: 'close_hour',
+                        message: 'Close hour must be positive',
+                    }),
                 ),
             )
 

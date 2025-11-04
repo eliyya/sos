@@ -1,12 +1,13 @@
+import { Data } from 'effect'
 import { PermissionsBitField } from './bitfields/PermissionsBitField'
 
-export class InvalidInputError<T extends string, F extends string> {
-    readonly _tag = 'InvalidInputError'
-    constructor(
-        readonly field: F,
-        readonly message: T,
-    ) {}
-}
+export class InvalidInputError<
+    T extends string,
+    F extends string,
+> extends Data.TaggedError('InvalidInputError')<{
+    field: F
+    message: T
+}> {}
 
 export class AlreadyArchivedError<T extends string> {
     readonly _tag = 'AlreadyArchivedError'
