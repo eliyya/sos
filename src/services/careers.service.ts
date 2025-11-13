@@ -10,6 +10,7 @@ import {
 } from '@/errors'
 import { STATUS } from '@/prisma/generated/enums'
 import { Career } from '@/prisma/generated/browser'
+import { DEFAULT_PAGINATION } from '@/constants/client'
 
 interface CreateCareerProps {
     name: Career['name']
@@ -249,34 +250,70 @@ export const getCareersEffect = () =>
         return yield* _(Effect.succeed(careers))
     })
 
-export const searchCareersEffect = ({ query = '', archived = false }) =>
+interface SearchCareersProps {
+    query?: string
+    archived?: boolean
+    page?: number
+    size?: number
+}
+export const searchCareersEffect = ({
+    query = '',
+    archived = false,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
+}: SearchCareersProps) =>
     Effect.gen(function* (_) {
         const prisma = yield* _(PrismaService)
 
-        const careers = yield* _(
+        const [careers, count] = yield* _(
             Effect.tryPromise({
                 try: () =>
-                    prisma.career.findMany({
-                        where: {
-                            status: archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
-                            OR: [
-                                {
-                                    name: {
-                                        contains: query,
-                                        mode: 'insensitive',
+                    Promise.all([
+                        prisma.career.findMany({
+                            skip: (page - 1) * size,
+                            take: size,
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
                                     },
-                                },
-                                {
-                                    alias: {
-                                        contains: query,
-                                        mode: 'insensitive',
+                                    {
+                                        alias: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
                                     },
-                                },
-                            ],
-                        },
-                    }),
+                                ],
+                            },
+                        }),
+                        prisma.career.count({
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        alias: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
                 catch: err => new PrismaError(err),
             }),
         )
-        return yield* _(Effect.succeed(careers))
+        return yield* _(Effect.succeed({ careers, count }))
     })

@@ -11,6 +11,7 @@ import {
     PrismaError,
 } from '@/errors'
 import { Class } from '@/prisma/generated/browser'
+import { DEFAULT_PAGINATION } from '@/constants/client'
 
 interface CreateClassProps {
     teacher_id: Class['teacher_id']
@@ -329,34 +330,152 @@ export const getClassesEffect = () =>
         return classProcessed
     })
 
-export const searchClassesEffect = ({ query = '', archived = false }) =>
+interface SearchClassesProps {
+    query?: string
+    archived?: boolean
+    page?: number
+    size?: number
+}
+export const searchClassesEffect = ({
+    query = '',
+    archived = false,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
+}: SearchClassesProps) =>
     Effect.gen(function* (_) {
         const prisma = yield* _(PrismaService)
 
-        const classes = yield* _(
+        const [classes, count] = yield* _(
             Effect.tryPromise({
                 try: () =>
-                    prisma.career.findMany({
-                        where: {
-                            status: archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
-                            OR: [
-                                {
-                                    name: {
-                                        contains: query,
-                                        mode: 'insensitive',
+                    Promise.all([
+                        prisma.class.findMany({
+                            skip: (page - 1) * size,
+                            take: size,
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        subject: {
+                                            name: {
+                                                contains: query,
+                                                mode: 'insensitive',
+                                            },
+                                        },
+                                    },
+                                    {
+                                        career: {
+                                            name: {
+                                                contains: query,
+                                                mode: 'insensitive',
+                                            },
+                                        },
+                                    },
+                                    {
+                                        teacher: {
+                                            name: {
+                                                contains: query,
+                                                mode: 'insensitive',
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                            include: {
+                                subject: {
+                                    select: {
+                                        name: true,
+                                        status: true,
                                     },
                                 },
-                                {
-                                    alias: {
-                                        contains: query,
-                                        mode: 'insensitive',
+                                career: {
+                                    select: {
+                                        name: true,
+                                        status: true,
                                     },
                                 },
-                            ],
-                        },
-                    }),
+                                teacher: {
+                                    select: {
+                                        name: true,
+                                        status: true,
+                                    },
+                                },
+                            },
+                        }),
+                        prisma.class.count({
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        subject: {
+                                            name: {
+                                                contains: query,
+                                                mode: 'insensitive',
+                                            },
+                                        },
+                                    },
+                                    {
+                                        career: {
+                                            name: {
+                                                contains: query,
+                                                mode: 'insensitive',
+                                            },
+                                        },
+                                    },
+                                    {
+                                        teacher: {
+                                            name: {
+                                                contains: query,
+                                                mode: 'insensitive',
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
                 catch: err => new PrismaError(err),
             }),
         )
-        return classes
+
+        const classesProcessed = classes.map(class_ => ({
+            ...class_,
+            teacher: {
+                name: class_.teacher.name,
+                displayname:
+                    class_.teacher.status === STATUS.ACTIVE ?
+                        class_.teacher.name
+                    : class_.teacher.status === STATUS.ARCHIVED ?
+                        `(Archived) ${class_.teacher.name}`
+                    : class_.teacher.status === STATUS.DELETED ? `Deleted user`
+                    : class_.teacher.name,
+            },
+            subject: {
+                name: class_.subject.name,
+                displayname:
+                    class_.subject.status === STATUS.ACTIVE ?
+                        class_.subject.name
+                    : class_.subject.status === STATUS.ARCHIVED ?
+                        `(Archived) ${class_.subject.name}`
+                    : class_.subject.status === STATUS.DELETED ?
+                        `Deleted subject`
+                    :   class_.subject.name,
+            },
+            career: {
+                name: class_.career.name,
+                displayname:
+                    class_.career.status === STATUS.ACTIVE ? class_.career.name
+                    : class_.career.status === STATUS.ARCHIVED ?
+                        `(Archived) ${class_.career.name}`
+                    : class_.career.status === STATUS.DELETED ? `Deleted career`
+                    : class_.career.name,
+            },
+        }))
+
+        return {
+            classes: classesProcessed,
+            count: classes.length,
+        }
     })

@@ -1,22 +1,22 @@
 'use client'
 
-import { useSearchCareers } from '@/hooks/careers.hooks'
+import { useSearchClasses } from '@/hooks/classes.hooks'
 import { createContext } from 'react'
 
-export const SearchCareersContext = createContext<
-    ReturnType<typeof useSearchCareers>
+export const SearchClassesContext = createContext<
+    ReturnType<typeof useSearchClasses>
 >(undefined!)
 
-interface SearchCareersProviderProps {
+interface SearchClassesProviderProps {
     children: React.ReactNode
 }
-export function SearchCareersProvider({
+export function SearchClassesProvider({
     children,
-}: SearchCareersProviderProps) {
-    const searchData = useSearchCareers()
+}: SearchClassesProviderProps) {
+    const searchData = useSearchClasses()
     return (
-        <SearchCareersContext.Provider value={searchData}>
+        <SearchClassesContext.Provider value={searchData}>
             {children}
-        </SearchCareersContext.Provider>
+        </SearchClassesContext.Provider>
     )
 }

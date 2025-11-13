@@ -372,7 +372,7 @@ export async function searchCareers(
                 .pipe(
                     Effect.catchAll(error => {
                         console.log(error)
-                        return Effect.succeed([])
+                        return Effect.succeed({ careers: [], count: 0 })
                     }),
                 ),
         ),

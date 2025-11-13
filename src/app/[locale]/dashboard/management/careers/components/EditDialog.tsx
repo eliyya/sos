@@ -2,7 +2,15 @@
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, TagIcon } from 'lucide-react'
-import { Activity, Suspense, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { editCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -14,11 +22,11 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
-import { openDialogAtom, selectedCareerAtom } from '@/global/careers.globals'
+import { openDialogAtom, selectedCareerIdAtom } from '@/global/careers.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useCareers } from '@/hooks/careers.hooks'
+import { SearchCareersContext } from '@/contexts/careers.context'
 
 const nameErrorAtom = atom('')
 const aliasErrorAtom = atom('')
@@ -26,35 +34,35 @@ const aliasErrorAtom = atom('')
 function EditDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(selectedCareerAtom)
+    const oldId = useAtomValue(selectedCareerIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
     const router = useRouter()
-    const { setCareers } = useCareers()
     // errors
     const setNameError = useSetAtom(nameErrorAtom)
     const setAliasError = useSetAtom(aliasErrorAtom)
+    const { careersPromise, refreshCareers } = use(SearchCareersContext)
+    const { careers } = use(careersPromise)
+
+    const old = useMemo(
+        () => careers.find(c => c.id === oldId),
+        [careers, oldId],
+    )
 
     const onAction = useCallback(
         (data: FormData) => {
-            if (!old) return
+            if (!oldId) return
             const name = data.get('name') as string
             const alias = data.get('alias') as string
 
             startTransition(async () => {
                 const response = await editCareer({
-                    id: old.id,
+                    id: oldId,
                     name,
                     alias,
                 })
                 if (response.status === 'success') {
-                    setCareers(prev =>
-                        prev.map(career =>
-                            career.id === old.id ?
-                                { ...career, name, alias }
-                            :   career,
-                        ),
-                    )
+                    refreshCareers()
                     setOpen(null)
                 } else {
                     if (response.type === 'permission') {
@@ -80,7 +88,7 @@ function EditDialog() {
                 }
             })
         },
-        [old, setCareers, setOpen, router, setNameError, setAliasError],
+        [oldId, refreshCareers, setOpen, router, setNameError, setAliasError],
     )
 
     if (!old) return null
@@ -122,8 +130,15 @@ function EditDialog() {
 
 function NameInput() {
     const t = useTranslations('career')
-    const old = useAtomValue(selectedCareerAtom)
+    const oldId = useAtomValue(selectedCareerIdAtom)
     const nameError = useAtomValue(nameErrorAtom)
+    const { careersPromise } = use(SearchCareersContext)
+    const { careers } = use(careersPromise)
+
+    const old = useMemo(
+        () => careers.find(c => c.id === oldId),
+        [careers, oldId],
+    )
 
     if (!old) return null
     return (
@@ -141,13 +156,20 @@ function NameInput() {
 
 function AliasInput() {
     const t = useTranslations('career')
-    const old = useAtomValue(selectedCareerAtom)
+    const oldId = useAtomValue(selectedCareerIdAtom)
     const aliasError = useAtomValue(aliasErrorAtom)
+    const { careersPromise } = use(SearchCareersContext)
+    const { careers } = use(careersPromise)
+
+    const old = useMemo(
+        () => careers.find(c => c.id === oldId),
+        [careers, oldId],
+    )
 
     if (!old) return null
     return (
         <RetornableCompletInput
-            originalValue={old.alias ?? ''}
+            originalValue={old.alias}
             required
             label={t('alias')}
             type='text'

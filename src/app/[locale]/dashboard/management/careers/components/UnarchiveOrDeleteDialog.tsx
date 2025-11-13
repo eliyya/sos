@@ -2,7 +2,15 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
-import { Activity, Suspense, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { unarchiveCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -13,35 +21,34 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedCareerAtom } from '@/global/careers.globals'
+import { openDialogAtom, selectedCareerIdAtom } from '@/global/careers.globals'
 import { useTranslations } from 'next-intl'
-import { useCareers } from '@/hooks/careers.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
+import { SearchCareersContext } from '@/contexts/careers.context'
 
 function UnarchiveOrDeleteDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedCareerAtom)
+    const entityId = useAtomValue(selectedCareerIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
-    const { setCareers } = useCareers()
     const router = useRouter()
+    const { careersPromise, refreshCareers } = use(SearchCareersContext)
+    const { careers } = use(careersPromise)
+
+    const entity = useMemo(
+        () => careers.find(c => c.id === entityId),
+        [careers, entityId],
+    )
 
     const onAction = useCallback(() => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const response = await unarchiveCareer(entity.id)
+            const response = await unarchiveCareer(entityId)
             if (response.status === 'success') {
-                setCareers(prev =>
-                    prev.map(career =>
-                        career.id === entity.id ?
-                            { ...career, status: STATUS.ACTIVE }
-                        :   career,
-                    ),
-                )
+                refreshCareers()
                 openDialog(null)
             } else {
                 if (response.type === 'permission') {
@@ -60,7 +67,7 @@ function UnarchiveOrDeleteDialog() {
                 }
             }
         })
-    }, [openDialog, router, entity, setCareers])
+    }, [entityId, refreshCareers, openDialog, router])
 
     if (!entity) return null
 

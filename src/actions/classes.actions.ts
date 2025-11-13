@@ -21,6 +21,7 @@ import {
     deleteClassEffect,
     editClassEffect,
     getClassesEffect,
+    searchClassesEffect,
     unarchiveClassEffect,
 } from '@/services/classes.service'
 import { Temporal } from '@js-temporal/polyfill'
@@ -462,4 +463,23 @@ export async function getRemainingHours({
         allowedHours,
         usedHours,
     }
+}
+
+type SearchClassesProps = Parameters<typeof searchClassesEffect>[0]
+export async function searchClasses(
+    props: SearchClassesProps,
+): Promise<SuccessOf<ReturnType<typeof searchClassesEffect>>> {
+    const classes = await Effect.runPromise(
+        Effect.scoped(
+            searchClassesEffect(props)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed({ classes: [], count: 0 })
+                    }),
+                ),
+        ),
+    )
+    return classes
 }

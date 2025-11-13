@@ -2,7 +2,15 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
-import { Activity, Suspense, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { archiveCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -13,13 +21,12 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedCareerAtom } from '@/global/careers.globals'
+import { openDialogAtom, selectedCareerIdAtom } from '@/global/careers.globals'
 import { useTranslations } from 'next-intl'
-import { useCareers } from '@/hooks/careers.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
+import { SearchCareersContext } from '@/contexts/careers.context'
 
 function SuspenseArchiveDialog() {
     return (
@@ -34,25 +41,25 @@ export { SuspenseArchiveDialog as ArchiveDialog }
 function ArchiveDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedCareerAtom)
+    const entityId = useAtomValue(selectedCareerIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
-    const { setCareers } = useCareers()
+    const { refreshCareers, careersPromise } = use(SearchCareersContext)
+    const { careers } = use(careersPromise)
     const router = useRouter()
+
+    const entity = useMemo(
+        () => careers.find(c => c.id === entityId),
+        [careers, entityId],
+    )
 
     const onAction = useCallback(() => {
         startTransition(async () => {
-            if (!entity) return
-            const response = await archiveCareer(entity.id)
+            if (!entityId) return
+            const response = await archiveCareer(entityId)
             if (response.status === 'success') {
                 openDialog(null)
-                setCareers(prev =>
-                    prev.map(career =>
-                        career.id === entity.id ?
-                            { ...career, status: STATUS.ARCHIVED }
-                        :   career,
-                    ),
-                )
+                refreshCareers()
                 return
             }
             // error
@@ -71,7 +78,7 @@ function ArchiveDialog() {
                 setTimeout(() => setMessage(''), 5_000)
             }
         })
-    }, [entity, openDialog, setCareers, router])
+    }, [entityId, openDialog, refreshCareers, router])
 
     if (!entity) return null
 
