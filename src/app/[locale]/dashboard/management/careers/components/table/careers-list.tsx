@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
-import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { SearchCareersPromise } from '@/hooks/careers.hooks'
 import { SearchCareersContext } from '@/contexts/careers.context'

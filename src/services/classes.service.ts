@@ -476,6 +476,6 @@ export const searchClassesEffect = ({
 
         return {
             classes: classesProcessed,
-            count: classes.length,
+            count,
         }
     })

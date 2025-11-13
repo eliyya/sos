@@ -33,9 +33,7 @@ import { MessageError } from '@/components/Error'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
-import { useCareers } from '@/hooks/careers.hooks'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
 function UnarchiveOrDeleteDialog() {

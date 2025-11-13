@@ -9,14 +9,7 @@ import {
     CalendarRangeIcon,
     GraduationCapIcon,
 } from 'lucide-react'
-import {
-    Activity,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
@@ -27,13 +20,12 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { CompletAsyncSelect, CompletSelect } from '@/components/Select'
+import { CompletAsyncSelect } from '@/components/Select'
 import {
     careersSelectOptionsAtom,
     dialogAtom,
     selectedIdAtom,
 } from '@/global/management.globals'
-import { useCareers } from '@/hooks/careers.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 
@@ -43,7 +35,6 @@ import { searchCareers } from '@/actions/careers.actions'
 const ncAtom = atom('')
 const firstnameAtom = atom('')
 const lastnameAtom = atom('')
-const careerAtom = atom('')
 const groupAtom = atom(1)
 const semesterAtom = atom(1)
 const errorNcAtom = atom('')

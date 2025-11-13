@@ -21,6 +21,8 @@ export function useQueryParam<T extends string | boolean | number>(
     const router = useRouter()
     const searchParams = useSearchParams()
 
+    // TODO: Fix this
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getInitialValue = useCallback((): any => {
         const raw = searchParams.get(key)
         if (typeof defaultValue === 'boolean') {
