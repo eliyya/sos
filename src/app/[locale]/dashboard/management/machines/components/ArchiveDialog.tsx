@@ -7,6 +7,7 @@ import {
     Suspense,
     use,
     useCallback,
+    useMemo,
     useState,
     useTransition,
 } from 'react'
@@ -20,7 +21,10 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
+import {
+    openDialogAtom,
+    selectedMachineIdAtom,
+} from '@/global/machines.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
@@ -29,10 +33,16 @@ import { SearchMachinesContext } from '@/contexts/machines.context'
 function ArchiveDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedMachineAtom)
+    const entityId = useAtomValue(selectedMachineIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshMachines } = use(SearchMachinesContext)
+    const { refreshMachines, machinesPromise } = use(SearchMachinesContext)
     const router = useRouter()
+
+    const { machines } = use(machinesPromise)
+
+    const entity = useMemo(() => {
+        return machines.find(m => m.id === entityId)
+    }, [machines, entityId])
 
     const onAction = useCallback(() => {
         if (!entity) return

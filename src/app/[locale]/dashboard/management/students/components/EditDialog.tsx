@@ -3,6 +3,7 @@
 import { useAtom, useAtomValue } from 'jotai'
 import {
     CalendarRangeIcon,
+    GraduationCapIcon,
     HashIcon,
     IdCardIcon,
     Save,
@@ -17,7 +18,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { editStudent } from '@/actions/students.actions'
+import { editStudent, searchStudents } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -28,47 +29,37 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
-import { RetornableCompletSelect } from '@/components/Select'
-import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
-import { useCareers } from '@/hooks/careers.hooks'
+import { RetornableCompletAsyncSelect } from '@/components/Select'
+import {
+    openDialogAtom,
+    selectedStudentNCAtom,
+} from '@/global/students.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { STATUS } from '@/prisma/generated/enums'
 import { SearchStudentsContext } from '@/contexts/students.context'
+import { useTranslations } from 'next-intl'
+import { careersSelectOptionsAtom } from '@/global/careers.globals'
 
 function EditDialog() {
-    const { refreshStudents } = use(SearchStudentsContext)
+    const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(selectedStudentAtom)
+    const entityNc = useAtomValue(selectedStudentNCAtom)
     const [message, setMessage] = useState('')
-    const { careers, activeCareers } = useCareers()
     const router = useRouter()
+    const { students } = use(studentsPromise)
 
-    const originalCareer = useMemo(() => {
-        if (!old) return null
-        const career = careers.find(c => c.id === old.career_id)
-        if (!career) return { label: 'Deleted Career', value: old.career_id }
-        if (career.status === STATUS.ARCHIVED)
-            return { label: `(Archived) ${career.name}`, value: career.id }
-        return { label: career.name, value: career.id }
-    }, [old, careers])
-
-    const careerOptions = useMemo(() => {
-        return activeCareers.map(c => ({
-            label: c.name,
-            value: c.id,
-        }))
-    }, [activeCareers])
+    const old = useMemo(() => {
+        return students.find(student => student.nc === entityNc)
+    }, [students, entityNc])
 
     const onAction = useCallback(
         (formData: FormData) => {
-            if (!old) return
+            if (!entityNc) return
             const career_id = formData.get('career_id') as string
             const firstname = formData.get('firstname') as string
             const group = Number(formData.get('group'))
             const lastname = formData.get('lastname') as string
-            const nc = formData.get('nc') as string
             const semester = Number(formData.get('semester'))
 
             startTransition(async () => {
@@ -77,7 +68,7 @@ function EditDialog() {
                     firstname,
                     group,
                     lastname,
-                    nc,
+                    nc: entityNc,
                     semester,
                 })
                 if (res.status === 'success') {
@@ -98,7 +89,7 @@ function EditDialog() {
                 }
             })
         },
-        [old, openDialog, router, refreshStudents],
+        [entityNc, openDialog, router, refreshStudents],
     )
 
     if (!old) return null
@@ -154,14 +145,7 @@ function EditDialog() {
                         name='semester'
                         icon={CalendarRangeIcon}
                     />
-                    <RetornableCompletSelect
-                        originalValue={originalCareer}
-                        options={careerOptions}
-                        required
-                        label='Carrera'
-                        name='career_id'
-                        icon={CalendarRangeIcon}
-                    />
+                    <CareerSelect />
                     <Button type='submit' disabled={inTransition}>
                         <Save className='mr-2 h-5 w-5' />
                         Save
@@ -181,3 +165,49 @@ function SuspenseEditDialog() {
 }
 
 export { SuspenseEditDialog as EditDialog }
+
+function CareerSelect() {
+    const t = useTranslations('classes')
+    const classId = useAtomValue(selectedStudentNCAtom)
+    const { studentsPromise } = use(SearchStudentsContext)
+    const { students } = use(studentsPromise)
+    const [careersSelectOptions, setCareersSelectOptions] = useAtom(
+        careersSelectOptionsAtom,
+    )
+    const originalCareer = useMemo(() => {
+        const student = students.find(s => s.nc === classId)
+        if (!student) return null
+        return {
+            label: student.career.displayname,
+            value: student.career_id,
+        }
+    }, [students, classId])
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchStudents({
+                query: inputValue,
+            }).then(res => {
+                const options = res.students.map(s => ({
+                    label: s.career.displayalias,
+                    value: s.career_id,
+                }))
+                setCareersSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setCareersSelectOptions],
+    )
+    return (
+        <RetornableCompletAsyncSelect
+            originalValue={originalCareer}
+            label={t('career')}
+            name='career_id'
+            loadOptions={loadOptions}
+            defaultOptions={careersSelectOptions}
+            icon={GraduationCapIcon}
+        />
+    )
+}

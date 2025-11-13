@@ -31,12 +31,6 @@ export const selectedMachineIdAtom = atomWithStorage<id>(
     'selectedMachineId',
     '',
 )
-export const selectedMachineAtom = atom(get => {
-    const machines = get(machinesAtom)
-    const selectedId = get(selectedMachineIdAtom)
-    return machines.find(machine => machine.id === selectedId)
-})
-
 export const laboratoriesSelectOptionsAtom = atomWithStorage<
     {
         label: string

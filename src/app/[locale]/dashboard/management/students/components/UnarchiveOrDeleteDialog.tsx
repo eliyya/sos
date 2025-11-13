@@ -30,7 +30,10 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedStudentAtom } from '@/global/students.globals'
+import {
+    openDialogAtom,
+    selectedStudentNCAtom,
+} from '@/global/students.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
@@ -39,13 +42,18 @@ import { useCareers } from '@/hooks/careers.hooks'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
 function UnarchiveOrDeleteDialog() {
-    const { refreshStudents } = use(SearchStudentsContext)
+    const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedStudentAtom)
+    const entityNc = useAtomValue(selectedStudentNCAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
     const { careers } = useCareers()
+    const { students } = use(studentsPromise)
+
+    const entity = useMemo(() => {
+        return students.find(student => student.nc === entityNc)
+    }, [students, entityNc])
 
     const career = useMemo(() => {
         if (!entity) return ''
@@ -57,9 +65,9 @@ function UnarchiveOrDeleteDialog() {
     }, [entity, careers])
 
     const onAction = useCallback(() => {
-        if (!entity) return
+        if (!entityNc) return
         startTransition(async () => {
-            const res = await unarchiveStudent(entity.nc)
+            const res = await unarchiveStudent(entityNc)
             if (res.status === 'success') {
                 openDialog(null)
                 refreshStudents()
@@ -76,7 +84,7 @@ function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, refreshStudents])
+    }, [entityNc, openDialog, router, refreshStudents])
 
     if (!entity) return null
 
@@ -105,7 +113,7 @@ function UnarchiveOrDeleteDialog() {
                     </Activity>
                     <CompletInput
                         disabled
-                        value={entity.nc}
+                        value={entityNc}
                         label='Numero de Control'
                         icon={HashIcon}
                     />

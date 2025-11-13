@@ -7,6 +7,7 @@ import {
     Suspense,
     use,
     useCallback,
+    useMemo,
     useState,
     useTransition,
 } from 'react'
@@ -20,7 +21,10 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
+import {
+    openDialogAtom,
+    selectedMachineIdAtom,
+} from '@/global/machines.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
@@ -29,15 +33,21 @@ import { SearchMachinesContext } from '@/contexts/machines.context'
 function UnarchiveDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedMachineAtom)
+    const entityId = useAtomValue(selectedMachineIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshMachines } = use(SearchMachinesContext)
+    const { refreshMachines, machinesPromise } = use(SearchMachinesContext)
     const router = useRouter()
 
+    const { machines } = use(machinesPromise)
+
+    const entity = useMemo(() => {
+        return machines.find(m => m.id === entityId)
+    }, [machines, entityId])
+
     const onAction = useCallback(() => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const res = await availableMachine(entity.id)
+            const res = await availableMachine(entityId)
             if (res.status === 'success') {
                 openDialog(null)
                 refreshMachines()
@@ -54,7 +64,7 @@ function UnarchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, refreshMachines])
+    }, [entityId, openDialog, router, refreshMachines])
 
     if (!entity) return null
 

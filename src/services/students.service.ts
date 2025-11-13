@@ -351,7 +351,6 @@ export const searchStudentsEffect = ({
                                 career: {
                                     select: {
                                         alias: true,
-                                        id: true,
                                         status: true,
                                     },
                                 },
@@ -388,20 +387,24 @@ export const searchStudentsEffect = ({
         )
 
         const studentsParsed = students.map(student => {
-            if (student.career.status === STATUS.DELETED)
-                return {
-                    ...student,
-                    career: null,
-                }
-            if (student.career.status === STATUS.ARCHIVED)
-                return {
-                    ...student,
-                    career: {
-                        ...student.career,
-                        alias: `(Archived) ${student.career.alias}`,
-                    },
-                }
-            return student
+            return {
+                ...student,
+                career: {
+                    ...student.career,
+                    displayalias:
+                        student.career.status === STATUS.ACTIVE ?
+                            student.career.alias
+                        : student.career.status === STATUS.ARCHIVED ?
+                            `(Archived) ${student.career.alias}`
+                        :   `Deleted`,
+                    displayname:
+                        student.status === STATUS.ACTIVE ?
+                            `${student.firstname} ${student.lastname}`
+                        : student.status === STATUS.ARCHIVED ?
+                            `(Archived) ${student.firstname} ${student.lastname}`
+                        :   `Deleted`,
+                },
+            }
         })
 
         return {

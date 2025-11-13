@@ -1,12 +1,13 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, Trash2, UserIcon } from 'lucide-react'
+import { BanIcon, Trash2Icon, UserIcon } from 'lucide-react'
 import {
     Activity,
     Suspense,
     use,
     useCallback,
+    useMemo,
     useState,
     useTransition,
 } from 'react'
@@ -20,7 +21,10 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedMachineAtom } from '@/global/machines.globals'
+import {
+    openDialogAtom,
+    selectedMachineIdAtom,
+} from '@/global/machines.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
@@ -29,10 +33,16 @@ import { SearchMachinesContext } from '@/contexts/machines.context'
 function DeleteDialog() {
     const [openedDialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedMachineAtom)
+    const entityId = useAtomValue(selectedMachineIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshMachines } = use(SearchMachinesContext)
+    const { refreshMachines, machinesPromise } = use(SearchMachinesContext)
+
+    const { machines } = use(machinesPromise)
+
+    const entity = useMemo(() => {
+        return machines.find(m => m.id === entityId)
+    }, [machines, entityId])
 
     const onAction = useCallback(() => {
         if (!entity) return
@@ -119,7 +129,7 @@ function DeleteDialog() {
                                 openDialog(null)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
@@ -127,7 +137,7 @@ function DeleteDialog() {
                             variant={'destructive'}
                             disabled={inTransition}
                         >
-                            <Trash2 className='mr-2 h-5 w-5' />
+                            <Trash2Icon className='mr-2 h-5 w-5' />
                             Eliminar
                         </Button>
                     </div>

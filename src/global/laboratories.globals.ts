@@ -24,8 +24,3 @@ export const selectedLaboratoryIdAtom = atomWithStorage<id>(
     'selectedLaboratoryId',
     '',
 )
-export const selectedLaboratoryAtom = atom(get => {
-    const laboratories = get(laboratoriesAtom)
-    const selectedId = get(selectedLaboratoryIdAtom)
-    return laboratories.find(laboratory => laboratory.id === selectedId)
-})

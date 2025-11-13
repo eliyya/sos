@@ -7,6 +7,7 @@ import {
     Suspense,
     use,
     useCallback,
+    useMemo,
     useState,
     useTransition,
 } from 'react'
@@ -25,7 +26,7 @@ import { RetornableCompletAsyncSelect } from '@/components/Select'
 import {
     laboratoriesSelectOptionsAtom,
     openDialogAtom,
-    selectedMachineAtom,
+    selectedMachineIdAtom,
 } from '@/global/machines.globals'
 import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
@@ -36,10 +37,17 @@ import { searchLaboratories } from '@/actions/laboratories.actions'
 function EditDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(selectedMachineAtom)
+    const entityId = useAtomValue(selectedMachineIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshMachines } = use(SearchMachinesContext)
+    const { refreshMachines, machinesPromise } = use(SearchMachinesContext)
+
+    const { machines } = use(machinesPromise)
+
+    const entity = useMemo(() => {
+        return machines.find(m => m.id === entityId)
+    }, [machines, entityId])
+
     const [defaultlaboratoriesOptions, setLaboratoriesSelectOptions] = useAtom(
         laboratoriesSelectOptionsAtom,
     )
@@ -65,7 +73,7 @@ function EditDialog() {
 
     const onAction = useCallback(
         (formData: FormData) => {
-            if (!old) return
+            if (!entityId) return
             const description = formData.get('description') as string
             const laboratory_id = formData.get('laboratory_id') as string
             const number = Number(formData.get('number'))
@@ -77,7 +85,7 @@ function EditDialog() {
 
             startTransition(async () => {
                 const res = await editMachine({
-                    id: old.id,
+                    id: entityId,
                     description,
                     laboratory_id,
                     number,
@@ -109,10 +117,10 @@ function EditDialog() {
                 }
             })
         },
-        [old, openDialog, refreshMachines, router],
+        [entityId, openDialog, refreshMachines, router],
     )
 
-    if (!old) return null
+    if (!entity) return null
 
     return (
         <Dialog
@@ -123,7 +131,7 @@ function EditDialog() {
                 <DialogHeader>
                     <DialogTitle>Editar Máquina</DialogTitle>
                     <DialogDescription>
-                        Editar la máquina {old.number}
+                        Editar la máquina {entity.number}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -133,9 +141,9 @@ function EditDialog() {
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <input type='hidden' value={old.id} name='id' />
+                    <input type='hidden' value={entity.id} name='id' />
                     <RetornableCompletInput
-                        originalValue={old.number}
+                        originalValue={entity.number}
                         required
                         label='Numero'
                         type='number'
@@ -143,7 +151,7 @@ function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        originalValue={old.processor}
+                        originalValue={entity.processor}
                         required
                         label='Procesador'
                         type='text'
@@ -151,7 +159,7 @@ function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        originalValue={old.ram}
+                        originalValue={entity.ram}
                         required
                         label='Ram'
                         type='text'
@@ -159,7 +167,7 @@ function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        originalValue={old.storage}
+                        originalValue={entity.storage}
                         required
                         label='Almacenamiento'
                         type='text'
@@ -167,7 +175,7 @@ function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        originalValue={old.serie ?? ''}
+                        originalValue={entity.serie ?? ''}
                         required
                         label='Serie'
                         type='text'
@@ -175,7 +183,7 @@ function EditDialog() {
                         icon={User}
                     ></RetornableCompletInput>
                     <RetornableCompletInput
-                        originalValue={old.description}
+                        originalValue={entity.description}
                         label='Descripcion'
                         name='description'
                         icon={User}
@@ -183,7 +191,10 @@ function EditDialog() {
                     <RetornableCompletAsyncSelect
                         isClearable
                         // TODO: fix this
-                        originalValue={{ label: '', value: old.laboratory_id }}
+                        originalValue={{
+                            label: '',
+                            value: entity.laboratory_id,
+                        }}
                         label='Laboratorio Asignado'
                         loadOptions={loadOptions}
                         defaultOptions={defaultlaboratoriesOptions}
