@@ -9,7 +9,14 @@ import {
     SquarePenIcon,
     TrashIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition, use } from 'react'
+import {
+    Activity,
+    useCallback,
+    useState,
+    useTransition,
+    use,
+    useMemo,
+} from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -21,7 +28,7 @@ import {
 import { MessageError } from '@/components/Error'
 import {
     openDialogAtom,
-    selectedLaboratoryAtom,
+    selectedLaboratoryIdAtom,
 } from '@/global/laboratories.globals'
 import { useRouter } from 'next/navigation'
 import { unarchiveLaboratory } from '@/actions/laboratories.actions'
@@ -32,15 +39,22 @@ import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedLaboratoryAtom)
+    const entityId = useAtomValue(selectedLaboratoryIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshLaboratories } = use(SearchLaboratoriesContext)
+    const { refreshLaboratories, laboratoriesPromise } = use(
+        SearchLaboratoriesContext,
+    )
+    const { laboratories } = use(laboratoriesPromise)
     const router = useRouter()
 
+    const entity = useMemo(() => {
+        return laboratories.find(l => l.id === entityId)
+    }, [laboratories, entityId])
+
     const onAction = useCallback(async () => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const response = await unarchiveLaboratory(entity.id)
+            const response = await unarchiveLaboratory(entityId)
             if (response.status === 'success') {
                 refreshLaboratories()
                 setOpen(null)
@@ -59,7 +73,7 @@ export function UnarchiveOrDeleteDialog() {
                 }
             }
         })
-    }, [entity, refreshLaboratories, setOpen, router])
+    }, [entityId, refreshLaboratories, setOpen, router])
 
     if (!entity) return null
 

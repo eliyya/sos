@@ -2,13 +2,20 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import {
-    Archive,
-    Ban,
+    ArchiveIcon,
+    BanIcon,
     Clock8Icon,
     MicroscopeIcon,
     SquarePenIcon,
 } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    use,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -20,7 +27,7 @@ import {
 import { MessageError } from '@/components/Error'
 import {
     openDialogAtom,
-    selectedLaboratoryAtom,
+    selectedLaboratoryIdAtom,
 } from '@/global/laboratories.globals'
 import { archiveLaboratory } from '@/actions/laboratories.actions'
 import { useRouter } from 'next/navigation'
@@ -31,15 +38,22 @@ import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedLaboratoryAtom)
+    const entityId = useAtomValue(selectedLaboratoryIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshLaboratories } = use(SearchLaboratoriesContext)
+    const { refreshLaboratories, laboratoriesPromise } = use(
+        SearchLaboratoriesContext,
+    )
+    const { laboratories } = use(laboratoriesPromise)
+
+    const entity = useMemo(() => {
+        return laboratories.find(l => l.id === entityId)
+    }, [laboratories, entityId])
 
     const onAction = useCallback(async () => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const response = await archiveLaboratory(entity.id)
+            const response = await archiveLaboratory(entityId)
             if (response.status === 'success') {
                 refreshLaboratories()
                 setOpen(null)
@@ -58,7 +72,7 @@ export function ArchiveDialog() {
                 }
             }
         })
-    }, [entity, refreshLaboratories, setOpen, router])
+    }, [entityId, refreshLaboratories, setOpen, router])
 
     if (!entity) return null
 
@@ -120,7 +134,7 @@ export function ArchiveDialog() {
                                 setOpen(null)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             Cancelar
                         </Button>
                         <Button
@@ -128,7 +142,7 @@ export function ArchiveDialog() {
                             variant={'destructive'}
                             disabled={inTransition}
                         >
-                            <Archive className='mr-2 h-5 w-5' />
+                            <ArchiveIcon className='mr-2 h-5 w-5' />
                             Archivar
                         </Button>
                     </div>

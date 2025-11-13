@@ -84,17 +84,11 @@ function EditForm() {
     )
 
     const onAction = useCallback(
-        ({
-            name,
-            close_hour,
-            open_hour,
-            type,
-        }: {
-            name?: string
-            close_hour?: number
-            open_hour?: number
-            type?: LABORATORY_TYPE
-        }) => {
+        (data: FormData) => {
+            const name = data.get('name') as string
+            const close_hour = Number(data.get('close_hour'))
+            const open_hour = Number(data.get('open_hour'))
+            const type = data.get('type') as LABORATORY_TYPE
             if (!old) return
             startTransition(async () => {
                 const response = await editLaboratory({
@@ -133,13 +127,7 @@ function EditForm() {
 
     return (
         <form
-            action={data => {
-                const name = data.get('name') as string
-                const close_hour = Number(data.get('close_hour'))
-                const open_hour = Number(data.get('open_hour'))
-                const type = data.get('type') as LABORATORY_TYPE
-                onAction({ name, close_hour, open_hour, type })
-            }}
+            action={onAction}
             className='flex w-full max-w-md flex-col justify-center gap-6'
         >
             <Activity mode={message ? 'visible' : 'hidden'}>
