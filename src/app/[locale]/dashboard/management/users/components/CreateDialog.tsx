@@ -28,7 +28,7 @@ import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import {
-    entityToEditAtom,
+    selectedUserIdAtom,
     dialogOpenedAtom,
     passwordFocusAtom,
 } from '@/global/users.globals'
@@ -52,7 +52,7 @@ export function CreateUserDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setUsernameError = useSetAtom(usernameErrorAtom)
-    const setTakenUser = useSetAtom(entityToEditAtom)
+    const setTakenUser = useSetAtom(selectedUserIdAtom)
     const setName = useSetAtom(nameAtom)
     const setUsername = useSetAtom(usernameAtom)
     const setPassword = useSetAtom(passwordAtom)
@@ -94,7 +94,7 @@ export function CreateUserDialog() {
                                 response.type === 'archived'
                             ) {
                                 setOpen(null)
-                                setTakenUser(response.user)
+                                setTakenUser(response.user.id)
                                 setOpen('unarchiveOrDelete')
                                 // reset
                                 setName('')

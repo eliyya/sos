@@ -13,7 +13,7 @@ import {
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
-import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
+import { selectedUserIdAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { SearchUsersPromise } from '@/hooks/users.hooks'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { use } from 'react'
@@ -41,7 +41,7 @@ interface ButtonsProps {
 }
 function Buttons({ user }: ButtonsProps) {
     const setDialogOpened = useSetAtom(dialogOpenedAtom)
-    const setUserSelected = useSetAtom(entityToEditAtom)
+    const setUserSelected = useSetAtom(selectedUserIdAtom)
     if (user.status === STATUS.ACTIVE)
         return (
             <>
@@ -50,7 +50,7 @@ function Buttons({ user }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setDialogOpened('edit')
-                        setUserSelected(user)
+                        setUserSelected(user.id)
                     }}
                 >
                     <Pencil className='text-xs' />
@@ -60,7 +60,7 @@ function Buttons({ user }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setDialogOpened('archive')
-                        setUserSelected(user)
+                        setUserSelected(user.id)
                     }}
                 >
                     <Archive className='w-xs text-xs' />
@@ -75,7 +75,7 @@ function Buttons({ user }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setDialogOpened('unarchive')
-                        setUserSelected(user)
+                        setUserSelected(user.id)
                     }}
                 >
                     <ArchiveRestore className='w-xs text-xs' />
@@ -85,7 +85,7 @@ function Buttons({ user }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         setDialogOpened('delete')
-                        setUserSelected(user)
+                        setUserSelected(user.id)
                     }}
                 >
                     <Trash2 className='w-xs text-xs' />

@@ -1,7 +1,7 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateSubjectDialog'
-import { EntityTable } from './components/EntityTable'
+import { SubjectsTable } from './components/table/subjects-table'
 import { Filters } from './components/SearchInput'
 import { SearchSubjectsProvider } from '@/contexts/subjects.context'
 import { ArchiveDialog } from './components/ArchiveDialog'
@@ -22,7 +22,7 @@ export default async function SubjectsPage() {
                 <CreateSubjectDialog />
             </div>
             <Filters />
-            <EntityTable />
+            <SubjectsTable />
             <ArchiveDialog />
             <DeleteDialog />
             <EditDialog />
