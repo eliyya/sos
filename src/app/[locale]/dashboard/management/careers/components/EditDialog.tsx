@@ -22,7 +22,7 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
-import { openDialogAtom, selectedCareerIdAtom } from '@/global/careers.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
@@ -32,9 +32,9 @@ const nameErrorAtom = atom('')
 const aliasErrorAtom = atom('')
 
 function EditDialog() {
-    const [open, setOpen] = useAtom(openDialogAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const oldId = useAtomValue(selectedCareerIdAtom)
+    const oldId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
     const router = useRouter()
@@ -130,7 +130,7 @@ function EditDialog() {
 
 function NameInput() {
     const t = useTranslations('career')
-    const oldId = useAtomValue(selectedCareerIdAtom)
+    const oldId = useAtomValue(selectedIdAtom)
     const nameError = useAtomValue(nameErrorAtom)
     const { careersPromise } = use(SearchCareersContext)
     const { careers } = use(careersPromise)
@@ -156,7 +156,7 @@ function NameInput() {
 
 function AliasInput() {
     const t = useTranslations('career')
-    const oldId = useAtomValue(selectedCareerIdAtom)
+    const oldId = useAtomValue(selectedIdAtom)
     const aliasError = useAtomValue(aliasErrorAtom)
     const { careersPromise } = use(SearchCareersContext)
     const { careers } = use(careersPromise)

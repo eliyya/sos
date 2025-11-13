@@ -20,10 +20,7 @@ import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
-import {
-    openDialogAtom,
-    selectedLaboratoryIdAtom,
-} from '@/global/laboratories.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { createLaboratory } from '@/actions/laboratories.actions'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
@@ -49,10 +46,10 @@ const errorTypeAtom = atom('')
 export function CreateLaboratoryDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const [dialogOpened, openDialog] = useAtom(openDialogAtom)
+    const [dialogOpened, openDialog] = useAtom(dialogAtom)
     const { refreshLaboratories } = use(SearchLaboratoriesContext)
     const router = useRouter()
-    const selectLaboratory = useSetAtom(selectedLaboratoryIdAtom)
+    const selectLaboratory = useSetAtom(selectedIdAtom)
     // inputs
     const setName = useSetAtom(nameAtom)
     const setNameError = useSetAtom(errorNameAtom)

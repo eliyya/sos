@@ -1,5 +1,5 @@
 import { getRoles } from '@/actions/roles.actions'
-import { rolesAtom } from '@/global/roles.globals'
+import { rolesAtom } from '@/global/management.globals'
 import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect } from 'react'
 

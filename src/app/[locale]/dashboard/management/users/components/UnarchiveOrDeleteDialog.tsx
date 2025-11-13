@@ -26,16 +26,16 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { selectedUserIdAtom, dialogOpenedAtom } from '@/global/users.globals'
+import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
 import { CompletInput } from '@/components/Inputs'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 
 export function UnarchiveOrDeleteDialog() {
-    const [open, setOpen] = useAtom(dialogOpenedAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const { refreshUsers, usersPromise } = use(SearchUsersContext)
     const router = useRouter()
@@ -72,8 +72,8 @@ export function UnarchiveOrDeleteDialog() {
 
     return (
         <Dialog
-            open={open === 'unarchiveOrDelete'}
-            onOpenChange={op => setOpen(op ? 'unarchiveOrDelete' : null)}
+            open={open === 'UNARCHIVE_OR_DELETE'}
+            onOpenChange={op => setOpen(op ? 'UNARCHIVE_OR_DELETE' : null)}
         >
             <DialogContent>
                 <DialogHeader>
@@ -135,7 +135,7 @@ export function UnarchiveOrDeleteDialog() {
                             disabled={inTransition}
                             onClick={e => {
                                 e.preventDefault()
-                                setOpen('delete')
+                                setOpen('DELETE')
                             }}
                         >
                             <TrashIcon className='mr-2 h-5 w-5' />

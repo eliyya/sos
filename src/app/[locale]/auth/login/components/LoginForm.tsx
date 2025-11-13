@@ -1,16 +1,18 @@
 'use client'
 
 import app from '@eliyya/type-routes'
-import { useAtom, useSetAtom } from 'jotai'
+import { atom, useAtom, useSetAtom } from 'jotai'
 import { AtSignIcon, LogIn, RectangleEllipsisIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Activity, ReactNode, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
-import { usernameAtom, passwordAtom } from '@/global/login'
 import { authClient } from '@/lib/auth-client'
 import { CompletInput } from '@/components/Inputs'
+
+export const usernameAtom = atom('')
+export const passwordAtom = atom('')
 
 type Props = {
     children?: ReactNode

@@ -3,11 +3,11 @@
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/Button'
-import { openDialogAtom } from '@/global/careers.globals'
+import { dialogAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 
 export function CreateButton() {
-    const openDialog = useSetAtom(openDialogAtom)
+    const openDialog = useSetAtom(dialogAtom)
     const t = useTranslations('career')
 
     return (

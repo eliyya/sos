@@ -27,11 +27,7 @@ import {
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
-import {
-    selectedUserIdAtom,
-    dialogOpenedAtom,
-    passwordFocusAtom,
-} from '@/global/users.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
 import { useRoles } from '@/hooks/roles.hooks'
@@ -46,13 +42,14 @@ const passwordAtom = atom('')
 const passwordErrorAtom = atom('')
 const confirmPasswordAtom = atom('')
 const confirmPasswordErrorAtom = atom('')
+const passwordFocusAtom = atom(false)
 
 export function CreateUserDialog() {
-    const [open, setOpen] = useAtom(dialogOpenedAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setUsernameError = useSetAtom(usernameErrorAtom)
-    const setTakenUser = useSetAtom(selectedUserIdAtom)
+    const setTakenUser = useSetAtom(selectedIdAtom)
     const setName = useSetAtom(nameAtom)
     const setUsername = useSetAtom(usernameAtom)
     const setPassword = useSetAtom(passwordAtom)
@@ -61,7 +58,7 @@ export function CreateUserDialog() {
 
     return (
         <Dialog
-            open={open === 'create'}
+            open={open === 'CREATE'}
             onOpenChange={open => {
                 setOpen(null)
                 if (!open) {
@@ -95,7 +92,7 @@ export function CreateUserDialog() {
                             ) {
                                 setOpen(null)
                                 setTakenUser(response.user.id)
-                                setOpen('unarchiveOrDelete')
+                                setOpen('UNARCHIVE_OR_DELETE')
                                 // reset
                                 setName('')
                                 setUsername('')

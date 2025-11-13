@@ -13,7 +13,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDeleteAtom, selectedRoleAtom } from '@/global/roles.globals'
+import { openDeleteAtom, selectedRoleAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'

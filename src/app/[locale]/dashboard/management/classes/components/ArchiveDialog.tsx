@@ -22,16 +22,16 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { openDialogAtom, selectedClassIdAtom } from '@/global/classes.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchClassesContext } from '@/contexts/classes.context'
 
 function ArchiveDialog() {
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedClassIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('classes')
     const router = useRouter()

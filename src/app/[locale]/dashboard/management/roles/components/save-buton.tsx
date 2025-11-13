@@ -3,7 +3,10 @@ import { useEffect, useTransition } from 'react'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/Button'
 import { DEFAULT_ROLES } from '@/constants/client'
-import { permissionsEditedAtom, selectedRoleAtom } from '@/global/roles.globals'
+import {
+    permissionsEditedAtom,
+    selectedRoleAtom,
+} from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { changuePermissions } from '@/actions/roles.actions'
 import { cn } from '@/lib/utils'

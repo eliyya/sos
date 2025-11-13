@@ -27,16 +27,18 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { CompletSelect } from '@/components/Select'
+import { CompletAsyncSelect, CompletSelect } from '@/components/Select'
 import {
-    openDialogAtom,
-    selectedStudentNCAtom,
-} from '@/global/students.globals'
+    careersSelectOptionsAtom,
+    dialogAtom,
+    selectedIdAtom,
+} from '@/global/management.globals'
 import { useCareers } from '@/hooks/careers.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 
 import { SearchStudentsContext } from '@/contexts/students.context'
+import { searchCareers } from '@/actions/careers.actions'
 
 const ncAtom = atom('')
 const firstnameAtom = atom('')
@@ -53,10 +55,10 @@ const errorSemesterAtom = atom('')
 
 export function CreateSubjectDialog() {
     const { refreshStudents } = use(SearchStudentsContext)
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const setEntityToEdit = useSetAtom(selectedStudentNCAtom)
+    const setEntityToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
     // errors
     const setErrorFirstname = useSetAtom(errorFirstnameAtom)
@@ -252,32 +254,38 @@ export function GroupInput() {
 }
 
 export function CareerInput() {
-    const [careerId, setCareerId] = useAtom(careerAtom)
     const error = useAtomValue(errorCareerAtom)
-    const { activeCareers } = useCareers()
+    const [defaultOptions, setCareersSelectOptions] = useAtom(
+        careersSelectOptionsAtom,
+    )
 
-    const activeCareersOptions = useMemo(() => {
-        return activeCareers.map(t => ({
-            label: t.name,
-            value: t.id,
-        }))
-    }, [activeCareers])
-
-    const careerValue = useMemo(() => {
-        const career = activeCareers.find(t => t.id === careerId)
-        if (!career) return activeCareersOptions[0]
-        return { label: career.name, value: career.id }
-    }, [activeCareers, activeCareersOptions, careerId])
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchCareers({
+                query: inputValue,
+            }).then(res => {
+                const options = res.careers.map(career => ({
+                    label: career.name,
+                    value: career.id,
+                }))
+                setCareersSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setCareersSelectOptions],
+    )
 
     return (
-        <CompletSelect
+        <CompletAsyncSelect
             label='Carrera'
             required
             name='career_id'
-            options={activeCareersOptions}
             icon={GraduationCapIcon}
-            value={careerValue}
-            onChange={e => e && setCareerId(e.value)}
+            loadOptions={loadOptions}
+            defaultOptions={defaultOptions}
             error={error}
         />
     )

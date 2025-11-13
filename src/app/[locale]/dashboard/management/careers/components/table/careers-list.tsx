@@ -1,52 +1,45 @@
 'use client'
 
-import { Machine, MACHINE_STATUS } from '@/prisma/generated/browser'
+import { Career, STATUS } from '@/prisma/generated/browser'
 import { useSetAtom } from 'jotai'
 import {
+    ArchiveIcon,
+    ArchiveRestoreIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
-    MonitorCheckIcon,
-    MonitorCogIcon,
-    MonitorOffIcon,
-    Pencil,
+    PencilIcon,
+    Trash2Icon,
 } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
-import { SearchMachinesContext } from '@/contexts/machines.context'
-import { SearchMachinesPromise } from '@/hooks/machines.hooks'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
+import { SearchCareersPromise } from '@/hooks/careers.hooks'
+import { SearchCareersContext } from '@/contexts/careers.context'
 
-interface MachineItemListProps {
-    machine: Awaited<SearchMachinesPromise>['machines'][number]
+interface CareerItemListProps {
+    career: Awaited<SearchCareersPromise>['careers'][number]
 }
-export function MachineItem({ machine }: MachineItemListProps) {
+export function CareerItem({ career }: CareerItemListProps) {
     return (
         <TableRow>
-            <TableCell>@{machine.number}</TableCell>
-            <TableCell>
-                {machine.processor} {machine.ram} {machine.storage}
-            </TableCell>
-            <TableCell>{machine.serie}</TableCell>
-            <TableCell>{machine.description}</TableCell>
-            <TableCell>{machine.laboratory?.name ?? 'Sin asignar'}</TableCell>
+            <TableCell>{career.name}</TableCell>
+            <TableCell>{career.alias}</TableCell>
             <TableCell className='flex gap-1'>
-                <Buttons machine={machine} />
+                <Buttons career={career} />
             </TableCell>
         </TableRow>
     )
 }
-
 interface ButtonsProps {
-    machine: Machine
+    career: Career
 }
-function Buttons({ machine }: ButtonsProps) {
+function Buttons({ career }: ButtonsProps) {
+    const setSelectedId = useSetAtom(selectedIdAtom)
     const openDialog = useSetAtom(dialogAtom)
-    const setSubjectSelected = useSetAtom(selectedIdAtom)
-    if (
-        machine.status === MACHINE_STATUS.AVAILABLE ||
-        machine.status === MACHINE_STATUS.IN_USE
-    )
+
+    if (career.status === STATUS.ACTIVE)
         return (
             <>
                 {/* Editar */}
@@ -54,57 +47,56 @@ function Buttons({ machine }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         openDialog('EDIT')
-                        setSubjectSelected(machine.id)
+                        setSelectedId(career.id)
                     }}
                 >
-                    <Pencil className='text-xs' />
+                    <PencilIcon className='text-xs' />
                 </Button>
                 {/* Archivar */}
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(machine.id)
+                        setSelectedId(career.id)
                         openDialog('ARCHIVE')
                     }}
                 >
-                    <MonitorCogIcon className='w-xs text-xs' />
+                    <ArchiveIcon className='w-xs text-xs' />
                 </Button>
             </>
         )
-    if (machine.status === MACHINE_STATUS.MAINTENANCE)
+    if (career.status === STATUS.ARCHIVED)
         return (
             <>
                 {/* Unarchive */}
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(machine.id)
+                        setSelectedId(career.id)
                         openDialog('UNARCHIVE')
                     }}
                 >
-                    <MonitorCheckIcon className='w-xs text-xs' />
+                    <ArchiveRestoreIcon className='w-xs text-xs' />
                 </Button>
                 {/* Delete */}
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSubjectSelected(machine.id)
+                        setSelectedId(career.id)
                         openDialog('DELETE')
                     }}
                 >
-                    <MonitorOffIcon className='w-xs text-xs' />
+                    <Trash2Icon className='w-xs text-xs' />
                 </Button>
             </>
         )
-
     return <></>
 }
 
-export function MachineList() {
-    const { machinesPromise } = use(SearchMachinesContext)
-    const { machines } = use(machinesPromise)
+export function CareersList() {
+    const { careersPromise } = use(SearchCareersContext)
+    const { careers } = use(careersPromise)
 
-    if (!machines.length)
+    if (!careers.length)
         return (
             <TableRow>
                 <TableCell className='text-center' colSpan={5}>
@@ -113,16 +105,12 @@ export function MachineList() {
             </TableRow>
         )
 
-    return machines.map(entity => (
-        <MachineItem key={entity.id} machine={entity} />
-    ))
+    return careers.map(career => <CareerItem key={career.id} career={career} />)
 }
 
 export function FoooterTable() {
-    const { changeFilters, filters, machinesPromise } = use(
-        SearchMachinesContext,
-    )
-    const { count } = use(machinesPromise)
+    const { changeFilters, filters, careersPromise } = use(SearchCareersContext)
+    const { count } = use(careersPromise)
 
     return (
         <div className='flex items-center justify-center gap-5'>

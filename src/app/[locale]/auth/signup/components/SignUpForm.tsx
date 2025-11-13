@@ -14,20 +14,20 @@ import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, cn, truncateByUnderscore } from '@/lib/utils'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import {
-    canSuggestUsernameAtom,
-    confirmPasswordAtom,
-    confirmPasswordErrorAtom,
-    nameAtom,
-    nameErrorAtom,
-    passwordAtom,
-    passwordErrorAtom,
-    usernameAtom,
-    usernameErrorAtom,
-} from '@/global/signup'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { CompletInput } from '@/components/Inputs'
 import { useTranslations } from 'next-intl'
+
+export const usernameAtom = atom('')
+export const usernameErrorAtom = atom('')
+export const passwordAtom = atom('')
+export const passwordErrorAtom = atom('')
+export const passwordFocusAtom = atom(false)
+export const confirmPasswordAtom = atom('')
+export const confirmPasswordErrorAtom = atom('')
+export const nameAtom = atom('')
+export const nameErrorAtom = atom('')
+export const canSuggestUsernameAtom = atom(true)
 
 export function SignUpForm() {
     const [error, setError] = useState('')

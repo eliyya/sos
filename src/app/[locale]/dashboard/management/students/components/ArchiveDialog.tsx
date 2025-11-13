@@ -29,19 +29,16 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openDialogAtom,
-    selectedStudentNCAtom,
-} from '@/global/students.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
 function ArchiveDialog() {
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityNc = useAtomValue(selectedStudentNCAtom)
+    const entityNc = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
     const { refreshStudents, studentsPromise } = use(SearchStudentsContext)

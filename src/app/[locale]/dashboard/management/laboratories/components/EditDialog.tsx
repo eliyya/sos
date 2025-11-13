@@ -28,10 +28,7 @@ import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import { secondsToTime } from '@/lib/utils'
-import {
-    openDialogAtom,
-    selectedLaboratoryIdAtom,
-} from '@/global/laboratories.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { editLaboratory } from '@/actions/laboratories.actions'
 import { useRouter } from 'next/navigation'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
@@ -43,7 +40,7 @@ const labTypeLabel = {
 }
 
 export function EditDialog() {
-    const [dialogOpened, openDialog] = useAtom(openDialogAtom)
+    const [dialogOpened, openDialog] = useAtom(dialogAtom)
 
     return (
         <Dialog
@@ -68,10 +65,10 @@ export function EditDialog() {
 }
 
 function EditForm() {
-    const openDialog = useSetAtom(openDialogAtom)
+    const openDialog = useSetAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
     const [message, setMessage] = useState('')
-    const labId = useAtomValue(selectedLaboratoryIdAtom)
+    const labId = useAtomValue(selectedIdAtom)
     const router = useRouter()
     const { refreshLaboratories, laboratoriesPromise } = use(
         SearchLaboratoriesContext,

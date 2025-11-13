@@ -20,7 +20,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { dialogOpenedAtom, selectedUserIdAtom } from '@/global/users.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { CompletInput } from '@/components/Inputs'
@@ -29,9 +29,9 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 
 export function DeleteEntityDialog() {
-    const [open, setOpen] = useAtom(dialogOpenedAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
@@ -55,7 +55,7 @@ export function DeleteEntityDialog() {
             }
             if (response.type === 'not-allowed') {
                 if (response.message === 'Unique admin cannot be deleted') {
-                    setOpen('preventArchiveAdmin')
+                    setOpen('PREVENT_ARCHIVE_ADMIN')
                 } else {
                     setMessage('Operacion no permitida')
                     setTimeout(() => setMessage(''), 5_000)
@@ -80,9 +80,9 @@ export function DeleteEntityDialog() {
 
     return (
         <Dialog
-            open={open === 'delete'}
+            open={open === 'DELETE'}
             onOpenChange={open => {
-                setOpen(open ? 'delete' : null)
+                setOpen(open ? 'DELETE' : null)
             }}
         >
             <DialogContent>

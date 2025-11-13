@@ -1,42 +1,8 @@
-import { getClasses, searchClasses } from '@/actions/classes.actions'
-import { classesAtom } from '@/global/classes.globals'
-import { STATUS } from '@/prisma/generated/enums'
-import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { searchClasses } from '@/actions/classes.actions'
+import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
-
-const isClassesFetchedAtom = atom(false)
-
-export function useClasses() {
-    const [classes, setClasses] = useAtom(classesAtom)
-    const [isFetched, setIsFetched] = useAtom(isClassesFetchedAtom)
-
-    const refetchClasses = useCallback(
-        () => getClasses().then(setClasses),
-        [setClasses],
-    )
-
-    const activeClasses = useMemo(
-        () => classes.filter(c => c.status === STATUS.ACTIVE),
-        [classes],
-    )
-
-    useEffect(() => {
-        if (!isFetched) {
-            refetchClasses()
-            setIsFetched(true)
-        }
-    }, [setClasses, isFetched, setIsFetched, refetchClasses])
-
-    return {
-        classes,
-        setClasses,
-        activeClasses,
-        refetchClasses,
-    } as const
-}
 
 export type SearchClassesPromise = ReturnType<typeof searchClasses>
 
@@ -77,7 +43,7 @@ export function useSearchClasses() {
                 `${app.api.pagination.classes()}?${createSearchParams(filters)}`,
             )
                 .then(res => res.json())
-                .catch(() => ({ users: [], count: 0 })),
+                .catch(() => ({ classes: [], count: 0 })),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [refresh, filters],
     )

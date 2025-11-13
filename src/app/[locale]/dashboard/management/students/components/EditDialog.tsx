@@ -31,20 +31,20 @@ import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletAsyncSelect } from '@/components/Select'
 import {
-    openDialogAtom,
-    selectedStudentNCAtom,
-} from '@/global/students.globals'
+    careersSelectOptionsAtom,
+    dialogAtom,
+    selectedIdAtom,
+} from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchStudentsContext } from '@/contexts/students.context'
 import { useTranslations } from 'next-intl'
-import { careersSelectOptionsAtom } from '@/global/careers.globals'
 
 function EditDialog() {
     const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityNc = useAtomValue(selectedStudentNCAtom)
+    const entityNc = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
     const { students } = use(studentsPromise)
@@ -168,7 +168,7 @@ export { SuspenseEditDialog as EditDialog }
 
 function CareerSelect() {
     const t = useTranslations('classes')
-    const classId = useAtomValue(selectedStudentNCAtom)
+    const classId = useAtomValue(selectedIdAtom)
     const { studentsPromise } = use(SearchStudentsContext)
     const { students } = use(studentsPromise)
     const [careersSelectOptions, setCareersSelectOptions] = useAtom(

@@ -25,9 +25,9 @@ import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletAsyncSelect } from '@/components/Select'
 import {
     laboratoriesSelectOptionsAtom,
-    openDialogAtom,
-    selectedMachineIdAtom,
-} from '@/global/machines.globals'
+    dialogAtom,
+    selectedIdAtom,
+} from '@/global/management.globals'
 import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
@@ -35,9 +35,9 @@ import { SearchMachinesContext } from '@/contexts/machines.context'
 import { searchLaboratories } from '@/actions/laboratories.actions'
 
 function EditDialog() {
-    const [dialogOpened, openDialog] = useAtom(openDialogAtom)
+    const [dialogOpened, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedMachineIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
     const { refreshMachines, machinesPromise } = use(SearchMachinesContext)

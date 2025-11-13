@@ -28,11 +28,7 @@ import {
 import { MessageError } from '@/components/Error'
 import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
-import {
-    selectedUserIdAtom,
-    passwordFocusAtom,
-    dialogOpenedAtom,
-} from '@/global/users.globals'
+import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { SearchUsersContext } from '@/contexts/users.context'
 
@@ -40,11 +36,12 @@ const editPasswordAtom = atom('')
 const editPasswordErrorAtom = atom('')
 const editConfirmPasswordAtom = atom('')
 const editConfirmPasswordErrorAtom = atom('')
+const passwordFocusAtom = atom(false)
 
 export function EditUserDialog() {
-    const [open, setOpen] = useAtom(dialogOpenedAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const { refreshUsers, usersPromise } = use(SearchUsersContext)
     const setPasswordError = useSetAtom(editPasswordErrorAtom)
@@ -59,8 +56,8 @@ export function EditUserDialog() {
 
     return (
         <Dialog
-            open={open === 'edit'}
-            onOpenChange={op => setOpen(op ? 'edit' : null)}
+            open={open === 'EDIT'}
+            onOpenChange={op => setOpen(op ? 'EDIT' : null)}
         >
             <DialogContent>
                 <DialogHeader>
@@ -127,7 +124,7 @@ export function EditUserDialog() {
 }
 
 export function EditUsernameInput() {
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const { usersPromise } = use(SearchUsersContext)
     const { users } = use(usersPromise)
 
@@ -151,7 +148,7 @@ export function EditUsernameInput() {
 }
 
 export function EditRoleSelect() {
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const { usersPromise } = use(SearchUsersContext)
     const { users } = use(usersPromise)
 
@@ -223,7 +220,7 @@ export function EditPasswordInput() {
 }
 
 export function EditNameInput() {
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const { usersPromise } = use(SearchUsersContext)
     const { users } = use(usersPromise)
 

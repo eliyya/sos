@@ -15,10 +15,7 @@ import { TableRow, TableCell } from '@/components/Table'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 import { use } from 'react'
 import { SearchSubjectsPromise } from '@/hooks/subjects.hooks'
-import {
-    openDialogAtom,
-    selectedSubjectIdAtom,
-} from '@/global/subjects.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 
 interface StudentItemListProps {
     subject: Awaited<SearchSubjectsPromise>['subjects'][number]
@@ -44,8 +41,8 @@ interface ButtonsProps {
     subject: Subject
 }
 function Buttons({ subject }: ButtonsProps) {
-    const setDialogOpened = useSetAtom(openDialogAtom)
-    const setSelectedSubjectId = useSetAtom(selectedSubjectIdAtom)
+    const setDialogOpened = useSetAtom(dialogAtom)
+    const setSelectedSubjectId = useSetAtom(selectedIdAtom)
     if (subject.status === STATUS.ACTIVE)
         return (
             <>

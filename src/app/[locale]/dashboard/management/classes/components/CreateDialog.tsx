@@ -9,7 +9,7 @@ import {
     UsersIcon,
     HashIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
@@ -20,22 +20,22 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { CompletAsyncSelect, CompletSelect } from '@/components/Select'
+import { CompletAsyncSelect } from '@/components/Select'
 import {
-    openDialogAtom,
-    selectedClassIdAtom,
+    careersSelectOptionsAtom,
+    dialogAtom,
+    selectedIdAtom,
+    subjectsSelectOptionsAtom,
     usersSelectOptionsAtom,
-} from '@/global/classes.globals'
+} from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
-import { useSubjects } from '@/hooks/subjects.hooks'
-import { useCareers } from '@/hooks/careers.hooks'
-import { useClasses } from '@/hooks/classes.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { searchUsers } from '@/actions/users.actions'
+import { searchSubjects } from '@/actions/subjects.actions'
+import { searchCareers } from '@/actions/careers.actions'
+import { SearchClassesContext } from '@/contexts/classes.context'
 
-const careerIdAtom = atom('')
-const subjectIdAtom = atom('')
 const teacherAtom = atom<{ label: string; value: string } | null>(null)
 const errorCareerIdAtom = atom('')
 const errorSubjectIdAtom = atom('')
@@ -46,11 +46,11 @@ const errorGroupAtom = atom('')
 const errorSemesterAtom = atom('')
 
 export function CreateSubjectDialog() {
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const setEntityToEdit = useSetAtom(selectedClassIdAtom)
-    const { refetchClasses } = useClasses()
+    const setEntityToEdit = useSetAtom(selectedIdAtom)
+    const { refreshClasses } = use(SearchClassesContext)
     const t = useTranslations('classes')
     const router = useRouter()
     const setTeacherError = useSetAtom(errorTeacherIdAtom)
@@ -76,7 +76,7 @@ export function CreateSubjectDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    refetchClasses()
+                    refreshClasses()
                     return
                 }
                 if (res.type === 'already-archived') {
@@ -107,7 +107,7 @@ export function CreateSubjectDialog() {
         },
         [
             openDialog,
-            refetchClasses,
+            refreshClasses,
             router,
             setCareerError,
             setEntityToEdit,
@@ -195,62 +195,75 @@ export function TeacherInput() {
 }
 
 export function SubjectInput() {
-    const [subjectId, setSubjectId] = useAtom(subjectIdAtom)
     const error = useAtomValue(errorSubjectIdAtom)
-    const { subjects } = useSubjects()
 
-    const subjectsOptions = useMemo(() => {
-        return subjects.map(s => ({
-            label: s.name,
-            value: s.id,
-        }))
-    }, [subjects])
+    const [defaultOptions, setSubjectsSelectOptions] = useAtom(
+        subjectsSelectOptionsAtom,
+    )
 
-    const subjectValue = useMemo(() => {
-        const subject = subjects.find(s => s.id === subjectId)
-        if (!subject) return subjectsOptions[0]
-        return { label: subject.name, value: subject.id }
-    }, [subjectId, subjects, subjectsOptions])
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchSubjects({
+                query: inputValue,
+            }).then(res => {
+                const options = res.subjects.map(subject => ({
+                    label: subject.name,
+                    value: subject.id,
+                }))
+                setSubjectsSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setSubjectsSelectOptions],
+    )
 
     return (
-        <CompletSelect
+        <CompletAsyncSelect
             label='Materia'
             name='subject_id'
-            options={subjectsOptions}
+            loadOptions={loadOptions}
             icon={BookAIcon}
-            value={subjectValue}
-            onChange={e => e && setSubjectId(e.value)}
+            defaultOptions={defaultOptions}
             error={error}
         />
     )
 }
 
 export function CareerInput() {
-    const [careerId, setCareerId] = useAtom(careerIdAtom)
     const error = useAtomValue(errorCareerIdAtom)
-    const { careers } = useCareers()
+    const [defaultOptions, setCareersSelectOptions] = useAtom(
+        careersSelectOptionsAtom,
+    )
 
-    const careersOptions = useMemo(() => {
-        return careers.map(c => ({
-            label: c.name,
-            value: c.id,
-        }))
-    }, [careers])
-
-    const careerValue = useMemo(() => {
-        const career = careers.find(c => c.id === careerId)
-        if (!career) return careersOptions[0]
-        return { label: career.name, value: career.id }
-    }, [careerId, careers, careersOptions])
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchCareers({
+                query: inputValue,
+            }).then(res => {
+                const options = res.careers.map(career => ({
+                    label: career.name,
+                    value: career.id,
+                }))
+                setCareersSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setCareersSelectOptions],
+    )
 
     return (
-        <CompletSelect
+        <CompletAsyncSelect
             label='Carrera'
             name='career_id'
-            options={careersOptions}
+            loadOptions={loadOptions}
             icon={GraduationCapIcon}
-            value={careerValue}
-            onChange={e => e && setCareerId(e.value)}
+            defaultOptions={defaultOptions}
             error={error}
         />
     )

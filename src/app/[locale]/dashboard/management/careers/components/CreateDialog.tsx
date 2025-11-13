@@ -2,7 +2,7 @@
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, TagIcon, SquarePenIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -13,25 +13,25 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { openDialogAtom, selectedCareerIdAtom } from '@/global/careers.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import app from '@eliyya/type-routes'
-import { useCareers } from '@/hooks/careers.hooks'
 import { useRouter } from 'next/navigation'
+import { SearchCareersContext } from '@/contexts/careers.context'
 
 const nameAtom = atom('')
 const aliasAtom = atom('')
 const nameErrorAtom = atom('')
 const aliasErrorAtom = atom('')
 
-export function CreateSubjectDialog() {
-    const [open, openDialog] = useAtom(openDialogAtom)
+export function CreateCareerDialog() {
+    const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const t = useTranslations('career')
-    const { setCareers } = useCareers()
     const router = useRouter()
-    const setSelectedId = useSetAtom(selectedCareerIdAtom)
+    const setSelectedId = useSetAtom(selectedIdAtom)
+    const { refreshCareers } = use(SearchCareersContext)
     // errors
     const setNameError = useSetAtom(nameErrorAtom)
     const setAliasError = useSetAtom(aliasErrorAtom)
@@ -45,7 +45,7 @@ export function CreateSubjectDialog() {
                 const response = await createCareer({ name, alias })
                 if (response.status === 'success') {
                     openDialog(null)
-                    setCareers(prev => [...prev, response.career])
+                    refreshCareers()
                     return
                 }
                 // error
@@ -72,7 +72,7 @@ export function CreateSubjectDialog() {
         },
         [
             openDialog,
-            setCareers,
+            refreshCareers,
             router,
             setSelectedId,
             setNameError,

@@ -2,14 +2,7 @@
 
 import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
-import {
-    Activity,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -22,10 +15,10 @@ import { MessageError } from '@/components/Error'
 import { CompletInput, CompletTextarea } from '@/components/Inputs'
 import { CompletAsyncSelect } from '@/components/Select'
 import {
+    dialogAtom,
     laboratoriesSelectOptionsAtom,
-    openDialogAtom,
-    selectedMachineIdAtom,
-} from '@/global/machines.globals'
+    selectedIdAtom,
+} from '@/global/management.globals'
 import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
@@ -33,10 +26,10 @@ import { SearchMachinesContext } from '@/contexts/machines.context'
 import { searchLaboratories } from '@/actions/laboratories.actions'
 
 export function CreateSubjectDialog() {
-    const [dialogOpened, openDialog] = useAtom(openDialogAtom)
+    const [dialogOpened, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const setEntityToEdit = useSetAtom(selectedMachineIdAtom)
+    const setEntityToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
     const [serieError, setSerieError] = useState('')
     const { refreshMachines } = use(SearchMachinesContext)

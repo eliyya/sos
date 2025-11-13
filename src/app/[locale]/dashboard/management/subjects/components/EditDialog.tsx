@@ -22,18 +22,15 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
-import {
-    openDialogAtom,
-    selectedSubjectIdAtom,
-} from '@/global/subjects.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 import app from '@eliyya/type-routes'
 
 function EditDialog() {
-    const [dialog, openDialog] = useAtom(openDialogAtom)
+    const [dialog, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedSubjectIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
     const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)

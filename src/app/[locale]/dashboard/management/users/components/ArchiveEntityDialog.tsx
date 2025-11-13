@@ -20,7 +20,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { selectedUserIdAtom, dialogOpenedAtom } from '@/global/users.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { useRouter } from 'next/navigation'
@@ -29,9 +29,9 @@ import { CompletInput } from '@/components/Inputs'
 import { SearchUsersContext } from '@/contexts/users.context'
 
 export function ArchiveEntityDialog() {
-    const [open, setOpen] = useAtom(dialogOpenedAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
@@ -54,7 +54,7 @@ export function ArchiveEntityDialog() {
                 return
             }
             if (response.type === 'not-allowed') {
-                setOpen('preventArchiveAdmin')
+                setOpen('PREVENT_ARCHIVE_ADMIN')
             } else if (response.type === 'not-found') {
                 refreshUsers()
                 setOpen(null)
@@ -73,8 +73,8 @@ export function ArchiveEntityDialog() {
 
     return (
         <Dialog
-            open={open === 'archive'}
-            onOpenChange={op => setOpen(op ? 'archive' : null)}
+            open={open === 'ARCHIVE'}
+            onOpenChange={op => setOpen(op ? 'ARCHIVE' : null)}
         >
             <DialogContent>
                 <DialogHeader>

@@ -26,10 +26,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openDialogAtom,
-    selectedLaboratoryIdAtom,
-} from '@/global/laboratories.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import { unarchiveLaboratory } from '@/actions/laboratories.actions'
 import { CompletInput } from '@/components/Inputs'
@@ -37,9 +34,9 @@ import { LABORATORY_TYPE } from '@/prisma/generated/enums'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 export function UnarchiveOrDeleteDialog() {
-    const [open, setOpen] = useAtom(openDialogAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedLaboratoryIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const { refreshLaboratories, laboratoriesPromise } = use(
         SearchLaboratoriesContext,

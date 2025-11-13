@@ -13,10 +13,7 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import {
-    openDialogAtom,
-    selectedSubjectIdAtom,
-} from '@/global/subjects.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
@@ -30,13 +27,13 @@ const errorTheoryHoursAtom = atom('')
 const errorPracticeHoursAtom = atom('')
 
 export function CreateSubjectDialog() {
-    const [dialog, openDialog] = useAtom(openDialogAtom)
+    const [dialog, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setErrorName = useSetAtom(errorNameAtom)
     const setErrorTheoryHours = useSetAtom(errorTheoryHoursAtom)
     const setErrorPracticeHours = useSetAtom(errorPracticeHoursAtom)
-    const setUserToEdit = useSetAtom(selectedSubjectIdAtom)
+    const setUserToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
     const { refreshSubjects } = use(SearchSubjectsContext)
 

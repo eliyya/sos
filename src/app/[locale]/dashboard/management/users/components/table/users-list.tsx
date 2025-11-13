@@ -13,7 +13,7 @@ import {
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
-import { selectedUserIdAtom, dialogOpenedAtom } from '@/global/users.globals'
+import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
 import { SearchUsersPromise } from '@/hooks/users.hooks'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { use } from 'react'
@@ -40,8 +40,8 @@ interface ButtonsProps {
     user: User
 }
 function Buttons({ user }: ButtonsProps) {
-    const setDialogOpened = useSetAtom(dialogOpenedAtom)
-    const setUserSelected = useSetAtom(selectedUserIdAtom)
+    const setDialogOpened = useSetAtom(dialogAtom)
+    const setUserSelected = useSetAtom(selectedIdAtom)
     if (user.status === STATUS.ACTIVE)
         return (
             <>
@@ -49,7 +49,7 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setDialogOpened('edit')
+                        setDialogOpened('EDIT')
                         setUserSelected(user.id)
                     }}
                 >
@@ -59,7 +59,7 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setDialogOpened('archive')
+                        setDialogOpened('ARCHIVE')
                         setUserSelected(user.id)
                     }}
                 >
@@ -74,7 +74,7 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setDialogOpened('unarchive')
+                        setDialogOpened('UNARCHIVE')
                         setUserSelected(user.id)
                     }}
                 >
@@ -84,7 +84,7 @@ function Buttons({ user }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setDialogOpened('delete')
+                        setDialogOpened('DELETE')
                         setUserSelected(user.id)
                     }}
                 >

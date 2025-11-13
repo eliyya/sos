@@ -32,23 +32,23 @@ import { useTranslations } from 'next-intl'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletAsyncSelect } from '@/components/Select'
 import {
-    openDialogAtom,
-    selectedClassIdAtom,
+    careersSelectOptionsAtom,
+    dialogAtom,
+    selectedIdAtom,
+    subjectsSelectOptionsAtom,
     usersSelectOptionsAtom,
-} from '@/global/classes.globals'
+} from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { searchUsers } from '@/actions/users.actions'
 import { SearchClassesContext } from '@/contexts/classes.context'
 import { searchSubjects } from '@/actions/subjects.actions'
-import { subjectsSelectOptionsAtom } from '@/global/subjects.globals'
-import { careersSelectOptionsAtom } from '@/global/careers.globals'
 
 function EditDialog() {
     const t = useTranslations('classes')
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const oldId = useAtomValue(selectedClassIdAtom)
+    const oldId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
     const { classesPromise, refreshClasses } = use(SearchClassesContext)
@@ -172,7 +172,7 @@ function TeacherSelect() {
     const [usersSelectOptions, setUsersSelectOptions] = useAtom(
         usersSelectOptionsAtom,
     )
-    const classId = useAtomValue(selectedClassIdAtom)
+    const classId = useAtomValue(selectedIdAtom)
     const { classesPromise } = use(SearchClassesContext)
     const { classes } = use(classesPromise)
     const originalTeacher = useMemo(() => {
@@ -216,7 +216,7 @@ function TeacherSelect() {
 
 function SubjectSelect() {
     const t = useTranslations('classes')
-    const classId = useAtomValue(selectedClassIdAtom)
+    const classId = useAtomValue(selectedIdAtom)
     const { classesPromise } = use(SearchClassesContext)
     const { classes } = use(classesPromise)
     const [subjectsSelectOptions, setSubjectsSelectOptions] = useAtom(
@@ -262,7 +262,7 @@ function SubjectSelect() {
 
 function CareerSelect() {
     const t = useTranslations('classes')
-    const classId = useAtomValue(selectedClassIdAtom)
+    const classId = useAtomValue(selectedIdAtom)
     const { classesPromise } = use(SearchClassesContext)
     const { classes } = use(classesPromise)
     const [careersSelectOptions, setCareersSelectOptions] = useAtom(

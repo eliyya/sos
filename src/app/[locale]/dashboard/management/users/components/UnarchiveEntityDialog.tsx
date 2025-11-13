@@ -20,16 +20,16 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { dialogOpenedAtom, selectedUserIdAtom } from '@/global/users.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { CompletInput } from '@/components/Inputs'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 
 export function UnarchiveEntityDialog() {
-    const [open, setOpen] = useAtom(dialogOpenedAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedUserIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const { refreshUsers, usersPromise } = use(SearchUsersContext)
     const router = useRouter()
@@ -66,8 +66,8 @@ export function UnarchiveEntityDialog() {
 
     return (
         <Dialog
-            open={open === 'unarchive'}
-            onOpenChange={op => setOpen(op ? 'unarchive' : null)}
+            open={open === 'UNARCHIVE'}
+            onOpenChange={op => setOpen(op ? 'UNARCHIVE' : null)}
         >
             <DialogContent>
                 <DialogHeader>

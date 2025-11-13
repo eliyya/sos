@@ -30,10 +30,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openDialogAtom,
-    selectedStudentNCAtom,
-} from '@/global/students.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
@@ -43,26 +40,16 @@ import { SearchStudentsContext } from '@/contexts/students.context'
 
 function UnarchiveOrDeleteDialog() {
     const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityNc = useAtomValue(selectedStudentNCAtom)
+    const entityNc = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { careers } = useCareers()
     const { students } = use(studentsPromise)
 
     const entity = useMemo(() => {
         return students.find(student => student.nc === entityNc)
     }, [students, entityNc])
-
-    const career = useMemo(() => {
-        if (!entity) return ''
-        const career = careers.find(career => career.id === entity.career_id)
-        if (!career) return 'Deleted Career'
-        if (career.status === STATUS.ARCHIVED)
-            return `(Archived) ${career.alias}`
-        return career.alias
-    }, [entity, careers])
 
     const onAction = useCallback(() => {
         if (!entityNc) return
@@ -131,7 +118,7 @@ function UnarchiveOrDeleteDialog() {
                     />
                     <CompletInput
                         disabled
-                        value={career}
+                        value={entity.career.displayalias}
                         label='Carrera'
                         icon={GraduationCapIcon}
                     />

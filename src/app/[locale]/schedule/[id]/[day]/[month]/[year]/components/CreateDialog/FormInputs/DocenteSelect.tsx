@@ -1,9 +1,9 @@
 'use client'
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { TransitionStartFunction } from 'react'
-import { getRemainingHours } from '@/actions/classes.actions'
-import { CompletSelect } from '@/components/Select'
+import { TransitionStartFunction, useCallback, useState } from 'react'
+import { getRemainingHours, searchClasses } from '@/actions/classes.actions'
+import { CompletAsyncSelect } from '@/components/Select'
 import {
     classesAtom,
     createDayAtom,
@@ -11,15 +11,13 @@ import {
     selectedClassAtom,
     selectedUserAtom,
 } from '@/global/management-practices'
-import { useClasses } from '@/hooks/classes.hooks'
+import { classesSelectOptionsAtom } from '@/global/management.globals'
 
 interface DocenteSelectProps {
-    options: { label: string; value: string }[]
     startLoadingClasses: TransitionStartFunction
     startLoadingHours: TransitionStartFunction
 }
 export function DocenteSelect({
-    options,
     startLoadingClasses,
     startLoadingHours,
 }: DocenteSelectProps) {
@@ -28,13 +26,39 @@ export function DocenteSelect({
     const setSelectedClass = useSetAtom(selectedClassAtom)
     const setRemainingHours = useSetAtom(remainingHoursAtom)
     const timestampStartHour = useAtomValue(createDayAtom)
-    const { classes } = useClasses()
+    const [defaultClassesOptions, setDefaultClassesOptions] = useAtom(
+        classesSelectOptionsAtom,
+    )
+    // TODO: fix type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [completeClasses, setCompleteClasses] = useState<any[]>([])
+
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchClasses({
+                query: inputValue,
+            }).then(res => {
+                const options = res.classes.map(c => ({
+                    label: `${c.teacher.name} - ${c.teacher_id}`,
+                    value: c.id,
+                }))
+                setDefaultClassesOptions(options)
+                setCompleteClasses(res.classes)
+                callback(options)
+            })
+        },
+        [setDefaultClassesOptions],
+    )
 
     return (
-        <CompletSelect
+        <CompletAsyncSelect
             label='Docente'
             name='teacher_id'
-            options={options}
+            defaultOptions={defaultClassesOptions}
+            loadOptions={loadOptions}
             isClearable={false}
             value={{
                 label: selectedUser.name,
@@ -47,8 +71,10 @@ export function DocenteSelect({
                     id: o.value,
                 })
                 startLoadingClasses(async () => {
-                    setClasses(classes.filter(c => c.teacher_id === o.value))
-                    const [firstClass] = classes.filter(
+                    setClasses(
+                        completeClasses.filter(c => c.teacher_id === o.value),
+                    )
+                    const [firstClass] = completeClasses.filter(
                         c => c.teacher_id === o.value,
                     )
                     if (firstClass) {

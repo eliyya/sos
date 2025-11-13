@@ -10,15 +10,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import { dialogOpenedAtom } from '@/global/users.globals'
+import { dialogAtom } from '@/global/management.globals'
 
 export function PreventArchiveAdminDialog() {
-    const [open, setOpen] = useAtom(dialogOpenedAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
 
     return (
         <Dialog
-            open={open === 'preventArchiveAdmin'}
-            onOpenChange={op => setOpen(op ? 'preventArchiveAdmin' : null)}
+            open={open === 'PREVENT_ARCHIVE_ADMIN'}
+            onOpenChange={op => setOpen(op ? 'PREVENT_ARCHIVE_ADMIN' : null)}
         >
             <DialogContent>
                 <DialogHeader>

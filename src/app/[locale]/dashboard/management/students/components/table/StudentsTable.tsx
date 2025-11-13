@@ -10,10 +10,7 @@ import {
     Trash2,
 } from 'lucide-react'
 import { Button } from '@/components/Button'
-import {
-    openDialogAtom,
-    selectedStudentNCAtom,
-} from '@/global/students.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useSetAtom } from 'jotai'
 import { SearchStudentsPromise } from '@/hooks/students.hooks'
 import { use } from 'react'
@@ -41,8 +38,8 @@ interface ButtonsProps {
     entity: Student
 }
 function Buttons({ entity }: ButtonsProps) {
-    const openDialog = useSetAtom(openDialogAtom)
-    const selectStudent = useSetAtom(selectedStudentNCAtom)
+    const openDialog = useSetAtom(dialogAtom)
+    const selectStudent = useSetAtom(selectedIdAtom)
     if (entity.status === STATUS.ACTIVE)
         return (
             <>

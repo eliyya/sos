@@ -12,7 +12,7 @@ import {
     selectedRoleAtom,
     selectedRoleIdAtom,
     usersCountAtom,
-} from '@/global/roles.globals'
+} from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { PermissionsList } from './permissions-list'
 import { cn } from '@/lib/utils'

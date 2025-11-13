@@ -2,7 +2,7 @@ import {
     PERMISSIONS_FLAGS,
     PermissionsBitField,
 } from '@/bitfields/PermissionsBitField'
-import { managementRouteSelected } from '@/global/routes.globals'
+import { managementRouteSelected } from '@/global/management.globals'
 import { authClient } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { useAtom } from 'jotai'

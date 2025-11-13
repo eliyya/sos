@@ -21,7 +21,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedCareerIdAtom } from '@/global/careers.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
@@ -29,9 +29,9 @@ import { CompletInput } from '@/components/Inputs'
 import { SearchCareersContext } from '@/contexts/careers.context'
 
 function UnarchiveOrDeleteDialog() {
-    const [open, openDialog] = useAtom(openDialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedCareerIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
     const router = useRouter()

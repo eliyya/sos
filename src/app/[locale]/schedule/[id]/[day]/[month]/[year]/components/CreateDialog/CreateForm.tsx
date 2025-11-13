@@ -67,17 +67,6 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
     const [isLoadingHours, startLoadingHours] = useTransition()
     const [remainingHours, setRemainingHours] = useAtom(remainingHoursAtom)
 
-    const usersToSelect = [
-        {
-            value: user?.id ?? '',
-            label: user?.name ?? '',
-        },
-        ...users.map(u => ({
-            value: u.id,
-            label: u.name,
-        })),
-    ]
-
     useEffect(() => {
         if (!user) return
         setSelecctedUser({
@@ -112,11 +101,11 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
                 start.epochMilliseconds >= e.start &&
                 start.epochMilliseconds < e.end,
         )
-        if (start.epochMilliseconds < openHourDate.epochMilliseconds)
+        if (start.epochMilliseconds < openHourDate.epochMilliseconds) {
             setStartHourError(
                 'La hora de inicio debe ser mayor que la de apertura.',
             )
-        else if (
+        } else if (
             start.epochMilliseconds >
             closeHourDate.subtract({ hours: 1 }).epochMilliseconds
         )
@@ -156,6 +145,7 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
             setEndHourError('No hay suficientes horas restantes.')
         else setEndHourError('')
     }, [
+        setStartHourError,
         timestampStartHour,
         setActualEvent,
         endTime,
@@ -188,7 +178,6 @@ export function CreateForm({ users, lab, isAdmin, user }: CreateFormProps) {
             <input type='hidden' value={lab.id} name='laboratory_id' />
             <input type='hidden' value={timestampStartHour} name='starts_at' />
             <DocenteSelect
-                options={usersToSelect}
                 startLoadingClasses={startLoadingClasses}
                 startLoadingHours={startLoadingHours}
             />

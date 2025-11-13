@@ -17,10 +17,7 @@ import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 import { SearchLaboratoriesPromise } from '@/hooks/laboratories.hoohs'
 import { secondsToTime } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
-import {
-    openDialogAtom,
-    selectedLaboratoryIdAtom,
-} from '@/global/laboratories.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 
 interface LaboratoryItemListProps {
     laboratory: Awaited<SearchLaboratoriesPromise>['laboratories'][number]
@@ -52,8 +49,8 @@ interface ButtonsProps {
     laboratory: Laboratory
 }
 function Buttons({ laboratory }: ButtonsProps) {
-    const setSelectedLaboratoryId = useSetAtom(selectedLaboratoryIdAtom)
-    const openDialog = useSetAtom(openDialogAtom)
+    const setSelectedId = useSetAtom(selectedIdAtom)
+    const openDialog = useSetAtom(dialogAtom)
 
     if (laboratory.status === STATUS.ACTIVE)
         return (
@@ -63,7 +60,7 @@ function Buttons({ laboratory }: ButtonsProps) {
                     size='icon'
                     onClick={() => {
                         openDialog('EDIT')
-                        setSelectedLaboratoryId(laboratory.id)
+                        setSelectedId(laboratory.id)
                     }}
                 >
                     <PencilIcon className='text-xs' />
@@ -72,7 +69,7 @@ function Buttons({ laboratory }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSelectedLaboratoryId(laboratory.id)
+                        setSelectedId(laboratory.id)
                         openDialog('ARCHIVE')
                     }}
                 >
@@ -87,7 +84,7 @@ function Buttons({ laboratory }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSelectedLaboratoryId(laboratory.id)
+                        setSelectedId(laboratory.id)
                         openDialog('UNARCHIVE')
                     }}
                 >
@@ -97,7 +94,7 @@ function Buttons({ laboratory }: ButtonsProps) {
                 <Button
                     size='icon'
                     onClick={() => {
-                        setSelectedLaboratoryId(laboratory.id)
+                        setSelectedId(laboratory.id)
                         openDialog('DELETE')
                     }}
                 >

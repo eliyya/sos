@@ -30,23 +30,21 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedClassIdAtom } from '@/global/classes.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import { useClasses } from '@/hooks/classes.hooks'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { SearchClassesContext } from '@/contexts/classes.context'
 
 function UnarchiveOrDeleteDialog() {
-    const [open, setOpen] = useAtom(openDialogAtom)
+    const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedClassIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('classes')
-    const { refetchClasses } = useClasses()
     const router = useRouter()
-    const { classesPromise } = use(SearchClassesContext)
+    const { classesPromise, refreshClasses } = use(SearchClassesContext)
     const { classes } = use(classesPromise)
 
     const entity = useMemo(() => {
@@ -59,11 +57,11 @@ function UnarchiveOrDeleteDialog() {
             const res = await unarchiveClass(entityId)
             if (res.status === 'success') {
                 setOpen(null)
-                refetchClasses()
+                refreshClasses()
                 return
             }
             if (res.type === 'not-found') {
-                refetchClasses()
+                refreshClasses()
                 setOpen(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -73,7 +71,7 @@ function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityId, setOpen, refetchClasses, router])
+    }, [entityId, setOpen, refreshClasses, router])
 
     if (!entity) return null
 

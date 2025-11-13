@@ -21,19 +21,16 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import {
-    openDialogAtom,
-    selectedSubjectIdAtom,
-} from '@/global/subjects.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
 function DeleteDialog() {
-    const [dialog, openDialog] = useAtom(openDialogAtom)
+    const [dialog, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entityId = useAtomValue(selectedSubjectIdAtom)
+    const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)
     const router = useRouter()
