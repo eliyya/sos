@@ -2,8 +2,8 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import {
-    ArchiveRestore,
-    Ban,
+    ArchiveRestoreIcon,
+    BanIcon,
     BookAIcon,
     GraduationCapIcon,
     HashIcon,
@@ -13,6 +13,7 @@ import {
 import {
     Activity,
     Suspense,
+    use,
     useCallback,
     useMemo,
     useState,
@@ -28,49 +29,33 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
+import { openDialogAtom, selectedClassIdAtom } from '@/global/classes.globals'
 import { useTranslations } from 'next-intl'
 import { useClasses } from '@/hooks/classes.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useCareers } from '@/hooks/careers.hooks'
-import { useSubjects } from '@/hooks/subjects.hooks'
-import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
+import { SearchClassesContext } from '@/contexts/classes.context'
 
 function UnarchiveDialog() {
     const t = useTranslations('classes')
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedClassAtom)
+    const entityId = useAtomValue(selectedClassIdAtom)
     const [message, setMessage] = useState('')
     const { refetchClasses } = useClasses()
     const router = useRouter()
-    const { careers } = useCareers()
-    const { subjects } = useSubjects()
+    const { classesPromise } = use(SearchClassesContext)
+    const { classes } = use(classesPromise)
 
-    const subject = useMemo(() => {
-        if (!entity) return ''
-        const subject = subjects.find(s => s.id === entity.subject_id)
-        if (!subject) return 'Deleted Subject'
-        if (subject.status === STATUS.ARCHIVED)
-            return `(Archived) ${subject.name}`
-        return subject.name
-    }, [entity, subjects])
-
-    const career = useMemo(() => {
-        if (!entity) return ''
-        const career = careers.find(c => c.id === entity.career_id)
-        if (!career) return 'Deleted Career'
-        if (career.status === STATUS.ARCHIVED)
-            return `(Archived) ${career.alias}`
-        return career.alias
-    }, [entity, careers])
+    const entity = useMemo(() => {
+        return classes.find(c => c.id === entityId)
+    }, [classes, entityId])
 
     const onAction = useCallback(() => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const res = await unarchiveClass(entity.id)
+            const res = await unarchiveClass(entityId)
             if (res.status === 'success') {
                 setOpen(null)
                 refetchClasses()
@@ -87,7 +72,7 @@ function UnarchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, setOpen, refetchClasses, router])
+    }, [entityId, setOpen, refetchClasses, router])
 
     if (!entity) return null
 
@@ -101,8 +86,8 @@ function UnarchiveDialog() {
                     <DialogTitle>{t('unarchive_class')}</DialogTitle>
                     <DialogDescription>
                         {t('confirm_unarchive', {
-                            subject,
-                            career,
+                            subject: entity.subject.displayname,
+                            career: entity.career.displayname,
                             group: entity.group + '',
                             semester: entity.semester + '',
                             teacher: entity.teacher.displayname,
@@ -137,13 +122,13 @@ function UnarchiveDialog() {
                     <CompletInput
                         label={t('subject')}
                         disabled
-                        value={subject}
+                        value={entity.subject.displayname}
                         icon={BookAIcon}
                     />
                     <CompletInput
                         label={t('career')}
                         disabled
-                        value={career}
+                        value={entity.career.displayname}
                         icon={GraduationCapIcon}
                     />
                     <div className='flex flex-row gap-2 *:flex-1'>
@@ -155,7 +140,7 @@ function UnarchiveDialog() {
                                 setOpen(null)
                             }}
                         >
-                            <Ban className='mr-2 h-5 w-5' />
+                            <BanIcon className='mr-2 h-5 w-5' />
                             {t('cancel')}
                         </Button>
                         <Button
@@ -163,7 +148,7 @@ function UnarchiveDialog() {
                             variant={'default'}
                             disabled={inTransition}
                         >
-                            <ArchiveRestore className='mr-2 h-5 w-5' />
+                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
                             {t('unarchive')}
                         </Button>
                     </div>

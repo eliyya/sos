@@ -21,8 +21,9 @@ export const openDialogAtom = atom<
 // edit
 type id = Career['id']
 export const selectedCareerIdAtom = atomWithStorage<id>('selectedCareerId', '')
-export const selectedCareerAtom = atom(get => {
-    const careers = get(careersAtom)
-    const selectedId = get(selectedCareerIdAtom)
-    return careers.find(career => career.id === selectedId)
-})
+export const careersSelectOptionsAtom = atomWithStorage<
+    {
+        label: string
+        value: string
+    }[]
+>('careersSelectOptions', [])

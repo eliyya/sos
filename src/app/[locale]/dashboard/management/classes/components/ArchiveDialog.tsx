@@ -5,6 +5,7 @@ import { Archive, Ban, User as UserIcon } from 'lucide-react'
 import {
     Activity,
     Suspense,
+    use,
     useCallback,
     useMemo,
     useState,
@@ -21,55 +22,38 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
+import { openDialogAtom, selectedClassIdAtom } from '@/global/classes.globals'
 import { useTranslations } from 'next-intl'
-import { useCareers } from '@/hooks/careers.hooks'
-import { useSubjects } from '@/hooks/subjects.hooks'
 import { useRouter } from 'next/navigation'
-import { useClasses } from '@/hooks/classes.hooks'
 import app from '@eliyya/type-routes'
-import { STATUS } from '@/prisma/generated/enums'
+import { SearchClassesContext } from '@/contexts/classes.context'
 
 function ArchiveDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedClassAtom)
+    const entityId = useAtomValue(selectedClassIdAtom)
     const [message, setMessage] = useState('')
-    const { subjects } = useSubjects()
-    const { careers } = useCareers()
     const t = useTranslations('classes')
-    const { refetchClasses } = useClasses()
     const router = useRouter()
+    const { classesPromise, refreshClasses } = use(SearchClassesContext)
+    const { classes } = use(classesPromise)
 
-    const subject = useMemo(() => {
-        if (!entity) return ''
-        const subject = subjects.find(s => s.id === entity.subject_id)
-        if (!subject) return 'Deleted subject'
-        if (subject.status === STATUS.ARCHIVED)
-            return `(Archived) ${subject.name}`
-        return subject.name
-    }, [entity, subjects])
-
-    const career = useMemo(() => {
-        if (!entity) return ''
-        const career = careers.find(c => c.id === entity.career_id)
-        if (!career) return 'Deleted career'
-        if (career.status === STATUS.ARCHIVED)
-            return `(Archived) ${career.name}`
-        return career.name
-    }, [entity, careers])
+    const entity = useMemo(
+        () => classes.find(c => c.id === entityId),
+        [classes, entityId],
+    )
 
     const onAction = useCallback(() => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const res = await archiveClass(entity.id)
+            const res = await archiveClass(entityId)
             if (res.status === 'success') {
                 openDialog(null)
-                refetchClasses()
+                refreshClasses()
                 return
             }
             if (res.type === 'not-found') {
-                refetchClasses()
+                refreshClasses()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -79,7 +63,7 @@ function ArchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, refetchClasses])
+    }, [entityId, openDialog, router, refreshClasses])
 
     if (!entity) return null
 
@@ -112,13 +96,13 @@ function ArchiveDialog() {
                     <CompletInput
                         label={t('subject')}
                         disabled
-                        value={subject}
+                        value={entity.subject.displayname}
                         icon={UserIcon}
                     />
                     <CompletInput
                         label={t('career')}
                         disabled
-                        value={career}
+                        value={entity.career.displayname}
                         icon={UserIcon}
                     />
                     <CompletInput

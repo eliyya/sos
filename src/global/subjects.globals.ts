@@ -36,3 +36,9 @@ export const selectedSubjectAtom = atom(get => {
     const selectedId = get(selectedSubjectIdAtom)
     return subjects.find(subject => subject.id === selectedId)
 })
+export const subjectsSelectOptionsAtom = atomWithStorage<
+    {
+        label: string
+        value: string
+    }[]
+>('subjects-select-options', [], createSerializableLocaleStorage())

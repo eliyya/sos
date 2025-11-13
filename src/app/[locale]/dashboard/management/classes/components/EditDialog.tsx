@@ -5,13 +5,14 @@ import {
     BookAIcon,
     GraduationCapIcon,
     HashIcon,
-    Save,
+    SaveIcon,
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
 import {
     Activity,
     Suspense,
+    use,
     useCallback,
     useMemo,
     useState,
@@ -29,77 +30,37 @@ import {
 import { MessageError } from '@/components/Error'
 import { useTranslations } from 'next-intl'
 import { RetornableCompletInput } from '@/components/Inputs'
-import {
-    RetornableCompletAsyncSelect,
-    RetornableCompletSelect,
-} from '@/components/Select'
+import { RetornableCompletAsyncSelect } from '@/components/Select'
 import {
     openDialogAtom,
-    selectedClassAtom,
+    selectedClassIdAtom,
     usersSelectOptionsAtom,
 } from '@/global/classes.globals'
-import { useCareers } from '@/hooks/careers.hooks'
-import { useSubjects } from '@/hooks/subjects.hooks'
-import { useClasses } from '@/hooks/classes.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { STATUS } from '@/prisma/generated/enums'
 import { searchUsers } from '@/actions/users.actions'
+import { SearchClassesContext } from '@/contexts/classes.context'
+import { searchSubjects } from '@/actions/subjects.actions'
+import { subjectsSelectOptionsAtom } from '@/global/subjects.globals'
+import { careersSelectOptionsAtom } from '@/global/careers.globals'
 
 function EditDialog() {
     const t = useTranslations('classes')
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(selectedClassAtom)
+    const oldId = useAtomValue(selectedClassIdAtom)
     const [message, setMessage] = useState('')
-    const { careers, activeCareers } = useCareers()
-    const { subjects, activeSubjects } = useSubjects()
-    const { refetchClasses } = useClasses()
     const router = useRouter()
-    const [usersSelectOptions, setUsersSelectOptions] = useAtom(
-        usersSelectOptionsAtom,
-    )
+    const { classesPromise, refreshClasses } = use(SearchClassesContext)
+    const { classes } = use(classesPromise)
 
-    const subjectsOptions = useMemo(() => {
-        return activeSubjects.map(s => ({
-            label: s.name,
-            value: s.id,
-        }))
-    }, [activeSubjects])
-
-    const careersOptions = useMemo(() => {
-        return activeCareers.map(c => ({
-            label: c.name,
-            value: c.id,
-        }))
-    }, [activeCareers])
-
-    const originalCareer = useMemo(() => {
-        if (!old) return null
-        const career = careers.find(c => c.id === old.career_id)
-        if (!career) return { label: 'Deleted Career', value: old.career_id }
-        if (career.status === STATUS.ARCHIVED)
-            return { label: `(Archived) ${career.alias}`, value: career.id }
-        return { label: career.alias, value: career.id }
-    }, [old, careers])
-
-    const originalSubject = useMemo(() => {
-        if (!old) return null
-        const subject = subjects.find(s => s.id === old.subject_id)
-        if (!subject) return { label: 'Deleted Subject', value: old.subject_id }
-        if (subject.status === STATUS.ARCHIVED)
-            return { label: `(Archived) ${subject.name}`, value: subject.id }
-        return { label: subject.name, value: subject.id }
-    }, [old, subjects])
-
-    const originalTeacher = useMemo(() => {
-        if (!old) return null
-        return { label: old.teacher.displayname, value: old.teacher_id }
-    }, [old])
+    const old = useMemo(() => {
+        return classes.find(c => c.id === oldId)
+    }, [classes, oldId])
 
     const onAction = useCallback(
         (formData: FormData) => {
-            if (!old) return
+            if (!oldId) return
             const career_id = formData.get('career_id') as string
             const group = Number(formData.get('group'))
             const semester = Number(formData.get('semester'))
@@ -110,17 +71,17 @@ function EditDialog() {
                 const res = await editClass({
                     career_id,
                     group,
-                    id: old.id,
+                    id: oldId,
                     semester,
                     subject_id,
                     teacher_id,
                 })
                 if (res.status === 'success') {
-                    refetchClasses()
+                    refreshClasses()
                     openDialog(null)
                     return
                 } else if (res.type === 'not-found') {
-                    refetchClasses()
+                    refreshClasses()
                     openDialog(null)
                 } else if (res.type === 'permission') {
                     setMessage('No tienes permiso para editar esta máquina')
@@ -133,9 +94,95 @@ function EditDialog() {
                 }
             })
         },
-        [old, openDialog, router, refetchClasses],
+        [oldId, refreshClasses, openDialog, router],
     )
 
+    if (!old) return null
+
+    return (
+        <Dialog
+            open={open === 'EDIT'}
+            onOpenChange={state => openDialog(state ? 'EDIT' : null)}
+        >
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        {t('edit_class', {
+                            subject: old.subject.displayname,
+                            career: old.career.displayname,
+                            group: old.group + '',
+                        })}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {t('edit_class', {
+                            subject: old.subject.displayname,
+                            career: old.career.displayname,
+                            group: old.group + '',
+                        })}
+                    </DialogDescription>
+                </DialogHeader>
+                <form
+                    action={onAction}
+                    className='flex w-full max-w-md flex-col justify-center gap-6'
+                >
+                    <Activity mode={message ? 'visible' : 'hidden'}>
+                        <MessageError>{message}</MessageError>
+                    </Activity>
+                    <TeacherSelect />
+                    <SubjectSelect />
+                    <CareerSelect />
+                    <RetornableCompletInput
+                        label={t('group')}
+                        name='group'
+                        icon={UsersIcon}
+                        type='number'
+                        min={0}
+                        originalValue={old.group}
+                    />
+                    <RetornableCompletInput
+                        label={t('semester')}
+                        name='semester'
+                        icon={HashIcon}
+                        type='number'
+                        min={0}
+                        originalValue={old.semester}
+                    />
+                    <Button type='submit' disabled={inTransition}>
+                        <SaveIcon className='mr-2 h-5 w-5' />
+                        {t('save')}
+                    </Button>
+                </form>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+function SuspenseEditDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseEditDialog as EditDialog }
+
+function TeacherSelect() {
+    const t = useTranslations('classes')
+    const [usersSelectOptions, setUsersSelectOptions] = useAtom(
+        usersSelectOptionsAtom,
+    )
+    const classId = useAtomValue(selectedClassIdAtom)
+    const { classesPromise } = use(SearchClassesContext)
+    const { classes } = use(classesPromise)
+    const originalTeacher = useMemo(() => {
+        const class_ = classes.find(c => c.id === classId)
+        if (!class_) return null
+        return {
+            label: class_.teacher.displayname,
+            value: class_.teacher_id,
+        }
+    }, [classes, classId])
     const loadOptions = useCallback(
         (
             inputValue: string,
@@ -155,91 +202,106 @@ function EditDialog() {
         [setUsersSelectOptions],
     )
 
-    if (!old) return null
-
     return (
-        <Dialog
-            open={open === 'EDIT'}
-            onOpenChange={state => openDialog(state ? 'EDIT' : null)}
-        >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>
-                        {t('edit_class', {
-                            subject: originalCareer?.label ?? '',
-                            career: originalCareer?.label ?? '',
-                            group: old.group + '',
-                        })}
-                    </DialogTitle>
-                    <DialogDescription>
-                        {t('edit_class', {
-                            subject: originalSubject?.label ?? '',
-                            career: originalCareer?.label ?? '',
-                            group: old.group + '',
-                        })}
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <RetornableCompletAsyncSelect
-                        originalValue={originalTeacher}
-                        label={t('teacher')}
-                        name='teacher_id'
-                        loadOptions={loadOptions}
-                        defaultOptions={usersSelectOptions}
-                        icon={UserIcon}
-                    />
-                    <RetornableCompletSelect
-                        originalValue={originalSubject}
-                        label={t('subject')}
-                        name='subject_id'
-                        options={subjectsOptions}
-                        icon={BookAIcon}
-                    />
-                    <RetornableCompletSelect
-                        originalValue={originalCareer}
-                        label={t('career')}
-                        name='career_id'
-                        options={careersOptions}
-                        icon={GraduationCapIcon}
-                    />
-                    <RetornableCompletInput
-                        label={t('group')}
-                        name='group'
-                        icon={UsersIcon}
-                        type='number'
-                        min={0}
-                        originalValue={old.group}
-                    />
-                    <RetornableCompletInput
-                        label={t('semester')}
-                        name='semester'
-                        icon={HashIcon}
-                        type='number'
-                        min={0}
-                        originalValue={old.semester}
-                    />
-                    <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
-                        {t('save')}
-                    </Button>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <RetornableCompletAsyncSelect
+            originalValue={originalTeacher}
+            label={t('teacher')}
+            name='teacher_id'
+            loadOptions={loadOptions}
+            defaultOptions={usersSelectOptions}
+            icon={UserIcon}
+        />
     )
 }
 
-function SuspenseEditDialog() {
+function SubjectSelect() {
+    const t = useTranslations('classes')
+    const classId = useAtomValue(selectedClassIdAtom)
+    const { classesPromise } = use(SearchClassesContext)
+    const { classes } = use(classesPromise)
+    const [subjectsSelectOptions, setSubjectsSelectOptions] = useAtom(
+        subjectsSelectOptionsAtom,
+    )
+    const originalSubject = useMemo(() => {
+        const class_ = classes.find(c => c.id === classId)
+        if (!class_) return null
+        return {
+            label: class_.subject.displayname,
+            value: class_.subject_id,
+        }
+    }, [classes, classId])
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchSubjects({
+                query: inputValue,
+            }).then(res => {
+                const options = res.subjects.map(s => ({
+                    label: s.name,
+                    value: s.id,
+                }))
+                setSubjectsSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setSubjectsSelectOptions],
+    )
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <EditDialog />
-        </Suspense>
+        <RetornableCompletAsyncSelect
+            originalValue={originalSubject}
+            label={t('subject')}
+            name='subject_id'
+            loadOptions={loadOptions}
+            defaultOptions={subjectsSelectOptions}
+            icon={BookAIcon}
+        />
     )
 }
 
-export { SuspenseEditDialog as EditDialog }
+function CareerSelect() {
+    const t = useTranslations('classes')
+    const classId = useAtomValue(selectedClassIdAtom)
+    const { classesPromise } = use(SearchClassesContext)
+    const { classes } = use(classesPromise)
+    const [careersSelectOptions, setCareersSelectOptions] = useAtom(
+        careersSelectOptionsAtom,
+    )
+    const originalCareer = useMemo(() => {
+        const class_ = classes.find(c => c.id === classId)
+        if (!class_) return null
+        return {
+            label: class_.career.displayname,
+            value: class_.career_id,
+        }
+    }, [classes, classId])
+    const loadOptions = useCallback(
+        (
+            inputValue: string,
+            callback: (options: { label: string; value: string }[]) => void,
+        ) => {
+            searchSubjects({
+                query: inputValue,
+            }).then(res => {
+                const options = res.subjects.map(s => ({
+                    label: s.name,
+                    value: s.id,
+                }))
+                setCareersSelectOptions(options)
+                callback(options)
+            })
+        },
+        [setCareersSelectOptions],
+    )
+    return (
+        <RetornableCompletAsyncSelect
+            originalValue={originalCareer}
+            label={t('career')}
+            name='career_id'
+            loadOptions={loadOptions}
+            defaultOptions={careersSelectOptions}
+            icon={GraduationCapIcon}
+        />
+    )
+}

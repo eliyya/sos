@@ -5,6 +5,7 @@ import { Ban, Trash2, User as UserIcon } from 'lucide-react'
 import {
     Activity,
     Suspense,
+    use,
     useCallback,
     useMemo,
     useState,
@@ -21,54 +22,37 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
-import { openDialogAtom, selectedClassAtom } from '@/global/classes.globals'
+import { openDialogAtom, selectedClassIdAtom } from '@/global/classes.globals'
 import { useTranslations } from 'next-intl'
-import { useCareers } from '@/hooks/careers.hooks'
-import { useSubjects } from '@/hooks/subjects.hooks'
-import { useClasses } from '@/hooks/classes.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { STATUS } from '@/prisma/generated/enums'
+import { SearchClassesContext } from '@/contexts/classes.context'
 
 function DeleteDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedClassAtom)
+    const entityId = useAtomValue(selectedClassIdAtom)
     const [message, setMessage] = useState('')
-    const { subjects } = useSubjects()
-    const { careers } = useCareers()
-    const { setClasses, refetchClasses } = useClasses()
     const router = useRouter()
+    const { classesPromise, refreshClasses } = use(SearchClassesContext)
+    const { classes } = use(classesPromise)
 
-    const subjectName = useMemo(() => {
-        if (!entity) return ''
-        const subject = subjects.find(s => s.id === entity.subject_id)
-        if (!subject) return 'Deleted subject'
-        if (subject.status === STATUS.ARCHIVED)
-            return `(Archived) ${subject.name}`
-        return subject.name
-    }, [entity, subjects])
-
-    const careerName = useMemo(() => {
-        if (!entity) return ''
-        const career = careers.find(c => c.id === entity.career_id)
-        if (!career) return 'Deleted career'
-        if (career.status === STATUS.ARCHIVED)
-            return `(Archived) ${career.name}`
-        return career.name
-    }, [entity, careers])
+    const entity = useMemo(
+        () => classes.find(c => c.id === entityId),
+        [classes, entityId],
+    )
 
     const onAction = useCallback(() => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const res = await deleteClass(entity.id)
+            const res = await deleteClass(entityId)
             if (res.status === 'success') {
-                setClasses(prev => prev.filter(c => c.id !== entity.id))
+                refreshClasses()
                 openDialog(null)
                 return
             }
             if (res.type === 'not-found') {
-                refetchClasses()
+                refreshClasses()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para eliminar esta estudiante')
@@ -78,7 +62,7 @@ function DeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, setClasses, refetchClasses])
+    }, [entityId, refreshClasses, openDialog, router])
 
     const t = useTranslations('classes')
 
@@ -94,7 +78,7 @@ function DeleteDialog() {
                     <DialogTitle>{t('delete_class')}</DialogTitle>
                     <DialogDescription>
                         {t('confirm_delete_class', {
-                            subjectName,
+                            subjectName: entity.subject.displayname,
                             teacherName: entity.teacher.displayname,
                         })}{' '}
                         <strong>{t('is_irreversible')}</strong>
@@ -116,13 +100,13 @@ function DeleteDialog() {
                     <CompletInput
                         label={t('subject')}
                         disabled
-                        value={subjectName}
+                        value={entity.subject.displayname}
                         icon={UserIcon}
                     />
                     <CompletInput
                         label={t('career')}
                         disabled
-                        value={careerName}
+                        value={entity.career.displayname}
                         icon={UserIcon}
                     />
                     <CompletInput
