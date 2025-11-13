@@ -11,7 +11,14 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { unarchiveClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
@@ -32,7 +39,7 @@ import { useClasses } from '@/hooks/classes.hooks'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 
-export function UnarchiveOrDeleteDialog() {
+function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedClassAtom)
@@ -181,3 +188,13 @@ export function UnarchiveOrDeleteDialog() {
         </Dialog>
     )
 }
+
+function SuspenseUnarchiveOrDeleteDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UnarchiveOrDeleteDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseUnarchiveOrDeleteDialog as UnarchiveOrDeleteDialog }

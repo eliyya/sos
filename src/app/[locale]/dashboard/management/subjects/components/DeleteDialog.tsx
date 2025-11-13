@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, ClockFadingIcon, SquarePenIcon, Trash2 } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useState,
+    useTransition,
+} from 'react'
 import { deleteSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -19,7 +26,7 @@ import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
-export function DeleteDialog() {
+function DeleteDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const subject = useAtomValue(selectedSubjectAtom)
@@ -122,3 +129,13 @@ export function DeleteDialog() {
         </Dialog>
     )
 }
+
+function SuspenseDeleteDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DeleteDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseDeleteDialog as DeleteDialog }

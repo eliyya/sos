@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import {
     Activity,
+    Suspense,
     use,
     useCallback,
     useMemo,
@@ -35,7 +36,7 @@ import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
-export function EditDialog() {
+function EditDialog() {
     const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
@@ -170,3 +171,13 @@ export function EditDialog() {
         </Dialog>
     )
 }
+
+function SuspenseEditDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseEditDialog as EditDialog }

@@ -8,7 +8,14 @@ import {
     SquarePenIcon,
     TrashIcon,
 } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useState,
+    useTransition,
+} from 'react'
 import { unarchiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -25,7 +32,7 @@ import { useRouter } from 'next/navigation'
 import { CompletInput } from '@/components/Inputs'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
-export function UnarchiveOrDeleteDialog() {
+function UnarchiveOrDeleteDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedSubjectAtom)
@@ -138,3 +145,13 @@ export function UnarchiveOrDeleteDialog() {
         </Dialog>
     )
 }
+
+function SuspenseUnarchiveOrDeleteDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UnarchiveOrDeleteDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseUnarchiveOrDeleteDialog as UnarchiveOrDeleteDialog }

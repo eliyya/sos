@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import {
     Activity,
+    Suspense,
     use,
     useCallback,
     useMemo,
@@ -36,7 +37,7 @@ import { CompletInput } from '@/components/Inputs'
 import { useCareers } from '@/hooks/careers.hooks'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
-export function UnarchiveDialog() {
+function UnarchiveDialog() {
     const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
@@ -154,3 +155,13 @@ export function UnarchiveDialog() {
         </Dialog>
     )
 }
+
+function SuspenseUnarchiveDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UnarchiveDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseUnarchiveDialog as UnarchiveDialog }

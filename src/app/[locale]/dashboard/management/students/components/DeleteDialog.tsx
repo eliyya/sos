@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import {
     Activity,
+    Suspense,
     use,
     useCallback,
     useMemo,
@@ -36,7 +37,7 @@ import { useCareers } from '@/hooks/careers.hooks'
 import { STATUS } from '@/prisma/generated/enums'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
-export function DeleteDialog() {
+function DeleteDialog() {
     const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
@@ -154,3 +155,13 @@ export function DeleteDialog() {
         </Dialog>
     )
 }
+
+function SuspenseDeleteDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DeleteDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseDeleteDialog as DeleteDialog }

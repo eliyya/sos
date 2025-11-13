@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Archive, Ban } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, Suspense, useCallback, useState, useTransition } from 'react'
 import { archiveCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -21,7 +21,17 @@ import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
 
-export function ArchiveDialog() {
+function SuspenseArchiveDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ArchiveDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseArchiveDialog as ArchiveDialog }
+
+function ArchiveDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedCareerAtom)

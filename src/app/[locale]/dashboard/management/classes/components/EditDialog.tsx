@@ -9,7 +9,14 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { editClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
@@ -39,7 +46,7 @@ import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 import { searchUsers } from '@/actions/users.actions'
 
-export function EditDialog() {
+function EditDialog() {
     const t = useTranslations('classes')
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
@@ -226,3 +233,13 @@ export function EditDialog() {
         </Dialog>
     )
 }
+
+function SuspenseEditDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseEditDialog as EditDialog }

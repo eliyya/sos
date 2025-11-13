@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useState,
+    useTransition,
+} from 'react'
 import { editSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -19,7 +26,7 @@ import { useRouter } from 'next/navigation'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 import app from '@eliyya/type-routes'
 
-export function EditDialog() {
+function EditDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedSubjectAtom)
@@ -125,3 +132,13 @@ export function EditDialog() {
         </Dialog>
     )
 }
+
+function SuspenseEditDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseEditDialog as EditDialog }

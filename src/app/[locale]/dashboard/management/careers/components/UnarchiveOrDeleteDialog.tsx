@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, Suspense, useCallback, useState, useTransition } from 'react'
 import { unarchiveCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -21,7 +21,7 @@ import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
 
-export function UnarchiveOrDeleteDialog() {
+function UnarchiveOrDeleteDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedCareerAtom)
@@ -136,3 +136,13 @@ export function UnarchiveOrDeleteDialog() {
         </Dialog>
     )
 }
+
+function SuspenseUnarchiveOrDeleteDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UnarchiveOrDeleteDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseUnarchiveOrDeleteDialog as UnarchiveOrDeleteDialog }

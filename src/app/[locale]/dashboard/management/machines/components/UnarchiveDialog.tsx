@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, MonitorCheckIcon, UserIcon } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useState,
+    useTransition,
+} from 'react'
 import { availableMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -19,7 +26,7 @@ import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { SearchMachinesContext } from '@/contexts/machines.context'
 
-export function UnarchiveDialog() {
+function UnarchiveDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedMachineAtom)
@@ -126,3 +133,13 @@ export function UnarchiveDialog() {
         </Dialog>
     )
 }
+
+function SuspenseUnarchiveDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UnarchiveDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseUnarchiveDialog as UnarchiveDialog }

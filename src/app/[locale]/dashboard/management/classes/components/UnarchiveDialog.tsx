@@ -10,7 +10,14 @@ import {
     UserIcon,
     UsersIcon,
 } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { unarchiveClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
@@ -31,7 +38,7 @@ import { useSubjects } from '@/hooks/subjects.hooks'
 import { STATUS } from '@/prisma/generated/enums'
 import { CompletInput } from '@/components/Inputs'
 
-export function UnarchiveDialog() {
+function UnarchiveDialog() {
     const t = useTranslations('classes')
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
@@ -165,3 +172,13 @@ export function UnarchiveDialog() {
         </Dialog>
     )
 }
+
+function SuspenseUnarchiveDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UnarchiveDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseUnarchiveDialog as UnarchiveDialog }

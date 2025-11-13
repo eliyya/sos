@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Save, User } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useState,
+    useTransition,
+} from 'react'
 import { editMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/Button'
 import {
@@ -26,7 +33,7 @@ import app from '@eliyya/type-routes'
 import { SearchMachinesContext } from '@/contexts/machines.context'
 import { searchLaboratories } from '@/actions/laboratories.actions'
 
-export function EditDialog() {
+function EditDialog() {
     const [dialogOpened, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedMachineAtom)
@@ -192,3 +199,13 @@ export function EditDialog() {
         </Dialog>
     )
 }
+
+function SuspenseEditDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseEditDialog as EditDialog }

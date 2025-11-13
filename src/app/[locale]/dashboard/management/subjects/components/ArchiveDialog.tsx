@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Archive, Ban, ClockFadingIcon, SquarePenIcon } from 'lucide-react'
-import { Activity, use, useCallback, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    use,
+    useCallback,
+    useState,
+    useTransition,
+} from 'react'
 import { archiveSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/Button'
 import {
@@ -19,7 +26,7 @@ import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 
-export function ArchiveDialog() {
+function ArchiveDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedSubjectAtom)
@@ -117,3 +124,13 @@ export function ArchiveDialog() {
         </Dialog>
     )
 }
+
+function SuspenseArchiveDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ArchiveDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseArchiveDialog as ArchiveDialog }

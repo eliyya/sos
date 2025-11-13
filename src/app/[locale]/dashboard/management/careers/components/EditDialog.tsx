@@ -2,7 +2,7 @@
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, TagIcon } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, Suspense, useCallback, useState, useTransition } from 'react'
 import { editCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -23,7 +23,7 @@ import { useCareers } from '@/hooks/careers.hooks'
 const nameErrorAtom = atom('')
 const aliasErrorAtom = atom('')
 
-export function EditDialog() {
+function EditDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const old = useAtomValue(selectedCareerAtom)
@@ -157,3 +157,13 @@ function AliasInput() {
         />
     )
 }
+
+function SuspenseEditDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseEditDialog as EditDialog }

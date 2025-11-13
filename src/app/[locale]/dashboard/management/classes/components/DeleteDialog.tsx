@@ -2,7 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2, User as UserIcon } from 'lucide-react'
-import { Activity, useCallback, useMemo, useState, useTransition } from 'react'
+import {
+    Activity,
+    Suspense,
+    useCallback,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react'
 import { deleteClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
@@ -23,7 +30,7 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/enums'
 
-export function DeleteDialog() {
+function DeleteDialog() {
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedClassAtom)
@@ -157,3 +164,13 @@ export function DeleteDialog() {
         </Dialog>
     )
 }
+
+function SuspenseDeleteDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DeleteDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseDeleteDialog as DeleteDialog }

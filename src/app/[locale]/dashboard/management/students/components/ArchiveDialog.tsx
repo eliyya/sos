@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import {
     Activity,
+    Suspense,
     use,
     useCallback,
     useMemo,
@@ -36,7 +37,7 @@ import { useCareers } from '@/hooks/careers.hooks'
 import { STATUS } from '@/prisma/generated/enums'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
-export function ArchiveDialog() {
+function ArchiveDialog() {
     const { refreshStudents } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
@@ -159,3 +160,13 @@ export function ArchiveDialog() {
         </Dialog>
     )
 }
+
+export function SuspenseArchiveDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ArchiveDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseArchiveDialog as ArchiveDialog }

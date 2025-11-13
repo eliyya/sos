@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { Ban, Trash2 } from 'lucide-react'
-import { Activity, useCallback, useState, useTransition } from 'react'
+import { Activity, Suspense, useCallback, useState, useTransition } from 'react'
 import { deleteCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/Button'
 import {
@@ -20,7 +20,17 @@ import { useRouter } from 'next/navigation'
 import { useCareers } from '@/hooks/careers.hooks'
 import { CompletInput } from '@/components/Inputs'
 
-export function DeleteDialog() {
+function SuspenseDeleteDialog() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DeleteDialog />
+        </Suspense>
+    )
+}
+
+export { SuspenseDeleteDialog as DeleteDialog }
+
+function DeleteDialog() {
     const [open, setOpen] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entity = useAtomValue(selectedCareerAtom)
