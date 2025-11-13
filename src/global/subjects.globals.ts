@@ -31,11 +31,6 @@ export const selectedSubjectIdAtom = atomWithStorage<id>(
     'selectedSubjectId',
     '',
 )
-export const selectedSubjectAtom = atom(get => {
-    const subjects = get(subjectsAtom)
-    const selectedId = get(selectedSubjectIdAtom)
-    return subjects.find(subject => subject.id === selectedId)
-})
 export const subjectsSelectOptionsAtom = atomWithStorage<
     {
         label: string

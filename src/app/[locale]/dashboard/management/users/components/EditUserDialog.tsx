@@ -29,7 +29,7 @@ import { MessageError } from '@/components/Error'
 import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletSelect } from '@/components/Select'
 import {
-    entityToEditAtom,
+    selectedUserIdAtom,
     passwordFocusAtom,
     dialogOpenedAtom,
 } from '@/global/users.globals'
@@ -44,10 +44,16 @@ const editConfirmPasswordErrorAtom = atom('')
 export function EditUserDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
-    const oldUser = useAtomValue(entityToEditAtom)
+    const entityId = useAtomValue(selectedUserIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshUsers } = use(SearchUsersContext)
+    const { refreshUsers, usersPromise } = use(SearchUsersContext)
     const setPasswordError = useSetAtom(editPasswordErrorAtom)
+    const { users } = use(usersPromise)
+
+    const oldUser = useMemo(() => {
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
 
     if (!oldUser) return null
 
@@ -121,7 +127,14 @@ export function EditUserDialog() {
 }
 
 export function EditUsernameInput() {
-    const oldUser = useAtomValue(entityToEditAtom)
+    const entityId = useAtomValue(selectedUserIdAtom)
+    const { usersPromise } = use(SearchUsersContext)
+    const { users } = use(usersPromise)
+
+    const oldUser = useMemo(() => {
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
 
     if (!oldUser) return null
 
@@ -138,7 +151,15 @@ export function EditUsernameInput() {
 }
 
 export function EditRoleSelect() {
-    const oldUser = useAtomValue(entityToEditAtom)
+    const entityId = useAtomValue(selectedUserIdAtom)
+    const { usersPromise } = use(SearchUsersContext)
+    const { users } = use(usersPromise)
+
+    const oldUser = useMemo(() => {
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
+
     const { roles } = useRoles()
     const rolesOptions = useMemo(() => {
         return roles.map(role => ({
@@ -202,7 +223,14 @@ export function EditPasswordInput() {
 }
 
 export function EditNameInput() {
-    const oldUser = useAtomValue(entityToEditAtom)
+    const entityId = useAtomValue(selectedUserIdAtom)
+    const { usersPromise } = use(SearchUsersContext)
+    const { users } = use(usersPromise)
+
+    const oldUser = useMemo(() => {
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
 
     if (!oldUser) return null
 

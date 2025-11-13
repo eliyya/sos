@@ -26,8 +26,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { entityToEditAtom, dialogOpenedAtom } from '@/global/users.globals'
-import { useRoles } from '@/hooks/roles.hooks'
+import { selectedUserIdAtom, dialogOpenedAtom } from '@/global/users.globals'
 import { CompletInput } from '@/components/Inputs'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { useRouter } from 'next/navigation'
@@ -36,22 +35,21 @@ import app from '@eliyya/type-routes'
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entityId = useAtomValue(selectedUserIdAtom)
     const [message, setMessage] = useState('')
-    const { roles } = useRoles()
-    const { refreshUsers } = use(SearchUsersContext)
+    const { refreshUsers, usersPromise } = use(SearchUsersContext)
     const router = useRouter()
+    const { users } = use(usersPromise)
 
-    const role = useMemo(() => {
-        if (!entity) return ''
-        const role = roles.find(r => r.id === entity.role_id)
-        if (!role) return 'Deleted Role'
-        return role.name
-    }, [entity, roles])
+    const entity = useMemo(() => {
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
 
     const onAction = useCallback(() => {
+        if (!entityId) return
         startTransition(async () => {
-            const response = await unarchiveUser(entity.id)
+            const response = await unarchiveUser(entityId)
             if (response.status === 'success') {
                 refreshUsers()
                 setOpen(null)
@@ -68,7 +66,7 @@ export function UnarchiveOrDeleteDialog() {
             }
             setTimeout(setMessage, 5_000, '')
         })
-    }, [entity, startTransition, setOpen, refreshUsers, router])
+    }, [entityId, startTransition, setOpen, refreshUsers, router])
 
     if (!entity) return null
 
@@ -108,7 +106,7 @@ export function UnarchiveOrDeleteDialog() {
                         label='Role'
                         disabled
                         icon={UserIcon}
-                        value={role}
+                        value={entity.role.name}
                     />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button

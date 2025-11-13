@@ -20,7 +20,7 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { dialogOpenedAtom, entityToEditAtom } from '@/global/users.globals'
+import { dialogOpenedAtom, selectedUserIdAtom } from '@/global/users.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { CompletInput } from '@/components/Inputs'
@@ -31,24 +31,23 @@ import app from '@eliyya/type-routes'
 export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(dialogOpenedAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(entityToEditAtom)
+    const entityId = useAtomValue(selectedUserIdAtom)
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
-    const { refreshUsers } = use(SearchUsersContext)
+    const { refreshUsers, usersPromise } = use(SearchUsersContext)
     const router = useRouter()
+    const { users } = use(usersPromise)
 
-    const role = useMemo(() => {
-        if (!entity) return ''
-        const role = roles.find(r => r.id === entity.role_id)
-        if (!role) return 'Deleted Role'
-        return role.name
-    }, [entity, roles])
+    const entity = useMemo(() => {
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
 
     const onAction = useCallback(() => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const response = await deleteUser(entity.id)
+            const response = await deleteUser(entityId)
             if (response.status === 'success') {
                 refreshUsers()
                 setOpen(null)
@@ -75,7 +74,7 @@ export function DeleteEntityDialog() {
                 setTimeout(() => setMessage(''), 5_000)
             }
         })
-    }, [entity, startTransition, setOpen, refreshUsers, router])
+    }, [entityId, startTransition, setOpen, refreshUsers, router])
 
     if (!entity || !adminRole) return null
 
@@ -118,7 +117,7 @@ export function DeleteEntityDialog() {
                         label='Role'
                         disabled
                         icon={UserIcon}
-                        value={role}
+                        value={entity.role.name}
                     />
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button
