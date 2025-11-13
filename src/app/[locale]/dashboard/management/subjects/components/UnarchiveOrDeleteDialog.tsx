@@ -13,6 +13,7 @@ import {
     Suspense,
     use,
     useCallback,
+    useMemo,
     useState,
     useTransition,
 } from 'react'
@@ -26,7 +27,10 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
+import {
+    openDialogAtom,
+    selectedSubjectIdAtom,
+} from '@/global/subjects.globals'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'
 import { CompletInput } from '@/components/Inputs'
@@ -35,15 +39,20 @@ import { SearchSubjectsContext } from '@/contexts/subjects.context'
 function UnarchiveOrDeleteDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const entity = useAtomValue(selectedSubjectAtom)
+    const entityId = useAtomValue(selectedSubjectIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshSubjects } = use(SearchSubjectsContext)
+    const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)
     const router = useRouter()
+    const { subjects } = use(subjectsPromise)
+
+    const entity = useMemo(() => {
+        return subjects.find(subject => subject.id === entityId)
+    }, [subjects, entityId])
 
     const onAction = useCallback(async () => {
-        if (!entity) return
+        if (!entityId) return
         startTransition(async () => {
-            const res = await unarchiveSubject(entity.id)
+            const res = await unarchiveSubject(entityId)
             if (res.status === 'success') {
                 openDialog(null)
                 refreshSubjects()
@@ -60,7 +69,7 @@ function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error, intentalo más tarde')
             }
         })
-    }, [entity, openDialog, refreshSubjects, router])
+    }, [entityId, openDialog, refreshSubjects, router])
 
     if (!entity) return null
 

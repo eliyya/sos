@@ -7,6 +7,7 @@ import {
     Suspense,
     use,
     useCallback,
+    useMemo,
     useState,
     useTransition,
 } from 'react'
@@ -21,7 +22,10 @@ import {
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
-import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
+import {
+    openDialogAtom,
+    selectedSubjectIdAtom,
+} from '@/global/subjects.globals'
 import { useRouter } from 'next/navigation'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 import app from '@eliyya/type-routes'
@@ -29,20 +33,25 @@ import app from '@eliyya/type-routes'
 function EditDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const old = useAtomValue(selectedSubjectAtom)
+    const entityId = useAtomValue(selectedSubjectIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshSubjects } = use(SearchSubjectsContext)
+    const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)
+    const { subjects } = use(subjectsPromise)
+
+    const entity = useMemo(() => {
+        return subjects.find(subject => subject.id === entityId)
+    }, [subjects, entityId])
 
     const onAction = useCallback(
         async (formData: FormData) => {
-            if (!old) return
+            if (!entityId) return
             const name = formData.get('name') as string
             const theory_hours = Number(formData.get('theory_hours'))
             const practice_hours = Number(formData.get('practice_hours'))
             startTransition(async () => {
                 const res = await editSubject({
-                    id: old.id,
+                    id: entityId,
                     name,
                     theory_hours,
                     practice_hours,
@@ -66,10 +75,10 @@ function EditDialog() {
                 }
             })
         },
-        [old, openDialog, refreshSubjects, router],
+        [entityId, openDialog, refreshSubjects, router],
     )
 
-    if (!old) return null
+    if (!entity) return null
 
     return (
         <Dialog
@@ -85,7 +94,7 @@ function EditDialog() {
                 <DialogHeader>
                     <DialogTitle>Editar Asignatura</DialogTitle>
                     <DialogDescription>
-                        Edita la asignatura {old.name}
+                        Edita la asignatura {entity.name}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -96,7 +105,7 @@ function EditDialog() {
                         <MessageError>{message}</MessageError>
                     </Activity>
                     <RetornableCompletInput
-                        originalValue={old.name}
+                        originalValue={entity.name}
                         required
                         label='Name'
                         type='text'
@@ -110,7 +119,7 @@ function EditDialog() {
                             type='number'
                             name='theory_hours'
                             min={0}
-                            originalValue={old.theory_hours.toString()}
+                            originalValue={entity.theory_hours.toString()}
                             icon={User}
                         ></RetornableCompletInput>
                         <RetornableCompletInput
@@ -119,7 +128,7 @@ function EditDialog() {
                             type='number'
                             name='practice_hours'
                             min={0}
-                            originalValue={old.practice_hours.toString()}
+                            originalValue={entity.practice_hours.toString()}
                             icon={User}
                         ></RetornableCompletInput>
                     </div>

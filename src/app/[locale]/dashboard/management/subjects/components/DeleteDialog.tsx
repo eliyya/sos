@@ -7,6 +7,7 @@ import {
     Suspense,
     use,
     useCallback,
+    useMemo,
     useState,
     useTransition,
 } from 'react'
@@ -20,7 +21,10 @@ import {
     DialogTitle,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
-import { openDialogAtom, selectedSubjectAtom } from '@/global/subjects.globals'
+import {
+    openDialogAtom,
+    selectedSubjectIdAtom,
+} from '@/global/subjects.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { CompletInput } from '@/components/Inputs'
@@ -29,15 +33,20 @@ import { SearchSubjectsContext } from '@/contexts/subjects.context'
 function DeleteDialog() {
     const [dialog, openDialog] = useAtom(openDialogAtom)
     const [inTransition, startTransition] = useTransition()
-    const subject = useAtomValue(selectedSubjectAtom)
+    const entityId = useAtomValue(selectedSubjectIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshSubjects } = use(SearchSubjectsContext)
+    const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)
     const router = useRouter()
+    const { subjects } = use(subjectsPromise)
+
+    const entity = useMemo(() => {
+        return subjects.find(subject => subject.id === entityId)
+    }, [subjects, entityId])
 
     const onAction = useCallback(async () => {
-        if (!subject) return
+        if (!entityId) return
         startTransition(async () => {
-            const res = await deleteSubject(subject.id)
+            const res = await deleteSubject(entityId)
             if (res.status === 'success') {
                 openDialog(null)
                 refreshSubjects()
@@ -54,9 +63,9 @@ function DeleteDialog() {
                 setMessage('Ha ocurrido un error, intentalo más tarde')
             }
         })
-    }, [subject, openDialog, refreshSubjects, router])
+    }, [entityId, openDialog, refreshSubjects, router])
 
-    if (!subject) return null
+    if (!entity) return null
 
     return (
         <Dialog
@@ -73,7 +82,7 @@ function DeleteDialog() {
                     <DialogTitle>Eliminar Asignatura</DialogTitle>
                     <DialogDescription>
                         ¿Está seguro de eliminar la asignatura{' '}
-                        <strong>{subject.name}</strong>?
+                        <strong>{entity.name}</strong>?
                         <strong>Esta acción es irreversible</strong>
                     </DialogDescription>
                 </DialogHeader>
@@ -86,20 +95,20 @@ function DeleteDialog() {
                     </Activity>
                     <CompletInput
                         disabled
-                        value={subject.name}
+                        value={entity.name}
                         label='Nombre'
                         icon={SquarePenIcon}
                     />
                     <div className='flex w-full gap-4'>
                         <CompletInput
                             disabled
-                            value={subject.theory_hours}
+                            value={entity.theory_hours}
                             label='Horas Teoricas'
                             icon={ClockFadingIcon}
                         />
                         <CompletInput
                             disabled
-                            value={subject.practice_hours}
+                            value={entity.practice_hours}
                             label='Horas Prácticas'
                             icon={ClockFadingIcon}
                         />
