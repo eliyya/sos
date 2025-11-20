@@ -8,6 +8,7 @@ import {
     deleteUserEffect,
     editUserEffect,
     getUsersEffect,
+    searchUsersEffect,
     unarchiveUserEffect,
 } from '@/services/users.service'
 import {
@@ -18,6 +19,7 @@ import {
     UnauthorizedError,
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
+import { SuccessOf } from '@/lib/type-utils'
 
 export async function getUsers() {
     return Effect.runPromise(
@@ -114,6 +116,7 @@ export async function archiveUser(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             }
                             if (error instanceof UnauthorizedError) {
@@ -163,6 +166,7 @@ export async function unarchiveUser(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             }
                             if (error instanceof UnauthorizedError) {
@@ -218,6 +222,7 @@ export async function deleteUser(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             }
                             if (error instanceof UnauthorizedError) {
@@ -240,6 +245,7 @@ export async function deleteUser(id: string) {
     )
 }
 
+// TODO: CatchTag Prisma https://effect.website/docs/error-management/expected-errors/#catchtag
 interface EditUserProps {
     id: string
     name: string
@@ -280,6 +286,7 @@ export async function editUser({
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
+                                    field: error.field,
                                 }
                             }
                             console.error(error)
@@ -293,4 +300,23 @@ export async function editUser({
                 ),
         ),
     )
+}
+
+type SearchUsersProps = Parameters<typeof searchUsersEffect>[0]
+export async function searchUsers(
+    props: SearchUsersProps,
+): Promise<SuccessOf<ReturnType<typeof searchUsersEffect>>> {
+    const users = await Effect.runPromise(
+        Effect.scoped(
+            searchUsersEffect(props)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed({ users: [], count: 0 })
+                    }),
+                ),
+        ),
+    )
+    return users
 }

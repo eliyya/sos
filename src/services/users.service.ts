@@ -6,12 +6,12 @@ import {
     PrismaError,
 } from '@/errors'
 import { PrismaService } from '@/layers/db.layer'
-import { STATUS } from '@/prisma/enums'
-import { DEFAULT_ROLES } from '@/constants/client'
+import { STATUS } from '@/prisma/generated/enums'
+import { DEFAULT_PAGINATION, DEFAULT_ROLES } from '@/constants/client'
 import { AuthService } from '@/layers/auth.layer'
 import { db } from '@/prisma/db'
 import { requirePermission } from './auth.service'
-import { PermissionsFlags } from '@/bitfields/PermissionsBitField'
+import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 
 export function getUsersEffect() {
     return Effect.gen(function* (_) {
@@ -44,7 +44,7 @@ export function checkIfUsernameIsTakenEffect(username: string) {
 
 export function archiveUserEffect(id: string) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
         const prisma = yield* _(PrismaService)
 
         const user = yield* _(
@@ -96,7 +96,7 @@ export function archiveUserEffect(id: string) {
 
 export function unarchiveUserEffect(id: string) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
         const prisma = yield* _(PrismaService)
 
         const user = yield* _(
@@ -129,7 +129,7 @@ export function unarchiveUserEffect(id: string) {
 
 export function deleteUserEffect(id: string) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
         const prisma = yield* _(PrismaService)
 
         const user = yield* _(
@@ -205,7 +205,7 @@ export function editUserEffect({
     password,
 }: EditUserEffectProps) {
     return Effect.gen(function* (_) {
-        yield* _(requirePermission(PermissionsFlags.MANAGE_USERS))
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
 
         const prisma = yield* _(PrismaService)
         const auth = yield* _(AuthService)
@@ -257,47 +257,146 @@ export function validatePasswordEffect(password: string) {
     return Effect.gen(function* (_) {
         if (!password)
             return yield* _(
-                Effect.fail(new InvalidInputError('Password is required')),
+                Effect.fail(
+                    new InvalidInputError({
+                        field: 'password',
+                        message: 'Password is required',
+                    }),
+                ),
             )
         if (!/[A-Z]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'Password must contain at least one uppercase letter',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message:
+                            'Password must contain at least one uppercase letter',
+                    }),
                 ),
             )
         if (!/[a-z]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'Password must contain at least one lowercase letter',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message:
+                            'Password must contain at least one lowercase letter',
+                    }),
                 ),
             )
         if (!/[0-9]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'Password must contain at least one number',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message: 'Password must contain at least one number',
+                    }),
                 ),
             )
         if (!/[!@#$%^&*]/.test(password))
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'Password must contain at least one special character',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message:
+                            'Password must contain at least one special character',
+                    }),
                 ),
             )
         if (password.length < 10)
             return yield* _(
                 Effect.fail(
-                    new InvalidInputError(
-                        'Password must be at least 10 characters long',
-                    ),
+                    new InvalidInputError({
+                        field: 'password',
+                        message: 'Password must be at least 10 characters long',
+                    }),
                 ),
             )
     })
 }
+
+interface SearchUsersProps {
+    query?: string
+    archived?: boolean
+    page?: number
+    size?: number
+}
+export const searchUsersEffect = ({
+    query = '',
+    archived = false,
+    page = DEFAULT_PAGINATION.PAGE,
+    size = DEFAULT_PAGINATION.SIZE,
+}: SearchUsersProps) =>
+    Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const [users, count] = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    Promise.all([
+                        prisma.user.findMany({
+                            skip: (page - 1) * size,
+                            take: size,
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        username: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                            include: {
+                                role: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                            },
+                        }),
+                        prisma.user.count({
+                            where: {
+                                status:
+                                    archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                OR: [
+                                    {
+                                        name: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                    {
+                                        username: {
+                                            contains: query,
+                                            mode: 'insensitive',
+                                        },
+                                    },
+                                ],
+                            },
+                        }),
+                    ]),
+                catch: err => new PrismaError(err),
+            }),
+        )
+
+        const usersMapped = users.map(user => ({
+            ...user,
+            role: {
+                name: user.role.name,
+            },
+        }))
+
+        return {
+            users: usersMapped,
+            count,
+        }
+    })

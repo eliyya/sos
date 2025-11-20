@@ -21,6 +21,7 @@
 /build
 /public/sw*
 /src/prisma/client
+/src/prisma/generated
 
 # misc
 .DS_Store
@@ -41,3 +42,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sentry Config File
+.env.sentry-build-plugin

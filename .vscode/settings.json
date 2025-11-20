@@ -33,5 +33,10 @@
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "i18n-ally.localesPaths": ["locales"],
+    "i18n-ally.keystyle": "nested",
+    "i18n-ally.keysInUse": ["es"],
+    "i18n-ally.sourceLanguage": "es",
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

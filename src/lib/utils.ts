@@ -168,3 +168,59 @@ export function truncateByUnderscore(str: string, maxLength = 30) {
 
     return result
 }
+
+export function createSerializableLocaleStorage<T>(keyPrefix = '') {
+    return {
+        getItem: (key: string, initialValue: T): T => {
+            const item = localStorage.getItem(keyPrefix + key)
+            if (item == null) return initialValue
+
+            try {
+                return JSON.parse(item, (_, value) => {
+                    // detectar strings que parecen bigint serializados
+                    if (typeof value === 'string' && /^-?\d+n$/.test(value)) {
+                        return BigInt(value.slice(0, -1)) // quitar la 'n' al final
+                    }
+                    return value
+                })
+            } catch {
+                return initialValue
+            }
+        },
+        setItem: (key: string, value: T) => {
+            localStorage.setItem(
+                keyPrefix + key,
+                JSON.stringify(value, (_, v) => {
+                    if (typeof v === 'bigint') {
+                        return v.toString() + 'n'
+                    }
+                    return v
+                }),
+            )
+        },
+        removeItem: (key: string) => {
+            localStorage.removeItem(keyPrefix + key)
+        },
+    }
+}
+
+export function createSearchParams(filters: Record<string, unknown>) {
+    const params = new URLSearchParams()
+
+    for (const [key, value] of Object.entries(filters)) {
+        if (typeof value === 'string' && value !== '') params.set(key, value)
+        if (typeof value === 'boolean' && value) params.set(key, '1')
+        if (typeof value === 'number' && value !== 0)
+            params.set(key, String(value))
+    }
+
+    return params
+}
+
+export type ChangeProps<T> = Partial<T> | ((filters: T) => Partial<T>)
+export function propsParser<T>(props: ChangeProps<T>, filters: T) {
+    if (typeof props === 'function') {
+        return props(filters) as Partial<T>
+    }
+    return props as Partial<T>
+}

@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth'
+import { auth } from './auth.ts'
 
 export type CompleteSession = typeof auth.$Infer.Session
 export type UserSession = CompleteSession['user']

@@ -143,8 +143,8 @@ CREATE TABLE "public"."classes" (
     "subject_id" TEXT NOT NULL,
     "teacher_id" TEXT NOT NULL,
     "career_id" TEXT NOT NULL,
-    "group" INTEGER NOT NULL DEFAULT 0,
-    "semester" INTEGER NOT NULL DEFAULT 0,
+    "group" INTEGER NOT NULL DEFAULT 1,
+    "semester" INTEGER NOT NULL DEFAULT 1,
     "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -210,7 +210,7 @@ CREATE TABLE "public"."careers" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
-    "alias" TEXT,
+    "alias" TEXT NOT NULL,
 
     CONSTRAINT "careers_pkey" PRIMARY KEY ("id")
 );
@@ -321,6 +321,9 @@ CREATE UNIQUE INDEX "laboratories_name_key" ON "public"."laboratories"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "careers_name_key" ON "public"."careers"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "careers_alias_key" ON "public"."careers"("alias");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "machines_serie_key" ON "public"."machines"("serie");

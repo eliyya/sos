@@ -1,0 +1,22 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { withSentry } from '@/lib/sentry'
+import { DEFAULT_PAGINATION } from '@/constants/client'
+import { searchMachines } from '@/actions/machines.actions'
+
+export const GET = withSentry(async function GET(req: NextRequest) {
+    const searchParams = req.nextUrl.searchParams
+
+    const query = searchParams.get('q')
+    const maintenance = searchParams.get('maintenance')
+    const page = searchParams.get('page')
+    const size = searchParams.get('size')
+
+    const users = await searchMachines({
+        query: query ?? '',
+        maintenance: maintenance === '1',
+        page: Number(page) || DEFAULT_PAGINATION.PAGE,
+        size: Number(size) || DEFAULT_PAGINATION.SIZE,
+    })
+
+    return NextResponse.json(users)
+})

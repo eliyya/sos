@@ -4,11 +4,10 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 generator client {
     provider               = "prisma-client"
     engineType             = "client"
-    output                 = "./client"
+    output                 = "./generated"
     runtime                = "nodejs"
     moduleFormat           = "esm"
     generatedFileExtension = "ts"
@@ -17,13 +16,11 @@ generator client {
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+    provider = "postgresql"
 }
 
 model States {
-    name String @id
+    name  String @id
     value Int
 
     @@map("states")
@@ -112,7 +109,7 @@ model Verification {
 
 model Subject {
     id             String   @id @default(dbgenerated("snowflake()"))
-    name           String @unique
+    name           String   @unique
     created_at     DateTime @default(now())
     practice_hours Int
     theory_hours   Int
@@ -129,8 +126,8 @@ model Class {
     subject_id String
     teacher_id String
     career_id  String
-    group      Int      @default(0)
-    semester   Int      @default(0)
+    group      Int      @default(1)
+    semester   Int      @default(1)
     status     STATUS   @default(ACTIVE)
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
@@ -154,7 +151,9 @@ model Laboratory {
     id         String          @id @default(dbgenerated("snowflake()"))
     created_at DateTime        @default(now())
     name       String          @unique
+    /// in minutes
     open_hour  Int
+    /// in minutes
     close_hour Int
     type       LABORATORY_TYPE @default(LABORATORY)
     status     STATUS          @default(ACTIVE)
@@ -220,7 +219,7 @@ model Career {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
     status     STATUS   @default(ACTIVE)
-    alias      String?
+    alias      String   @unique
 
     students Student[]
     classes  Class[]

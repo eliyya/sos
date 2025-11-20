@@ -3,16 +3,15 @@ import { Provider } from 'jotai'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages } from 'next-intl/server'
+import { getLocale } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { ReactNode } from 'react'
 import { ToastProvider, ToastViewport } from '@/components/Toast'
 import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
+import { MantineProvider } from '@mantine/core'
 
 const inter = Inter({ subsets: ['latin'] })
-
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
     title: APP_NAME,
@@ -25,7 +24,7 @@ export default async function RootLayout({
     children: ReactNode
 }) {
     const locale = await getLocale()
-    const messages = await getMessages()
+    // const messages = await getMessages()
     return (
         <html lang={locale} suppressHydrationWarning>
             <body
@@ -38,8 +37,10 @@ export default async function RootLayout({
                     enableSystem
                 >
                     <ToastProvider swipeDirection='up' duration={3000}>
-                        <NextIntlClientProvider messages={messages}>
-                            <Provider>{children}</Provider>
+                        <NextIntlClientProvider>
+                            <Provider>
+                                <MantineProvider>{children}</MantineProvider>
+                            </Provider>
                         </NextIntlClientProvider>
                         <ToastViewport />
                     </ToastProvider>

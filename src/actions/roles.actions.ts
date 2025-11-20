@@ -32,14 +32,9 @@ export async function getAdminRole() {
             getAdminRoleEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess(value) {
-                            return value
-                        },
-                        onFailure(error) {
-                            console.error(error)
-                            return null
-                        },
+                    Effect.catchAll(error => {
+                        console.error(error)
+                        return Effect.succeed(null)
                     }),
                 ),
         ),
@@ -55,14 +50,9 @@ export async function getRoles() {
             getRolesEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
-                    Effect.match({
-                        onSuccess(value) {
-                            return value
-                        },
-                        onFailure(error) {
-                            console.error(error)
-                            return []
-                        },
+                    Effect.catchAll(error => {
+                        console.error(error)
+                        return Effect.succeed([])
                     }),
                 ),
         ),
@@ -91,6 +81,7 @@ export async function editRoleName(id: string, name: string) {
                                     status: 'error' as const,
                                     type: 'invalid-input' as const,
                                     message: error.message,
+                                    field: error.field,
                                 }
                             if (error instanceof NotFoundError)
                                 return {
@@ -122,11 +113,12 @@ export async function editRoleName(id: string, name: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
 
                             return {
                                 status: 'error' as const,
-                                type: 'unknown' as const,
+                                type: 'unexpected' as const,
                                 message: String(error),
                             }
                         },
@@ -170,6 +162,7 @@ export async function createNewRole() {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
                                 }
                             if (error instanceof PrismaError)
                                 return {
@@ -220,10 +213,30 @@ export async function deleteRole(id: string) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
+                                }
+                            if (error instanceof PrismaError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            if (error instanceof NotFoundError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'not-found' as const,
+                                    message: error.message,
+                                }
+                            if (error instanceof InvalidInputError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'invalid-input' as const,
+                                    message: error.message,
+                                    input: error.field,
                                 }
                             return {
                                 status: 'error' as const,
-                                type: 'unknown' as const,
+                                type: 'unexpected' as const,
                                 message: String(error),
                             }
                         },
@@ -270,7 +283,6 @@ export async function changuePermissions(id: string, permissions: bigint) {
                                     type: 'invalid-input' as const,
                                     message: error.message,
                                 }
-
                             if (error instanceof UnauthorizedError)
                                 return {
                                     status: 'error' as const,
@@ -282,10 +294,17 @@ export async function changuePermissions(id: string, permissions: bigint) {
                                     status: 'error' as const,
                                     type: 'permission' as const,
                                     message: error.message,
+                                    missings: error.missings,
+                                }
+                            if (error instanceof PrismaError)
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
                                 }
                             return {
                                 status: 'error' as const,
-                                type: 'unknown' as const,
+                                type: 'unexpected' as const,
                                 message: String(error),
                             }
                         },
@@ -305,7 +324,7 @@ export async function getUsersCountPerRole() {
                 Effect.match({
                     onSuccess: roles => ({ status: 'success' as const, roles }),
                     onFailure: error => {
-                        if (error instanceof UnexpectedError)
+                        if (error instanceof PrismaError)
                             return {
                                 status: 'error' as const,
                                 type: 'unexpected' as const,
@@ -313,7 +332,7 @@ export async function getUsersCountPerRole() {
                             }
                         return {
                             status: 'error' as const,
-                            type: 'unknown' as const,
+                            type: 'unexpected' as const,
                             message: String(error),
                         }
                     },

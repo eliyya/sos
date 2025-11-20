@@ -2,6 +2,7 @@
 
 import { LucideIcon, Undo2 } from 'lucide-react'
 import {
+    Activity,
     ForwardedRef,
     InputHTMLAttributes,
     ReactNode,
@@ -71,7 +72,9 @@ export function CompletInput({
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
             >
                 {label}
-                {required && <span className='ml-1'>*</span>}
+                <Activity mode={required ? 'visible' : 'hidden'}>
+                    <span className='ml-1'>*</span>
+                </Activity>
             </label>
             <div className='relative'>
                 {children}
@@ -98,14 +101,14 @@ export function CompletInput({
                     )}
                 />
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }
@@ -150,7 +153,9 @@ export function CompletTextarea({
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
             >
                 {label}
-                {required && <span className='ml-1'>*</span>}
+                <Activity mode={required ? 'visible' : 'hidden'}>
+                    <span className='ml-1'>*</span>
+                </Activity>
             </label>
             <div className='relative'>
                 {children}
@@ -180,14 +185,14 @@ export function CompletTextarea({
                     )}
                 />
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }
@@ -261,7 +266,7 @@ export function RetornableCompletInput({
                         },
                     )}
                 />
-                {isChanged && (
+                <Activity mode={isChanged ? 'visible' : 'hidden'}>
                     <button
                         className='absolute top-0.5 right-1 cursor-pointer p-2'
                         onClick={e => {
@@ -298,16 +303,16 @@ export function RetornableCompletInput({
                     >
                         <Undo2 className='h-5 w-5 text-gray-500 dark:text-gray-400' />
                     </button>
-                )}
+                </Activity>
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }
@@ -353,7 +358,9 @@ export function RetornableCompletTextarea({
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
             >
                 {label}
-                {required && <span className='ml-1'>*</span>}
+                <Activity mode={required ? 'visible' : 'hidden'}>
+                    <span className='ml-1'>*</span>
+                </Activity>
             </label>
             <div className='relative'>
                 {children}
@@ -394,14 +401,14 @@ export function RetornableCompletTextarea({
                     )}
                 />
             </div>
-            {error && (
+            <Activity mode={error ? 'visible' : 'hidden'}>
                 <MessageError
                     className='absolute mt-0'
                     id={`${id ?? rid}-error`}
                 >
                     {error}
                 </MessageError>
-            )}
+            </Activity>
         </div>
     )
 }

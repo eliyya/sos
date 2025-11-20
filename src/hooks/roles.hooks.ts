@@ -1,5 +1,5 @@
 import { getRoles } from '@/actions/roles.actions'
-import { rolesAtom } from '@/global/roles.globals'
+import { rolesAtom } from '@/global/management.globals'
 import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect } from 'react'
 
@@ -10,15 +10,7 @@ export function useRoles() {
     const [isFetched, setIsFetched] = useAtom(isRolesFetchedAtom)
 
     const refetchRoles = useCallback(
-        () =>
-            getRoles().then(roles =>
-                setRoles(
-                    roles.map(role => ({
-                        ...role,
-                        permissions: role.permissions.toString(),
-                    })),
-                ),
-            ),
+        () => getRoles().then(roles => setRoles(roles)),
         [setRoles],
     )
 

@@ -10,6 +10,7 @@
         "bradlc.vscode-tailwindcss",
         "hediet.vscode-drawio",
         "pomdtr.markdown-kroki",
-        "pomdtr.excalidraw-editor"
+        "pomdtr.excalidraw-editor",
+        "lokalise.i18n-ally"
     ]
 }
