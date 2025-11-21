@@ -1,33 +1,53 @@
 'use client'
 
-import { Search } from 'lucide-react'
+import { CornerDownLeftIcon, SearchIcon } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { useTranslations } from 'next-intl'
-import { useQueryParam } from '@/hooks/query.hooks'
+import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
+import { Button } from '@/components/Button'
+import { SearchClassesContext } from '@/contexts/classes.context'
 
 export function Filters() {
-    const [query, setQuery] = useQueryParam('q', '')
-    const [archived, setArchived] = useQueryParam('archived', false)
-    const t = useTranslations('classes')
+    const { filters, changeFilters } = use(SearchClassesContext)
+    const queryInputRef = useRef<HTMLInputElement>(null)
+
+    const onSubmit = useCallback(
+        (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
+            const query = queryInputRef.current?.value.trim() || ''
+            changeFilters({ query })
+        },
+        [queryInputRef, changeFilters],
+    )
+
+    useEffect(() => {
+        if (queryInputRef.current) queryInputRef.current.value = filters.query
+    }, [filters.query, queryInputRef])
+
     return (
-        <div className='flex items-center gap-4'>
-            <div className='relative flex-1'>
-                <Search className='absolute top-2.5 left-3 h-5 w-5 text-gray-500 dark:text-gray-400' />
+        <form className='flex items-center' onSubmit={onSubmit}>
+            <div className='relative flex-1 flex-row'>
                 <SimpleInput
-                    placeholder={t('search_class')}
-                    className='pl-10'
-                    value={query}
-                    onChange={e => setQuery(e.currentTarget.value)}
+                    placeholder='Buscar Clase...'
+                    ref={queryInputRef}
+                    className='rounded-r-none pl-10'
                 />
+                <SearchIcon className='absolute top-1/2 left-3 -translate-y-1/2' />
             </div>
-            <div>
-                <LabeledSwitch
-                    label={t('archived')}
-                    checked={archived}
-                    onCheckedChange={() => setArchived(v => !v)}
-                />
-            </div>
-        </div>
+            <Button
+                type='submit'
+                variant='secondary'
+                size='icon'
+                className='rounded-l-none'
+            >
+                <CornerDownLeftIcon />
+            </Button>
+            <LabeledSwitch
+                className='ml-4'
+                label='Archivados'
+                checked={filters.archived}
+                onCheckedChange={archived => changeFilters({ archived })}
+            />
+        </form>
     )
 }

@@ -1,34 +1,53 @@
 'use client'
 
-import { Search } from 'lucide-react'
+import { CornerDownLeftIcon, SearchIcon } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
-import { useQueryParam } from '@/hooks/query.hooks'
+import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
+import { SearchMachinesContext } from '@/contexts/machines.context'
+import { Button } from '@mantine/core'
 
 export function Filters() {
-    const [query, setQuery] = useQueryParam('q', '')
-    const [archived, setArchived] = useQueryParam('archived', false)
+    const { filters, changeFilters } = use(SearchMachinesContext)
+    const queryInputRef = useRef<HTMLInputElement>(null)
+
+    const onSubmit = useCallback(
+        (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
+            const query = queryInputRef.current?.value.trim() || ''
+            changeFilters({ query })
+        },
+        [queryInputRef, changeFilters],
+    )
+
+    useEffect(() => {
+        if (queryInputRef.current) queryInputRef.current.value = filters.query
+    }, [filters.query, queryInputRef])
 
     return (
-        <div className='flex items-center gap-4'>
-            <div className='relative flex-1'>
+        <form className='flex items-center' onSubmit={onSubmit}>
+            <div className='relative flex-1 flex-row'>
                 <SimpleInput
-                    // TODO: Implementar busqueda
-                    disabled={true}
-                    placeholder='Buscar maquina...'
-                    className='pl-10'
-                    value={query}
-                    onChange={e => setQuery(e.currentTarget.value)}
+                    placeholder='Buscar Maquina...'
+                    ref={queryInputRef}
+                    className='rounded-r-none pl-10'
                 />
-                <Search className='absolute top-1/2 left-3 -translate-y-1/2' />
+                <SearchIcon className='absolute top-1/2 left-3 -translate-y-1/2' />
             </div>
-            <div>
-                <LabeledSwitch
-                    label='En Mantenimiento'
-                    checked={archived}
-                    onCheckedChange={() => setArchived(v => !v)}
-                />
-            </div>
-        </div>
+            <Button
+                type='submit'
+                variant='secondary'
+                size='icon'
+                className='rounded-l-none'
+            >
+                <CornerDownLeftIcon />
+            </Button>
+            <LabeledSwitch
+                className='ml-4'
+                label='En Mantenimiento'
+                checked={filters.maintenance}
+                onCheckedChange={maintenance => changeFilters({ maintenance })}
+            />
+        </form>
     )
 }
