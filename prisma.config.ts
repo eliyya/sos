@@ -10,4 +10,7 @@ export default defineConfig({
     migrations: {
         seed: `node src/prisma/seed.ts`,
     },
+    datasource: {
+        url: process.env.DIRECT_URL!,
+    },
 })
