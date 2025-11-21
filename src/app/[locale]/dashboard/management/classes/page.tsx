@@ -9,12 +9,13 @@ import { EditDialog } from './components/EditDialog'
 import { ArchiveDialog } from './components/ArchiveDialog'
 import { DeleteDialog } from './components/DeleteDialog'
 import { UnarchiveDialog } from './components/UnarchiveDialog'
+import { SearchClassesProvider } from '@/contexts/classes.context'
 
 export default async function ClassesPage() {
     const t = await getTranslations('classes')
 
     return (
-        <>
+        <SearchClassesProvider>
             <div className='flex justify-between'>
                 <DashboardHeader
                     heading={t('classes')}
@@ -30,6 +31,6 @@ export default async function ClassesPage() {
             <ArchiveDialog />
             <DeleteDialog />
             <UnarchiveDialog />
-        </>
+        </SearchClassesProvider>
     )
 }
