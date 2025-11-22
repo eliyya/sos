@@ -44,7 +44,7 @@ export function ArchiveDialog() {
     const { laboratories } = use(laboratoriesPromise)
 
     const entity = useMemo(() => {
-        return laboratories.find(l => l.id === entityId)
+        return laboratories?.find(l => l.id === entityId)
     }, [laboratories, entityId])
 
     const onAction = useCallback(async () => {

@@ -109,7 +109,7 @@ export function LaboratoriesList() {
     const { laboratoriesPromise } = use(SearchLaboratoriesContext)
     const { laboratories } = use(laboratoriesPromise)
 
-    if (!laboratories.length)
+    if (!laboratories?.length)
         return (
             <TableRow>
                 <TableCell className='text-center' colSpan={5}>

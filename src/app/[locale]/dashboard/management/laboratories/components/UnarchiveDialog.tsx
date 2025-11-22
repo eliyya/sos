@@ -44,7 +44,7 @@ export function UnarchiveDialog() {
     const router = useRouter()
 
     const entity = useMemo(() => {
-        return laboratories.find(l => l.id === entityId)
+        return laboratories?.find(l => l.id === entityId)
     }, [laboratories, entityId])
 
     const onAction = useCallback(async () => {

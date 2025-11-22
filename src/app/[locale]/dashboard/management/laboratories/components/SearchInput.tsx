@@ -21,7 +21,7 @@ export function Filters() {
     )
 
     useEffect(() => {
-        if (queryInputRef.current) queryInputRef.current.value = filters.query
+        // if (queryInputRef.current) queryInputRef.current.value = filters.query
     }, [filters.query, queryInputRef])
 
     return (

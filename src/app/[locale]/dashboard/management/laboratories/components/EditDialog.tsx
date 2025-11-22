@@ -76,7 +76,7 @@ function EditForm() {
     const { laboratories } = use(laboratoriesPromise)
 
     const old = useMemo(
-        () => laboratories.find(lab => lab.id === labId),
+        () => laboratories?.find(lab => lab.id === labId),
         [labId, laboratories],
     )
 

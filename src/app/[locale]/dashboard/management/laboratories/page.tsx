@@ -8,6 +8,7 @@ import { ArchiveDialog } from './components/ArchiveDialog'
 import { EditDialog } from './components/EditDialog'
 import { DeleteDialog } from './components/DeleteDialog'
 import { UnarchiveDialog } from './components/UnarchiveDialog'
+import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
 
 export default async function LaboratoryPage() {
     return (
@@ -26,6 +27,7 @@ export default async function LaboratoryPage() {
             <EditDialog />
             <DeleteDialog />
             <UnarchiveDialog />
+            <UnarchiveOrDeleteDialog />
         </SearchLaboratoriesProvider>
     )
 }

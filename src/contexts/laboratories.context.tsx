@@ -14,6 +14,8 @@ export function SearchLaboratoriesProvider({
     children,
 }: SearchLaboratoriesProviderProps) {
     const searchData = useSearchLaboratories()
+    console.log('provider')
+
     return (
         <SearchLaboratoriesContext.Provider value={searchData}>
             {children}
