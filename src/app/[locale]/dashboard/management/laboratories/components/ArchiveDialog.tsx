@@ -38,10 +38,8 @@ export function ArchiveDialog() {
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshLaboratories, laboratoriesPromise } = use(
-        SearchLaboratoriesContext,
-    )
-    const { laboratories } = use(laboratoriesPromise)
+    const { refresh, promise } = use(SearchLaboratoriesContext)
+    const { laboratories } = use(promise)
 
     const entity = useMemo(() => {
         return laboratories?.find(l => l.id === entityId)
@@ -52,11 +50,11 @@ export function ArchiveDialog() {
         startTransition(async () => {
             const response = await archiveLaboratory(entityId)
             if (response.status === 'success') {
-                refreshLaboratories()
+                refresh()
                 setOpen(null)
             } else {
                 if (response.type === 'not-found') {
-                    refreshLaboratories()
+                    refresh()
                     setOpen(null)
                 } else if (response.type === 'unexpected') {
                     setMessage('Ha ocurrido un error, intente más tarde')
@@ -69,7 +67,7 @@ export function ArchiveDialog() {
                 }
             }
         })
-    }, [entityId, refreshLaboratories, setOpen, router])
+    }, [entityId, refresh, setOpen, router])
 
     if (!entity) return null
 

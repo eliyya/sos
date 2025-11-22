@@ -47,7 +47,7 @@ export function CreateLaboratoryDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const [dialogOpened, openDialog] = useAtom(dialogAtom)
-    const { refreshLaboratories } = use(SearchLaboratoriesContext)
+    const { refresh } = use(SearchLaboratoriesContext)
     const router = useRouter()
     const selectLaboratory = useSetAtom(selectedIdAtom)
     // inputs
@@ -79,7 +79,7 @@ export function CreateLaboratoryDialog() {
                     type,
                 })
                 if (response.status === 'success') {
-                    refreshLaboratories()
+                    refresh()
                     openDialog(null)
                     setName('')
                     setNameError('')
@@ -112,7 +112,7 @@ export function CreateLaboratoryDialog() {
                 }
             }),
         [
-            refreshLaboratories,
+            refresh,
             openDialog,
             setName,
             setNameError,

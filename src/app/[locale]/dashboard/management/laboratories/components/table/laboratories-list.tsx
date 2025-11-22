@@ -14,13 +14,13 @@ import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
-import { SearchLaboratoriesPromise } from '@/hooks/laboratories.hoohs'
+import { Searchpromise } from '@/hooks/laboratories.hoohs'
 import { secondsToTime } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 
 interface LaboratoryItemListProps {
-    laboratory: Awaited<SearchLaboratoriesPromise>['laboratories'][number]
+    laboratory: Awaited<Searchpromise>['laboratories'][number]
 }
 export function LaboratoryItem({ laboratory }: LaboratoryItemListProps) {
     return (
@@ -106,10 +106,12 @@ function Buttons({ laboratory }: ButtonsProps) {
 }
 
 export function LaboratoriesList() {
-    const { laboratoriesPromise } = use(SearchLaboratoriesContext)
-    const { laboratories } = use(laboratoriesPromise)
+    const { promise } = use(SearchLaboratoriesContext)
+    const data = use(promise)
 
-    if (!laboratories?.length)
+    console.log(data)
+
+    if (!data?.laboratories?.length)
         return (
             <TableRow>
                 <TableCell className='text-center' colSpan={5}>
@@ -118,16 +120,14 @@ export function LaboratoriesList() {
             </TableRow>
         )
 
-    return laboratories.map(lab => (
+    return data.laboratories.map(lab => (
         <LaboratoryItem key={lab.id} laboratory={lab} />
     ))
 }
 
 export function FoooterTable() {
-    const { changeFilters, filters, laboratoriesPromise } = use(
-        SearchLaboratoriesContext,
-    )
-    const { count } = use(laboratoriesPromise)
+    const { changeFilters, filters, promise } = use(SearchLaboratoriesContext)
+    const { count } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>

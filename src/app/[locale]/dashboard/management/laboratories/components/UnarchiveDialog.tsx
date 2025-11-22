@@ -37,10 +37,8 @@ export function UnarchiveDialog() {
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshLaboratories, laboratoriesPromise } = use(
-        SearchLaboratoriesContext,
-    )
-    const { laboratories } = use(laboratoriesPromise)
+    const { refresh, promise } = use(SearchLaboratoriesContext)
+    const { laboratories } = use(promise)
     const router = useRouter()
 
     const entity = useMemo(() => {
@@ -52,11 +50,11 @@ export function UnarchiveDialog() {
         startTransition(async () => {
             const response = await unarchiveLaboratory(entityId)
             if (response.status === 'success') {
-                refreshLaboratories()
+                refresh()
                 setOpen(null)
             } else {
                 if (response.type === 'not-found') {
-                    refreshLaboratories()
+                    refresh()
                     setOpen(null)
                 } else if (response.type === 'unexpected') {
                     setMessage('Ha ocurrido un error, intente más tarde')
@@ -69,7 +67,7 @@ export function UnarchiveDialog() {
                 }
             }
         })
-    }, [entityId, refreshLaboratories, setOpen, router])
+    }, [entityId, refresh, setOpen, router])
 
     if (!entity) return null
 

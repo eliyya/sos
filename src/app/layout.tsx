@@ -10,6 +10,7 @@ import { ToastProvider, ToastViewport } from '@/components/Toast'
 import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
 import { MantineProvider } from '@mantine/core'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -39,7 +40,9 @@ export default async function RootLayout({
                     <ToastProvider swipeDirection='up' duration={3000}>
                         <NextIntlClientProvider>
                             <Provider>
-                                <MantineProvider>{children}</MantineProvider>
+                                <MantineProvider>
+                                    <NuqsAdapter>{children}</NuqsAdapter>
+                                </MantineProvider>
                             </Provider>
                         </NextIntlClientProvider>
                         <ToastViewport />

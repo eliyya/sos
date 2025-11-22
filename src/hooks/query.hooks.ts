@@ -1,57 +1,40 @@
+'use client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
-
-type SetValue<T> = T | ((prev: T) => T)
 
 export function useQueryParam<T extends string | boolean | number>(
     key: string,
     defaultValue: T,
-): [
-    T extends boolean ? boolean
-    : T extends number ? number
-    : string,
-    (
-        value: SetValue<
-            T extends boolean ? boolean
-            : T extends number ? number
-            : string
-        >,
-    ) => void,
-] {
+) {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    // TODO: Fix this
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getInitialValue = useCallback((): any => {
+    const getValueFromParams = useCallback(() => {
         const raw = searchParams.get(key)
+
         if (typeof defaultValue === 'boolean') {
-            return (raw !== null && raw !== '0') as boolean
+            return (raw !== null && raw !== '0') as any
         }
+
         if (typeof defaultValue === 'number') {
             return Number(raw ?? defaultValue)
         }
-        return (raw ?? defaultValue ?? '') as string
-    }, [key, defaultValue, searchParams])
 
-    const [value, setValue] = useState<
-        T extends boolean ? boolean
-        : T extends number ? number
-        : string
-    >(getInitialValue)
+        return (raw ?? defaultValue ?? '') as any
+    }, [key, defaultValue])
 
+    const [value, setValue] = useState<T>(() => getValueFromParams())
+
+    // Solo ejecutarse si el valor REAL cambia, no si "searchParams" cambia de referencia
     useEffect(() => {
-        setValue(getInitialValue())
-    }, [getInitialValue])
+        const newValue = getValueFromParams()
+        if (newValue !== value) {
+            setValue(newValue)
+        }
+    }, [getValueFromParams, value])
 
     const setQueryParam = useCallback(
-        (
-            newValue: SetValue<
-                T extends boolean ? boolean
-                : T extends number ? number
-                : string
-            >,
-        ) => {
+        (newValue: any) => {
             const resolved =
                 typeof newValue === 'function' ? newValue(value) : newValue
 
@@ -67,11 +50,11 @@ export function useQueryParam<T extends string | boolean | number>(
                 else params.delete(key)
             }
 
-            router.replace(`?${params.toString()}`)
+            router.replace(`?${params}`)
             setValue(resolved)
         },
-        [key, router, value],
+        [value, key, router],
     )
 
-    return [value, setQueryParam]
+    return [value, setQueryParam] as const
 }

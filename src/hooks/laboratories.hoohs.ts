@@ -1,10 +1,10 @@
-import { searchLaboratories } from '@/actions/laboratories.actions'
+import type { searchLaboratories } from '@/actions/laboratories.actions'
 import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
 
-export type SearchLaboratoriesPromise = ReturnType<typeof searchLaboratories>
+export type Searchpromise = ReturnType<typeof searchLaboratories>
 
 type Filters = {
     query: string
@@ -13,53 +13,45 @@ type Filters = {
     size: number
 }
 export function useSearchLaboratories() {
-    console.log('hook')
-
     const [query, setQuery] = useQueryParam('q', '')
     const [archived, setArchived] = useQueryParam('archived', false)
     const [page, setPage] = useQueryParam('page', 1)
     const [size, setSize] = useQueryParam('size', 10)
-    const [refresh, setRefresh] = useState(Symbol())
+    const [forceRefresh, setRefresh] = useState(Symbol())
 
-    const filters = useMemo(() => {
-        // se recalcula en bucle, sus dependencias marcan todo el tiempo ["", false, 1, 10]
-        console.log('filters', [query, archived, page, size])
-
-        return { query, archived, page, size }
-    }, [query, archived, page, size])
+    const filters = useMemo(
+        () => ({ query, archived, page, size }),
+        [query, archived, page, size],
+    )
 
     const changeFilters = useCallback(
         (props: ChangeProps<Filters>) => {
-            props = propsParser(props, { query, archived, page, size })
+            props = propsParser(props, filters)
             if (typeof props.query === 'string') setQuery(props.query)
             if (typeof props.archived === 'boolean') setArchived(props.archived)
             if (typeof props.page === 'number') setPage(props.page)
             if (typeof props.size === 'number') setSize(props.size)
         },
-        [query, archived, page, size, setQuery, setArchived, setPage, setSize],
+        [filters, setQuery, setArchived, setPage, setSize],
     )
 
-    const refreshLaboratories = useCallback(() => {
-        console.log('refresh')
+    const refresh = useCallback(() => setRefresh(Symbol()), [setRefresh])
 
-        setRefresh(Symbol())
-    }, [setRefresh])
-
-    const laboratoriesPromise: SearchLaboratoriesPromise = useMemo(
+    const promise: Searchpromise = useMemo(
         () =>
             fetch(
-                `${app.api.pagination.laboratories()}?${createSearchParams({ query, archived, page, size })}`,
+                `${app.api.pagination.laboratories()}?${createSearchParams(filters)}`,
             )
                 .then(res => res.json())
-                .catch(() => ({ users: [], count: 0 })),
+                .catch(() => ({ laboratories: [], count: 0 })),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [refresh, query, archived, page, size],
+        [forceRefresh, filters],
     )
 
     return {
         filters,
         changeFilters,
-        laboratoriesPromise,
-        refreshLaboratories,
+        promise,
+        refresh,
     }
 }

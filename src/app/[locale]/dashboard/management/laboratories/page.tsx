@@ -1,4 +1,3 @@
-import { SearchLaboratoriesProvider } from '@/contexts/laboratories.context'
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
 import { LaboratoriesTable } from './components/table/laboratories-table'
@@ -9,10 +8,11 @@ import { EditDialog } from './components/EditDialog'
 import { DeleteDialog } from './components/DeleteDialog'
 import { UnarchiveDialog } from './components/UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
+import { Provider } from './components/Provider'
 
-export default async function LaboratoryPage() {
+export default function LaboratoryPage() {
     return (
-        <SearchLaboratoriesProvider>
+        <Provider>
             <div className='flex justify-between'>
                 <DashboardHeader
                     heading='Laboratorios'
@@ -28,6 +28,6 @@ export default async function LaboratoryPage() {
             <DeleteDialog />
             <UnarchiveDialog />
             <UnarchiveOrDeleteDialog />
-        </SearchLaboratoriesProvider>
+        </Provider>
     )
 }
