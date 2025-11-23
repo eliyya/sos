@@ -26,7 +26,7 @@ export type SearchMachinesPromise = ReturnType<typeof searchMachines>
 export type SearchStudentsPromise = ReturnType<typeof searchStudents>
 export type SearchUsersPromise = ReturnType<typeof searchUsers>
 
-type EntityPromise<T extends Entity> =
+type EntityPromise<T extends SearchEntity> =
     T extends 'subjects' ? SearchSubjectsPromise
     : T extends 'careers' ? SearchCareersPromise
     : T extends 'classes' ? SearchClassesPromise
@@ -36,34 +36,41 @@ type EntityPromise<T extends Entity> =
     : T extends 'users' ? SearchUsersPromise
     : never
 
-type Filters = {
-    query: string
-    archived: boolean
-    page: number
-    size: number
-}
-type Entity = keyof typeof app.api.pagination
-export function useSearchEntity<T extends Entity>(entity: T) {
+export type SearchEntity = keyof typeof app.api.pagination
+
+type Filters = Record<string, string | number | boolean>
+
+export type SearchContext<
+    E extends SearchEntity,
+    F extends () => {
+        filters: Filters
+        changeFilters: (props: ChangeProps<Filters>) => void
+    },
+> = ReturnType<typeof useSearchEntity<E, ReturnType<F>>>
+
+export function useSearchEntity<
+    E extends SearchEntity,
+    F extends {
+        filters: Filters
+        changeFilters: (props: ChangeProps<Filters>) => void
+    },
+>(entity: E, { filters, changeFilters }: F) {
     const [forceRefresh, setRefresh] = useState(Symbol())
-    const { filters, changeFilters } = useFilters()
+    // const { filters, changeFilters } = useFiltersBase()
     const [promise, setPromise] = useState(
         () =>
             Promise.resolve({
                 [entity]: [],
                 pages: 1,
-            }) as unknown as EntityPromise<T>,
+            }) as unknown as EntityPromise<E>,
     )
 
-    const refresh = useCallback(() => setRefresh(Symbol()), [])
-
     useEffect(() => {
-        const promise = fetch(
-            `${app.api.pagination[entity]()}?${createSearchParams(filters)}`,
-        )
-            .then(res => res.json())
-            .catch(() => ({ [entity]: [], count: 1 })) as EntityPromise<T>
+        const promise = search(entity, filters)
         setPromise(promise)
     }, [entity, filters, forceRefresh])
+
+    const refresh = useCallback(() => setRefresh(Symbol()), [])
 
     return {
         filters,
@@ -73,7 +80,18 @@ export function useSearchEntity<T extends Entity>(entity: T) {
     }
 }
 
-function useFilters() {
+function search<E extends SearchEntity>(
+    entity: E,
+    filters: Record<string, string | number | boolean>,
+) {
+    return fetch(
+        `${app.api.pagination[entity]()}?${createSearchParams(filters)}`,
+    )
+        .then(res => res.json())
+        .catch(() => ({ [entity]: [], pages: 1 })) as EntityPromise<E>
+}
+
+export function useFiltersBase() {
     const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''))
     const [archived, setArchived] = useQueryState(
         'archived',
@@ -91,7 +109,7 @@ function useFilters() {
     )
 
     const changeFilters = useCallback(
-        (props: ChangeProps<Filters>) => {
+        (props: ChangeProps<typeof filters>) => {
             props = propsParser(props, filters)
             if (typeof props.query === 'string') setQuery(props.query)
             if (typeof props.archived === 'boolean') setArchived(props.archived)
@@ -99,6 +117,41 @@ function useFilters() {
             if (typeof props.size === 'number') setSize(props.size)
         },
         [filters, setQuery, setArchived, setPage, setSize],
+    )
+
+    return {
+        filters,
+        changeFilters,
+    }
+}
+
+export function useFiltersMachines() {
+    const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''))
+    const [maintenance, setMaintenance] = useQueryState(
+        'maintenance',
+        parseAsBoolean.withDefault(false),
+    )
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+    const [size, setSize] = useQueryState(
+        'size',
+        parseAsInteger.withDefault(10),
+    )
+
+    const filters = useMemo(
+        () => ({ query, maintenance, page, size }),
+        [query, maintenance, page, size],
+    )
+
+    const changeFilters = useCallback(
+        (props: ChangeProps<Filters>) => {
+            props = propsParser(props, filters)
+            if (typeof props.query === 'string') setQuery(props.query)
+            if (typeof props.maintenance === 'boolean')
+                setMaintenance(props.maintenance)
+            if (typeof props.page === 'number') setPage(props.page)
+            if (typeof props.size === 'number') setSize(props.size)
+        },
+        [filters, setQuery, setMaintenance, setPage, setSize],
     )
 
     return {

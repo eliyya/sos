@@ -1,10 +1,14 @@
 'use client'
 
-import { useSearchMachines } from '@/hooks/machines.hooks'
+import {
+    SearchContext,
+    useFiltersMachines,
+    useSearchEntity,
+} from '@/hooks/search.hooks'
 import { createContext } from 'react'
 
 export const SearchMachinesContext = createContext<
-    ReturnType<typeof useSearchMachines>
+    SearchContext<'machines', typeof useFiltersMachines>
 >(undefined!)
 
 interface SearchMachinesProviderProps {
@@ -13,7 +17,8 @@ interface SearchMachinesProviderProps {
 export function SearchMachinesProvider({
     children,
 }: SearchMachinesProviderProps) {
-    const searchData = useSearchMachines()
+    const { filters, changeFilters } = useFiltersMachines()
+    const searchData = useSearchEntity('machines', { filters, changeFilters })
     return (
         <SearchMachinesContext.Provider value={searchData}>
             {children}
