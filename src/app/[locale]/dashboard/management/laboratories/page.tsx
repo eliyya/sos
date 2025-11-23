@@ -1,33 +1,33 @@
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
+import { CreateLaboratoryDialog } from './components/CreateDialog'
 import { LaboratoriesTable } from './components/table/laboratories-table'
 import { Filters } from './components/SearchInput'
-import { CreateLaboratoryDialog } from './components/CreateDialog'
+import { SearchLaboratoriesProvider } from '@/contexts/laboratories.context'
 import { ArchiveDialog } from './components/ArchiveDialog'
-import { EditDialog } from './components/EditDialog'
 import { DeleteDialog } from './components/DeleteDialog'
+import { EditDialog } from './components/EditDialog'
 import { UnarchiveDialog } from './components/UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
-import { Provider } from './components/Provider'
 
 export default function LaboratoryPage() {
     return (
-        <Provider>
+        <SearchLaboratoriesProvider>
             <div className='flex justify-between'>
                 <DashboardHeader
                     heading='Laboratorios'
                     text='Gestión de Laboratorios.'
                 />
                 <CreateButton />
+                <CreateLaboratoryDialog />
             </div>
             <Filters />
             <LaboratoriesTable />
-            <CreateLaboratoryDialog />
             <ArchiveDialog />
-            <EditDialog />
             <DeleteDialog />
+            <EditDialog />
             <UnarchiveDialog />
             <UnarchiveOrDeleteDialog />
-        </Provider>
+        </SearchLaboratoriesProvider>
     )
 }

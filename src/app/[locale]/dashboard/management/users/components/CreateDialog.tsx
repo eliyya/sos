@@ -54,7 +54,7 @@ export function CreateUserDialog() {
     const setUsername = useSetAtom(usernameAtom)
     const setPassword = useSetAtom(passwordAtom)
     const setConfirmPassword = useSetAtom(confirmPasswordAtom)
-    const { refreshUsers } = use(SearchUsersContext)
+    const { refresh } = use(SearchUsersContext)
 
     return (
         <Dialog
@@ -116,7 +116,7 @@ export function CreateUserDialog() {
                                 } else setMessage('Algo salio mal')
                                 console.log(error)
                             } else {
-                                refreshUsers()
+                                refresh()
                                 setOpen(null)
                             }
                             setTimeout(() => {

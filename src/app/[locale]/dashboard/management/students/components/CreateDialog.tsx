@@ -45,7 +45,7 @@ const errorGroupAtom = atom('')
 const errorSemesterAtom = atom('')
 
 export function CreateSubjectDialog() {
-    const { refreshStudents } = use(SearchStudentsContext)
+    const { refresh } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
@@ -77,7 +77,7 @@ export function CreateSubjectDialog() {
                     semester,
                 })
                 if (res.status === 'success') {
-                    refreshStudents()
+                    refresh()
                     openDialog(null)
                     return
                 }
@@ -108,7 +108,7 @@ export function CreateSubjectDialog() {
             })
         },
         [
-            refreshStudents,
+            refresh,
             openDialog,
             setEntityToEdit,
             router,

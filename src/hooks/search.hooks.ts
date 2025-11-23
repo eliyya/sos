@@ -1,3 +1,4 @@
+'use client'
 import type {
     searchSubjects,
     searchCareers,
@@ -8,9 +9,14 @@ import type {
     searchUsers,
 } from '@/actions/search.actions'
 import { useCallback, useMemo, useState } from 'react'
-import { useQueryParam } from './query.hooks'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
+import {
+    parseAsBoolean,
+    parseAsInteger,
+    parseAsString,
+    useQueryState,
+} from 'nuqs'
 
 export type SearchSubjectsPromise = ReturnType<typeof searchSubjects>
 export type SearchCareersPromise = ReturnType<typeof searchCareers>
@@ -38,10 +44,16 @@ type Filters = {
 }
 type Entity = keyof typeof app.api.pagination
 export function useSearchEntity<T extends Entity>(entity: T) {
-    const [query, setQuery] = useQueryParam('q', '')
-    const [archived, setArchived] = useQueryParam('archived', false)
-    const [page, setPage] = useQueryParam('page', 1)
-    const [size, setSize] = useQueryParam('size', 10)
+    const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''))
+    const [archived, setArchived] = useQueryState(
+        'archived',
+        parseAsBoolean.withDefault(false),
+    )
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+    const [size, setSize] = useQueryState(
+        'size',
+        parseAsInteger.withDefault(10),
+    )
     const [forceRefresh, setRefresh] = useState(Symbol())
 
     const filters = useMemo(

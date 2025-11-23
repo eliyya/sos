@@ -35,9 +35,9 @@ export function ArchiveEntityDialog() {
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
-    const { refreshUsers, usersPromise } = use(SearchUsersContext)
+    const { refresh, promise } = use(SearchUsersContext)
     const router = useRouter()
-    const { users } = use(usersPromise)
+    const { users } = use(promise)
 
     const entity = useMemo(() => {
         if (!entityId) return null
@@ -49,14 +49,14 @@ export function ArchiveEntityDialog() {
         startTransition(async () => {
             const response = await archiveUser(entityId)
             if (response.status === 'success') {
-                refreshUsers()
+                refresh()
                 setOpen(null)
                 return
             }
             if (response.type === 'not-allowed') {
                 setOpen('PREVENT_ARCHIVE_ADMIN')
             } else if (response.type === 'not-found') {
-                refreshUsers()
+                refresh()
                 setOpen(null)
             } else if (response.type === 'permission') {
                 setMessage('No tienes permiso para archivar a este usuario')
@@ -67,7 +67,7 @@ export function ArchiveEntityDialog() {
             }
             setTimeout(setMessage, 5_000, '')
         })
-    }, [entityId, refreshUsers, setOpen, router])
+    }, [entityId, refresh, setOpen, router])
 
     if (!entity || !adminRole) return null
 

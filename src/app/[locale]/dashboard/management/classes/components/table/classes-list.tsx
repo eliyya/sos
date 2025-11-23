@@ -15,7 +15,7 @@ import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { SearchClassesContext } from '@/contexts/classes.context'
-import { SearchClassesPromise } from '@/hooks/classes.hooks'
+import { SearchClassesPromise } from '@/hooks/search.hooks'
 
 interface ClassItemListProps {
     class_: Awaited<SearchClassesPromise>['classes'][number]
@@ -93,8 +93,8 @@ function Buttons({ class_ }: ButtonsProps) {
 }
 
 export function ClassesList() {
-    const { classesPromise } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { promise } = use(SearchClassesContext)
+    const { classes } = use(promise)
 
     if (!classes.length)
         return (
@@ -109,8 +109,8 @@ export function ClassesList() {
 }
 
 export function FoooterTable() {
-    const { changeFilters, filters, classesPromise } = use(SearchClassesContext)
-    const { pages } = use(classesPromise)
+    const { changeFilters, filters, promise } = use(SearchClassesContext)
+    const { pages } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>

@@ -17,12 +17,12 @@ export function Filters() {
             const query = queryInputRef.current?.value.trim() || ''
             changeFilters({ query })
         },
-        [queryInputRef, changeFilters],
+        [changeFilters],
     )
 
     useEffect(() => {
-        // if (queryInputRef.current) queryInputRef.current.value = filters.query
-    }, [filters.query, queryInputRef])
+        if (queryInputRef.current) queryInputRef.current.value = filters.query
+    }, [filters.query])
 
     return (
         <form className='flex items-center' onSubmit={onSubmit}>

@@ -41,8 +41,8 @@ function ArchiveDialog() {
     const entityNc = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
-    const { students } = use(studentsPromise)
+    const { refresh, promise } = use(SearchStudentsContext)
+    const { students } = use(promise)
 
     const entity = useMemo(() => {
         return students.find(student => student.nc === entityNc)
@@ -54,11 +54,11 @@ function ArchiveDialog() {
             const res = await archiveStudent(entityNc)
             if (res.status === 'success') {
                 openDialog(null)
-                refreshStudents()
+                refresh()
                 return
             }
             if (res.type === 'not-found') {
-                refreshStudents()
+                refresh()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -68,7 +68,7 @@ function ArchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityNc, openDialog, router, refreshStudents])
+    }, [entityNc, openDialog, router, refresh])
 
     if (!entity) return null
 

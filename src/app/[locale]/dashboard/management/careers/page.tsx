@@ -5,11 +5,11 @@ import { CreateButton } from './components/CreateButton'
 import { CreateCareerDialog } from './components/CreateDialog'
 import { Filters } from './components/SearchInput'
 import { SearchCareersProvider } from '@/contexts/careers.context'
-import { UnarchiveOrDeleteDialog } from '../laboratories/components/UnarchiveOrDeleteDialog'
-import { UnarchiveDialog } from '../laboratories/components/UnarchiveDialog'
-import { DeleteDialog } from '../laboratories/components/DeleteDialog'
-import { EditDialog } from '../laboratories/components/EditDialog'
-import { ArchiveDialog } from '../laboratories/components/ArchiveDialog'
+import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
+import { UnarchiveDialog } from './components/UnarchiveDialog'
+import { DeleteDialog } from './components/DeleteDialog'
+import { EditDialog } from './components/EditDialog'
+import { ArchiveDialog } from './components/ArchiveDialog'
 
 export default async function CareersPage() {
     const t = await getTranslations('career')

@@ -35,8 +35,8 @@ function ArchiveDialog() {
     const [message, setMessage] = useState('')
     const t = useTranslations('classes')
     const router = useRouter()
-    const { classesPromise, refreshClasses } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { promise, refresh } = use(SearchClassesContext)
+    const { classes } = use(promise)
 
     const entity = useMemo(
         () => classes.find(c => c.id === entityId),
@@ -49,11 +49,11 @@ function ArchiveDialog() {
             const res = await archiveClass(entityId)
             if (res.status === 'success') {
                 openDialog(null)
-                refreshClasses()
+                refresh()
                 return
             }
             if (res.type === 'not-found') {
-                refreshClasses()
+                refresh()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -63,7 +63,7 @@ function ArchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityId, openDialog, router, refreshClasses])
+    }, [entityId, openDialog, router, refresh])
 
     if (!entity) return null
 

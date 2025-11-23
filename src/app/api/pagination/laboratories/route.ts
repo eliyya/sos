@@ -13,7 +13,7 @@ export const GET = withSentry(async function GET(req: NextRequest) {
 
     const laboratories = await searchLaboratories({
         query: query ?? '',
-        archived: archived === '1',
+        archived: archived === 'true',
         page: Number(page) || DEFAULT_PAGINATION.PAGE,
         size: Number(size) || DEFAULT_PAGINATION.SIZE,
     })

@@ -45,8 +45,8 @@ function DeleteDialog() {
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
     const router = useRouter()
-    const { careersPromise, refreshCareers } = use(SearchCareersContext)
-    const { careers } = use(careersPromise)
+    const { refresh, promise } = use(SearchCareersContext)
+    const { careers } = use(promise)
 
     const entity = useMemo(
         () => careers.find(c => c.id === entityId),
@@ -58,7 +58,7 @@ function DeleteDialog() {
         startTransition(async () => {
             const response = await deleteCareer(entityId)
             if (response.status === 'success') {
-                refreshCareers()
+                refresh()
                 setOpen(null)
             } else {
                 if (response.type === 'permission') {
@@ -77,7 +77,7 @@ function DeleteDialog() {
                 }
             }
         })
-    }, [entityId, refreshCareers, setOpen, router])
+    }, [entityId, refresh, setOpen, router])
 
     if (!entity) return null
 

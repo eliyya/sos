@@ -50,8 +50,8 @@ function EditDialog() {
     const oldId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { classesPromise, refreshClasses } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { refresh, promise } = use(SearchClassesContext)
+    const { classes } = use(promise)
 
     const old = useMemo(() => {
         return classes.find(c => c.id === oldId)
@@ -76,11 +76,11 @@ function EditDialog() {
                     teacher_id,
                 })
                 if (res.status === 'success') {
-                    refreshClasses()
+                    refresh()
                     openDialog(null)
                     return
                 } else if (res.type === 'not-found') {
-                    refreshClasses()
+                    refresh()
                     openDialog(null)
                 } else if (res.type === 'permission') {
                     setMessage('No tienes permiso para editar esta máquina')
@@ -93,7 +93,7 @@ function EditDialog() {
                 }
             })
         },
-        [oldId, refreshClasses, openDialog, router],
+        [oldId, refresh, openDialog, router],
     )
 
     if (!old) return null
@@ -172,8 +172,8 @@ function TeacherSelect() {
         usersSelectOptionsAtom,
     )
     const classId = useAtomValue(selectedIdAtom)
-    const { classesPromise } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { promise } = use(SearchClassesContext)
+    const { classes } = use(promise)
     const originalTeacher = useMemo(() => {
         const class_ = classes.find(c => c.id === classId)
         if (!class_) return null
@@ -216,8 +216,8 @@ function TeacherSelect() {
 function SubjectSelect() {
     const t = useTranslations('classes')
     const classId = useAtomValue(selectedIdAtom)
-    const { classesPromise } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { promise } = use(SearchClassesContext)
+    const { classes } = use(promise)
     const [subjectsSelectOptions, setSubjectsSelectOptions] = useAtom(
         subjectsSelectOptionsAtom,
     )
@@ -262,8 +262,8 @@ function SubjectSelect() {
 function CareerSelect() {
     const t = useTranslations('classes')
     const classId = useAtomValue(selectedIdAtom)
-    const { classesPromise } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { promise } = use(SearchClassesContext)
+    const { classes } = use(promise)
     const [careersSelectOptions, setCareersSelectOptions] = useAtom(
         careersSelectOptionsAtom,
     )

@@ -53,7 +53,7 @@ export function CreateSubjectDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedIdAtom)
-    const { refreshClasses } = use(SearchClassesContext)
+    const { refresh } = use(SearchClassesContext)
     const t = useTranslations('classes')
     const router = useRouter()
     const setTeacherError = useSetAtom(errorTeacherIdAtom)
@@ -79,7 +79,7 @@ export function CreateSubjectDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    refreshClasses()
+                    refresh()
                     return
                 }
                 if (res.type === 'already-archived') {
@@ -110,7 +110,7 @@ export function CreateSubjectDialog() {
         },
         [
             openDialog,
-            refreshClasses,
+            refresh,
             router,
             setCareerError,
             setEntityToEdit,

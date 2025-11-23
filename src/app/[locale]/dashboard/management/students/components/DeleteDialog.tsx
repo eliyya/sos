@@ -36,13 +36,13 @@ import { CompletInput } from '@/components/Inputs'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
 function DeleteDialog() {
-    const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
+    const { refresh, promise } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entityNc = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { students } = use(studentsPromise)
+    const { students } = use(promise)
 
     const entity = useMemo(() => {
         return students.find(student => student.nc === entityNc)
@@ -53,12 +53,12 @@ function DeleteDialog() {
         startTransition(async () => {
             const res = await deleteStudent(entityNc)
             if (res.status === 'success') {
-                refreshStudents()
+                refresh()
                 openDialog(null)
                 return
             }
             if (res.type === 'not-found') {
-                refreshStudents()
+                refresh()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para eliminar esta estudiante')
@@ -68,7 +68,7 @@ function DeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityNc, openDialog, router, refreshStudents])
+    }, [entityNc, openDialog, router, refresh])
 
     if (!entity) return null
 

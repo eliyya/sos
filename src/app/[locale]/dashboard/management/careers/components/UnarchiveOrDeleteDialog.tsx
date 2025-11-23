@@ -35,8 +35,8 @@ function UnarchiveOrDeleteDialog() {
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
     const router = useRouter()
-    const { careersPromise, refreshCareers } = use(SearchCareersContext)
-    const { careers } = use(careersPromise)
+    const { refresh, promise } = use(SearchCareersContext)
+    const { careers } = use(promise)
 
     const entity = useMemo(
         () => careers.find(c => c.id === entityId),
@@ -48,7 +48,7 @@ function UnarchiveOrDeleteDialog() {
         startTransition(async () => {
             const response = await unarchiveCareer(entityId)
             if (response.status === 'success') {
-                refreshCareers()
+                refresh()
                 openDialog(null)
             } else {
                 if (response.type === 'permission') {
@@ -67,7 +67,7 @@ function UnarchiveOrDeleteDialog() {
                 }
             }
         })
-    }, [entityId, refreshCareers, openDialog, router])
+    }, [entityId, refresh, openDialog, router])
 
     if (!entity) return null
 
