@@ -17,8 +17,8 @@ interface SearchMachinesProviderProps {
 export function SearchMachinesProvider({
     children,
 }: SearchMachinesProviderProps) {
-    const { filters, changeFilters } = useFiltersMachines()
-    const searchData = useSearchEntity('machines', { filters, changeFilters })
+    const filters = useFiltersMachines()
+    const searchData = useSearchEntity('machines', filters)
     return (
         <SearchMachinesContext.Provider value={searchData}>
             {children}

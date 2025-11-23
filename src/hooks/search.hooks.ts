@@ -46,15 +46,15 @@ export type SearchContext<
         filters: Filters
         changeFilters: (props: ChangeProps<Filters>) => void
     },
-> = ReturnType<typeof useSearchEntity<E, ReturnType<F>>>
+> = ReturnType<typeof useSearchEntity<E, ReturnType<F>['filters']>>
 
-export function useSearchEntity<
-    E extends SearchEntity,
-    F extends {
-        filters: Filters
-        changeFilters: (props: ChangeProps<Filters>) => void
-    },
->(entity: E, { filters, changeFilters }: F) {
+export function useSearchEntity<E extends SearchEntity, F extends Filters>(
+    entity: E,
+    {
+        filters,
+        changeFilters,
+    }: { filters: F; changeFilters: (props: ChangeProps<F>) => void },
+) {
     const [forceRefresh, setRefresh] = useState(Symbol())
     // const { filters, changeFilters } = useFiltersBase()
     const [promise, setPromise] = useState(
@@ -143,7 +143,7 @@ export function useFiltersMachines() {
     )
 
     const changeFilters = useCallback(
-        (props: ChangeProps<Filters>) => {
+        (props: ChangeProps<typeof filters>) => {
             props = propsParser(props, filters)
             if (typeof props.query === 'string') setQuery(props.query)
             if (typeof props.maintenance === 'boolean')
