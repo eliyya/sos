@@ -476,6 +476,6 @@ export const searchClassesEffect = ({
 
         return {
             classes: classesProcessed,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })

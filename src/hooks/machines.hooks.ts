@@ -1,8 +1,13 @@
-import { searchMachines } from '@/actions/machines.actions'
+import { searchMachines } from '@/actions/search.actions'
 import { useCallback, useMemo, useState } from 'react'
-import { useQueryParam } from './query.hooks'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
+import {
+    parseAsBoolean,
+    parseAsInteger,
+    parseAsString,
+    useQueryState,
+} from 'nuqs'
 
 export type SearchMachinesPromise = ReturnType<typeof searchMachines>
 
@@ -13,10 +18,16 @@ type Filters = {
     size: number
 }
 export function useSearchMachines() {
-    const [query, setQuery] = useQueryParam('q', '')
-    const [maintenance, setMaintenance] = useQueryParam('maintenance', false)
-    const [page, setPage] = useQueryParam('page', 1)
-    const [size, setSize] = useQueryParam('size', 10)
+    const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''))
+    const [maintenance, setMaintenance] = useQueryState(
+        'maintenance',
+        parseAsBoolean.withDefault(false),
+    )
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+    const [size, setSize] = useQueryState(
+        'size',
+        parseAsInteger.withDefault(10),
+    )
     const [refresh, setRefresh] = useState(Symbol())
 
     const filters = useMemo(

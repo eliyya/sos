@@ -14,7 +14,7 @@ import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 import { use } from 'react'
-import { SearchSubjectsPromise } from '@/hooks/subjects.hooks'
+import { SearchSubjectsPromise } from '@/hooks/search.hooks'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 
 interface StudentItemListProps {
@@ -97,10 +97,10 @@ function Buttons({ subject }: ButtonsProps) {
 }
 
 export function SubjectsList() {
-    const { subjectsPromise } = use(SearchSubjectsContext)
-    const { subjects } = use(subjectsPromise)
+    const { promise } = use(SearchSubjectsContext)
+    const { subjects } = use(promise)
 
-    if (!subjects.length)
+    if (!subjects?.length)
         return (
             <TableRow>
                 <TableCell className='text-center' colSpan={5}>
@@ -115,10 +115,8 @@ export function SubjectsList() {
 }
 
 export function FoooterTable() {
-    const { changeFilters, filters, subjectsPromise } = use(
-        SearchSubjectsContext,
-    )
-    const { count } = use(subjectsPromise)
+    const { changeFilters, filters, promise } = use(SearchSubjectsContext)
+    const { pages } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>
@@ -136,17 +134,17 @@ export function FoooterTable() {
                 Anterior
             </Button>
             <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+                Página {filters.page} de {pages}
             </div>
             <Button
                 variant='outline'
-                size='sm'
+                size='default'
                 onClick={() =>
                     changeFilters({
                         page: filters.page + 1,
                     })
                 }
-                disabled={filters.page === Math.ceil(count / filters.size)}
+                disabled={filters.page === pages}
             >
                 Siguiente
                 <ChevronRightIcon className='h-4 w-4' />

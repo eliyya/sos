@@ -397,6 +397,6 @@ export const searchUsersEffect = ({
 
         return {
             users: usersMapped,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })

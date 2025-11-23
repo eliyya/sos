@@ -41,8 +41,8 @@ function EditDialog() {
     // errors
     const setNameError = useSetAtom(nameErrorAtom)
     const setAliasError = useSetAtom(aliasErrorAtom)
-    const { careersPromise, refreshCareers } = use(SearchCareersContext)
-    const { careers } = use(careersPromise)
+    const { refresh, promise } = use(SearchCareersContext)
+    const { careers } = use(promise)
 
     const old = useMemo(
         () => careers.find(c => c.id === oldId),
@@ -62,7 +62,7 @@ function EditDialog() {
                     alias,
                 })
                 if (response.status === 'success') {
-                    refreshCareers()
+                    refresh()
                     setOpen(null)
                 } else {
                     if (response.type === 'permission') {
@@ -88,7 +88,7 @@ function EditDialog() {
                 }
             })
         },
-        [oldId, refreshCareers, setOpen, router, setNameError, setAliasError],
+        [oldId, refresh, setOpen, router, setNameError, setAliasError],
     )
 
     if (!old) return null
@@ -132,8 +132,8 @@ function NameInput() {
     const t = useTranslations('career')
     const oldId = useAtomValue(selectedIdAtom)
     const nameError = useAtomValue(nameErrorAtom)
-    const { careersPromise } = use(SearchCareersContext)
-    const { careers } = use(careersPromise)
+    const { promise } = use(SearchCareersContext)
+    const { careers } = use(promise)
 
     const old = useMemo(
         () => careers.find(c => c.id === oldId),
@@ -158,8 +158,8 @@ function AliasInput() {
     const t = useTranslations('career')
     const oldId = useAtomValue(selectedIdAtom)
     const aliasError = useAtomValue(aliasErrorAtom)
-    const { careersPromise } = use(SearchCareersContext)
-    const { careers } = use(careersPromise)
+    const { promise } = use(SearchCareersContext)
+    const { careers } = use(promise)
 
     const old = useMemo(
         () => careers.find(c => c.id === oldId),
@@ -182,7 +182,7 @@ function AliasInput() {
 
 function SuspenseEditDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <EditDialog />
         </Suspense>
     )

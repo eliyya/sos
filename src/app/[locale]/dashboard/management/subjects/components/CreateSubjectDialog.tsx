@@ -35,7 +35,7 @@ export function CreateSubjectDialog() {
     const setErrorPracticeHours = useSetAtom(errorPracticeHoursAtom)
     const setUserToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
-    const { refreshSubjects } = use(SearchSubjectsContext)
+    const { refresh } = use(SearchSubjectsContext)
 
     const onAction = useCallback(
         async (formData: FormData) => {
@@ -51,7 +51,7 @@ export function CreateSubjectDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    refreshSubjects()
+                    refresh()
                     return
                 }
                 if (res.type === 'permission') {
@@ -78,7 +78,7 @@ export function CreateSubjectDialog() {
         },
         [
             openDialog,
-            refreshSubjects,
+            refresh,
             router,
             setErrorName,
             setErrorTheoryHours,

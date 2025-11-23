@@ -1,10 +1,10 @@
 'use client'
 
-import { useSearchLaboratories } from '@/hooks/laboratories.hoohs'
+import { useSearchEntity } from '@/hooks/search.hooks'
 import { createContext } from 'react'
 
 export const SearchLaboratoriesContext = createContext<
-    ReturnType<typeof useSearchLaboratories>
+    ReturnType<typeof useSearchEntity<'laboratories'>>
 >(undefined!)
 
 interface SearchLaboratoriesProviderProps {
@@ -13,7 +13,8 @@ interface SearchLaboratoriesProviderProps {
 export function SearchLaboratoriesProvider({
     children,
 }: SearchLaboratoriesProviderProps) {
-    const searchData = useSearchLaboratories()
+    const searchData = useSearchEntity('laboratories')
+
     return (
         <SearchLaboratoriesContext.Provider value={searchData}>
             {children}

@@ -122,7 +122,7 @@ export function FoooterTable() {
     const { changeFilters, filters, machinesPromise } = use(
         SearchMachinesContext,
     )
-    const { count } = use(machinesPromise)
+    const { pages } = use(machinesPromise)
 
     return (
         <div className='flex items-center justify-center gap-5'>
@@ -140,7 +140,7 @@ export function FoooterTable() {
                 Anterior
             </Button>
             <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+                Página {filters.page} de {pages}
             </div>
             <Button
                 variant='outline'
@@ -150,7 +150,7 @@ export function FoooterTable() {
                         page: filters.page + 1,
                     })
                 }
-                disabled={filters.page === Math.ceil(count / filters.size)}
+                disabled={filters.page === pages}
             >
                 Siguiente
                 <ChevronRightIcon className='h-4 w-4' />

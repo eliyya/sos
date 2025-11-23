@@ -386,6 +386,6 @@ export const searchMachinesEffect = ({
 
         return {
             machines: machinesMapped,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })

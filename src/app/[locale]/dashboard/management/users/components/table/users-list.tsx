@@ -14,7 +14,7 @@ import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
-import { SearchUsersPromise } from '@/hooks/users.hooks'
+import { SearchUsersPromise } from '@/hooks/search.hooks'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { use } from 'react'
 
@@ -96,8 +96,8 @@ function Buttons({ user }: ButtonsProps) {
 }
 
 export function UsersList() {
-    const { usersPromise } = use(SearchUsersContext)
-    const { users } = use(usersPromise)
+    const { promise } = use(SearchUsersContext)
+    const { users } = use(promise)
 
     if (!users.length)
         return (
@@ -112,8 +112,8 @@ export function UsersList() {
 }
 
 export function FoooterTable() {
-    const { changeFilters, filters, usersPromise } = use(SearchUsersContext)
-    const { count } = use(usersPromise)
+    const { changeFilters, filters, promise } = use(SearchUsersContext)
+    const { pages } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>
@@ -131,7 +131,7 @@ export function FoooterTable() {
                 Anterior
             </Button>
             <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+                Página {filters.page} de {pages}
             </div>
             <Button
                 variant='outline'
@@ -141,7 +141,7 @@ export function FoooterTable() {
                         page: filters.page + 1,
                     })
                 }
-                disabled={filters.page === Math.ceil(count / filters.size)}
+                disabled={filters.page === pages}
             >
                 Siguiente
                 <ChevronRightIcon className='h-4 w-4' />

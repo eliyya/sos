@@ -16,12 +16,12 @@ import {
 import { useRoles } from '@/hooks/roles.hooks'
 import { PermissionsList } from './permissions-list'
 import { cn } from '@/lib/utils'
-import { useQueryParam } from '@/hooks/query.hooks'
+import { parseAsString, useQueryState } from 'nuqs'
 
 export function RolesTable() {
     const { roles } = useRoles()
     const selectedRole = useAtomValue(selectedRoleAtom)
-    const [query, setQuery] = useQueryParam('q', '')
+    const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''))
     const selectRole = useSetAtom(selectedRoleIdAtom)
     const [usersCount, setUsersCount] = useAtom(usersCountAtom)
 

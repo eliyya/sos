@@ -17,7 +17,6 @@ import {
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
 import { auth } from '@/lib/auth'
-import { SuccessOf } from '@/lib/type-utils'
 import { db } from '@/prisma/db'
 import {
     archiveLaboratoryEffect,
@@ -25,7 +24,6 @@ import {
     deleteLaboratoryEffect,
     editLaboratoryEffect,
     getLaboratoriesEffect,
-    searchLaboratoriesEffect,
     unarchiveLaboratoryEffect,
 } from '@/services/laboratories.service'
 import { Temporal } from '@js-temporal/polyfill'
@@ -478,23 +476,4 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
         },
     })
     return { message: null, errors: {} }
-}
-
-type SearchLaboratoriesProps = Parameters<typeof searchLaboratoriesEffect>[0]
-export async function searchLaboratories(
-    props: SearchLaboratoriesProps,
-): Promise<SuccessOf<ReturnType<typeof searchLaboratoriesEffect>>> {
-    const laboratories = await Effect.runPromise(
-        Effect.scoped(
-            searchLaboratoriesEffect(props)
-                .pipe(Effect.provide(PrismaLive))
-                .pipe(
-                    Effect.catchAll(error => {
-                        console.log(error)
-                        return Effect.succeed({ laboratories: [], count: 0 })
-                    }),
-                ),
-        ),
-    )
-    return laboratories
 }

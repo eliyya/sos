@@ -14,8 +14,24 @@ import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
-import { SearchCareersPromise } from '@/hooks/careers.hooks'
 import { SearchCareersContext } from '@/contexts/careers.context'
+import { SearchCareersPromise } from '@/hooks/search.hooks'
+
+export function CareersList() {
+    const { promise } = use(SearchCareersContext)
+    const { careers } = use(promise)
+
+    if (!careers.length)
+        return (
+            <TableRow>
+                <TableCell className='text-center' colSpan={5}>
+                    No se encontraron resultados
+                </TableCell>
+            </TableRow>
+        )
+
+    return careers.map(career => <CareerItem key={career.id} career={career} />)
+}
 
 interface CareerItemListProps {
     career: Awaited<SearchCareersPromise>['careers'][number]
@@ -31,6 +47,7 @@ export function CareerItem({ career }: CareerItemListProps) {
         </TableRow>
     )
 }
+
 interface ButtonsProps {
     career: Career
 }
@@ -91,25 +108,9 @@ function Buttons({ career }: ButtonsProps) {
     return <></>
 }
 
-export function CareersList() {
-    const { careersPromise } = use(SearchCareersContext)
-    const { careers } = use(careersPromise)
-
-    if (!careers.length)
-        return (
-            <TableRow>
-                <TableCell className='text-center' colSpan={5}>
-                    No se encontraron resultados
-                </TableCell>
-            </TableRow>
-        )
-
-    return careers.map(career => <CareerItem key={career.id} career={career} />)
-}
-
 export function FoooterTable() {
-    const { changeFilters, filters, careersPromise } = use(SearchCareersContext)
-    const { count } = use(careersPromise)
+    const { changeFilters, filters, promise } = use(SearchCareersContext)
+    const { pages } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>
@@ -127,7 +128,7 @@ export function FoooterTable() {
                 Anterior
             </Button>
             <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+                Página {filters.page} de {pages}
             </div>
             <Button
                 variant='outline'
@@ -137,7 +138,7 @@ export function FoooterTable() {
                         page: filters.page + 1,
                     })
                 }
-                disabled={filters.page === Math.ceil(count / filters.size)}
+                disabled={filters.page === pages}
             >
                 Siguiente
                 <ChevronRightIcon className='h-4 w-4' />

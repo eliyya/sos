@@ -7,7 +7,6 @@ import {
     deleteCareerEffect,
     editCareerEffect,
     getCareersEffect,
-    searchCareersEffect,
     unarchiveCareerEffect,
 } from '@/services/careers.service'
 import { PrismaLive } from '@/layers/db.layer'
@@ -21,7 +20,6 @@ import {
     UnauthorizedError,
     UnexpectedError,
 } from '@/errors'
-import { SuccessOf } from '@/lib/type-utils'
 
 type CreateCareerProps = Parameters<typeof createCareerEffect>[0]
 export async function createCareer(props: CreateCareerProps) {
@@ -355,24 +353,6 @@ export async function getCareers() {
                     Effect.catchAll(error => {
                         console.log(error)
                         return Effect.succeed([])
-                    }),
-                ),
-        ),
-    )
-}
-
-type SearchCareersProps = Parameters<typeof searchCareersEffect>[0]
-export async function searchCareers(
-    props: SearchCareersProps,
-): Promise<SuccessOf<ReturnType<typeof searchCareersEffect>>> {
-    return await Effect.runPromise(
-        Effect.scoped(
-            searchCareersEffect(props)
-                .pipe(Effect.provide(PrismaLive))
-                .pipe(
-                    Effect.catchAll(error => {
-                        console.log(error)
-                        return Effect.succeed({ careers: [], count: 0 })
                     }),
                 ),
         ),

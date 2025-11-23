@@ -31,9 +31,12 @@ import {
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { searchUsers } from '@/actions/users.actions'
-import { searchSubjects } from '@/actions/subjects.actions'
-import { searchCareers } from '@/actions/careers.actions'
+import {
+    searchUsers,
+    searchSubjects,
+    searchCareers,
+} from '@/actions/search.actions'
+
 import { SearchClassesContext } from '@/contexts/classes.context'
 
 const teacherAtom = atom<{ label: string; value: string } | null>(null)
@@ -50,7 +53,7 @@ export function CreateSubjectDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedIdAtom)
-    const { refreshClasses } = use(SearchClassesContext)
+    const { refresh } = use(SearchClassesContext)
     const t = useTranslations('classes')
     const router = useRouter()
     const setTeacherError = useSetAtom(errorTeacherIdAtom)
@@ -76,7 +79,7 @@ export function CreateSubjectDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    refreshClasses()
+                    refresh()
                     return
                 }
                 if (res.type === 'already-archived') {
@@ -107,7 +110,7 @@ export function CreateSubjectDialog() {
         },
         [
             openDialog,
-            refreshClasses,
+            refresh,
             router,
             setCareerError,
             setEntityToEdit,

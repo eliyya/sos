@@ -18,7 +18,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { editStudent, searchStudents } from '@/actions/students.actions'
+import { editStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -39,15 +39,16 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchStudentsContext } from '@/contexts/students.context'
 import { useTranslations } from 'next-intl'
+import { searchStudents } from '@/actions/search.actions'
 
 function EditDialog() {
-    const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
+    const { refresh, promise } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entityNc = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { students } = use(studentsPromise)
+    const { students } = use(promise)
 
     const old = useMemo(() => {
         return students.find(student => student.nc === entityNc)
@@ -72,11 +73,11 @@ function EditDialog() {
                     semester,
                 })
                 if (res.status === 'success') {
-                    refreshStudents()
+                    refresh()
                     openDialog(null)
                     return
                 } else if (res.type === 'not-found') {
-                    refreshStudents()
+                    refresh()
                     openDialog(null)
                 } else if (res.type === 'permission') {
                     setMessage('No tienes permiso para editar esta máquina')
@@ -89,7 +90,7 @@ function EditDialog() {
                 }
             })
         },
-        [entityNc, openDialog, router, refreshStudents],
+        [entityNc, openDialog, router, refresh],
     )
 
     if (!old) return null
@@ -158,7 +159,7 @@ function EditDialog() {
 
 function SuspenseEditDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <EditDialog />
         </Suspense>
     )
@@ -169,8 +170,8 @@ export { SuspenseEditDialog as EditDialog }
 function CareerSelect() {
     const t = useTranslations('classes')
     const classId = useAtomValue(selectedIdAtom)
-    const { studentsPromise } = use(SearchStudentsContext)
-    const { students } = use(studentsPromise)
+    const { promise } = use(SearchStudentsContext)
+    const { students } = use(promise)
     const [careersSelectOptions, setCareersSelectOptions] = useAtom(
         careersSelectOptionsAtom,
     )

@@ -34,8 +34,8 @@ function DeleteDialog() {
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { classesPromise, refreshClasses } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { promise, refresh } = use(SearchClassesContext)
+    const { classes } = use(promise)
 
     const entity = useMemo(
         () => classes.find(c => c.id === entityId),
@@ -47,12 +47,12 @@ function DeleteDialog() {
         startTransition(async () => {
             const res = await deleteClass(entityId)
             if (res.status === 'success') {
-                refreshClasses()
+                refresh()
                 openDialog(null)
                 return
             }
             if (res.type === 'not-found') {
-                refreshClasses()
+                refresh()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para eliminar esta estudiante')
@@ -62,7 +62,7 @@ function DeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityId, refreshClasses, openDialog, router])
+    }, [entityId, refresh, openDialog, router])
 
     const t = useTranslations('classes')
 
@@ -151,7 +151,7 @@ function DeleteDialog() {
 
 function SuspenseDeleteDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <DeleteDialog />
         </Suspense>
     )

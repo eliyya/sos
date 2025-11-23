@@ -30,7 +30,7 @@ import { SearchCareersContext } from '@/contexts/careers.context'
 
 function SuspenseArchiveDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <ArchiveDialog />
         </Suspense>
     )
@@ -44,8 +44,8 @@ function ArchiveDialog() {
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const t = useTranslations('career')
-    const { refreshCareers, careersPromise } = use(SearchCareersContext)
-    const { careers } = use(careersPromise)
+    const { refresh, promise } = use(SearchCareersContext)
+    const { careers } = use(promise)
     const router = useRouter()
 
     const entity = useMemo(
@@ -59,7 +59,7 @@ function ArchiveDialog() {
             const response = await archiveCareer(entityId)
             if (response.status === 'success') {
                 openDialog(null)
-                refreshCareers()
+                refresh()
                 return
             }
             // error
@@ -78,7 +78,7 @@ function ArchiveDialog() {
                 setTimeout(() => setMessage(''), 5_000)
             }
         })
-    }, [entityId, openDialog, refreshCareers, router])
+    }, [entityId, openDialog, refresh, router])
 
     if (!entity) return null
 

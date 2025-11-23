@@ -37,14 +37,12 @@ export function DeleteDialog() {
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshLaboratories, laboratoriesPromise } = use(
-        SearchLaboratoriesContext,
-    )
-    const { laboratories } = use(laboratoriesPromise)
+    const { refresh, promise } = use(SearchLaboratoriesContext)
+    const { laboratories } = use(promise)
     const router = useRouter()
 
     const entity = useMemo(() => {
-        return laboratories.find(l => l.id === entityId)
+        return laboratories?.find(l => l.id === entityId)
     }, [laboratories, entityId])
 
     const onAction = useCallback(async () => {
@@ -52,11 +50,11 @@ export function DeleteDialog() {
         startTransition(async () => {
             const response = await deleteLaboratory(entityId)
             if (response.status === 'success') {
-                refreshLaboratories()
+                refresh()
                 setOpen(null)
             } else {
                 if (response.type === 'not-found') {
-                    refreshLaboratories()
+                    refresh()
                     setOpen(null)
                 } else if (response.type === 'unexpected') {
                     setMessage('Ha ocurrido un error, intente más tarde')
@@ -69,7 +67,7 @@ export function DeleteDialog() {
                 }
             }
         })
-    }, [entityId, setOpen, refreshLaboratories, router])
+    }, [entityId, setOpen, refresh, router])
 
     if (!entity) return null
 
