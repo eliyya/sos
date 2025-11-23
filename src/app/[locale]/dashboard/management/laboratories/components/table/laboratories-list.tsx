@@ -13,14 +13,14 @@ import {
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
-import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
-import { Searchpromise } from '@/hooks/laboratories.hoohs'
 import { secondsToTime } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
+import { SearchLaboratoriesPromise } from '@/hooks/search.hooks'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 interface LaboratoryItemListProps {
-    laboratory: Awaited<Searchpromise>['laboratories'][number]
+    laboratory: Awaited<SearchLaboratoriesPromise>['laboratories'][number]
 }
 export function LaboratoryItem({ laboratory }: LaboratoryItemListProps) {
     return (
@@ -107,11 +107,11 @@ function Buttons({ laboratory }: ButtonsProps) {
 
 export function LaboratoriesList() {
     const { promise } = use(SearchLaboratoriesContext)
-    const data = use(promise)
+    const { laboratories } = use(promise)
 
-    console.log(data)
+    console.log({ laboratories })
 
-    if (!data?.laboratories?.length)
+    if (!laboratories?.length)
         return (
             <TableRow>
                 <TableCell className='text-center' colSpan={5}>
@@ -120,14 +120,14 @@ export function LaboratoriesList() {
             </TableRow>
         )
 
-    return data.laboratories.map(lab => (
+    return laboratories.map(lab => (
         <LaboratoryItem key={lab.id} laboratory={lab} />
     ))
 }
 
 export function FoooterTable() {
     const { changeFilters, filters, promise } = use(SearchLaboratoriesContext)
-    const { count } = use(promise)
+    const { pages } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>
@@ -145,7 +145,7 @@ export function FoooterTable() {
                 Anterior
             </Button>
             <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+                Página {filters.page} de {pages}
             </div>
             <Button
                 variant='outline'
@@ -155,7 +155,7 @@ export function FoooterTable() {
                         page: filters.page + 1,
                     })
                 }
-                disabled={filters.page === Math.ceil(count / filters.size)}
+                disabled={filters.page === pages}
             >
                 Siguiente
                 <ChevronRightIcon className='h-4 w-4' />

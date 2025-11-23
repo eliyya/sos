@@ -113,7 +113,7 @@ export function UsersList() {
 
 export function FoooterTable() {
     const { changeFilters, filters, usersPromise } = use(SearchUsersContext)
-    const { count } = use(usersPromise)
+    const { pages } = use(usersPromise)
 
     return (
         <div className='flex items-center justify-center gap-5'>
@@ -131,7 +131,7 @@ export function FoooterTable() {
                 Anterior
             </Button>
             <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+                Página {filters.page} de {pages}
             </div>
             <Button
                 variant='outline'
@@ -141,7 +141,7 @@ export function FoooterTable() {
                         page: filters.page + 1,
                     })
                 }
-                disabled={filters.page === Math.ceil(count / filters.size)}
+                disabled={filters.page === pages}
             >
                 Siguiente
                 <ChevronRightIcon className='h-4 w-4' />

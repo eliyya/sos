@@ -315,5 +315,7 @@ export const searchCareersEffect = ({
                 catch: err => new PrismaError(err),
             }),
         )
-        return yield* _(Effect.succeed({ careers, count }))
+        return yield* _(
+            Effect.succeed({ careers, pages: Math.ceil(count / size || 1) }),
+        )
     })

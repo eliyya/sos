@@ -1,4 +1,4 @@
-import { searchClasses } from '@/actions/classes.actions'
+import { searchClasses } from '@/actions/search.actions'
 import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'

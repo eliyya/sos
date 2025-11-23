@@ -1,4 +1,4 @@
-import { searchStudents } from '@/actions/students.actions'
+import { searchStudents } from '@/actions/search.actions'
 import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import app from '@eliyya/type-routes'

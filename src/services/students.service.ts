@@ -409,7 +409,7 @@ export const searchStudentsEffect = ({
 
         return {
             students: studentsParsed,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })
 

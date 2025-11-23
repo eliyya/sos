@@ -40,9 +40,8 @@ import {
 } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { searchUsers } from '@/actions/users.actions'
+import { searchUsers, searchSubjects } from '@/actions/search.actions'
 import { SearchClassesContext } from '@/contexts/classes.context'
-import { searchSubjects } from '@/actions/subjects.actions'
 
 function EditDialog() {
     const t = useTranslations('classes')

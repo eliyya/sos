@@ -1,5 +1,5 @@
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
-import { searchUsers } from '@/actions/users.actions'
+import { searchUsers } from '@/actions/search.actions'
 import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import app from '@eliyya/type-routes'

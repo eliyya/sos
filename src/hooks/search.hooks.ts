@@ -1,10 +1,34 @@
-import type { searchLaboratories } from '@/actions/search.actions'
+import type {
+    searchSubjects,
+    searchCareers,
+    searchClasses,
+    searchLaboratories,
+    searchMachines,
+    searchStudents,
+    searchUsers,
+} from '@/actions/search.actions'
 import { useCallback, useMemo, useState } from 'react'
 import { useQueryParam } from './query.hooks'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
 
-export type Searchpromise = ReturnType<typeof searchLaboratories>
+export type SearchSubjectsPromise = ReturnType<typeof searchSubjects>
+export type SearchCareersPromise = ReturnType<typeof searchCareers>
+export type SearchClassesPromise = ReturnType<typeof searchClasses>
+export type SearchLaboratoriesPromise = ReturnType<typeof searchLaboratories>
+export type SearchMachinesPromise = ReturnType<typeof searchMachines>
+export type SearchStudentsPromise = ReturnType<typeof searchStudents>
+export type SearchUsersPromise = ReturnType<typeof searchUsers>
+
+type EntityPromise<T extends Entity> =
+    T extends 'subjects' ? SearchSubjectsPromise
+    : T extends 'careers' ? SearchCareersPromise
+    : T extends 'classes' ? SearchClassesPromise
+    : T extends 'laboratories' ? SearchLaboratoriesPromise
+    : T extends 'machines' ? SearchMachinesPromise
+    : T extends 'students' ? SearchStudentsPromise
+    : T extends 'users' ? SearchUsersPromise
+    : never
 
 type Filters = {
     query: string
@@ -12,7 +36,8 @@ type Filters = {
     page: number
     size: number
 }
-export function useSearchLaboratories() {
+type Entity = keyof typeof app.api.pagination
+export function useSearchEntity<T extends Entity>(entity: T) {
     const [query, setQuery] = useQueryParam('q', '')
     const [archived, setArchived] = useQueryParam('archived', false)
     const [page, setPage] = useQueryParam('page', 1)
@@ -35,15 +60,15 @@ export function useSearchLaboratories() {
         [filters, setQuery, setArchived, setPage, setSize],
     )
 
-    const refresh = useCallback(() => setRefresh(Symbol()), [setRefresh])
+    const refresh = useCallback(() => setRefresh(Symbol()), [])
 
-    const promise: Searchpromise = useMemo(
+    const promise: EntityPromise<T> = useMemo(
         () =>
             fetch(
-                `${app.api.pagination.laboratories()}?${createSearchParams(filters)}`,
+                `${app.api.pagination[entity]()}?${createSearchParams(filters)}`,
             )
                 .then(res => res.json())
-                .catch(() => ({ laboratories: [], count: 0 })),
+                .catch(() => ({ [entity]: [], count: 1 })) as EntityPromise<T>,
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [forceRefresh, filters],
     )

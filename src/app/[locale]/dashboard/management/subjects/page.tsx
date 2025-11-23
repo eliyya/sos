@@ -1,3 +1,5 @@
+'use client'
+
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
 import { CreateSubjectDialog } from './components/CreateSubjectDialog'
@@ -10,7 +12,7 @@ import { EditDialog } from './components/EditDialog'
 import { UnarchiveDialog } from './components/UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
 
-export default async function SubjectsPage() {
+export default function SubjectsPage() {
     return (
         <SearchSubjectsProvider>
             <div className='flex justify-between'>

@@ -335,6 +335,6 @@ export const searchSubjectsEffect = ({
 
         return {
             subjects,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })

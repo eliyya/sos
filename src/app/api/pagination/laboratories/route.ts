@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withSentry } from '@/lib/sentry'
 import { DEFAULT_PAGINATION } from '@/constants/client'
-import { searchLaboratories } from '@/actions/laboratories.actions'
+import { searchLaboratories } from '@/actions/search.actions'
 
 export const GET = withSentry(async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams

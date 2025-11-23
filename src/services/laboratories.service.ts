@@ -450,6 +450,6 @@ export const searchLaboratoriesEffect = ({
 
         return {
             laboratories,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })

@@ -18,7 +18,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { editStudent, searchStudents } from '@/actions/students.actions'
+import { editStudent } from '@/actions/students.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -39,6 +39,7 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchStudentsContext } from '@/contexts/students.context'
 import { useTranslations } from 'next-intl'
+import { searchStudents } from '@/actions/search.actions'
 
 function EditDialog() {
     const { refreshStudents, studentsPromise } = use(SearchStudentsContext)

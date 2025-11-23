@@ -31,9 +31,12 @@ import {
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { searchUsers } from '@/actions/users.actions'
-import { searchSubjects } from '@/actions/subjects.actions'
-import { searchCareers } from '@/actions/careers.actions'
+import {
+    searchUsers,
+    searchSubjects,
+    searchCareers,
+} from '@/actions/search.actions'
+
 import { SearchClassesContext } from '@/contexts/classes.context'
 
 const teacherAtom = atom<{ label: string; value: string } | null>(null)

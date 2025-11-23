@@ -1,4 +1,4 @@
-import { getCareers, searchCareers } from '@/actions/careers.actions'
+import { getCareers } from '@/actions/careers.actions'
 import { STATUS } from '@/prisma/generated/enums'
 import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -6,6 +6,7 @@ import { useQueryParam } from './query.hooks'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
 import { Career } from '@/prisma/generated/client'
+import { searchCareers } from '@/actions/search.actions'
 
 const isCareersFetchedAtom = atom(false)
 const careersAtom = atom<Career[]>([])

@@ -30,7 +30,7 @@ import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 
 import { SearchStudentsContext } from '@/contexts/students.context'
-import { searchCareers } from '@/actions/careers.actions'
+import { searchCareers } from '@/actions/search.actions'
 
 const ncAtom = atom('')
 const firstnameAtom = atom('')

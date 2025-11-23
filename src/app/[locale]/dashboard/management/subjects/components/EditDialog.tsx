@@ -33,11 +33,11 @@ function EditDialog() {
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)
+    const { refresh, promise: subjectsPromise } = use(SearchSubjectsContext)
     const { subjects } = use(subjectsPromise)
 
     const entity = useMemo(() => {
-        return subjects.find(subject => subject.id === entityId)
+        return subjects?.find(subject => subject.id === entityId)
     }, [subjects, entityId])
 
     const onAction = useCallback(
@@ -55,12 +55,12 @@ function EditDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
-                    refreshSubjects()
+                    refresh()
                     return
                 }
                 if (res.type === 'not-found') {
                     openDialog(null)
-                    refreshSubjects()
+                    refresh()
                 } else if (res.type === 'permission') {
                     setMessage(
                         'No tienes permiso para archivar esta asignatura',
@@ -72,7 +72,7 @@ function EditDialog() {
                 }
             })
         },
-        [entityId, openDialog, refreshSubjects, router],
+        [entityId, openDialog, refresh, router],
     )
 
     if (!entity) return null

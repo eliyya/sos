@@ -38,12 +38,12 @@ function UnarchiveOrDeleteDialog() {
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)
+    const { refresh, promise } = use(SearchSubjectsContext)
     const router = useRouter()
-    const { subjects } = use(subjectsPromise)
+    const { subjects } = use(promise)
 
     const entity = useMemo(() => {
-        return subjects.find(subject => subject.id === entityId)
+        return subjects?.find(subject => subject.id === entityId)
     }, [subjects, entityId])
 
     const onAction = useCallback(async () => {
@@ -52,12 +52,12 @@ function UnarchiveOrDeleteDialog() {
             const res = await unarchiveSubject(entityId)
             if (res.status === 'success') {
                 openDialog(null)
-                refreshSubjects()
+                refresh()
                 return
             }
             if (res.type === 'not-found') {
                 openDialog(null)
-                refreshSubjects()
+                refresh()
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para archivar esta asignatura')
             } else if (res.type === 'unauthorized') {
@@ -66,7 +66,7 @@ function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error, intentalo más tarde')
             }
         })
-    }, [entityId, openDialog, refreshSubjects, router])
+    }, [entityId, openDialog, refresh, router])
 
     if (!entity) return null
 
