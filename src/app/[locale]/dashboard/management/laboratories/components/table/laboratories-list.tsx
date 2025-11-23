@@ -19,26 +19,6 @@ import { secondsToTime } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
-export function LaboratoriesList() {
-    const { promise } = use(SearchLaboratoriesContext)
-    const { laboratories } = use(promise)
-
-    console.log({ laboratories })
-
-    if (!laboratories?.length)
-        return (
-            <TableRow>
-                <TableCell className='text-center' colSpan={5}>
-                    No se encontraron resultados
-                </TableCell>
-            </TableRow>
-        )
-
-    return laboratories.map(entity => (
-        <LaboratoryItem key={entity.id} laboratory={entity} />
-    ))
-}
-
 interface ButtonsProps {
     laboratory: Laboratory
 }
@@ -96,6 +76,26 @@ function Buttons({ laboratory }: ButtonsProps) {
             </>
         )
     return <></>
+}
+
+export function LaboratoriesList() {
+    const { promise } = use(SearchLaboratoriesContext)
+    const { laboratories } = use(promise)
+
+    console.log({ laboratories })
+
+    if (!laboratories?.length)
+        return (
+            <TableRow>
+                <TableCell className='text-center' colSpan={5}>
+                    No se encontraron resultados
+                </TableCell>
+            </TableRow>
+        )
+
+    return laboratories.map(entity => (
+        <LaboratoryItem key={entity.id} laboratory={entity} />
+    ))
 }
 
 export function FoooterTable() {

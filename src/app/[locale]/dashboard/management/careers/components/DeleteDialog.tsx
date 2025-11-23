@@ -30,7 +30,7 @@ import { SearchCareersContext } from '@/contexts/careers.context'
 
 function SuspenseDeleteDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <DeleteDialog />
         </Suspense>
     )

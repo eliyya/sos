@@ -156,7 +156,7 @@ function ArchiveDialog() {
 
 export function SuspenseArchiveDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <ArchiveDialog />
         </Suspense>
     )

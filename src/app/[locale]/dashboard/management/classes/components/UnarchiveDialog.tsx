@@ -158,7 +158,7 @@ function UnarchiveDialog() {
 
 function SuspenseUnarchiveDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <UnarchiveDialog />
         </Suspense>
     )

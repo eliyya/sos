@@ -159,7 +159,7 @@ function EditDialog() {
 
 function SuspenseEditDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <EditDialog />
         </Suspense>
     )

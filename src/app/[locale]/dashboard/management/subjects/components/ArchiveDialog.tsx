@@ -133,7 +133,7 @@ function ArchiveDialog() {
 
 function SuspenseArchiveDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <ArchiveDialog />
         </Suspense>
     )

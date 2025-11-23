@@ -30,7 +30,7 @@ import { SearchCareersContext } from '@/contexts/careers.context'
 
 function SuspenseArchiveDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <ArchiveDialog />
         </Suspense>
     )

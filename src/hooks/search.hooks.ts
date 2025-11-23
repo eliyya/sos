@@ -8,7 +8,7 @@ import type {
     searchStudents,
     searchUsers,
 } from '@/actions/search.actions'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
 import {
@@ -44,6 +44,36 @@ type Filters = {
 }
 type Entity = keyof typeof app.api.pagination
 export function useSearchEntity<T extends Entity>(entity: T) {
+    const [forceRefresh, setRefresh] = useState(Symbol())
+    const { filters, changeFilters } = useFilters()
+    const [promise, setPromise] = useState(
+        () =>
+            Promise.resolve({
+                [entity]: [],
+                pages: 1,
+            }) as unknown as EntityPromise<T>,
+    )
+
+    const refresh = useCallback(() => setRefresh(Symbol()), [])
+
+    useEffect(() => {
+        const promise = fetch(
+            `${app.api.pagination[entity]()}?${createSearchParams(filters)}`,
+        )
+            .then(res => res.json())
+            .catch(() => ({ [entity]: [], count: 1 })) as EntityPromise<T>
+        setPromise(promise)
+    }, [entity, filters, forceRefresh])
+
+    return {
+        filters,
+        changeFilters,
+        promise,
+        refresh,
+    }
+}
+
+function useFilters() {
     const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''))
     const [archived, setArchived] = useQueryState(
         'archived',
@@ -54,7 +84,6 @@ export function useSearchEntity<T extends Entity>(entity: T) {
         'size',
         parseAsInteger.withDefault(10),
     )
-    const [forceRefresh, setRefresh] = useState(Symbol())
 
     const filters = useMemo(
         () => ({ query, archived, page, size }),
@@ -72,23 +101,8 @@ export function useSearchEntity<T extends Entity>(entity: T) {
         [filters, setQuery, setArchived, setPage, setSize],
     )
 
-    const refresh = useCallback(() => setRefresh(Symbol()), [])
-
-    const promise: EntityPromise<T> = useMemo(
-        () =>
-            fetch(
-                `${app.api.pagination[entity]()}?${createSearchParams(filters)}`,
-            )
-                .then(res => res.json())
-                .catch(() => ({ [entity]: [], count: 1 })) as EntityPromise<T>,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [forceRefresh, filters],
-    )
-
     return {
         filters,
         changeFilters,
-        promise,
-        refresh,
     }
 }
