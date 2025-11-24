@@ -257,7 +257,7 @@ export async function editUser({
     username,
     role_id,
     password,
-}: EditUserProps) {
+}: Partial<EditUserProps>) {
     return Effect.runPromise(
         Effect.scoped(
             editUserEffect({ id, name, username, role_id, password })

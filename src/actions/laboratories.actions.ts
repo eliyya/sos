@@ -118,10 +118,11 @@ export async function editLaboratory({
     name,
     open_hour,
     type,
+    id,
 }: Parameters<typeof editLaboratoryEffect>[0]) {
     return await Effect.runPromise(
         Effect.scoped(
-            editLaboratoryEffect({ close_hour, name, open_hour, type })
+            editLaboratoryEffect({ close_hour, name, open_hour, type, id })
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(Effect.provide(AuthLive))
                 .pipe(

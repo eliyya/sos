@@ -8,7 +8,7 @@ import type {
     searchStudents,
     searchUsers,
 } from '@/actions/search.actions'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { ChangeProps, createSearchParams, propsParser } from '@/lib/utils'
 import app from '@eliyya/type-routes'
 import {
@@ -38,17 +38,20 @@ type EntityPromise<T extends SearchEntity> =
 
 export type SearchEntity = keyof typeof app.api.pagination
 
-type Filters = Record<string, string | number | boolean>
+export type SearchFilters = Record<string, string | number | boolean>
 
 export type SearchContext<
     E extends SearchEntity,
     F extends () => {
-        filters: Filters
-        changeFilters: (props: ChangeProps<Filters>) => void
+        filters: SearchFilters
+        changeFilters: (props: ChangeProps<SearchFilters>) => void
     },
 > = ReturnType<typeof useSearchEntity<E, ReturnType<F>['filters']>>
 
-export function useSearchEntity<E extends SearchEntity, F extends Filters>(
+export function useSearchEntity<
+    E extends SearchEntity,
+    F extends SearchFilters,
+>(
     entity: E,
     {
         filters,
@@ -56,7 +59,6 @@ export function useSearchEntity<E extends SearchEntity, F extends Filters>(
     }: { filters: F; changeFilters: (props: ChangeProps<F>) => void },
 ) {
     const [forceRefresh, setRefresh] = useState(Symbol())
-    // const { filters, changeFilters } = useFiltersBase()
     const [promise, setPromise] = useState(
         () =>
             Promise.resolve({
@@ -64,10 +66,17 @@ export function useSearchEntity<E extends SearchEntity, F extends Filters>(
                 pages: 1,
             }) as unknown as EntityPromise<E>,
     )
+    const [data, setData] = useState({ [entity]: [], pages: 1 } as Awaited<
+        EntityPromise<E>
+    >)
+    const [inProgress, starTransition] = useTransition()
 
     useEffect(() => {
         const promise = search(entity, filters)
         setPromise(promise)
+        starTransition(() => {
+            promise.then(data => setData(data as Awaited<EntityPromise<E>>))
+        })
     }, [entity, filters, forceRefresh])
 
     const refresh = useCallback(() => setRefresh(Symbol()), [])
@@ -75,8 +84,10 @@ export function useSearchEntity<E extends SearchEntity, F extends Filters>(
     return {
         filters,
         changeFilters,
-        promise,
         refresh,
+        promise,
+        inProgress,
+        data,
     }
 }
 
