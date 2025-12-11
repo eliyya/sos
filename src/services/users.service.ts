@@ -203,7 +203,7 @@ export function editUserEffect({
     username,
     role_id,
     password,
-}: EditUserEffectProps) {
+}: Partial<EditUserEffectProps>) {
     return Effect.gen(function* (_) {
         yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
 
@@ -397,6 +397,6 @@ export const searchUsersEffect = ({
 
         return {
             users: usersMapped,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })

@@ -1,16 +1,16 @@
-import { SearchLaboratoriesProvider } from '@/contexts/laboratories.context'
 import { DashboardHeader } from '../../components/DashboardHeader'
 import { CreateButton } from './components/CreateButton'
+import { CreateLaboratoryDialog } from './components/CreateDialog'
 import { LaboratoriesTable } from './components/table/laboratories-table'
 import { Filters } from './components/SearchInput'
-import { CreateLaboratoryDialog } from './components/CreateDialog'
+import { SearchLaboratoriesProvider } from '@/contexts/laboratories.context'
 import { ArchiveDialog } from './components/ArchiveDialog'
-import { EditDialog } from './components/EditDialog'
 import { DeleteDialog } from './components/DeleteDialog'
+import { EditDialog } from './components/EditDialog'
 import { UnarchiveDialog } from './components/UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
 
-export default async function LaboratoryPage() {
+export default function LaboratoryPage() {
     return (
         <SearchLaboratoriesProvider>
             <div className='flex justify-between'>
@@ -19,13 +19,13 @@ export default async function LaboratoryPage() {
                     text='Gestión de Laboratorios.'
                 />
                 <CreateButton />
+                <CreateLaboratoryDialog />
             </div>
             <Filters />
             <LaboratoriesTable />
-            <CreateLaboratoryDialog />
             <ArchiveDialog />
-            <EditDialog />
             <DeleteDialog />
+            <EditDialog />
             <UnarchiveDialog />
             <UnarchiveOrDeleteDialog />
         </SearchLaboratoriesProvider>

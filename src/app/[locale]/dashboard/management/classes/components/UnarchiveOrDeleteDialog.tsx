@@ -44,8 +44,8 @@ function UnarchiveOrDeleteDialog() {
     const [message, setMessage] = useState('')
     const t = useTranslations('classes')
     const router = useRouter()
-    const { classesPromise, refreshClasses } = use(SearchClassesContext)
-    const { classes } = use(classesPromise)
+    const { promise, refresh } = use(SearchClassesContext)
+    const { classes } = use(promise)
 
     const entity = useMemo(() => {
         return classes.find(c => c.id === entityId)
@@ -57,11 +57,11 @@ function UnarchiveOrDeleteDialog() {
             const res = await unarchiveClass(entityId)
             if (res.status === 'success') {
                 setOpen(null)
-                refreshClasses()
+                refresh()
                 return
             }
             if (res.type === 'not-found') {
-                refreshClasses()
+                refresh()
                 setOpen(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -71,7 +71,7 @@ function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityId, setOpen, refreshClasses, router])
+    }, [entityId, setOpen, refresh, router])
 
     if (!entity) return null
 
@@ -174,7 +174,7 @@ function UnarchiveOrDeleteDialog() {
 
 function SuspenseUnarchiveOrDeleteDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <UnarchiveOrDeleteDialog />
         </Suspense>
     )

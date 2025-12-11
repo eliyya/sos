@@ -35,9 +35,9 @@ export function DeleteEntityDialog() {
     const [message, setMessage] = useState('')
     const { roles } = useRoles()
     const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
-    const { refreshUsers, usersPromise } = use(SearchUsersContext)
+    const { refresh, promise } = use(SearchUsersContext)
     const router = useRouter()
-    const { users } = use(usersPromise)
+    const { users } = use(promise)
 
     const entity = useMemo(() => {
         if (!entityId) return null
@@ -49,7 +49,7 @@ export function DeleteEntityDialog() {
         startTransition(async () => {
             const response = await deleteUser(entityId)
             if (response.status === 'success') {
-                refreshUsers()
+                refresh()
                 setOpen(null)
                 return
             }
@@ -74,7 +74,7 @@ export function DeleteEntityDialog() {
                 setTimeout(() => setMessage(''), 5_000)
             }
         })
-    }, [entityId, startTransition, setOpen, refreshUsers, router])
+    }, [entityId, startTransition, setOpen, refresh, router])
 
     if (!entity || !adminRole) return null
 

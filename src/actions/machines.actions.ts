@@ -11,7 +11,6 @@ import {
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
-import { SuccessOf } from '@/lib/type-utils'
 import {
     availableMachineEffect,
     createMachineEffect,
@@ -19,7 +18,6 @@ import {
     editMachineEffect,
     getMachinesEffect,
     maintainanceMachineEffect,
-    searchMachinesEffect,
 } from '@/services/machines.service'
 import { Effect } from 'effect'
 
@@ -363,23 +361,4 @@ export async function availableMachine(id: string) {
                 ),
         ),
     )
-}
-
-type SearchMachinesProps = Parameters<typeof searchMachinesEffect>[0]
-export async function searchMachines(
-    props: SearchMachinesProps,
-): Promise<SuccessOf<ReturnType<typeof searchMachinesEffect>>> {
-    const machines = await Effect.runPromise(
-        Effect.scoped(
-            searchMachinesEffect(props)
-                .pipe(Effect.provide(PrismaLive))
-                .pipe(
-                    Effect.catchAll(error => {
-                        console.log(error)
-                        return Effect.succeed({ machines: [], count: 0 })
-                    }),
-                ),
-        ),
-    )
-    return machines
 }

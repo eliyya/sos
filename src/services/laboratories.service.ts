@@ -3,6 +3,7 @@ import { requirePermission } from './auth.service'
 import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 import { PrismaService } from '@/layers/db.layer'
 import {
+    Laboratory,
     LABORATORY_TYPE,
     MACHINE_STATUS,
     STATUS,
@@ -134,7 +135,8 @@ export const editLaboratoryEffect = ({
     name,
     open_hour,
     type,
-}: Partial<CreateLaboratoryProps>) =>
+    id,
+}: Partial<CreateLaboratoryProps> & { id: Laboratory['id'] }) =>
     Effect.gen(function* (_) {
         yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_LABS))
 
@@ -144,7 +146,7 @@ export const editLaboratoryEffect = ({
             Effect.tryPromise({
                 try: () =>
                     prisma.laboratory.findUnique({
-                        where: { name },
+                        where: { id },
                     }),
                 catch: err => new PrismaError(err),
             }),
@@ -230,7 +232,7 @@ export const editLaboratoryEffect = ({
             Effect.tryPromise({
                 try: () =>
                     prisma.laboratory.update({
-                        where: { name },
+                        where: { id },
                         data: { name, open_hour, close_hour, type },
                     }),
                 catch: err => new PrismaError(err),
@@ -450,6 +452,6 @@ export const searchLaboratoriesEffect = ({
 
         return {
             laboratories,
-            count,
+            pages: Math.ceil(count / size || 1),
         }
     })

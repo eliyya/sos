@@ -70,10 +70,8 @@ function EditForm() {
     const [message, setMessage] = useState('')
     const labId = useAtomValue(selectedIdAtom)
     const router = useRouter()
-    const { refreshLaboratories, laboratoriesPromise } = use(
-        SearchLaboratoriesContext,
-    )
-    const { laboratories } = use(laboratoriesPromise)
+    const { refresh, promise } = use(SearchLaboratoriesContext)
+    const { laboratories } = use(promise)
 
     const old = useMemo(
         () => laboratories?.find(lab => lab.id === labId),
@@ -89,13 +87,14 @@ function EditForm() {
             if (!old) return
             startTransition(async () => {
                 const response = await editLaboratory({
+                    id: old.id,
                     name,
                     close_hour,
                     open_hour,
                     type,
                 })
                 if (response.status === 'success') {
-                    refreshLaboratories()
+                    refresh()
                     openDialog(null)
                 } else {
                     if (response.type === 'already-exists') {
@@ -103,7 +102,7 @@ function EditForm() {
                     } else if (response.type === 'invalid-input') {
                         setMessage(response.message)
                     } else if (response.type === 'not-found') {
-                        refreshLaboratories()
+                        refresh()
                         openDialog(null)
                     } else if (response.type === 'permission') {
                         setMessage(
@@ -117,7 +116,7 @@ function EditForm() {
                 }
             })
         },
-        [old, openDialog, router, refreshLaboratories],
+        [old, openDialog, router, refresh],
     )
 
     if (!old) return null

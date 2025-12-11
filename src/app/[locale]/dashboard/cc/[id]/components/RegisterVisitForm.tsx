@@ -10,8 +10,8 @@ import { CompletSelect } from '@/components/Select'
 import LabeledSwitch from '@/components/Switch'
 import { errorAtom, updateTableAtom } from '@/global/cc'
 import { useTranslations } from 'next-intl'
-import { useCareers } from '@/hooks/careers.hooks'
 import { getStudent } from '@/actions/students.actions'
+import { useCareers } from '@/hooks/careers.hooks'
 
 interface RegisterVisitFormProps {
     laboratory_id: string

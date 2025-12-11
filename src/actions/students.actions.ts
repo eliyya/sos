@@ -12,7 +12,6 @@ import {
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
-import { SuccessOf } from '@/lib/type-utils'
 import {
     archiveStudentEffect,
     createStudentEffect,
@@ -20,7 +19,6 @@ import {
     editStudentEffect,
     getStudentEffect,
     getStudentsEffect,
-    searchStudentsEffect,
     unarchiveStudentEffect,
 } from '@/services/students.service'
 import { Effect } from 'effect'
@@ -387,25 +385,6 @@ export async function getStudents() {
                 ),
         ),
     )
-}
-
-type SearchStudentsProps = Parameters<typeof searchStudentsEffect>[0]
-export async function searchStudents(
-    props: SearchStudentsProps,
-): Promise<SuccessOf<ReturnType<typeof searchStudentsEffect>>> {
-    const students = await Effect.runPromise(
-        Effect.scoped(
-            searchStudentsEffect(props)
-                .pipe(Effect.provide(PrismaLive))
-                .pipe(
-                    Effect.catchAll(error => {
-                        console.log(error)
-                        return Effect.succeed({ students: [], count: 0 })
-                    }),
-                ),
-        ),
-    )
-    return students
 }
 
 export async function getStudent(nc: string) {

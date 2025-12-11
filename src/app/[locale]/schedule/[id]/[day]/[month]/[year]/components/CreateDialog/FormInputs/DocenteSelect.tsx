@@ -2,7 +2,7 @@
 
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { TransitionStartFunction, useCallback, useState } from 'react'
-import { getRemainingHours, searchClasses } from '@/actions/classes.actions'
+import { getRemainingHours } from '@/actions/classes.actions'
 import { CompletAsyncSelect } from '@/components/Select'
 import {
     classesAtom,
@@ -12,6 +12,7 @@ import {
     selectedUserAtom,
 } from '@/global/management-practices'
 import { classesSelectOptionsAtom } from '@/global/management.globals'
+import { searchClasses } from '@/actions/search.actions'
 
 interface DocenteSelectProps {
     startLoadingClasses: TransitionStartFunction

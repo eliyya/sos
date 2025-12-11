@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/Button'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useSetAtom } from 'jotai'
-import { SearchStudentsPromise } from '@/hooks/students.hooks'
+import { SearchStudentsPromise } from '@/hooks/search.hooks'
 import { use } from 'react'
 import { SearchStudentsContext } from '@/contexts/students.context'
 import { TableRow, TableCell } from '@/components/Table'
@@ -94,8 +94,8 @@ function Buttons({ entity }: ButtonsProps) {
 }
 
 export function StudentsList() {
-    const { studentsPromise } = use(SearchStudentsContext)
-    const { students } = use(studentsPromise)
+    const { promise } = use(SearchStudentsContext)
+    const { students } = use(promise)
 
     if (!students.length)
         return (
@@ -112,10 +112,8 @@ export function StudentsList() {
 }
 
 export function FoooterTable() {
-    const { changeFilters, filters, studentsPromise } = use(
-        SearchStudentsContext,
-    )
-    const { count } = use(studentsPromise)
+    const { changeFilters, filters, promise } = use(SearchStudentsContext)
+    const { pages } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>
@@ -133,7 +131,7 @@ export function FoooterTable() {
                 Anterior
             </Button>
             <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
+                Página {filters.page} de {pages}
             </div>
             <Button
                 variant='outline'
@@ -143,7 +141,7 @@ export function FoooterTable() {
                         page: filters.page + 1,
                     })
                 }
-                disabled={filters.page === Math.ceil(count / filters.size)}
+                disabled={filters.page === pages}
             >
                 Siguiente
                 <ChevronRightIcon className='h-4 w-4' />

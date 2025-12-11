@@ -32,12 +32,12 @@ function DeleteDialog() {
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshSubjects, subjectsPromise } = use(SearchSubjectsContext)
+    const { refresh, promise: subjectsPromise } = use(SearchSubjectsContext)
     const router = useRouter()
     const { subjects } = use(subjectsPromise)
 
     const entity = useMemo(() => {
-        return subjects.find(subject => subject.id === entityId)
+        return subjects?.find(subject => subject.id === entityId)
     }, [subjects, entityId])
 
     const onAction = useCallback(async () => {
@@ -46,12 +46,12 @@ function DeleteDialog() {
             const res = await deleteSubject(entityId)
             if (res.status === 'success') {
                 openDialog(null)
-                refreshSubjects()
+                refresh()
                 return
             }
             if (res.type === 'not-found') {
                 openDialog(null)
-                refreshSubjects()
+                refresh()
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para archivar esta asignatura')
             } else if (res.type === 'unauthorized') {
@@ -60,7 +60,7 @@ function DeleteDialog() {
                 setMessage('Ha ocurrido un error, intentalo más tarde')
             }
         })
-    }, [entityId, openDialog, refreshSubjects, router])
+    }, [entityId, openDialog, refresh, router])
 
     if (!entity) return null
 
@@ -138,7 +138,7 @@ function DeleteDialog() {
 
 function SuspenseDeleteDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <DeleteDialog />
         </Suspense>
     )

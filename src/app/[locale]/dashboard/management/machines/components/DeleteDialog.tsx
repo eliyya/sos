@@ -146,7 +146,7 @@ function DeleteDialog() {
 
 function SuspenseDeleteDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <DeleteDialog />
         </Suspense>
     )

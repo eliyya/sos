@@ -31,9 +31,9 @@ export function UnarchiveEntityDialog() {
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshUsers, usersPromise } = use(SearchUsersContext)
+    const { refresh, promise } = use(SearchUsersContext)
     const router = useRouter()
-    const { users } = use(usersPromise)
+    const { users } = use(promise)
 
     const entity = useMemo(() => {
         if (!entityId) return null
@@ -45,7 +45,7 @@ export function UnarchiveEntityDialog() {
         startTransition(async () => {
             const response = await unarchiveUser(entityId)
             if (response.status === 'success') {
-                refreshUsers()
+                refresh()
                 setOpen(null)
                 return
             }
@@ -60,7 +60,7 @@ export function UnarchiveEntityDialog() {
             }
             setTimeout(setMessage, 5_000, '')
         })
-    }, [entityId, startTransition, setOpen, refreshUsers, router])
+    }, [entityId, startTransition, setOpen, refresh, router])
 
     if (!entity) return null
 

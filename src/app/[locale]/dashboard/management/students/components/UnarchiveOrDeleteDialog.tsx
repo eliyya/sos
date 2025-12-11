@@ -37,13 +37,13 @@ import { CompletInput } from '@/components/Inputs'
 import { SearchStudentsContext } from '@/contexts/students.context'
 
 function UnarchiveOrDeleteDialog() {
-    const { refreshStudents, studentsPromise } = use(SearchStudentsContext)
+    const { refresh, promise } = use(SearchStudentsContext)
     const [open, openDialog] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entityNc = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { students } = use(studentsPromise)
+    const { students } = use(promise)
 
     const entity = useMemo(() => {
         return students.find(student => student.nc === entityNc)
@@ -55,11 +55,11 @@ function UnarchiveOrDeleteDialog() {
             const res = await unarchiveStudent(entityNc)
             if (res.status === 'success') {
                 openDialog(null)
-                refreshStudents()
+                refresh()
                 return
             }
             if (res.type === 'not-found') {
-                refreshStudents()
+                refresh()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -69,7 +69,7 @@ function UnarchiveOrDeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityNc, openDialog, router, refreshStudents])
+    }, [entityNc, openDialog, router, refresh])
 
     if (!entity) return null
 
@@ -168,7 +168,7 @@ function UnarchiveOrDeleteDialog() {
 
 function SuspenseUnarchiveOrDeleteDialog() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <UnarchiveOrDeleteDialog />
         </Suspense>
     )

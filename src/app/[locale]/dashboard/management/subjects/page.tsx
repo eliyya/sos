@@ -10,7 +10,7 @@ import { EditDialog } from './components/EditDialog'
 import { UnarchiveDialog } from './components/UnarchiveDialog'
 import { UnarchiveOrDeleteDialog } from './components/UnarchiveOrDeleteDialog'
 
-export default async function SubjectsPage() {
+export default function SubjectsPage() {
     return (
         <SearchSubjectsProvider>
             <div className='flex justify-between'>

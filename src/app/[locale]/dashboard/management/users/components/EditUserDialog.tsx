@@ -43,9 +43,9 @@ export function EditUserDialog() {
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshUsers, usersPromise } = use(SearchUsersContext)
+    const { refresh, promise } = use(SearchUsersContext)
     const setPasswordError = useSetAtom(editPasswordErrorAtom)
-    const { users } = use(usersPromise)
+    const { users } = use(promise)
 
     const oldUser = useMemo(() => {
         if (!entityId) return null
@@ -82,7 +82,7 @@ export function EditUserDialog() {
                             })
                             if (response.status === 'success') {
                                 setOpen(null)
-                                refreshUsers()
+                                refresh()
                             } else if (response.type === 'not-found') {
                                 setMessage(response.message)
                                 setTimeout(setMessage, 5_000, '')
@@ -125,8 +125,8 @@ export function EditUserDialog() {
 
 export function EditUsernameInput() {
     const entityId = useAtomValue(selectedIdAtom)
-    const { usersPromise } = use(SearchUsersContext)
-    const { users } = use(usersPromise)
+    const { promise } = use(SearchUsersContext)
+    const { users } = use(promise)
 
     const oldUser = useMemo(() => {
         if (!entityId) return null
@@ -149,8 +149,8 @@ export function EditUsernameInput() {
 
 export function EditRoleSelect() {
     const entityId = useAtomValue(selectedIdAtom)
-    const { usersPromise } = use(SearchUsersContext)
-    const { users } = use(usersPromise)
+    const { promise } = use(SearchUsersContext)
+    const { users } = use(promise)
 
     const oldUser = useMemo(() => {
         if (!entityId) return null
@@ -221,8 +221,8 @@ export function EditPasswordInput() {
 
 export function EditNameInput() {
     const entityId = useAtomValue(selectedIdAtom)
-    const { usersPromise } = use(SearchUsersContext)
-    const { users } = use(usersPromise)
+    const { promise } = use(SearchUsersContext)
+    const { users } = use(promise)
 
     const oldUser = useMemo(() => {
         if (!entityId) return null

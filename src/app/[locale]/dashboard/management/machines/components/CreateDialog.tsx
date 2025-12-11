@@ -23,7 +23,7 @@ import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchMachinesContext } from '@/contexts/machines.context'
-import { searchLaboratories } from '@/actions/laboratories.actions'
+import { searchLaboratories } from '@/actions/search.actions'
 
 export function CreateSubjectDialog() {
     const [dialogOpened, openDialog] = useAtom(dialogAtom)

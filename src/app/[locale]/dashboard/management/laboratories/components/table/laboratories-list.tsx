@@ -13,11 +13,127 @@ import {
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
-import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
-import { SearchLaboratoriesPromise } from '@/hooks/laboratories.hoohs'
+import { SearchLaboratoriesPromise } from '@/hooks/search.hooks'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { secondsToTime } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
-import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
+import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
+
+interface ButtonsProps {
+    laboratory: Laboratory
+}
+function Buttons({ laboratory }: ButtonsProps) {
+    const setDialogOpened = useSetAtom(dialogAtom)
+    const setSelectedSubjectId = useSetAtom(selectedIdAtom)
+    if (laboratory.status === STATUS.ACTIVE)
+        return (
+            <>
+                {/* Editar */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setDialogOpened('EDIT')
+                        setSelectedSubjectId(laboratory.id)
+                    }}
+                >
+                    <PencilIcon className='text-xs' />
+                </Button>
+                {/* Archivar */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setDialogOpened('ARCHIVE')
+                        setSelectedSubjectId(laboratory.id)
+                    }}
+                >
+                    <ArchiveIcon className='w-xs text-xs' />
+                </Button>
+            </>
+        )
+    if (laboratory.status === STATUS.ARCHIVED)
+        return (
+            <>
+                {/* Unarchive */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setDialogOpened('UNARCHIVE')
+                        setSelectedSubjectId(laboratory.id)
+                    }}
+                >
+                    <ArchiveRestoreIcon className='w-xs text-xs' />
+                </Button>
+                {/* Delete */}
+                <Button
+                    size='icon'
+                    onClick={() => {
+                        setDialogOpened('DELETE')
+                        setSelectedSubjectId(laboratory.id)
+                    }}
+                >
+                    <Trash2Icon className='w-xs text-xs' />
+                </Button>
+            </>
+        )
+    return <></>
+}
+
+export function LaboratoriesList() {
+    const { promise } = use(SearchLaboratoriesContext)
+    const { laboratories } = use(promise)
+
+    if (!laboratories?.length)
+        return (
+            <TableRow>
+                <TableCell className='text-center' colSpan={5}>
+                    No se encontraron resultados
+                </TableCell>
+            </TableRow>
+        )
+
+    return laboratories.map(entity => (
+        <LaboratoryItem key={entity.id} laboratory={entity} />
+    ))
+}
+
+export function FoooterTable() {
+    const { changeFilters, filters, promise } = use(SearchLaboratoriesContext)
+    const { pages } = use(promise)
+
+    return (
+        <div className='flex items-center justify-center gap-5'>
+            <Button
+                variant='outline'
+                size='sm'
+                onClick={() =>
+                    changeFilters({
+                        page: filters.page - 1,
+                    })
+                }
+                disabled={filters.page === 1}
+            >
+                <ChevronLeftIcon className='h-4 w-4' />
+                Anterior
+            </Button>
+            <div className='text-sm font-medium'>
+                Página {filters.page} de {pages}
+            </div>
+            <Button
+                variant='outline'
+                size='default'
+                onClick={() =>
+                    changeFilters({
+                        page: filters.page + 1,
+                    })
+                }
+                disabled={filters.page === pages}
+            >
+                Siguiente
+                <ChevronRightIcon className='h-4 w-4' />
+            </Button>
+        </div>
+    )
+}
 
 interface LaboratoryItemListProps {
     laboratory: Awaited<SearchLaboratoriesPromise>['laboratories'][number]
@@ -43,123 +159,5 @@ export function LaboratoryItem({ laboratory }: LaboratoryItemListProps) {
                 <Buttons laboratory={laboratory} />
             </TableCell>
         </TableRow>
-    )
-}
-interface ButtonsProps {
-    laboratory: Laboratory
-}
-function Buttons({ laboratory }: ButtonsProps) {
-    const setSelectedId = useSetAtom(selectedIdAtom)
-    const openDialog = useSetAtom(dialogAtom)
-
-    if (laboratory.status === STATUS.ACTIVE)
-        return (
-            <>
-                {/* Editar */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        openDialog('EDIT')
-                        setSelectedId(laboratory.id)
-                    }}
-                >
-                    <PencilIcon className='text-xs' />
-                </Button>
-                {/* Archivar */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSelectedId(laboratory.id)
-                        openDialog('ARCHIVE')
-                    }}
-                >
-                    <ArchiveIcon className='w-xs text-xs' />
-                </Button>
-            </>
-        )
-    if (laboratory.status === STATUS.ARCHIVED)
-        return (
-            <>
-                {/* Unarchive */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSelectedId(laboratory.id)
-                        openDialog('UNARCHIVE')
-                    }}
-                >
-                    <ArchiveRestoreIcon className='w-xs text-xs' />
-                </Button>
-                {/* Delete */}
-                <Button
-                    size='icon'
-                    onClick={() => {
-                        setSelectedId(laboratory.id)
-                        openDialog('DELETE')
-                    }}
-                >
-                    <Trash2Icon className='w-xs text-xs' />
-                </Button>
-            </>
-        )
-    return <></>
-}
-
-export function LaboratoriesList() {
-    const { laboratoriesPromise } = use(SearchLaboratoriesContext)
-    const { laboratories } = use(laboratoriesPromise)
-
-    if (!laboratories?.length)
-        return (
-            <TableRow>
-                <TableCell className='text-center' colSpan={5}>
-                    No se encontraron resultados
-                </TableCell>
-            </TableRow>
-        )
-
-    return laboratories.map(lab => (
-        <LaboratoryItem key={lab.id} laboratory={lab} />
-    ))
-}
-
-export function FoooterTable() {
-    const { changeFilters, filters, laboratoriesPromise } = use(
-        SearchLaboratoriesContext,
-    )
-    const { count } = use(laboratoriesPromise)
-
-    return (
-        <div className='flex items-center justify-center gap-5'>
-            <Button
-                variant='outline'
-                size='sm'
-                onClick={() =>
-                    changeFilters({
-                        page: filters.page - 1,
-                    })
-                }
-                disabled={filters.page === 1}
-            >
-                <ChevronLeftIcon className='h-4 w-4' />
-                Anterior
-            </Button>
-            <div className='text-sm font-medium'>
-                Página {filters.page} de {Math.ceil(count || 1 / filters.size)}
-            </div>
-            <Button
-                variant='outline'
-                size='sm'
-                onClick={() =>
-                    changeFilters({
-                        page: filters.page + 1,
-                    })
-                }
-                disabled={filters.page === Math.ceil(count / filters.size)}
-            >
-                Siguiente
-                <ChevronRightIcon className='h-4 w-4' />
-            </Button>
-        </div>
     )
 }
