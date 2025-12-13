@@ -4,12 +4,13 @@ import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Save, TagIcon, SquarePenIcon, PlusIcon } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createCareer } from '@/actions/careers.actions'
-import { Button } from '@/components/Button'
+import { Button, SimulatedButton } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogTrigger,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
@@ -18,7 +19,6 @@ import { useTranslations } from 'next-intl'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'
 import { SearchCareersContext } from '@/contexts/careers.context'
-import { DialogTrigger } from '@radix-ui/react-dialog'
 
 const nameAtom = atom('')
 const aliasAtom = atom('')
@@ -88,17 +88,12 @@ export function CreateCareerDialog() {
     )
 
     return (
-        <Dialog
-            open={open === 'CREATE'}
-            onOpenChange={status => {
-                if (!status) openDialog(null)
-            }}
-        >
+        <Dialog>
             <DialogTrigger>
-                <Button>
+                <SimulatedButton>
                     <PlusIcon className='mr-2 h-5 w-5' />
                     {t('create_career')}
-                </Button>
+                </SimulatedButton>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>

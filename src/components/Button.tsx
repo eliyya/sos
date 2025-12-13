@@ -42,3 +42,19 @@ export const Button = ({ className, variant, size, ...props }: ButtonProps) => {
         />
     )
 }
+
+type SimulatedButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+    VariantProps<typeof buttonVariants>
+export const SimulatedButton = ({
+    className,
+    variant,
+    size,
+    ...props
+}: SimulatedButtonProps) => {
+    return (
+        <button
+            {...props}
+            className={cn(buttonVariants({ variant, size, className }))}
+        />
+    )
+}
