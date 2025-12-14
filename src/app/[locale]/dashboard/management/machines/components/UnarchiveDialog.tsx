@@ -32,10 +32,10 @@ function UnarchiveDialog() {
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
-    const { refreshMachines, machinesPromise } = use(SearchMachinesContext)
+    const { refresh, promise } = use(SearchMachinesContext)
     const router = useRouter()
 
-    const { machines } = use(machinesPromise)
+    const { machines } = use(promise)
 
     const entity = useMemo(() => {
         return machines.find(m => m.id === entityId)
@@ -47,11 +47,11 @@ function UnarchiveDialog() {
             const res = await availableMachine(entityId)
             if (res.status === 'success') {
                 openDialog(null)
-                refreshMachines()
+                refresh()
                 return
             }
             if (res.type === 'not-found') {
-                refreshMachines()
+                refresh()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage(res.message)
@@ -61,7 +61,7 @@ function UnarchiveDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entityId, openDialog, router, refreshMachines])
+    }, [entityId, openDialog, router, refresh])
 
     if (!entity) return null
 

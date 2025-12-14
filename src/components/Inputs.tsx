@@ -3,6 +3,7 @@
 import { LucideIcon, Undo2 } from 'lucide-react'
 import {
     Activity,
+    ChangeEvent,
     ForwardedRef,
     InputHTMLAttributes,
     ReactNode,
@@ -408,6 +409,100 @@ export function RetornableCompletTextarea({
                 >
                     {error}
                 </MessageError>
+            </Activity>
+        </div>
+    )
+}
+
+interface RetornableInputProps extends InputHTMLAttributes<HTMLInputElement> {
+    defaultValue: string | number
+    ref?: ForwardedRef<HTMLInputElement>
+    onEdited?: (
+        edited: boolean,
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => void
+    resetSignal?: symbol
+}
+export function RetornableInput({
+    onChange,
+    id,
+    defaultValue,
+    onEdited,
+    resetSignal,
+    ref,
+    ...props
+}: RetornableInputProps) {
+    const rid = useId()
+    const [isChanged, setIsChanged] = useState(false)
+    const internalRef = useRef<HTMLInputElement>(null)
+    const [value, setValue] = useState(() => `${defaultValue}`)
+
+    useImperativeHandle(ref, () => internalRef.current!)
+
+    useEffect(() => {
+        if (resetSignal) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setValue(`${defaultValue}`)
+            setIsChanged(false)
+        }
+    }, [defaultValue, resetSignal])
+
+    return (
+        <div className='relative'>
+            <input
+                {...props}
+                ref={internalRef}
+                id={id ?? rid}
+                value={value}
+                onChange={e => {
+                    const val = e.currentTarget.value
+                    setValue(val)
+                    onChange?.(e)
+                    onEdited?.(val !== `${defaultValue}`, e)
+                    setIsChanged(val !== `${defaultValue}`)
+                }}
+                className={cn(
+                    'ring-offset-background text-foreground flex h-10 w-full px-3 py-2 text-sm',
+                    'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
+                    'disabled:cursor-not-allowed disabled:opacity-50',
+                    'placeholder:text-muted-foreground',
+                    {
+                        'border border-yellow-500 pr-10 outline-yellow-500':
+                            isChanged,
+                    },
+                )}
+            />
+            <Activity mode={isChanged ? 'visible' : 'hidden'}>
+                <button
+                    className='absolute top-0.5 right-1 cursor-pointer p-2'
+                    onClick={e => {
+                        e.preventDefault()
+                        const newValue = `${defaultValue}`
+                        setValue(newValue)
+                        setIsChanged(false)
+                        internalRef.current!.value = newValue
+                        const syntheticEvent = new Event('input', {
+                            bubbles: true,
+                        })
+                        Object.defineProperty(syntheticEvent, 'target', {
+                            writable: false,
+                            value: internalRef.current,
+                        })
+                        Object.defineProperty(syntheticEvent, 'currentTarget', {
+                            writable: false,
+                            value: internalRef.current,
+                        })
+                        onChange?.(
+                            syntheticEvent as unknown as ChangeEvent<HTMLInputElement>,
+                        )
+                        onEdited?.(
+                            false,
+                            syntheticEvent as unknown as ChangeEvent<HTMLInputElement>,
+                        )
+                    }}
+                >
+                    <Undo2 className='h-5 w-5 text-gray-500 dark:text-gray-400' />
+                </button>
             </Activity>
         </div>
     )

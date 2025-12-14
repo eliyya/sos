@@ -82,8 +82,6 @@ export function LaboratoriesList() {
     const { promise } = use(SearchLaboratoriesContext)
     const { laboratories } = use(promise)
 
-    console.log({ laboratories })
-
     if (!laboratories?.length)
         return (
             <TableRow>

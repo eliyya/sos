@@ -1,10 +1,14 @@
 'use client'
 
-import { useSearchEntity } from '@/hooks/search.hooks'
+import {
+    SearchContext,
+    useFiltersBase,
+    useSearchEntity,
+} from '@/hooks/search.hooks'
 import { createContext } from 'react'
 
 export const SearchCareersContext = createContext<
-    ReturnType<typeof useSearchEntity<'careers'>>
+    SearchContext<'careers', typeof useFiltersBase>
 >(undefined!)
 
 interface SearchCareersProviderProps {
@@ -13,7 +17,8 @@ interface SearchCareersProviderProps {
 export function SearchCareersProvider({
     children,
 }: SearchCareersProviderProps) {
-    const searchData = useSearchEntity('careers')
+    const filters = useFiltersBase()
+    const searchData = useSearchEntity('careers', filters)
     return (
         <SearchCareersContext.Provider value={searchData}>
             {children}

@@ -87,6 +87,7 @@ function EditForm() {
             if (!old) return
             startTransition(async () => {
                 const response = await editLaboratory({
+                    id: old.id,
                     name,
                     close_hour,
                     open_hour,
