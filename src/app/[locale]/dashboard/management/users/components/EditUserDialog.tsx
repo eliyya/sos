@@ -16,7 +16,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { editUser } from '@/actions/users.actions'
+import { editUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -73,7 +73,7 @@ export function EditUserDialog() {
                             const username = data.get('username') as string
                             const role_id = data.get('role_id') as string
                             const password = data.get('password') as string
-                            const response = await editUser({
+                            const response = await editUserAction({
                                 id: oldUser.id,
                                 name,
                                 username,

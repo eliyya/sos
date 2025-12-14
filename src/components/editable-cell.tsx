@@ -64,10 +64,10 @@ import {
     deleteSubject,
 } from '@/actions/subjects.actions'
 import {
-    editUser,
-    archiveUser,
-    unarchiveUser,
-    deleteUser,
+    editUserAction,
+    archiveUserAction,
+    unarchiveUserAction,
+    deleteUserAction,
 } from '@/actions/users.actions'
 import { Career } from '@/prisma/generated/client'
 
@@ -272,8 +272,9 @@ export function TableHeadSkeleton({ columns }: TableHeadSkeletonProps) {
     )
 }
 
-interface GenericTableProps<E extends SearchEntity>
-    extends PassContextProps<E> {
+interface GenericTableProps<
+    E extends SearchEntity,
+> extends PassContextProps<E> {
     headers: string[]
     list(): JSX.Element | JSX.Element[]
 }
@@ -355,10 +356,10 @@ const ACTIONS: Record<
         delete: deleteSubject,
     },
     users: {
-        edit: editUser,
-        archive: archiveUser,
-        unarchive: unarchiveUser,
-        delete: deleteUser,
+        edit: editUserAction,
+        archive: archiveUserAction,
+        unarchive: unarchiveUserAction,
+        delete: deleteUserAction,
     },
 }
 interface ActionsProps<E extends SearchEntity> extends PassContextProps<E> {

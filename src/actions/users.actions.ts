@@ -5,21 +5,25 @@ import { PrismaLive } from '@/layers/db.layer'
 import {
     archiveUserEffect,
     checkIfUsernameIsTakenEffect,
+    createUserEffect,
     deleteUserEffect,
     editUserEffect,
     getUsersEffect,
     unarchiveUserEffect,
 } from '@/services/users.service'
 import {
+    BetterAuthAPIError,
+    BetterError,
     InvalidInputError,
     NotAllowedError,
     NotFoundError,
     PermissionError,
     UnauthorizedError,
+    UnexpectedError,
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
 
-export async function getUsers() {
+export async function getUsersAction() {
     return Effect.runPromise(
         Effect.scoped(
             getUsersEffect()
@@ -39,7 +43,7 @@ export async function getUsers() {
     )
 }
 
-export async function usernameIsTaken(username: string) {
+export async function usernameIsTakenAction(username: string) {
     return Effect.runPromise(
         Effect.scoped(
             checkIfUsernameIsTakenEffect(username)
@@ -80,7 +84,7 @@ export async function usernameIsTaken(username: string) {
     )
 }
 
-export async function archiveUser(id: string) {
+export async function archiveUserAction(id: string) {
     return Effect.runPromise(
         Effect.scoped(
             archiveUserEffect(id)
@@ -137,7 +141,7 @@ export async function archiveUser(id: string) {
     )
 }
 
-export async function unarchiveUser(id: string) {
+export async function unarchiveUserAction(id: string) {
     return Effect.runPromise(
         Effect.scoped(
             unarchiveUserEffect(id)
@@ -187,7 +191,7 @@ export async function unarchiveUser(id: string) {
     )
 }
 
-export async function deleteUser(id: string) {
+export async function deleteUserAction(id: string) {
     return Effect.runPromise(
         Effect.scoped(
             deleteUserEffect(id)
@@ -251,7 +255,7 @@ interface EditUserProps {
     role_id: string
     password?: string
 }
-export async function editUser({
+export async function editUserAction({
     id,
     name,
     username,
@@ -288,6 +292,82 @@ export async function editUser({
                                 }
                             }
                             console.error(error)
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error),
+                            }
+                        },
+                    }),
+                ),
+        ),
+    )
+}
+
+export async function createUserAction({
+    password,
+    name,
+    username,
+    role_id,
+}: {
+    password: string
+    name: string
+    username: string
+    role_id: string
+}) {
+    return Effect.runPromise(
+        Effect.scoped(
+            createUserEffect({ password, name, username, role_id })
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(AuthLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return {
+                                status: 'success' as const,
+                                data: value,
+                            }
+                        },
+                        onFailure(error) {
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                }
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                    missings: error.missings,
+                                }
+                            }
+                            if (error instanceof BetterError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'better-error' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            if (error instanceof UnexpectedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                }
+                            }
+                            if (error instanceof BetterAuthAPIError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'api-error' as const,
+                                    code: error.code,
+                                    message: error.message,
+                                    statusName: error.status,
+                                    statusCode: error.statusCode,
+                                }
+                            }
                             return {
                                 status: 'error' as const,
                                 type: 'unexpected' as const,

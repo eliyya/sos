@@ -10,7 +10,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { deleteUser } from '@/actions/users.actions'
+import { deleteUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -47,7 +47,7 @@ export function DeleteEntityDialog() {
     const onAction = useCallback(() => {
         if (!entityId) return
         startTransition(async () => {
-            const response = await deleteUser(entityId)
+            const response = await deleteUserAction(entityId)
             if (response.status === 'success') {
                 refresh()
                 setOpen(null)

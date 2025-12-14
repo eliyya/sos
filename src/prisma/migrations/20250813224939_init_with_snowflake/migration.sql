@@ -75,6 +75,10 @@ CREATE TABLE "public"."users" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "display_username" TEXT,
     "role_id" TEXT NOT NULL,
+    "banExpires" TIMESTAMP(3),
+    "banReason" TEXT,
+    "banned" BOOLEAN NOT NULL DEFAULT false,
+    "role" TEXT NOT NULL DEFAULT 'user',
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -89,6 +93,7 @@ CREATE TABLE "public"."session" (
     "ip_address" TEXT,
     "user_agent" TEXT,
     "user_id" TEXT NOT NULL,
+    "impersonatedBy" TEXT,
 
     CONSTRAINT "session_pkey" PRIMARY KEY ("id")
 );

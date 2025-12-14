@@ -16,7 +16,10 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { usernameIsTaken } from '@/actions/users.actions'
+import {
+    createUserAction,
+    usernameIsTakenAction,
+} from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -28,10 +31,11 @@ import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
-import { authClient } from '@/lib/auth-client'
 import { capitalize, truncateByUnderscore } from '@/lib/utils'
 import { useRoles } from '@/hooks/roles.hooks'
 import { SearchUsersContext } from '@/contexts/users.context'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 const usernameAtom = atom('')
 const usernameErrorAtom = atom('')
@@ -49,6 +53,7 @@ export function CreateUserDialog() {
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const { refresh } = use(SearchUsersContext)
+    const router = useRouter()
     // data
     const setTakenUser = useSetAtom(selectedIdAtom)
     const setName = useSetAtom(nameAtom)
@@ -79,7 +84,8 @@ export function CreateUserDialog() {
                             ).trim()
                             const password = data.get('password') as string
                             const role_id = data.get('role_id') as string
-                            const response = await usernameIsTaken(username)
+                            const response =
+                                await usernameIsTakenAction(username)
                             if (
                                 response.status === 'success' &&
                                 response.type === 'archived'
@@ -94,32 +100,48 @@ export function CreateUserDialog() {
                                 setConfirmPassword('')
                                 return
                             }
-                            const { error } = await authClient.signUp.email({
-                                email: `${username}@noemail.local`,
-                                password,
+                            const res = await createUserAction({
                                 name,
+                                password,
                                 username,
                                 role_id,
                             })
-                            if (error) {
-                                if (
-                                    error.code ===
-                                    'USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER'
-                                ) {
-                                    setUsernameError(error.message!)
-                                } else setMessage('Algo salio mal')
-                                console.log(error)
-                            } else {
+                            if (res.status === 'success') {
                                 refresh()
                                 setOpen(null)
                                 setName('')
                                 setUsername('')
                                 setPassword('')
                                 setConfirmPassword('')
+                                return
                             }
-                            setTimeout(() => {
-                                setMessage('')
-                            }, 5_000)
+                            if (res.type === 'permission') {
+                                setMessage(
+                                    'No tienes permiso para crear esta asignatura',
+                                )
+                            } else if (res.type === 'unauthorized') {
+                                router.replace(app.$locale.auth.login('es'))
+                            } else if (res.type === 'better-error') {
+                                setMessage(
+                                    'Ha ocurrido un error, intentalo más tarde',
+                                )
+                            } else if (res.type === 'api-error') {
+                                if (
+                                    res.code ===
+                                    'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL'
+                                ) {
+                                    setUsernameError('El usuario ya existe')
+                                } else {
+                                    console.log(res)
+                                    setMessage(
+                                        'Ha ocurrido un error, intentalo más tarde',
+                                    )
+                                }
+                            } else if (res.type === 'unexpected') {
+                                setMessage(
+                                    'Ha ocurrido un error, intentalo más tarde',
+                                )
+                            }
                         })
                     }}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
