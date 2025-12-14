@@ -189,3 +189,14 @@ handler.set(/^\/[^/]+\/dashboard\/management.*$/, async ctx => {
 
     return ctx.redirect(app.$locale.schedule.null('es'))
 })
+
+handler.use(/^\/([^/]+\/)?dashboard\/cc/, async ctx => {
+    const session = await auth.api.getSession(ctx.request)
+    if (!session) return ctx.redirect(app.$locale.auth.login('es'))
+    const permissions = new PermissionsBitField(
+        BigInt(session.user.permissions),
+    )
+    if (!permissions.has(PERMISSIONS_FLAGS.MANAGE_LABS))
+        return ctx.redirect(app.$locale.schedule.null('es'))
+    return ctx.next()
+})
