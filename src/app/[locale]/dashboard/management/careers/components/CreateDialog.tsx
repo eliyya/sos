@@ -32,6 +32,9 @@ export function CreateCareerDialog() {
     const router = useRouter()
     const setSelectedId = useSetAtom(selectedIdAtom)
     const { refresh } = use(SearchCareersContext)
+    // values
+    const setName = useSetAtom(nameAtom)
+    const setAlias = useSetAtom(aliasAtom)
     // errors
     const setNameError = useSetAtom(nameErrorAtom)
     const setAliasError = useSetAtom(aliasErrorAtom)
@@ -45,6 +48,8 @@ export function CreateCareerDialog() {
                 const response = await createCareer({ name, alias })
                 if (response.status === 'success') {
                     openDialog(null)
+                    setName('')
+                    setAlias('')
                     refresh()
                     return
                 }
@@ -77,6 +82,8 @@ export function CreateCareerDialog() {
             setSelectedId,
             setNameError,
             setAliasError,
+            setName,
+            setAlias,
         ],
     )
 
