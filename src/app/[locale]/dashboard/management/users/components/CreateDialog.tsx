@@ -127,7 +127,7 @@ export function CreateUserDialog() {
                                 )
                             } else if (res.type === 'api-error') {
                                 if (
-                                    res.code ===
+                                    res.cause.code ===
                                     'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL'
                                 ) {
                                     setUsernameError('El usuario ya existe')
