@@ -27,6 +27,14 @@ export default async function AdminDashboardPage() {
         },
     })
     const now = Temporal.Now.zonedDateTimeISO('America/Monterrey')
+    const today = now.subtract({
+        hours: now.hour,
+        minutes: now.minute,
+        seconds: now.second,
+        milliseconds: now.millisecond,
+        microseconds: now.microsecond,
+        nanoseconds: now.nanosecond,
+    })
     const monthStart = now.subtract({ days: now.day })
     const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
 
@@ -134,7 +142,7 @@ export default async function AdminDashboardPage() {
                                                         visit.laboratory_id ===
                                                             CC.id &&
                                                         visit.created_at.getTime() >=
-                                                            now.epochMilliseconds,
+                                                            today.epochMilliseconds,
                                                 ).length
                                             }
                                         </h3>

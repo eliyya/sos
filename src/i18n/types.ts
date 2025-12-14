@@ -13,6 +13,7 @@ export type BaseMessage = {
         "understood": "Entendido",
         "control_number": "Numero de control",
         "names": "Nombres",
+        "name": "Nombre",
         "surnames": "Apellidos",
         "career": "Carrera",
         "semester": "Semestre",

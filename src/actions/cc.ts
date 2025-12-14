@@ -1,95 +1,186 @@
 'use server'
 import { db } from '@/prisma/db'
-import { createStudent } from './students.actions'
+import { Effect } from 'effect'
+import {
+    endVisitEffect,
+    getTodayVisitsEffect,
+    registerVisitEffect,
+} from '@/services/cc.service'
+import { PrismaLive } from '@/layers/db.layer'
+import { AuthLive } from '@/layers/auth.layer'
+import {
+    AlreadyArchivedError,
+    AlreadyExistsError,
+    InvalidInputError,
+    PermissionError,
+    PrismaError,
+    UnauthorizedError,
+    UnexpectedError,
+} from '@/errors'
+import { SuccessOf } from '@/lib/type-utils'
+import { status } from 'effect/Fiber'
 
-export async function registerVisit(formData: FormData) {
-    const nc = formData.get('student_nc') as string
-    const laboratory_id = formData.get('laboratory_id') as string
-
-    const student = await db.student.findFirst({
-        where: { nc },
-        select: { nc: true },
-    })
-
-    if (!student) {
-        const career_id = formData.get('career_id') as string
-        const firstname = formData.get('firstname') as string
-        const lastname = formData.get('lastname') as string
-        const group = Number(formData.get('group'))
-        const semester = Number(formData.get('semester'))
-        await createStudent({
-            nc,
-            career_id,
-            firstname,
-            lastname,
-            group,
-            semester,
-        })
-    }
-
-    const today = new Date()
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0))
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999))
-
-    const is_yet = await db.visit.findFirst({
-        select: { id: true },
-        where: {
-            laboratory_id,
-            created_at: {
-                gte: startOfDay,
-                lte: endOfDay,
-            },
-            student_nc: nc,
-            exit_at: null,
-        },
-    })
-
-    if (is_yet) return { error: 'Ya existe una visita registrada' }
-
-    try {
-        await db.visit.create({
-            data: {
-                student_nc: nc,
-                laboratory_id,
-            },
-        })
-    } catch (error) {
-        console.log('Error creating visit')
-        console.log(error)
-        return { error: 'Error interno' }
-    }
-    return { error: null }
+export async function registerVisitAction(data: {
+    student_nc: string
+    laboratory_id: string
+    career_id?: string
+    firstname?: string
+    lastname?: string
+    group?: number
+    semester?: number
+}) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            registerVisitEffect(data)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(AuthLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return { status: 'success' as const, visit: value }
+                        },
+                        onFailure(error) {
+                            if (error instanceof InvalidInputError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'invalid-input' as const,
+                                    message: error.message,
+                                    field: error.field,
+                                } as const
+                            }
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                } as const
+                            }
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                } as const
+                            }
+                            if (error instanceof AlreadyArchivedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'already-archived' as const,
+                                    message: error.message,
+                                    nc: error.id,
+                                } as const
+                            }
+                            if (error instanceof AlreadyExistsError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'already-exists' as const,
+                                    message: error.message,
+                                    nc: error.id,
+                                } as const
+                            }
+                            if (error instanceof UnexpectedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                } as const
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                    missings: error.missings,
+                                } as const
+                            }
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error),
+                            } as const
+                        },
+                    }),
+                ),
+        ),
+    )
 }
 interface getVisitsTodayProps {
     laboratory_id: string
 }
-export async function getVisitsToday({ laboratory_id }: getVisitsTodayProps) {
-    const today = new Date()
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0))
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999))
-
-    const visits = await db.visit.findMany({
-        where: {
-            laboratory_id,
-            created_at: {
-                gte: startOfDay,
-                lte: endOfDay,
-            },
-            exit_at: null,
-        },
-    })
-
-    return visits
+export async function getTodayVisitsAction({
+    laboratory_id,
+}: getVisitsTodayProps): Promise<
+    SuccessOf<ReturnType<typeof getTodayVisitsEffect>>
+> {
+    return await Effect.runPromise(
+        Effect.scoped(
+            getTodayVisitsEffect({ laboratory_id })
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.catchAll(error => {
+                        console.log(error)
+                        return Effect.succeed([])
+                    }),
+                ),
+        ),
+    )
 }
 
 interface endVisitProps {
     id: string
 }
-export async function endVisit({ id }: endVisitProps) {
-    await db.visit.update({
-        where: { id },
-        data: {
-            exit_at: new Date(),
-        },
-    })
+export async function finishVisitAction({ id }: endVisitProps) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            endVisitEffect({ id })
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(Effect.provide(AuthLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return {
+                                status: 'success' as const,
+                                data: value,
+                            } as const
+                        },
+                        onFailure(error) {
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
+                                } as const
+                            }
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                } as const
+                            }
+                            if (error instanceof UnexpectedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                } as const
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                    missings: error.missings,
+                                } as const
+                            }
+                            return {
+                                status: 'error' as const,
+                                type: 'unexpected' as const,
+                                message: String(error),
+                            } as const
+                        },
+                    }),
+                ),
+        ),
+    )
 }
