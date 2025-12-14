@@ -29,9 +29,9 @@ import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 const nameAtom = atom('')
 const errorNameAtom = atom('')
-const openHourAtom = atom('')
+const openHourAtom = atom('08:00')
 const errorOpenHourAtom = atom('')
-const closeHourAtom = atom('')
+const closeHourAtom = atom('18:00')
 const errorCloseHourAtom = atom('')
 const defaultTypeAtom: {
     value: LABORATORY_TYPE
