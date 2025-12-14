@@ -1,16 +1,15 @@
 'use client'
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, TagIcon, SquarePenIcon, PlusIcon } from 'lucide-react'
+import { Save, TagIcon, SquarePenIcon } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createCareer } from '@/actions/careers.actions'
-import { Button, SimulatedButton } from '@/components/Button'
+import { Button } from '@/components/Button'
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/Dialog'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
@@ -36,8 +35,6 @@ export function CreateCareerDialog() {
     // errors
     const setNameError = useSetAtom(nameErrorAtom)
     const setAliasError = useSetAtom(aliasErrorAtom)
-    const setName = useSetAtom(nameAtom)
-    const setAlias = useSetAtom(aliasAtom)
 
     const onAction = useCallback(
         (data: FormData) => {
@@ -49,8 +46,6 @@ export function CreateCareerDialog() {
                 if (response.status === 'success') {
                     openDialog(null)
                     refresh()
-                    setName('')
-                    setAlias('')
                     return
                 }
                 // error
@@ -78,8 +73,6 @@ export function CreateCareerDialog() {
         [
             openDialog,
             refresh,
-            setName,
-            setAlias,
             router,
             setSelectedId,
             setNameError,
@@ -88,13 +81,12 @@ export function CreateCareerDialog() {
     )
 
     return (
-        <Dialog>
-            <DialogTrigger>
-                <SimulatedButton>
-                    <PlusIcon className='mr-2 h-5 w-5' />
-                    {t('create_career')}
-                </SimulatedButton>
-            </DialogTrigger>
+        <Dialog
+            open={open === 'CREATE'}
+            onOpenChange={status => {
+                if (!status) openDialog(null)
+            }}
+        >
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{t('create_career')}</DialogTitle>
