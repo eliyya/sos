@@ -28,7 +28,7 @@ export const SimpleInput = ({ className, ...props }: SimpleInputProps) => (
             // file:
             'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
             // focus-visible:
-            'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
+            'focus-visible:ring-ring focus-visible:ring-2',
             // disabled:
             'disabled:cursor-not-allowed disabled:opacity-50',
             // placeholder:
@@ -114,8 +114,7 @@ export function CompletInput({
     )
 }
 
-interface CompletTextareaProps
-    extends InputHTMLAttributes<HTMLTextAreaElement> {
+interface CompletTextareaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
     label: string
     children?: ReactNode
     error?: string
@@ -197,8 +196,7 @@ export function CompletTextarea({
         </div>
     )
 }
-interface RetornableCompletInputProps
-    extends InputHTMLAttributes<HTMLInputElement> {
+interface RetornableCompletInputProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string
     children?: React.ReactNode
     originalValue: string | number
@@ -257,12 +255,13 @@ export function RetornableCompletInput({
                     }}
                     className={cn(
                         'border-input ring-offset-background text-foreground flex h-10 w-full rounded-md border px-3 py-2 pl-10 text-sm',
-                        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
+                        'focus-visible:ring-ring focus-visible:ring-2',
                         'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
                         'disabled:cursor-not-allowed disabled:opacity-50',
                         'placeholder:text-muted-foreground',
                         {
-                            'border-yellow-500 pr-10': isChanged,
+                            'border-yellow-500 pr-10 outline-yellow-500':
+                                isChanged,
                             'border-gray-300 dark:border-gray-600': !isChanged,
                         },
                     )}
@@ -318,8 +317,7 @@ export function RetornableCompletInput({
     )
 }
 
-interface RetornableCompletTextareaProps
-    extends InputHTMLAttributes<HTMLTextAreaElement> {
+interface RetornableCompletTextareaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
     label: string
     children?: ReactNode
     error?: string
@@ -387,7 +385,7 @@ export function RetornableCompletTextarea({
                     className={cn(
                         'border-input ring-offset-background text-foreground flex h-fit w-full resize-y rounded-md border px-3 py-2 pl-10 text-sm',
                         // focus-visible:
-                        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-hidden',
+                        'focus-visible:ring-ring focus-visible:ring-2',
                         // file:
                         'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',
                         // disabled:
@@ -395,7 +393,7 @@ export function RetornableCompletTextarea({
                         // placeholder:
                         'placeholder:text-muted-foreground',
                         {
-                            'border-yellow-500': isChanged,
+                            'border-yellow-500 outline-yellow-500': isChanged,
                             'border-gray-300 dark:border-gray-600': !isChanged,
                         },
                         className,
@@ -461,6 +459,7 @@ export function RetornableInput({
                     onEdited?.(val !== `${defaultValue}`, e)
                     setIsChanged(val !== `${defaultValue}`)
                 }}
+                data-type='retornable-input'
                 className={cn(
                     'ring-offset-background text-foreground flex h-10 w-full px-3 py-2 text-sm',
                     'file:text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium',

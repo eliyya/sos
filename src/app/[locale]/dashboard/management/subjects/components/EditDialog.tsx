@@ -69,6 +69,10 @@ function EditDialog() {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'unexpected') {
                     setMessage('Ha ocurrido un error, intentalo más tarde')
+                } else if (res.type === 'already-exists') {
+                    setMessage('Ya existe una asignatura con este nombre')
+                } else if (res.type === 'already-archived') {
+                    setMessage('No se pueden editar asignaturas archivadas')
                 }
             })
         },

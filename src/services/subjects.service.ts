@@ -118,7 +118,7 @@ export const editSubjectEffect = ({
                 catch: err => new PrismaError(err),
             }),
         )
-        if (subject2) {
+        if (subject2 && subject2.id !== id) {
             if (subject2.status === STATUS.ARCHIVED)
                 return yield* _(
                     Effect.fail(
