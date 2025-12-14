@@ -48,26 +48,20 @@ export function CreateUserDialog() {
     const [open, setOpen] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const setUsernameError = useSetAtom(usernameErrorAtom)
+    const { refresh } = use(SearchUsersContext)
+    // data
     const setTakenUser = useSetAtom(selectedIdAtom)
     const setName = useSetAtom(nameAtom)
     const setUsername = useSetAtom(usernameAtom)
     const setPassword = useSetAtom(passwordAtom)
     const setConfirmPassword = useSetAtom(confirmPasswordAtom)
-    const { refresh } = use(SearchUsersContext)
+    const setUsernameError = useSetAtom(usernameErrorAtom)
 
     return (
         <Dialog
             open={open === 'CREATE'}
             onOpenChange={open => {
-                setOpen(null)
-                if (!open) {
-                    setName('')
-                    setUsername('')
-                    setPassword('')
-                    setConfirmPassword('')
-                    setUsernameError('')
-                }
+                if (!open) setOpen(null)
             }}
         >
             <DialogContent>
@@ -118,6 +112,10 @@ export function CreateUserDialog() {
                             } else {
                                 refresh()
                                 setOpen(null)
+                                setName('')
+                                setUsername('')
+                                setPassword('')
+                                setConfirmPassword('')
                             }
                             setTimeout(() => {
                                 setMessage('')
