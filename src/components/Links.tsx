@@ -34,8 +34,7 @@ export const buttonVariants = cva(
 )
 
 export interface ButtonProps
-    extends LinkProps,
-        VariantProps<typeof buttonVariants> {
+    extends LinkProps, VariantProps<typeof buttonVariants> {
     className?: string
     children?: ReactNode
 }
@@ -51,4 +50,18 @@ export const ButtonLink = ({
             {...props}
         />
     )
+}
+
+interface ConditionalLinkProps extends LinkProps {
+    condition: boolean
+    children: ReactNode
+}
+export function ConditionalLink({
+    condition,
+    children,
+    ...props
+}: ConditionalLinkProps) {
+    if (!condition) return <>{children}</>
+
+    return <Link {...props}>{children}</Link>
 }

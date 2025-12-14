@@ -2,11 +2,17 @@ import { Temporal } from '@js-temporal/polyfill'
 import { LABORATORY_TYPE, STATUS } from '@/prisma/generated/browser'
 import { BeakerIcon, CalendarIcon, UsersIcon } from 'lucide-react'
 import { Metadata } from 'next'
-import Link from 'next/link'
 import { DashboardHeader } from '@/app/[locale]/dashboard/components/DashboardHeader'
 import { Card } from '@/components/Card'
 import { APP_NAME } from '@/constants/client'
 import { db } from '@/prisma/db'
+import app from '@eliyya/type-routes'
+import { auth } from '@/lib/auth'
+import {
+    PERMISSIONS_FLAGS,
+    PermissionsBitField,
+} from '@/bitfields/PermissionsBitField'
+import { ConditionalLink } from '@/components/Links'
 
 export const metadata: Metadata = {
     title: 'Panel de Administrador | ' + APP_NAME,
@@ -14,6 +20,8 @@ export const metadata: Metadata = {
 }
 
 export default async function AdminDashboardPage() {
+    const session = await auth.api.getSession()
+    const permissions = new PermissionsBitField(session?.user.permissions ?? '')
     const ccs = await db.laboratory.findMany({
         where: {
             type: LABORATORY_TYPE.COMPUTER_CENTER,
@@ -125,7 +133,13 @@ export default async function AdminDashboardPage() {
                 </h2>
                 <div className='grid gap-4 md:grid-cols-2'>
                     {ccs.map(CC => (
-                        <Link key={CC.id} href={`/dashboard/cc/${CC.id}`}>
+                        <ConditionalLink
+                            key={CC.id}
+                            href={app.$locale.dashboard.cc.$id('es', CC.id)}
+                            condition={permissions.has(
+                                PERMISSIONS_FLAGS.SESSION_CC,
+                            )}
+                        >
                             <Card className='p-6 transition-shadow hover:shadow-lg'>
                                 <div className='flex items-center gap-4'>
                                     <div className='bg-primary/10 rounded-full p-3'>
@@ -152,7 +166,7 @@ export default async function AdminDashboardPage() {
                                     </div>
                                 </div>
                             </Card>
-                        </Link>
+                        </ConditionalLink>
                     ))}
                 </div>
             </div>
