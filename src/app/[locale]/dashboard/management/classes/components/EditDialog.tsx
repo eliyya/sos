@@ -105,15 +105,9 @@ function EditDialog() {
         >
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>
-                        {t('edit_class', {
-                            subject: old.subject.displayname,
-                            career: old.career.displayname,
-                            group: old.group + '',
-                        })}
-                    </DialogTitle>
+                    <DialogTitle>{t('edit_class')}</DialogTitle>
                     <DialogDescription>
-                        {t('edit_class', {
+                        {t('edit_class_description', {
                             subject: old.subject.displayname,
                             career: old.career.displayname,
                             group: old.group + '',
