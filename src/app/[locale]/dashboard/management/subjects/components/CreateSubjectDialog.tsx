@@ -30,12 +30,17 @@ export function CreateSubjectDialog() {
     const [dialog, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const setErrorName = useSetAtom(errorNameAtom)
-    const setErrorTheoryHours = useSetAtom(errorTheoryHoursAtom)
-    const setErrorPracticeHours = useSetAtom(errorPracticeHoursAtom)
     const setUserToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
     const { refresh } = use(SearchSubjectsContext)
+    // data
+    const setTheoryHours = useSetAtom(theoryHoursAtom)
+    const setPracticeHours = useSetAtom(practiceHoursAtom)
+    const setName = useSetAtom(nameAtom)
+    // errors
+    const setErrorName = useSetAtom(errorNameAtom)
+    const setErrorTheoryHours = useSetAtom(errorTheoryHoursAtom)
+    const setErrorPracticeHours = useSetAtom(errorPracticeHoursAtom)
 
     const onAction = useCallback(
         async (formData: FormData) => {
@@ -51,6 +56,9 @@ export function CreateSubjectDialog() {
                 })
                 if (res.status === 'success') {
                     openDialog(null)
+                    setName('')
+                    setTheoryHours(1)
+                    setPracticeHours(0)
                     refresh()
                     return
                 }
@@ -84,6 +92,9 @@ export function CreateSubjectDialog() {
             setErrorTheoryHours,
             setErrorPracticeHours,
             setUserToEdit,
+            setName,
+            setTheoryHours,
+            setPracticeHours,
         ],
     )
 
@@ -155,9 +166,9 @@ function TehoryHoursInput() {
     return (
         <CompletInput
             required
-            label='Horas'
+            label='Horas Teoricas'
             type='number'
-            name='hours'
+            name='theory_hours'
             icon={ClockFadingIcon}
             value={hours}
             onChange={e => {
@@ -176,9 +187,9 @@ function PracticeHoursInput() {
     return (
         <CompletInput
             required
-            label='Horas'
+            label='Horas Practicas'
             type='number'
-            name='hours'
+            name='practice_hours'
             icon={ClockFadingIcon}
             value={hours}
             onChange={e => {
