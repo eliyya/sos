@@ -118,7 +118,7 @@ export default async function AdminDashboardPage() {
                 <div className='grid gap-4 md:grid-cols-2'>
                     {ccs.map(CC => (
                         <Link key={CC.id} href={`/dashboard/cc/${CC.id}`}>
-                            <Card className='p-6'>
+                            <Card className='p-6 transition-shadow hover:shadow-lg'>
                                 <div className='flex items-center gap-4'>
                                     <div className='bg-primary/10 rounded-full p-3'>
                                         <BeakerIcon className='text-primary h-6 w-6' />
