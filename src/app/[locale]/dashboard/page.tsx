@@ -13,6 +13,7 @@ import {
     PermissionsBitField,
 } from '@/bitfields/PermissionsBitField'
 import { ConditionalLink } from '@/components/Links'
+import { headers } from 'next/headers'
 
 export const metadata: Metadata = {
     title: 'Panel de Administrador | ' + APP_NAME,
@@ -20,7 +21,9 @@ export const metadata: Metadata = {
 }
 
 export default async function AdminDashboardPage() {
-    const session = await auth.api.getSession()
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    })
     const permissions = new PermissionsBitField(session?.user.permissions ?? '')
     const ccs = await db.laboratory.findMany({
         where: {
@@ -99,6 +102,7 @@ export default async function AdminDashboardPage() {
             description: 'Usuarios registrados',
         },
     ]
+
     return (
         <main className='flex flex-1 flex-col gap-4 p-8'>
             <DashboardHeader
