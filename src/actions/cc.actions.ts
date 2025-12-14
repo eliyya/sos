@@ -1,5 +1,5 @@
 'use server'
-import { db } from '@/prisma/db'
+
 import { Effect } from 'effect'
 import {
     endVisitEffect,
@@ -18,7 +18,6 @@ import {
     UnexpectedError,
 } from '@/errors'
 import { SuccessOf } from '@/lib/type-utils'
-import { status } from 'effect/Fiber'
 
 export async function registerVisitAction(data: {
     student_nc: string

@@ -425,14 +425,11 @@ export function createUserEffect({
         yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
 
         const auth = yield* _(AuthService)
-        const api = auth.getApi()
-
-        console.log({ password, name, username, role_id })
 
         const data = yield* _(
             Effect.tryPromise({
                 try: () =>
-                    api.createUser({
+                    auth.api.createUser({
                         body: {
                             email: `${username}@noemail.local`,
                             name,
@@ -447,11 +444,11 @@ export function createUserEffect({
                 catch: err => {
                     if (err instanceof APIError) {
                         return new BetterAuthAPIError({
-                            code: err.body?.code ?? 'UNKNOWN_ERROR',
-                            name: err.name,
-                            message: err.message,
-                            status: err.status,
-                            statusCode: err.statusCode,
+                            cause: {
+                                code: err.body?.code ?? 'UNKNOWN_ERROR',
+                                message: err.message,
+                                status: err.status,
+                            },
                         })
                     } else {
                         return new BetterError({ cause: err })

@@ -3,7 +3,7 @@
 import { useSetAtom } from 'jotai'
 import { SquarePenIcon } from 'lucide-react'
 import { useCallback, useEffect, useState, useTransition } from 'react'
-import { registerVisitAction } from '@/actions/cc'
+import { registerVisitAction } from '@/actions/cc.actions'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'

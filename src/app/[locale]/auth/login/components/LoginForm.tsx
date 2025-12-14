@@ -1,15 +1,15 @@
 'use client'
 
-import app from '@eliyya/type-routes'
-import { atom, useAtom, useSetAtom } from 'jotai'
+import { atom, useAtom } from 'jotai'
 import { AtSignIcon, LogIn, RectangleEllipsisIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Activity, ReactNode, useState, useTransition } from 'react'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
-import { authClient } from '@/lib/auth-client'
 import { CompletInput } from '@/components/Inputs'
+import { loginAction } from '@/actions/auth.actions'
+import app from '@eliyya/type-routes'
 
 export const usernameAtom = atom('')
 export const passwordAtom = atom('')
@@ -22,9 +22,7 @@ export function LoginForm({ children }: Props) {
 
     const [error, setError] = useState('')
     const [pending, startTransition] = useTransition()
-    const { replace } = useRouter()
-    const setUsername = useSetAtom(usernameAtom)
-    const setPassword = useSetAtom(passwordAtom)
+    const router = useRouter()
 
     return (
         <form
@@ -32,23 +30,16 @@ export function LoginForm({ children }: Props) {
                 startTransition(async () => {
                     const username = formData.get('username') as string
                     const password = formData.get('password') as string
-                    const { error, data } = await authClient.signIn.username({
-                        username,
-                        password,
-                        rememberMe: true,
-                    })
-                    console.log({ error, data })
-                    if (!error) {
-                        setUsername('')
-                        setPassword('')
-                        replace(app.$locale.dashboard('es'))
+                    const res = await loginAction({ username, password })
+                    if (res.status == 'success') {
+                        router.replace(app.$locale.dashboard('es'))
                         return
                     }
-                    console.log(error)
-                    if (error.code === 'INVALID_USERNAME_OR_PASSWORD') {
-                        setError(error.message!)
-                        setTimeout(() => setError(''), 5000)
-                    } else setError('Something went wrong')
+                    if (res.type === 'invalid-credentials') {
+                        setError(res.message)
+                    } else if (res.type === 'unexpected') {
+                        setError('Something went wrong')
+                    }
                 })
             }
             className='flex w-full max-w-md flex-col justify-center gap-6'

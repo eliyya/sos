@@ -18,6 +18,7 @@ import {
     NotAllowedError,
     NotFoundError,
     PermissionError,
+    PrismaError,
     UnauthorizedError,
     UnexpectedError,
 } from '@/errors'
@@ -281,7 +282,7 @@ export async function editUserAction({
                                     status: 'error' as const,
                                     type: 'not-found' as const,
                                     message: error.message,
-                                }
+                                } as const
                             }
                             if (error instanceof InvalidInputError) {
                                 return {
@@ -289,14 +290,35 @@ export async function editUserAction({
                                     type: 'invalid-input' as const,
                                     message: error.message,
                                     field: error.field,
+                                } as const
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'permission' as const,
+                                    message: error.message,
+                                    missings: error.missings,
+                                } as const
+                            }
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unexpected' as const,
+                                    message: String(error.cause),
+                                } as const
+                            }
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error' as const,
+                                    type: 'unauthorized' as const,
+                                    message: error.message,
                                 }
                             }
-                            console.error(error)
                             return {
                                 status: 'error' as const,
                                 type: 'unexpected' as const,
                                 message: String(error),
-                            }
+                            } as const
                         },
                     }),
                 ),
@@ -334,7 +356,7 @@ export async function createUserAction({
                                     status: 'error' as const,
                                     type: 'unauthorized' as const,
                                     message: error.message,
-                                }
+                                } as const
                             }
                             if (error instanceof PermissionError) {
                                 return {
@@ -342,37 +364,34 @@ export async function createUserAction({
                                     type: 'permission' as const,
                                     message: error.message,
                                     missings: error.missings,
-                                }
+                                } as const
                             }
                             if (error instanceof BetterError) {
                                 return {
                                     status: 'error' as const,
                                     type: 'better-error' as const,
                                     message: String(error.cause),
-                                }
+                                } as const
                             }
                             if (error instanceof UnexpectedError) {
                                 return {
                                     status: 'error' as const,
                                     type: 'unexpected' as const,
                                     message: String(error.cause),
-                                }
+                                } as const
                             }
                             if (error instanceof BetterAuthAPIError) {
                                 return {
                                     status: 'error' as const,
                                     type: 'api-error' as const,
-                                    code: error.code,
-                                    message: error.message,
-                                    statusName: error.status,
-                                    statusCode: error.statusCode,
-                                }
+                                    cause: error.cause,
+                                } as const
                             }
                             return {
                                 status: 'error' as const,
                                 type: 'unexpected' as const,
                                 message: String(error),
-                            }
+                            } as const
                         },
                     }),
                 ),

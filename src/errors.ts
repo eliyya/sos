@@ -73,9 +73,21 @@ export class BetterError<T> extends Data.TaggedError('BetterError')<{
 export class BetterAuthAPIError<T extends APIError> extends Data.TaggedError(
     'BetterAuthAPIError',
 )<{
-    code: 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL' | (string & {})
-    name: T['name']
-    message: T['message'] | 'User already exists. Use another email.'
-    status: T['status']
-    statusCode: T['statusCode']
+    cause:
+        | {
+              code: 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL'
+              message: 'User already exists. Use another email.'
+              status: T['status']
+          }
+        | {
+              code: 'UNKNOWN_ERROR' | (string & {})
+              message: string & {}
+              status: T['status']
+          }
+}> {}
+
+export class InvalidCredentialsError extends Data.TaggedError(
+    'InvalidCredentialsError',
+)<{
+    message?: string
 }> {}
