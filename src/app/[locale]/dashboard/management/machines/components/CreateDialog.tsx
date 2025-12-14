@@ -32,7 +32,7 @@ export function CreateSubjectDialog() {
     const setEntityToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
     const [serieError, setSerieError] = useState('')
-    const { refreshMachines } = use(SearchMachinesContext)
+    const { refresh } = use(SearchMachinesContext)
 
     const onAction = useCallback(
         (formData: FormData) => {
@@ -57,7 +57,7 @@ export function CreateSubjectDialog() {
                     serie,
                 })
                 if (res.status === 'success') {
-                    refreshMachines()
+                    refresh()
                     openDialog(null)
                     return
                 }
@@ -79,7 +79,7 @@ export function CreateSubjectDialog() {
                 }
             })
         },
-        [openDialog, refreshMachines, router, setEntityToEdit],
+        [openDialog, refresh, router, setEntityToEdit],
     )
 
     return (

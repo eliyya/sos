@@ -14,8 +14,8 @@ import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { use } from 'react'
 import { SearchMachinesContext } from '@/contexts/machines.context'
-import { SearchMachinesPromise } from '@/hooks/machines.hooks'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
+import { SearchMachinesPromise } from '@/hooks/search.hooks'
 
 interface MachineItemListProps {
     machine: Awaited<SearchMachinesPromise>['machines'][number]
@@ -101,8 +101,8 @@ function Buttons({ machine }: ButtonsProps) {
 }
 
 export function MachineList() {
-    const { machinesPromise } = use(SearchMachinesContext)
-    const { machines } = use(machinesPromise)
+    const { promise } = use(SearchMachinesContext)
+    const { machines } = use(promise)
 
     if (!machines.length)
         return (
@@ -119,10 +119,8 @@ export function MachineList() {
 }
 
 export function FoooterTable() {
-    const { changeFilters, filters, machinesPromise } = use(
-        SearchMachinesContext,
-    )
-    const { pages } = use(machinesPromise)
+    const { changeFilters, filters, promise } = use(SearchMachinesContext)
+    const { pages } = use(promise)
 
     return (
         <div className='flex items-center justify-center gap-5'>

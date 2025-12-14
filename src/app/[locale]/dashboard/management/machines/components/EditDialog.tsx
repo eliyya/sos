@@ -40,9 +40,9 @@ function EditDialog() {
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshMachines, machinesPromise } = use(SearchMachinesContext)
+    const { refresh, promise } = use(SearchMachinesContext)
 
-    const { machines } = use(machinesPromise)
+    const { machines } = use(promise)
 
     const entity = useMemo(() => {
         return machines.find(m => m.id === entityId)
@@ -96,11 +96,11 @@ function EditDialog() {
                     storage,
                 })
                 if (res.status === 'success') {
-                    refreshMachines()
+                    refresh()
                     openDialog(null)
                     return
                 } else if (res.type === 'not-found') {
-                    refreshMachines()
+                    refresh()
                     openDialog(null)
                 } else if (res.type === 'permission') {
                     setMessage('No tienes permiso para editar esta máquina')
@@ -117,7 +117,7 @@ function EditDialog() {
                 }
             })
         },
-        [entityId, openDialog, refreshMachines, router],
+        [entityId, openDialog, refresh, router],
     )
 
     if (!entity) return null

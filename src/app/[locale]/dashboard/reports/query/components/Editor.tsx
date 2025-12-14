@@ -21,7 +21,7 @@ export function SQLEditor() {
     useEffect(() => {
         loader.init().then(monaco => {
             monaco.languages.registerCompletionItemProvider('sql', {
-                provideCompletionItems: (model, position) => {
+                provideCompletionItems: (model: any, position: any) => {
                     const word = model.getWordUntilPosition(position)
                     const range = {
                         startLineNumber: position.lineNumber,

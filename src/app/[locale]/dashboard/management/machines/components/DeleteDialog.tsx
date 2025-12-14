@@ -33,9 +33,9 @@ function DeleteDialog() {
     const entityId = useAtomValue(selectedIdAtom)
     const [message, setMessage] = useState('')
     const router = useRouter()
-    const { refreshMachines, machinesPromise } = use(SearchMachinesContext)
+    const { refresh, promise } = use(SearchMachinesContext)
 
-    const { machines } = use(machinesPromise)
+    const { machines } = use(promise)
 
     const entity = useMemo(() => {
         return machines.find(m => m.id === entityId)
@@ -46,12 +46,12 @@ function DeleteDialog() {
         startTransition(async () => {
             const res = await deleteMachine(entity.id)
             if (res.status === 'success') {
-                refreshMachines()
+                refresh()
                 openDialog(null)
                 return
             }
             if (res.type === 'not-found') {
-                refreshMachines()
+                refresh()
                 openDialog(null)
             } else if (res.type === 'permission') {
                 setMessage('No tienes permiso para eliminar esta máquina')
@@ -61,7 +61,7 @@ function DeleteDialog() {
                 setMessage('Ha ocurrido un error inesperado, intente mas tarde')
             }
         })
-    }, [entity, openDialog, router, refreshMachines])
+    }, [entity, openDialog, router, refresh])
 
     if (!entity) return null
 
