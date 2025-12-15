@@ -25,6 +25,7 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
     const [lastname, setLastname] = useState('')
     const [nc, setNc] = useState('')
     const [semester, setSemester] = useState('')
+    const [group, setGroup] = useState('')
     const [career_id, setCareerId] = useState('')
     const setError = useSetAtom(errorAtom)
     const refreshTable = useSetAtom(updateTableAtom)
@@ -157,15 +158,26 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 }}
                 options={careers.map(c => ({ label: c.name, value: c.id }))}
             />
-            <CompletInput
-                required
-                label={t('semester')}
-                name='semester'
-                type='number'
-                value={semester}
-                onChange={e => setSemester(e.currentTarget.value)}
-                disabled={!modified}
-            />
+            <div className='flex gap-6'>
+                <CompletInput
+                    required
+                    label={t('semester')}
+                    name='semester'
+                    type='number'
+                    value={semester}
+                    onChange={e => setSemester(e.currentTarget.value)}
+                    disabled={!modified}
+                />
+                <CompletInput
+                    required
+                    label={t('group')}
+                    name='group'
+                    type='number'
+                    value={group}
+                    onChange={e => setGroup(e.currentTarget.value)}
+                    disabled={!modified}
+                />
+            </div>
             <LabeledSwitch
                 required
                 label={t('credential_confirmation')}

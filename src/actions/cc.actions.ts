@@ -55,6 +55,8 @@ export async function registerVisitAction(data: {
                                 } as const
                             }
                             if (error instanceof PrismaError) {
+                            console.log(error.cause);
+                            
                                 return {
                                     status: 'error' as const,
                                     type: 'unexpected' as const,

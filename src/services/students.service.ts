@@ -115,7 +115,11 @@ export const createStudentEffect = ({
                             firstname,
                             semester,
                             group,
-                            career_id,
+                            career: {
+                                connect: {
+                                    id: career_id
+                                }
+                            }
                         },
                     }),
                 catch: err => new PrismaError(err),
