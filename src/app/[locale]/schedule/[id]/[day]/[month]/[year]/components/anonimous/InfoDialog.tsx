@@ -1,52 +1,49 @@
 'use client'
 
-import { useAtom } from 'jotai'
-import { useEffect, useState } from 'react'
+import { useAtom, useAtomValue } from 'jotai'
+import { useMemo } from 'react'
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from '@/components/Dialog'
-import {
-    modeAtom,
-    eventInfoAtom,
-    DialogMode,
-} from '@/global/management-practices'
-import { cn } from '@/lib/utils'
+import { eventInfoAtom, reservationsAtom } from '@/global/management-practices'
 import { CompletInput } from '@/components/Inputs'
 import { Temporal } from '@js-temporal/polyfill'
-import { UserIcon } from 'lucide-react'
-import { getReservationAction } from '@/actions/reservations.actions'
+import {
+    ClockFadingIcon,
+    ClockIcon,
+    HashIcon,
+    MousePointerIcon,
+    PencilIcon,
+    UserIcon,
+    UsersIcon,
+} from 'lucide-react'
 
-type ReservationInfo = Awaited<ReturnType<typeof getReservationAction>>
 export function InfoDialog() {
-    const [mode, setMode] = useAtom(modeAtom)
     const [currentEvent, setCurrentEvent] = useAtom(eventInfoAtom)
-    const [practice, setPractice] = useState<ReservationInfo>()
+    const reservations = useAtomValue(reservationsAtom)
 
-    useEffect(() => {
-        if (!currentEvent) return
-        getReservationAction({
-            id: currentEvent.id,
-        }).then(setPractice)
-    }, [currentEvent, setPractice])
+    const practice = useMemo(() => {
+        if (!currentEvent?.id) return null
+        const practice = reservations.find(r => r.id === currentEvent?.id)
+        if (!practice) return null
+        return practice
+    }, [currentEvent, reservations])
 
     if (!currentEvent) return null
     if (!practice) return null
     return (
         <Dialog
             open={!!currentEvent}
-            onOpenChange={op =>
-                (op === false && setCurrentEvent(null)) ||
-                setMode(DialogMode.INFO)
-            }
+            onOpenChange={op => {
+                if (!op) {
+                    setCurrentEvent(null)
+                }
+            }}
         >
-            <DialogContent
-                className={cn({
-                    'w-full max-w-4xl': mode === DialogMode.EDIT,
-                })}
-            >
+            <DialogContent>
                 <DialogHeader className='flex flex-col gap-4'>
                     <DialogTitle className='w-full text-center text-3xl'>
                         Info
@@ -63,7 +60,7 @@ export function InfoDialog() {
                         label='Clase'
                         disabled
                         value={getClassName(practice.class)}
-                        icon={UserIcon}
+                        icon={UsersIcon}
                     />
                 )}
                 <CompletInput
@@ -71,14 +68,14 @@ export function InfoDialog() {
                     type='text'
                     disabled
                     value={practice.name}
-                    icon={UserIcon}
+                    icon={MousePointerIcon}
                 />
                 <CompletInput
                     label='Tema'
                     type='text'
                     disabled
                     value={practice.topic}
-                    icon={UserIcon}
+                    icon={PencilIcon}
                 />
                 <CompletInput
                     label='Inicio'
@@ -90,7 +87,7 @@ export function InfoDialog() {
                         .toZonedDateTimeISO('America/Monterrey')
                         .hour.toString()
                         .padStart(2, '0')}:00`}
-                    icon={UserIcon}
+                    icon={ClockIcon}
                 />
                 <CompletInput
                     required
@@ -106,7 +103,7 @@ export function InfoDialog() {
                             ),
                         )
                         .total('hours')}
-                    icon={UserIcon}
+                    icon={ClockFadingIcon}
                 />
                 <CompletInput
                     required
@@ -114,7 +111,7 @@ export function InfoDialog() {
                     type='number'
                     disabled
                     value={practice.students ?? 1}
-                    icon={UserIcon}
+                    icon={HashIcon}
                 />
             </DialogContent>
         </Dialog>

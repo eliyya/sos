@@ -56,15 +56,15 @@ export function Calendar({ lab, isAdmin, canSeeInfo }: CalendarProps) {
             timestamp,
             lab_id: lab.id,
         }).then(e => {
-            setEvents(
-                e.map(e => ({
-                    id: e.id,
-                    title: e.name,
-                    start: e.starts_at.getTime(),
-                    end: e.ends_at.getTime(),
-                    ownerId: e.teacher_id,
-                })),
-            )
+            // setEvents(
+            //     e.map(e => ({
+            //         id: e.id,
+            //         title: e.name,
+            //         start: e.starts_at.getTime(),
+            //         end: e.ends_at.getTime(),
+            //         ownerId: e.teacher_id,
+            //     })),
+            // )
         })
     }, [newEventSignal, setEvents, lab, timestamp])
 

@@ -12,6 +12,7 @@ import {
     eventsAtom,
     newEventSignalAtom,
     eventInfoAtom,
+    reservationsAtom,
 } from '@/global/management-practices'
 import {
     getCalendarEventInfo,
@@ -31,7 +32,8 @@ interface CalendarProps {
 export function Calendar({ lab }: CalendarProps) {
     const { push } = useRouter()
     const newEventSignal = useAtomValue(newEventSignalAtom)
-    const [events, setEvents] = useAtom(eventsAtom)
+    const events = useAtomValue(eventsAtom)
+    const setReserves = useSetAtom(reservationsAtom)
     const openEventInfoWith = useSetAtom(eventInfoAtom)
 
     const [year, month, day] = usePathname().split('/').toReversed()
@@ -48,18 +50,8 @@ export function Calendar({ lab }: CalendarProps) {
         getPracticesFromWeekAction({
             timestamp,
             lab_id: lab.id,
-        }).then(e => {
-            setEvents(
-                e.map(e => ({
-                    id: e.id,
-                    title: e.name,
-                    start: e.starts_at.getTime(),
-                    end: e.ends_at.getTime(),
-                    ownerId: e.teacher_id,
-                })),
-            )
-        })
-    }, [newEventSignal, setEvents, lab, timestamp])
+        }).then(setReserves)
+    }, [newEventSignal, lab, timestamp, setReserves])
 
     return (
         <FullCalendar
@@ -79,9 +71,7 @@ export function Calendar({ lab }: CalendarProps) {
             slotDuration={'01:00:00'}
             height='auto'
             initialDate={timestamp}
-            events={events.map(e => {
-                return e
-            })}
+            events={events}
             eventClick={event => {
                 const info = getCalendarEventInfo(event.event)
                 openEventInfoWith(info)
