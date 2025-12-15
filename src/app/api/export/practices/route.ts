@@ -20,7 +20,7 @@ export const POST = Sentry.wrapApiHandlerWithSentry(async function POST(
         })
         .add({ days: 1 })
         .subtract({ seconds: 1 }).epochMilliseconds
-    const query = await db.practice.findMany({
+    const query = await db.reservation.findMany({
         where: {
             created_at: {
                 gte: new Date(start_timestamp),

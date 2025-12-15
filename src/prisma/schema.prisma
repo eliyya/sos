@@ -62,13 +62,13 @@ model User {
 
     permissions_role Role @relation(fields: [role_id], references: [id])
 
-    practices          Practice[]
-    practice_registers Practice[] @relation("practice_registers")
-    classes            Class[]
-    issues             Issue[]
-    comments           Comment[]
-    sessions           Session[]
-    accounts           Account[]
+    reservation          Reservation[]
+    reservations_created Reservation[] @relation("registered_by_user")
+    classes              Class[]
+    issues               Issue[]
+    comments             Comment[]
+    sessions             Session[]
+    accounts             Account[]
 
     @@unique([email])
     @@map("users")
@@ -150,7 +150,7 @@ model Class {
     teacher        User             @relation(fields: [teacher_id], references: [id])
     career         Career           @relation(fields: [career_id], references: [id])
     StudentClasses StudentClasses[]
-    Practice       Practice[]
+    Reservation    Reservation[]
 
     @@unique([subject_id, teacher_id, group, semester, career_id], name: "unique_class")
     @@map("classes")
@@ -173,14 +173,14 @@ model Laboratory {
     status     STATUS          @default(ACTIVE)
     updated_at DateTime        @updatedAt
 
-    practices Practice[]
-    machines  Machine[]
-    visits    Visit[]
+    reservations Reservation[]
+    machines     Machine[]
+    visits       Visit[]
 
     @@map("laboratories")
 }
 
-model Practice {
+model Reservation {
     id            String   @id @default(dbgenerated("snowflake()"))
     teacher_id    String
     topic         String
@@ -195,13 +195,13 @@ model Practice {
     starts_at     DateTime
     ends_at       DateTime
 
-    class              Class?             @relation(fields: [class_id], references: [id])
-    teacher            User               @relation(fields: [teacher_id], references: [id])
-    registered_by_user User               @relation("practice_registers", fields: [registered_by], references: [id])
-    laboratory         Laboratory         @relation(fields: [laboratory_id], references: [id])
-    software_practices SoftwarePractice[]
+    class                Class?                @relation(fields: [class_id], references: [id])
+    teacher              User                  @relation(fields: [teacher_id], references: [id])
+    registered_by_user   User                  @relation("registered_by_user", fields: [registered_by], references: [id])
+    laboratory           Laboratory            @relation(fields: [laboratory_id], references: [id])
+    software_reservation SoftwareReservation[]
 
-    @@map("practices")
+    @@map("reservation")
 }
 
 model Software {
@@ -210,21 +210,21 @@ model Software {
     updated_at DateTime @updatedAt
     created_at DateTime @default(now())
 
-    software_practices SoftwarePractice[]
-    software_machines  SoftwareMachine[]
+    software_reservation SoftwareReservation[]
+    software_machines    SoftwareMachine[]
 
     @@map("software")
 }
 
-model SoftwarePractice {
-    software_id String
-    practice_id String
+model SoftwareReservation {
+    software_id    String
+    reservation_id String
 
-    software Software @relation(fields: [software_id], references: [id], onDelete: Restrict)
-    practice Practice @relation(fields: [practice_id], references: [id], onDelete: Cascade)
+    software    Software    @relation(fields: [software_id], references: [id], onDelete: Restrict)
+    reservation Reservation @relation(fields: [reservation_id], references: [id], onDelete: Cascade)
 
-    @@id([software_id, practice_id])
-    @@map("software_practices")
+    @@id([software_id, reservation_id])
+    @@map("software_reservations")
 }
 
 model Career {

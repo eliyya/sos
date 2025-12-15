@@ -7,7 +7,7 @@ import { Temporal } from '@js-temporal/polyfill'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { SaveIcon, UserIcon } from 'lucide-react'
 import { Activity, useEffect, useState, useTransition } from 'react'
-import { editPractice, findFirstPractice } from '@/actions/practices'
+import { editPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
@@ -19,26 +19,10 @@ import {
 } from '@/global/management-practices'
 import { secondsToTime, setTime } from '@/lib/utils'
 import { getClassName } from './InfoDialog'
+import { getReservationAction } from '@/actions/reservations.actions'
 
 interface EditModeProps {
-    practice: Exclude<
-        Awaited<
-            ReturnType<
-                typeof findFirstPractice<{
-                    include: {
-                        teacher: true
-                        class: {
-                            include: {
-                                subject: true
-                                career: true
-                            }
-                        }
-                    }
-                }>
-            >
-        >,
-        null
-    >
+    practice: Exclude<Awaited<ReturnType<typeof getReservationAction>>, null>
     lab: {
         name: string
         id: string

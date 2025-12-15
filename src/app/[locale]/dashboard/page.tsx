@@ -49,7 +49,7 @@ export default async function AdminDashboardPage() {
     const monthStart = now.subtract({ days: now.day })
     const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
 
-    const practices = await db.practice.count({
+    const practices = await db.reservation.count({
         where: {
             created_at: {
                 gte: new Date(monthStart.epochMilliseconds),

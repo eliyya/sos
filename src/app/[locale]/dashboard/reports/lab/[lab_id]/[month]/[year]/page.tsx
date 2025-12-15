@@ -24,7 +24,7 @@ export default async function ReportsPage({
     }).toZonedDateTime('America/Monterrey')
     const monthEnd = monthStart.add({ months: 1 }).subtract({ seconds: 1 })
 
-    const practices = db.practice.findMany({
+    const practices = db.reservation.findMany({
         where: {
             created_at: {
                 gte: new Date(monthStart.epochMilliseconds),

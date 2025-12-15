@@ -463,7 +463,7 @@ export async function setAsideLaboratory(formData: FormData): Promise<{
                 errors: { teacher_id: 'La contraseña es incorrecta' },
             }
     }
-    await db.practice.create({
+    await db.reservation.create({
         data: {
             topic,
             name,
