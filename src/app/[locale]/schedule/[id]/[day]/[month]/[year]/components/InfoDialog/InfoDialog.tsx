@@ -3,7 +3,6 @@
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { getRemainingHours } from '@/actions/classes.actions'
-import { findFirstPractice } from '@/actions/practices'
 import {
     Dialog,
     DialogContent,
@@ -20,6 +19,7 @@ import { cn } from '@/lib/utils'
 import { DeleteMode } from './DeleteMode'
 import { EditMode } from './EditMode'
 import { InfoMode } from './InfoMode'
+import { getReservationAction } from '@/actions/reservations.actions'
 
 interface InfoDialogProps {
     lab: {
@@ -33,19 +33,7 @@ export function InfoDialog({ lab }: InfoDialogProps) {
     const [mode, setMode] = useAtom(modeAtom)
     const [currentEvent, setCurrentEvent] = useAtom(eventInfoAtom)
     const [practice, setPractice] = useState<Awaited<
-        ReturnType<
-            typeof findFirstPractice<{
-                include: {
-                    teacher: true
-                    class: {
-                        include: {
-                            subject: true
-                            career: true
-                        }
-                    }
-                }
-            }>
-        >
+        ReturnType<typeof getReservationAction>
     > | null>()
     const [remainingHours, setRemainingHours] = useState({
         leftHours: Infinity,
@@ -54,20 +42,7 @@ export function InfoDialog({ lab }: InfoDialogProps) {
     })
 
     useEffect(() => {
-        findFirstPractice({
-            where: {
-                id: currentEvent?.id,
-            },
-            include: {
-                teacher: true,
-                class: {
-                    include: {
-                        subject: true,
-                        career: true,
-                    },
-                },
-            },
-        })
+        getReservationAction({ id: currentEvent?.id ?? '' })
             .then(p => {
                 if (p) {
                     setPractice(p)

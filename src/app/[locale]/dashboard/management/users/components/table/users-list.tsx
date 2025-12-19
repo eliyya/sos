@@ -37,7 +37,10 @@ export function UserItem({ user }: StudentItemListProps) {
 }
 
 interface ButtonsProps {
-    user: User
+    user: {
+        id: User['id']
+        status: User['status']
+    }
 }
 function Buttons({ user }: ButtonsProps) {
     const setDialogOpened = useSetAtom(dialogAtom)

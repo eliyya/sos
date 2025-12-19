@@ -1,5 +1,7 @@
 import { Effect } from 'effect'
 import {
+    BetterAuthAPIError,
+    BetterError,
     InvalidInputError,
     NotAllowedError,
     NotFoundError,
@@ -12,6 +14,7 @@ import { AuthService } from '@/layers/auth.layer'
 import { db } from '@/prisma/db'
 import { requirePermission } from './auth.service'
 import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
+import { APIError } from 'better-auth'
 
 export function getUsersEffect() {
     return Effect.gen(function* (_) {
@@ -52,7 +55,7 @@ export function archiveUserEffect(id: string) {
                 try: () =>
                     prisma.user.findFirst({
                         where: { id },
-                        include: { role: true },
+                        include: { permissions_role: true },
                     }),
                 catch: err => new PrismaError(err),
             }),
@@ -63,12 +66,14 @@ export function archiveUserEffect(id: string) {
             return yield* _(Effect.fail(new NotFoundError('User not found')))
         if (user.status === STATUS.ARCHIVED) return user
 
-        if (user.role.name === DEFAULT_ROLES.ADMIN) {
+        if (user.permissions_role.name === DEFAULT_ROLES.ADMIN) {
             const adminCount = yield* _(
                 Effect.tryPromise({
                     try: () =>
                         prisma.user.count({
-                            where: { role: { name: DEFAULT_ROLES.ADMIN } },
+                            where: {
+                                permissions_role: { name: DEFAULT_ROLES.ADMIN },
+                            },
                         }),
                     catch: err => new PrismaError(err),
                 }),
@@ -137,7 +142,7 @@ export function deleteUserEffect(id: string) {
                 try: () =>
                     prisma.user.findFirst({
                         where: { id },
-                        include: { role: true },
+                        include: { permissions_role: true },
                     }),
                 catch: err => new PrismaError(err),
             }),
@@ -147,12 +152,16 @@ export function deleteUserEffect(id: string) {
         if (user.status === STATUS.DELETED)
             return yield* _(Effect.fail(new NotFoundError('User not found')))
 
-        if (user.role.name === DEFAULT_ROLES.ADMIN) {
+        if (user.permissions_role.name === DEFAULT_ROLES.ADMIN) {
             const adminCount = yield* _(
                 Effect.tryPromise({
                     try: () =>
                         prisma.user.count({
-                            where: { role: { name: DEFAULT_ROLES.ADMIN } },
+                            where: {
+                                permissions_role: {
+                                    name: DEFAULT_ROLES.ADMIN,
+                                },
+                            },
                         }),
                     catch: err => new PrismaError(err),
                 }),
@@ -177,7 +186,7 @@ export function deleteUserEffect(id: string) {
                             email: id,
                             image: null,
                             display_username: id,
-                            role: {
+                            permissions_role: {
                                 connect: {
                                     name: DEFAULT_ROLES.DELETED,
                                 },
@@ -356,7 +365,7 @@ export const searchUsersEffect = ({
                                 ],
                             },
                             include: {
-                                role: {
+                                permissions_role: {
                                     select: {
                                         name: true,
                                     },
@@ -391,7 +400,7 @@ export const searchUsersEffect = ({
         const usersMapped = users.map(user => ({
             ...user,
             role: {
-                name: user.role.name,
+                name: user.permissions_role.name,
             },
         }))
 
@@ -400,3 +409,54 @@ export const searchUsersEffect = ({
             pages: Math.ceil(count / size || 1),
         }
     })
+
+export function createUserEffect({
+    password,
+    name,
+    username,
+    role_id,
+}: {
+    password: string
+    name: string
+    username: string
+    role_id: string
+}) {
+    return Effect.gen(function* (_) {
+        yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_USERS))
+
+        const auth = yield* _(AuthService)
+
+        const data = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    auth.api.createUser({
+                        body: {
+                            email: `${username}@noemail.local`,
+                            name,
+                            password,
+                            data: {
+                                username,
+                                role_id,
+                                displayUsername: username,
+                            },
+                        },
+                    }),
+                catch: err => {
+                    if (err instanceof APIError) {
+                        return new BetterAuthAPIError({
+                            cause: {
+                                code: err.body?.code ?? 'UNKNOWN_ERROR',
+                                message: err.message,
+                                status: err.status,
+                            },
+                        })
+                    } else {
+                        return new BetterError({ cause: err })
+                    }
+                },
+            }),
+        )
+
+        return data
+    })
+}

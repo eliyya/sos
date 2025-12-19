@@ -16,7 +16,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { unarchiveUser } from '@/actions/users.actions'
+import { unarchiveUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -49,7 +49,7 @@ export function UnarchiveOrDeleteDialog() {
     const onAction = useCallback(() => {
         if (!entityId) return
         startTransition(async () => {
-            const response = await unarchiveUser(entityId)
+            const response = await unarchiveUserAction(entityId)
             if (response.status === 'success') {
                 refresh()
                 setOpen(null)

@@ -10,21 +10,17 @@ import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
 import ScheduleBody from './components/ScheduleBody'
 import { ScheduleHeader } from './components/ScheduleHeader'
+import { SearchInput } from './components/SearchInput'
+import AnonimousScheduleBody from './components/anonimous/anonimous-schedule-body'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
     description: 'Horario semanal de reservas de laboratorio',
 }
 
-interface SchedulePageProps {
-    params: Promise<{
-        id: string
-        day: string
-        month: string
-        year: string
-    }>
-}
-export default async function SchedulePage({ params }: SchedulePageProps) {
+export default async function SchedulePage({
+    params,
+}: PageProps<'/[locale]/schedule/[id]/[day]/[month]/[year]'>) {
     const { id } = await params
 
     const session = await auth.api.getSession({
@@ -69,13 +65,14 @@ export default async function SchedulePage({ params }: SchedulePageProps) {
     return (
         <div className='bg-background min-h-screen'>
             <ScheduleHeader labs={labs} />
-            <ScheduleBody
-                user={user?.[0] ?? null}
-                lab_id={id}
-                labs={labs}
-                isAdmin={isAdmin}
-                users={others}
-            />
+            <main className='container mx-auto px-4 py-8'>
+                <div className='flex items-center justify-between'>
+                    <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
+                    <SearchInput />
+                </div>
+                {/* Schedule Body */}
+                <AnonimousScheduleBody lab_id={id} />
+            </main>
         </div>
     )
 }

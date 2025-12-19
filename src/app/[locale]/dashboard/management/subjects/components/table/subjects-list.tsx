@@ -25,10 +25,10 @@ export function SubjectItem({ subject }: StudentItemListProps) {
         <TableRow>
             <TableCell>{subject.name}</TableCell>
             <TableCell className='text-center'>
-                {subject.practice_hours}
+                {subject.theory_hours}
             </TableCell>
             <TableCell className='text-center'>
-                {subject.theory_hours}
+                {subject.practice_hours}
             </TableCell>
             <TableCell className='flex gap-1'>
                 <Buttons subject={subject} />

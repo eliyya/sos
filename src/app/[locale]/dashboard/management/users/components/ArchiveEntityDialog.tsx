@@ -10,7 +10,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { archiveUser } from '@/actions/users.actions'
+import { archiveUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -47,7 +47,7 @@ export function ArchiveEntityDialog() {
     const onAction = useCallback(async () => {
         if (!entityId) return
         startTransition(async () => {
-            const response = await archiveUser(entityId)
+            const response = await archiveUserAction(entityId)
             if (response.status === 'success') {
                 refresh()
                 setOpen(null)

@@ -1,5 +1,6 @@
 import { atom } from 'jotai'
 import { ScheduleEvent } from '@/types/schedule'
+import { getPracticesFromWeekAction } from '@/actions/reservations.actions'
 
 export enum DialogMode {
     INFO,
@@ -20,7 +21,6 @@ export const actualEventAtom = atom<ScheduleEvent>({
     ownerId: '',
 })
 export const newEventSignalAtom = atom(Symbol())
-export const eventsAtom = atom<ScheduleEvent[]>([])
 export const eventInfoAtom = atom<ScheduleEvent | null>(null)
 export const modeAtom = atom<DialogMode>(DialogMode.INFO)
 export const selectedUserAtom = atom({
@@ -37,3 +37,21 @@ export const remainingHoursAtom = atom({
     allowedHours: 0,
     usedHours: 0,
 })
+// -----------
+// anonimous
+// -----------
+export const reservationsAtom = atom<
+    Awaited<ReturnType<typeof getPracticesFromWeekAction>>
+>([])
+// -----------
+// all
+// -----------
+export const eventsAtom = atom<ScheduleEvent[]>(get =>
+    get(reservationsAtom).map(e => ({
+        id: e.id,
+        title: e.name,
+        start: e.starts_at.getTime(),
+        end: e.ends_at.getTime(),
+        ownerId: e.teacher_id,
+    })),
+)

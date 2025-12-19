@@ -3,7 +3,7 @@
 import { useSetAtom } from 'jotai'
 import { SaveIcon, TrashIcon, UserIcon } from 'lucide-react'
 import { Activity, useState, useTransition } from 'react'
-import { deletePractice, findFirstPractice } from '@/actions/practices'
+import { deletePractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
@@ -12,26 +12,10 @@ import {
     eventInfoAtom,
     modeAtom,
 } from '@/global/management-practices'
+import { getReservationAction } from '@/actions/reservations.actions'
 
 interface InfoModeProps {
-    practice: Exclude<
-        Awaited<
-            ReturnType<
-                typeof findFirstPractice<{
-                    include: {
-                        teacher: true
-                        class: {
-                            include: {
-                                subject: true
-                                career: true
-                            }
-                        }
-                    }
-                }>
-            >
-        >,
-        null
-    >
+    practice: Exclude<Awaited<ReturnType<typeof getReservationAction>>, null>
 }
 export function DeleteMode({ practice }: InfoModeProps) {
     const setEditMode = useSetAtom(modeAtom)

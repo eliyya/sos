@@ -35,26 +35,27 @@ BEGIN
     END IF;
 END$$;
 
--- CreateEnum
-CREATE TYPE "public"."LABORATORY_TYPE" AS ENUM ('COMPUTER_CENTER', 'LABORATORY');
+-- ! Prisma generation
 
 -- CreateEnum
-CREATE TYPE "public"."MACHINE_STATUS" AS ENUM ('AVAILABLE', 'MAINTENANCE', 'IN_USE', 'OUT_OF_SERVICE');
+CREATE TYPE "LABORATORY_TYPE" AS ENUM ('COMPUTER_CENTER', 'LABORATORY');
 
 -- CreateEnum
-CREATE TYPE "public"."STATUS" AS ENUM ('ACTIVE', 'ARCHIVED', 'DELETED');
+CREATE TYPE "MACHINE_STATUS" AS ENUM ('AVAILABLE', 'MAINTENANCE', 'IN_USE', 'OUT_OF_SERVICE');
+
+-- CreateEnum
+CREATE TYPE "STATUS" AS ENUM ('ACTIVE', 'ARCHIVED', 'DELETED');
 
 -- CreateTable
-CREATE TABLE "public"."states" (
+CREATE TABLE "states" (
     "name" TEXT NOT NULL,
     "value" INTEGER NOT NULL,
 
     CONSTRAINT "states_pkey" PRIMARY KEY ("name")
 );
 
-
 -- CreateTable
-CREATE TABLE "public"."roles" (
+CREATE TABLE "roles" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "permissions" BIGINT NOT NULL DEFAULT 0,
@@ -63,24 +64,28 @@ CREATE TABLE "public"."roles" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."users" (
+CREATE TABLE "users" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "email_verified" BOOLEAN NOT NULL DEFAULT true,
     "image" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "username" TEXT NOT NULL,
-    "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "display_username" TEXT,
     "role_id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "email_verified" BOOLEAN NOT NULL DEFAULT true,
+    "display_username" TEXT,
+    "role" TEXT NOT NULL DEFAULT 'user',
+    "banned" BOOLEAN NOT NULL DEFAULT false,
+    "banReason" TEXT,
+    "banExpires" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."session" (
+CREATE TABLE "session" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "expires_at" TIMESTAMP(3) NOT NULL,
     "token" TEXT NOT NULL,
@@ -89,12 +94,13 @@ CREATE TABLE "public"."session" (
     "ip_address" TEXT,
     "user_agent" TEXT,
     "user_id" TEXT NOT NULL,
+    "impersonatedBy" TEXT,
 
     CONSTRAINT "session_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."account" (
+CREATE TABLE "account" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "account_id" TEXT NOT NULL,
     "provider_id" TEXT NOT NULL,
@@ -113,7 +119,7 @@ CREATE TABLE "public"."account" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."verification" (
+CREATE TABLE "verification" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "identifier" TEXT NOT NULL,
     "value" TEXT NOT NULL,
@@ -125,27 +131,27 @@ CREATE TABLE "public"."verification" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."subjects" (
+CREATE TABLE "subjects" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "practice_hours" INTEGER NOT NULL,
     "theory_hours" INTEGER NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "subjects_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."classes" (
+CREATE TABLE "classes" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "subject_id" TEXT NOT NULL,
     "teacher_id" TEXT NOT NULL,
     "career_id" TEXT NOT NULL,
     "group" INTEGER NOT NULL DEFAULT 1,
     "semester" INTEGER NOT NULL DEFAULT 1,
-    "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -153,21 +159,21 @@ CREATE TABLE "public"."classes" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."laboratories" (
+CREATE TABLE "laboratories" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "name" TEXT NOT NULL,
     "open_hour" INTEGER NOT NULL,
     "close_hour" INTEGER NOT NULL,
-    "type" "public"."LABORATORY_TYPE" NOT NULL DEFAULT 'LABORATORY',
-    "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "type" "LABORATORY_TYPE" NOT NULL DEFAULT 'LABORATORY',
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "laboratories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."practices" (
+CREATE TABLE "reservation" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "teacher_id" TEXT NOT NULL,
     "topic" TEXT NOT NULL,
@@ -182,11 +188,11 @@ CREATE TABLE "public"."practices" (
     "starts_at" TIMESTAMP(3) NOT NULL,
     "ends_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "practices_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "reservation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."software" (
+CREATE TABLE "software" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -196,27 +202,27 @@ CREATE TABLE "public"."software" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."software_practices" (
+CREATE TABLE "software_reservations" (
     "software_id" TEXT NOT NULL,
-    "practice_id" TEXT NOT NULL,
+    "reservation_id" TEXT NOT NULL,
 
-    CONSTRAINT "software_practices_pkey" PRIMARY KEY ("software_id","practice_id")
+    CONSTRAINT "software_reservations_pkey" PRIMARY KEY ("software_id","reservation_id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."careers" (
+CREATE TABLE "careers" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
     "alias" TEXT NOT NULL,
 
     CONSTRAINT "careers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."students" (
+CREATE TABLE "students" (
     "nc" TEXT NOT NULL,
     "lastname" TEXT NOT NULL,
     "firstname" TEXT NOT NULL,
@@ -225,13 +231,13 @@ CREATE TABLE "public"."students" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "career_id" TEXT NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "status" "public"."STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "status" "STATUS" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "students_pkey" PRIMARY KEY ("nc")
 );
 
 -- CreateTable
-CREATE TABLE "public"."visits" (
+CREATE TABLE "visits" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "exit_at" TIMESTAMP(3),
@@ -244,10 +250,10 @@ CREATE TABLE "public"."visits" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."machines" (
+CREATE TABLE "machines" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "number" INTEGER NOT NULL,
-    "status" "public"."MACHINE_STATUS" NOT NULL DEFAULT 'AVAILABLE',
+    "status" "MACHINE_STATUS" NOT NULL DEFAULT 'AVAILABLE',
     "processor" TEXT NOT NULL,
     "ram" TEXT NOT NULL,
     "storage" TEXT NOT NULL,
@@ -261,7 +267,7 @@ CREATE TABLE "public"."machines" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."software_machines" (
+CREATE TABLE "software_machines" (
     "software_id" TEXT NOT NULL,
     "machine_id" TEXT NOT NULL,
 
@@ -269,7 +275,7 @@ CREATE TABLE "public"."software_machines" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."issue" (
+CREATE TABLE "issue" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "comment" TEXT NOT NULL,
@@ -282,7 +288,7 @@ CREATE TABLE "public"."issue" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."comment" (
+CREATE TABLE "comment" (
     "id" TEXT NOT NULL DEFAULT snowflake(),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "content" TEXT NOT NULL,
@@ -294,7 +300,7 @@ CREATE TABLE "public"."comment" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."student_classes" (
+CREATE TABLE "student_classes" (
     "student_nc" TEXT NOT NULL,
     "class_id" TEXT NOT NULL,
 
@@ -302,106 +308,106 @@ CREATE TABLE "public"."student_classes" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "roles_name_key" ON "public"."roles"("name");
+CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_username_key" ON "public"."users"("username");
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "public"."users"("email");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "session_token_key" ON "public"."session"("token");
+CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "classes_subject_id_teacher_id_group_semester_career_id_key" ON "public"."classes"("subject_id", "teacher_id", "group", "semester", "career_id");
+CREATE UNIQUE INDEX "subjects_name_key" ON "subjects"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "laboratories_name_key" ON "public"."laboratories"("name");
+CREATE UNIQUE INDEX "classes_subject_id_teacher_id_group_semester_career_id_key" ON "classes"("subject_id", "teacher_id", "group", "semester", "career_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "careers_name_key" ON "public"."careers"("name");
+CREATE UNIQUE INDEX "laboratories_name_key" ON "laboratories"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "careers_alias_key" ON "public"."careers"("alias");
+CREATE UNIQUE INDEX "careers_name_key" ON "careers"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "machines_serie_key" ON "public"."machines"("serie");
+CREATE UNIQUE INDEX "careers_alias_key" ON "careers"("alias");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "subjects_name_key" ON "public"."subjects"("name");
+CREATE UNIQUE INDEX "machines_serie_key" ON "machines"("serie");
 
 -- AddForeignKey
-ALTER TABLE "public"."users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "public"."roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."session" ADD CONSTRAINT "session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "session" ADD CONSTRAINT "session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."account" ADD CONSTRAINT "account_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "account" ADD CONSTRAINT "account_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."classes" ADD CONSTRAINT "classes_subject_id_fkey" FOREIGN KEY ("subject_id") REFERENCES "public"."subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "classes" ADD CONSTRAINT "classes_subject_id_fkey" FOREIGN KEY ("subject_id") REFERENCES "subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."classes" ADD CONSTRAINT "classes_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "classes" ADD CONSTRAINT "classes_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."classes" ADD CONSTRAINT "classes_career_id_fkey" FOREIGN KEY ("career_id") REFERENCES "public"."careers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "classes" ADD CONSTRAINT "classes_career_id_fkey" FOREIGN KEY ("career_id") REFERENCES "careers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."practices" ADD CONSTRAINT "practices_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "public"."classes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "reservation" ADD CONSTRAINT "reservation_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."practices" ADD CONSTRAINT "practices_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reservation" ADD CONSTRAINT "reservation_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."practices" ADD CONSTRAINT "practices_registered_by_fkey" FOREIGN KEY ("registered_by") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reservation" ADD CONSTRAINT "reservation_registered_by_fkey" FOREIGN KEY ("registered_by") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."practices" ADD CONSTRAINT "practices_laboratory_id_fkey" FOREIGN KEY ("laboratory_id") REFERENCES "public"."laboratories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reservation" ADD CONSTRAINT "reservation_laboratory_id_fkey" FOREIGN KEY ("laboratory_id") REFERENCES "laboratories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."software_practices" ADD CONSTRAINT "software_practices_software_id_fkey" FOREIGN KEY ("software_id") REFERENCES "public"."software"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "software_reservations" ADD CONSTRAINT "software_reservations_software_id_fkey" FOREIGN KEY ("software_id") REFERENCES "software"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."software_practices" ADD CONSTRAINT "software_practices_practice_id_fkey" FOREIGN KEY ("practice_id") REFERENCES "public"."practices"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "software_reservations" ADD CONSTRAINT "software_reservations_reservation_id_fkey" FOREIGN KEY ("reservation_id") REFERENCES "reservation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."students" ADD CONSTRAINT "students_career_id_fkey" FOREIGN KEY ("career_id") REFERENCES "public"."careers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "students" ADD CONSTRAINT "students_career_id_fkey" FOREIGN KEY ("career_id") REFERENCES "careers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."visits" ADD CONSTRAINT "visits_student_nc_fkey" FOREIGN KEY ("student_nc") REFERENCES "public"."students"("nc") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "visits" ADD CONSTRAINT "visits_student_nc_fkey" FOREIGN KEY ("student_nc") REFERENCES "students"("nc") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."visits" ADD CONSTRAINT "visits_laboratory_id_fkey" FOREIGN KEY ("laboratory_id") REFERENCES "public"."laboratories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "visits" ADD CONSTRAINT "visits_laboratory_id_fkey" FOREIGN KEY ("laboratory_id") REFERENCES "laboratories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."visits" ADD CONSTRAINT "visits_machine_id_fkey" FOREIGN KEY ("machine_id") REFERENCES "public"."machines"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "visits" ADD CONSTRAINT "visits_machine_id_fkey" FOREIGN KEY ("machine_id") REFERENCES "machines"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."machines" ADD CONSTRAINT "machines_laboratory_id_fkey" FOREIGN KEY ("laboratory_id") REFERENCES "public"."laboratories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "machines" ADD CONSTRAINT "machines_laboratory_id_fkey" FOREIGN KEY ("laboratory_id") REFERENCES "laboratories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."software_machines" ADD CONSTRAINT "software_machines_software_id_fkey" FOREIGN KEY ("software_id") REFERENCES "public"."software"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "software_machines" ADD CONSTRAINT "software_machines_software_id_fkey" FOREIGN KEY ("software_id") REFERENCES "software"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."software_machines" ADD CONSTRAINT "software_machines_machine_id_fkey" FOREIGN KEY ("machine_id") REFERENCES "public"."machines"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "software_machines" ADD CONSTRAINT "software_machines_machine_id_fkey" FOREIGN KEY ("machine_id") REFERENCES "machines"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."issue" ADD CONSTRAINT "issue_machine_id_fkey" FOREIGN KEY ("machine_id") REFERENCES "public"."machines"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "issue" ADD CONSTRAINT "issue_machine_id_fkey" FOREIGN KEY ("machine_id") REFERENCES "machines"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."issue" ADD CONSTRAINT "issue_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "issue" ADD CONSTRAINT "issue_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."comment" ADD CONSTRAINT "comment_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "comment" ADD CONSTRAINT "comment_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."comment" ADD CONSTRAINT "comment_issue_id_fkey" FOREIGN KEY ("issue_id") REFERENCES "public"."issue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "comment" ADD CONSTRAINT "comment_issue_id_fkey" FOREIGN KEY ("issue_id") REFERENCES "issue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."student_classes" ADD CONSTRAINT "student_classes_student_nc_fkey" FOREIGN KEY ("student_nc") REFERENCES "public"."students"("nc") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "student_classes" ADD CONSTRAINT "student_classes_student_nc_fkey" FOREIGN KEY ("student_nc") REFERENCES "students"("nc") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."student_classes" ADD CONSTRAINT "student_classes_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "public"."classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "student_classes" ADD CONSTRAINT "student_classes_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

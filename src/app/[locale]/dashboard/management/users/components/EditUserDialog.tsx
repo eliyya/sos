@@ -16,7 +16,7 @@ import {
     useState,
     useTransition,
 } from 'react'
-import { editUser } from '@/actions/users.actions'
+import { editUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
@@ -31,6 +31,8 @@ import { RetornableCompletSelect } from '@/components/Select'
 import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { SearchUsersContext } from '@/contexts/users.context'
+import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 
 const editPasswordAtom = atom('')
 const editPasswordErrorAtom = atom('')
@@ -46,6 +48,7 @@ export function EditUserDialog() {
     const { refresh, promise } = use(SearchUsersContext)
     const setPasswordError = useSetAtom(editPasswordErrorAtom)
     const { users } = use(promise)
+    const router = useRouter()
 
     const oldUser = useMemo(() => {
         if (!entityId) return null
@@ -73,7 +76,7 @@ export function EditUserDialog() {
                             const username = data.get('username') as string
                             const role_id = data.get('role_id') as string
                             const password = data.get('password') as string
-                            const response = await editUser({
+                            const response = await editUserAction({
                                 id: oldUser.id,
                                 name,
                                 username,
@@ -95,6 +98,13 @@ export function EditUserDialog() {
                                     'Algo sucedio mal, intente nuevamente',
                                 )
                                 setTimeout(setMessage, 5_000, '')
+                                return
+                            } else if (response.type === 'permission') {
+                                setMessage('No tienes suficientes permisos')
+                                setTimeout(setMessage, 5_000, '')
+                                return
+                            } else if (response.type === 'unauthorized') {
+                                router.replace(app.$locale.auth.login('es'))
                                 return
                             }
                             setMessage('Algo sucedio mal, intente nuevamente')

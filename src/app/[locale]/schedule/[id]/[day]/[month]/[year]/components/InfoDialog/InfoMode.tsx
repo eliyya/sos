@@ -3,7 +3,6 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { useSetAtom } from 'jotai'
 import { Save, Trash, UserIcon } from 'lucide-react'
-import { findFirstPractice } from '@/actions/practices'
 import { Button } from '@/components/Button'
 import { CompletInput } from '@/components/Inputs'
 import { DialogMode, modeAtom } from '@/global/management-practices'
@@ -14,26 +13,10 @@ import {
 } from '@/bitfields/PermissionsBitField'
 import { authClient } from '@/lib/auth-client'
 import { useParams } from 'next/navigation'
+import { getReservationAction } from '@/actions/reservations.actions'
 
 interface InfoModeProps {
-    practice: Exclude<
-        Awaited<
-            ReturnType<
-                typeof findFirstPractice<{
-                    include: {
-                        teacher: true
-                        class: {
-                            include: {
-                                subject: true
-                                career: true
-                            }
-                        }
-                    }
-                }>
-            >
-        >,
-        null
-    >
+    practice: Exclude<Awaited<ReturnType<typeof getReservationAction>>, null>
 }
 export function InfoMode({ practice }: InfoModeProps) {
     const { id: lab_id } = useParams<{ id: string }>()

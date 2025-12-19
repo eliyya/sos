@@ -13,6 +13,7 @@ export type BaseMessage = {
         "understood": "Entendido",
         "control_number": "Numero de control",
         "names": "Nombres",
+        "name": "Nombre",
         "surnames": "Apellidos",
         "career": "Carrera",
         "semester": "Semestre",
@@ -20,7 +21,8 @@ export type BaseMessage = {
         "register_visit": "Registrar visita",
         "cn": "NC",
         "entrance": "Entrada",
-        "exit": "Salida"
+        "exit": "Salida",
+        "group": "Grupo"
     },
     "exports": {
         "from": "Desde",
@@ -78,7 +80,8 @@ export type BaseMessage = {
         "confirm_delete_class": "¿Está seguro de eliminar la clase {subjectName} - {teacherName}?",
         "is_irreversible": "Esta acción es irreversible",
         "delete": "Eliminar",
-        "edit_class": "Edita la clase {subject} {career} {group}",
+        "edit_class": "Edita la clase",
+        "edit_class_description": "Edita la clase {subject} {career} {group}",
         "save": "Save",
         "search_class": "Buscar clase...",
         "archived": "Archivados",

@@ -6,7 +6,7 @@ export default async function DashboardLayout(
     return (
         <div className='flex min-h-screen max-w-screen'>
             <DashboardNav />
-            {props.children}
+            <div className='flex w-full flex-col p-4'>{props.children}</div>
         </div>
     )
 }

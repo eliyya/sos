@@ -431,7 +431,7 @@ export async function getRemainingHours({
     const allowedHours = classData.subject.practice_hours
 
     // Consultar prácticas dentro del rango de la semana
-    const practices = await db.practice.findMany({
+    const practices = await db.reservation.findMany({
         where: {
             class_id: classId,
             starts_at: {

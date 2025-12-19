@@ -1,5 +1,6 @@
 import { Data } from 'effect'
 import { PermissionsBitField } from './bitfields/PermissionsBitField'
+import { APIError } from 'better-auth'
 
 export class InvalidInputError<
     T extends string,
@@ -64,3 +65,29 @@ export class RoleCreationConflictError<T extends string> {
     readonly _tag = 'RoleCreationConflictError'
     constructor(readonly message: T) {}
 }
+
+export class BetterError<T> extends Data.TaggedError('BetterError')<{
+    cause: T
+}> {}
+
+export class BetterAuthAPIError<T extends APIError> extends Data.TaggedError(
+    'BetterAuthAPIError',
+)<{
+    cause:
+        | {
+              code: 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL'
+              message: 'User already exists. Use another email.'
+              status: T['status']
+          }
+        | {
+              code: 'UNKNOWN_ERROR' | (string & {})
+              message: string & {}
+              status: T['status']
+          }
+}> {}
+
+export class InvalidCredentialsError extends Data.TaggedError(
+    'InvalidCredentialsError',
+)<{
+    message?: string
+}> {}
