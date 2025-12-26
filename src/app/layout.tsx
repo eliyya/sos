@@ -1,7 +1,7 @@
 import './globals.css'
 import { Provider } from 'jotai'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Figtree } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
@@ -11,6 +11,8 @@ import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
 import { MantineProvider } from '@mantine/core'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+
+const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,7 +29,7 @@ export default async function RootLayout({
     const locale = await getLocale()
     // const messages = await getMessages()
     return (
-        <html lang={locale} suppressHydrationWarning>
+        <html lang={locale} suppressHydrationWarning className={figtree.variable}>
             <body
                 className={cn('flex min-h-screen flex-col', inter.className)}
                 suppressContentEditableWarning
