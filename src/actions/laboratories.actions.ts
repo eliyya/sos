@@ -17,6 +17,7 @@ import {
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
 import { auth } from '@/lib/auth'
+import { SuccessOf } from '@/lib/type-utils'
 import { db } from '@/prisma/db'
 import {
     archiveLaboratoryEffect,
@@ -24,6 +25,7 @@ import {
     deleteLaboratoryEffect,
     editLaboratoryEffect,
     getLaboratoriesEffect,
+    getLaboratorySelectOptionsEffect,
     unarchiveLaboratoryEffect,
 } from '@/services/laboratories.service'
 import { Temporal } from '@js-temporal/polyfill'
@@ -382,6 +384,24 @@ export async function getLaboratories() {
     return await Effect.runPromise(
         Effect.scoped(
             getLaboratoriesEffect()
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: laboratories => laboratories,
+                        onFailure: error => {
+                            console.log(error)
+                            return []
+                        },
+                    }),
+                ),
+        ),
+    )
+}
+
+export async function getLaboratorySelectOptionsAction() {
+    return await Effect.runPromise(
+        Effect.scoped(
+            getLaboratorySelectOptionsEffect()
                 .pipe(Effect.provide(PrismaLive))
                 .pipe(
                     Effect.match({

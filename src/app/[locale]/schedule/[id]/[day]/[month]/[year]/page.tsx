@@ -12,6 +12,7 @@ import ScheduleBody from './components/ScheduleBody'
 import { ScheduleHeader } from './components/ScheduleHeader'
 import { SearchInput } from './components/SearchInput'
 import AnonimousScheduleBody from './components/anonimous/anonimous-schedule-body'
+import LoggedScheduleBody from './components/logged/logged-schedule-body'
 
 export const metadata: Metadata = {
     title: 'Horario | Lab Reservation System',
@@ -26,53 +27,16 @@ export default async function SchedulePage({
     const session = await auth.api.getSession({
         headers: await headers(),
     })
-    const isAdmin =
-        !!session &&
-        new PermissionsBitField(BigInt(session.user.permissions)).any(
-            ADMIN_BITS,
-        )
 
-    let users: { id: string; name: string }[] = []
-
-    users = await db.user.findMany({
+    const lab = await db.laboratory.findFirst({
         where: {
+            id,
             status: STATUS.ACTIVE,
         },
-        select: {
-            id: true,
-            name: true,
-        },
     })
-    const { user, others = [] } = Object.groupBy(users, u =>
-        u.id === session?.user.id ? 'user' : 'others',
-    )
-
-    const labs = await db.laboratory.findMany({
-        where: {
-            type: LABORATORY_TYPE.LABORATORY,
-            status: STATUS.ACTIVE,
-        },
-        select: {
-            id: true,
-            name: true,
-            open_hour: true,
-            close_hour: true,
-        },
-    })
-    const lab = labs.find(l => l.id === id)
     if (!lab) notFound()
 
-    return (
-        <div className='bg-background min-h-screen'>
-            <ScheduleHeader labs={labs} />
-            <main className='container mx-auto px-4 py-8'>
-                <div className='flex items-center justify-between'>
-                    <h1 className='mb-8 text-3xl font-bold'>Horario Semanal</h1>
-                    <SearchInput />
-                </div>
-                {/* Schedule Body */}
-                <AnonimousScheduleBody lab_id={id} />
-            </main>
-        </div>
-    )
+    if (!session) return <AnonimousScheduleBody lab_id={id} />
+
+    return <LoggedScheduleBody lab_id={id} />
 }

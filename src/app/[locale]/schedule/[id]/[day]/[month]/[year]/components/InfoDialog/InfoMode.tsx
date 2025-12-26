@@ -24,7 +24,7 @@ export function InfoMode({ practice }: InfoModeProps) {
     const session = authClient.useSession()
     const canEdit = new PermissionsBitField(
         BigInt(session.data?.user.permissions ?? 0n),
-    ).has(PERMISSIONS_FLAGS.SESSION_MANAGE)
+    ).has(PERMISSIONS_FLAGS.MANAGE_RESERVE)
     const isOwner = session.data?.user.id === practice.teacher_id
 
     return (

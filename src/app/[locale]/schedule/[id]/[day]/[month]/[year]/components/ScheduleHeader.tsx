@@ -8,14 +8,11 @@ import { SelectLaboratory } from './SelectLaboratory'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 
-interface ScheduleHeaderProps {
-    labs: { id: string; name: string }[]
-}
-export function ScheduleHeader({ labs }: ScheduleHeaderProps) {
+export function ScheduleHeader() {
     return (
         <div className='container mx-auto flex items-center justify-between p-2'>
             <div>
-                <SelectLaboratory labs={labs} />
+                <SelectLaboratory />
             </div>
             <div className='flex items-center justify-end gap-4'>
                 <Buttons />
@@ -34,9 +31,10 @@ function GuestButtons() {
 
 async function Buttons() {
     const session = await auth.api.getSession({ headers: await headers() })
+    if (!session) return <GuestButtons />
     const permissions = new PermissionsBitField(
-        BigInt(session?.user.permissions ?? 0n),
+        BigInt(session?.user.permissions),
     )
     if (permissions.any(ADMIN_BITS)) return <AdminButtons />
-    return <GuestButtons />
+    return null
 }

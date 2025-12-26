@@ -396,6 +396,32 @@ export const getLaboratoriesEffect = () =>
         )
     })
 
+export function getLaboratorySelectOptionsEffect() {
+    return Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        return yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.laboratory.findMany({
+                        where: {
+                            status: STATUS.ACTIVE,
+                        },
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    }),
+                catch: err => new PrismaError(err),
+            }).pipe(
+                Effect.map(labs =>
+                    labs.map(lab => ({ value: lab.id, label: lab.name })),
+                ),
+            ),
+        )
+    })
+}
+
 interface SearchLaboratoriesProps {
     query?: string
     archived?: boolean

@@ -5,11 +5,11 @@ export const PERMISSIONS_FLAGS = brandFlags({
     /** Puede iniciar sesion */
     CAN_LOGIN: 1n << 0n,
     /** Registrar su propia sesion en laboratorio */
-    SESSION_SELF: 1n << 1n, // TODO: implementar
+    RESERVE_SELF: 1n << 1n, // TODO: implementar
     /** Registrar sesiones de otros usuarios */
-    SESSION_OTHERS: 1n << 2n, // TODO: implementar
+    RESERVE_OTHERS: 1n << 2n, // TODO: implementar
     /** Eliminar/Editar sesiones de otros usuarios */
-    SESSION_MANAGE: 1n << 3n, // TODO: implementar
+    MANAGE_RESERVE: 1n << 3n, // TODO: implementar
     /** Registrar entradas en el centro de computo */
     SESSION_CC: 1n << 4n,
 
