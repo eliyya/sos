@@ -21,7 +21,8 @@ export type BaseMessage = {
         "register_visit": "Registrar visita",
         "cn": "NC",
         "entrance": "Entrada",
-        "exit": "Salida"
+        "exit": "Salida",
+        "group": "Grupo"
     },
     "exports": {
         "from": "Desde",
