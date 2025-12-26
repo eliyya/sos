@@ -17,7 +17,6 @@ import {
 import { AuthLive } from '@/layers/auth.layer'
 import { PrismaLive } from '@/layers/db.layer'
 import { auth } from '@/lib/auth'
-import { SuccessOf } from '@/lib/type-utils'
 import { db } from '@/prisma/db'
 import {
     archiveLaboratoryEffect,

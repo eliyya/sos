@@ -1,16 +1,9 @@
-import { LABORATORY_TYPE, STATUS } from '@/prisma/generated/browser'
+import { STATUS } from '@/prisma/generated/browser'
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
-import {
-    PermissionsBitField,
-    ADMIN_BITS,
-} from '@/bitfields/PermissionsBitField'
 import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
-import ScheduleBody from './components/ScheduleBody'
-import { ScheduleHeader } from './components/ScheduleHeader'
-import { SearchInput } from './components/SearchInput'
 import AnonimousScheduleBody from './components/anonimous/anonimous-schedule-body'
 import LoggedScheduleBody from './components/logged/logged-schedule-body'
 
