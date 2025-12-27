@@ -4,11 +4,11 @@ import { FlaggedBitfield } from '@eliyya/flagged-bitfield'
 export const PERMISSIONS_FLAGS = brandFlags({
     /** Puede iniciar sesion */
     CAN_LOGIN: 1n << 0n,
-    /** Registrar su propia sesion en laboratorio */
-    RESERVE_SELF: 1n << 1n, // TODO: implementar
-    /** Registrar sesiones de otros usuarios */
+    /** Reserva su propia sesion en laboratorio */
+    RESERVE_SELF: 1n << 1n,
+    /** Reserva sesiones de otros usuarios */
     RESERVE_OTHERS: 1n << 2n, // TODO: implementar
-    /** Eliminar/Editar sesiones de otros usuarios */
+    /** Eliminar/Editar reservas de otros usuarios */
     MANAGE_RESERVE: 1n << 3n, // TODO: implementar
     /** Registrar entradas en el centro de computo */
     SESSION_CC: 1n << 4n,

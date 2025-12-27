@@ -5,8 +5,11 @@ import { SuccessOf } from '@/lib/type-utils'
 import {
     getPracticesFromWeekEffect,
     getReservationEffect,
+    reserveLaboratoryEffect,
 } from '@/services/reservations.service'
 import { Effect } from 'effect'
+import { AuthLive } from '@/layers/auth.layer'
+import { InvalidInputError } from '@/errors'
 
 export async function getReservationAction({
     id,
@@ -42,6 +45,32 @@ export async function getPracticesFromWeekAction({
                     Effect.catchAll(error => {
                         console.log(error)
                         return Effect.succeed([])
+                    }),
+                ),
+        ),
+    )
+}
+
+type reserveLaboratoryProps = Parameters<typeof reserveLaboratoryEffect>[0]
+export async function reserveLaboratoryAction(data: reserveLaboratoryProps) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            reserveLaboratoryEffect(data)
+                .pipe(Effect.provide([PrismaLive, AuthLive]))
+                .pipe(
+                    Effect.match({
+                        onSuccess: reservation => ({
+                            status: 'succed',
+                            reservation,
+                        }),
+                        onFailure: error => {
+                            if (error instanceof InvalidInputError) {
+                                return {
+                                    status: 'error',
+                                    type: 'invalid-input',
+                                } as const
+                            }
+                        },
                     }),
                 ),
         ),

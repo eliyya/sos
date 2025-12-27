@@ -24,12 +24,14 @@ import {
     deleteLaboratoryEffect,
     editLaboratoryEffect,
     getLaboratoriesEffect,
+    getLaboratoryEffect,
     getLaboratorySelectOptionsEffect,
     unarchiveLaboratoryEffect,
 } from '@/services/laboratories.service'
 import { Temporal } from '@js-temporal/polyfill'
 import { Effect } from 'effect'
 import { headers } from 'next/headers'
+import { Laboratory } from '@/prisma/client/browser'
 
 export async function createLaboratory({
     close_hour,
@@ -390,6 +392,24 @@ export async function getLaboratories() {
                         onFailure: error => {
                             console.log(error)
                             return []
+                        },
+                    }),
+                ),
+        ),
+    )
+}
+
+export async function getLaboratoryAction(id: Laboratory['id']) {
+    return await Effect.runPromise(
+        Effect.scoped(
+            getLaboratoryEffect(id)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess: l => l,
+                        onFailure: error => {
+                            console.log(error)
+                            return null
                         },
                     }),
                 ),

@@ -460,3 +460,50 @@ export function createUserEffect({
         return data
     })
 }
+
+export function scheduleUserInformationEffect({ id }: { id: string }) {
+    return Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+
+        const data = yield* _(
+            Effect.tryPromise({
+                try: () =>
+                    prisma.user.findFirst({
+                        where: { id },
+                        include: {
+                            classes: {
+                                include: {
+                                    student_classes: {
+                                        include: {
+                                            student: true,
+                                        },
+                                    },
+                                    career: true,
+                                    subject: true,
+                                    reservation: true,
+                                },
+                            },
+                        },
+                    }),
+                catch: cause => new PrismaError(cause),
+            }).pipe(
+                Effect.map(data =>
+                    data ?
+                        {
+                            ...data,
+                            classes: data.classes.map(c => ({
+                                ...c,
+                                student_classes: null,
+                                students: c.student_classes.map(
+                                    sc => sc.student,
+                                ),
+                            })),
+                        }
+                    :   null,
+                ),
+            ),
+        )
+
+        return data
+    })
+}

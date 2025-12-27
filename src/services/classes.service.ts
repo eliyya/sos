@@ -335,10 +335,12 @@ interface SearchClassesProps {
     archived?: boolean
     page?: number
     size?: number
+    teacher_id?: string
 }
 export const searchClassesEffect = ({
     query = '',
     archived = false,
+    teacher_id,
     page = DEFAULT_PAGINATION.PAGE,
     size = DEFAULT_PAGINATION.SIZE,
 }: SearchClassesProps) =>
@@ -355,6 +357,7 @@ export const searchClassesEffect = ({
                             where: {
                                 status:
                                     archived ? STATUS.ARCHIVED : STATUS.ACTIVE,
+                                teacher_id,
                                 OR: [
                                     {
                                         subject: {

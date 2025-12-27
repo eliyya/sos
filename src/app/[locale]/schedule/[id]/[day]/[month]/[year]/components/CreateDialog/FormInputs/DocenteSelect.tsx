@@ -12,7 +12,7 @@ import {
     selectedUserAtom,
 } from '@/global/management-practices'
 import { classesSelectOptionsAtom } from '@/global/management.globals'
-import { searchClasses } from '@/actions/search.actions'
+import { searchClassesAction } from '@/actions/search.actions'
 
 interface DocenteSelectProps {
     startLoadingClasses: TransitionStartFunction
@@ -39,7 +39,7 @@ export function DocenteSelect({
             inputValue: string,
             callback: (options: { label: string; value: string }[]) => void,
         ) => {
-            searchClasses({
+            searchClassesAction({
                 query: inputValue,
             }).then(res => {
                 const options = res.classes.map(c => ({

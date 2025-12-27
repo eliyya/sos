@@ -2,6 +2,7 @@ import { db } from '@/prisma/db'
 import { Calendar } from './calendar'
 import { notFound } from 'next/navigation'
 import { InfoDialog } from './InfoDialog'
+import { ReserveDialog } from './reserve-self-dialog'
 
 interface LoggedScheduleBodyProps {
     lab_id: string
@@ -16,6 +17,7 @@ export default async function LoggedScheduleBody({
         <>
             <Calendar lab={lab} />
             <InfoDialog />
+            <ReserveDialog />
         </>
     )
 }

@@ -481,3 +481,15 @@ export const searchLaboratoriesEffect = ({
             pages: Math.ceil(count / size || 1),
         }
     })
+
+export function getLaboratoryEffect(id: Laboratory['id']) {
+    return Effect.gen(function* (_) {
+        const prisma = yield* _(PrismaService)
+        return yield* _(
+            Effect.tryPromise({
+                try: () => prisma.laboratory.findUnique({ where: { id } }),
+                catch: err => new PrismaError(err),
+            }),
+        )
+    })
+}

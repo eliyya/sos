@@ -107,7 +107,7 @@ export async function searchLaboratories(
 }
 
 type SearchClassesProps = Parameters<typeof searchClassesEffect>[0]
-export async function searchClasses(
+export async function searchClassesAction(
     props: SearchClassesProps,
 ): Promise<SuccessOf<ReturnType<typeof searchClassesEffect>>> {
     const classes = await Effect.runPromise(

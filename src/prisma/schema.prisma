@@ -146,11 +146,11 @@ model Class {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    subject        Subject          @relation(fields: [subject_id], references: [id])
-    teacher        User             @relation(fields: [teacher_id], references: [id])
-    career         Career           @relation(fields: [career_id], references: [id])
-    StudentClasses StudentClasses[]
-    Reservation    Reservation[]
+    subject         Subject          @relation(fields: [subject_id], references: [id])
+    teacher         User             @relation(fields: [teacher_id], references: [id])
+    career          Career           @relation(fields: [career_id], references: [id])
+    student_classes StudentClasses[]
+    reservation     Reservation[]
 
     @@unique([subject_id, teacher_id, group, semester, career_id], name: "unique_class")
     @@map("classes")

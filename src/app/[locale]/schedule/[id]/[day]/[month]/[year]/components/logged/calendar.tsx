@@ -5,9 +5,9 @@ import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { Temporal } from '@js-temporal/polyfill'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
     eventsAtom,
     newEventSignalAtom,
@@ -20,6 +20,12 @@ import {
     secondsToTime,
 } from '@/lib/utils'
 import { getPracticesFromWeekAction } from '@/actions/reservations.actions'
+import { authClient } from '@/lib/auth-client'
+import {
+    PERMISSIONS_FLAGS,
+    PermissionsBitField,
+} from '@/bitfields/PermissionsBitField'
+import { useFormReserveStore } from '@/global/schedule.globals'
 
 interface CalendarProps {
     lab: {
@@ -30,11 +36,16 @@ interface CalendarProps {
 }
 
 export function Calendar({ lab }: CalendarProps) {
+    const openReserveDialogOn = useFormReserveStore(s => s.setDate)
     const { push } = useRouter()
     const newEventSignal = useAtomValue(newEventSignalAtom)
     const events = useAtomValue(eventsAtom)
     const setReserves = useSetAtom(reservationsAtom)
     const openEventInfoWith = useSetAtom(eventInfoAtom)
+    const { data: session } = authClient.useSession()
+    const permissions = useMemo(() => {
+        return new PermissionsBitField(session?.user.permissions)
+    }, [session])
 
     const [year, month, day] = usePathname().split('/').toReversed()
 
@@ -72,6 +83,16 @@ export function Calendar({ lab }: CalendarProps) {
             height='auto'
             initialDate={timestamp}
             events={events}
+            dateClick={arg => {
+                if (
+                    !permissions.any([
+                        PERMISSIONS_FLAGS.RESERVE_SELF,
+                        PERMISSIONS_FLAGS.RESERVE_OTHERS,
+                    ])
+                )
+                    return
+                openReserveDialogOn(arg.date.getTime())
+            }}
             eventClick={event => {
                 const info = getCalendarEventInfo(event.event)
                 openEventInfoWith(info)

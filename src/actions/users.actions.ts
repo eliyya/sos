@@ -9,6 +9,7 @@ import {
     deleteUserEffect,
     editUserEffect,
     getUsersEffect,
+    scheduleUserInformationEffect,
     unarchiveUserEffect,
 } from '@/services/users.service'
 import {
@@ -23,6 +24,7 @@ import {
     UnexpectedError,
 } from '@/errors'
 import { AuthLive } from '@/layers/auth.layer'
+import { SuccessOf } from '@/lib/type-utils'
 
 export async function getUsersAction() {
     return Effect.runPromise(
@@ -37,6 +39,30 @@ export async function getUsersAction() {
                         onFailure(error) {
                             console.error(error)
                             return []
+                        },
+                    }),
+                ),
+        ),
+    )
+}
+type ScheduleUserInformationActionProps = Parameters<
+    typeof scheduleUserInformationEffect
+>[0]
+export async function scheduleUserInformationAction(
+    data: ScheduleUserInformationActionProps,
+) {
+    return Effect.runPromise(
+        Effect.scoped(
+            scheduleUserInformationEffect(data)
+                .pipe(Effect.provide(PrismaLive))
+                .pipe(
+                    Effect.match({
+                        onSuccess(value) {
+                            return value
+                        },
+                        onFailure(error) {
+                            console.error(error)
+                            return null
                         },
                     }),
                 ),

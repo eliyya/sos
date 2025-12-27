@@ -2,7 +2,7 @@
 import type {
     searchSubjects,
     searchCareers,
-    searchClasses,
+    searchClassesAction,
     searchLaboratories,
     searchMachines,
     searchStudents,
@@ -20,7 +20,7 @@ import {
 
 export type SearchSubjectsPromise = ReturnType<typeof searchSubjects>
 export type SearchCareersPromise = ReturnType<typeof searchCareers>
-export type SearchClassesPromise = ReturnType<typeof searchClasses>
+export type SearchClassesPromise = ReturnType<typeof searchClassesAction>
 export type SearchLaboratoriesPromise = ReturnType<typeof searchLaboratories>
 export type SearchMachinesPromise = ReturnType<typeof searchMachines>
 export type SearchStudentsPromise = ReturnType<typeof searchStudents>

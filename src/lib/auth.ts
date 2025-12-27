@@ -27,11 +27,15 @@ export const auth = betterAuth({
                 // @ts-expect-error role_id is a string
                 where: { id: user.role_id },
             })
+            const dbuser = await db.user.findUnique({
+                where: { id: user.id },
+            })
             return {
                 ...session,
                 user: {
                     ...user,
                     permissions: (perm?.permissions ?? 0n).toString(),
+                    username: dbuser!.username,
                 },
             }
         }),
