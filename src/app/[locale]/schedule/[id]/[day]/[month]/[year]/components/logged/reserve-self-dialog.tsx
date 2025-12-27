@@ -14,7 +14,6 @@ import { useFormReserveStore } from '@/global/schedule.globals'
 import { startTransition, use, useEffect, useState, useTransition } from 'react'
 import { CurrentLaboratoryContext } from '@/contexts/laboratories.context'
 import {
-    ChevronDownIcon,
     Clock8Icon,
     ClockFading,
     PencilIcon,
@@ -23,25 +22,16 @@ import {
 } from 'lucide-react'
 import { CompletField } from '@/components/ui/complet-field'
 import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from '@/components/ui/command'
 import { getClassName } from './InfoDialog'
 import { searchClassesAction } from '@/actions/search.actions'
 import { authClient } from '@/lib/auth-client'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { reserveLaboratoryAction } from '@/actions/reservations.actions'
 import { Temporal } from '@js-temporal/polyfill'
+import {
+    AsyncCombobox,
+    AsyncComboboxItem,
+} from '@/components/ui/async-combobox'
 
 interface ReserveDialogProps {
     laboratory_id: string
@@ -131,85 +121,38 @@ export function ReserveDialog({ laboratory_id }: ReserveDialogProps) {
 }
 
 function ClassInput() {
-    const [value, setValue] = useState<{ id: string; label: string } | null>(
-        null,
-    )
-    const [open, setOpen] = useState(false)
-    const [search, setSearch] = useState('')
     const { data: session } = authClient.useSession()
-    const [items, setItems] = useState<{ id: string; label: string }[]>([])
+    const [value, setValue] = useState<AsyncComboboxItem | null>(null)
 
-    useEffect(() => {
-        if (!session) return
-        const timeout = setTimeout(() => {
-            startTransition(async () => {
-                const classes = await searchClassesAction({
-                    teacher_id: session.userId,
-                    query: search,
-                })
-                setItems(
-                    classes.classes.map(c => ({
-                        id: c.id,
+    return (
+        <Field>
+            <FieldLabel>Clase</FieldLabel>
+            <AsyncCombobox
+                name='class_id'
+                value={value}
+                placeholder='Seleccionar clase'
+                searchPlaceholder='Buscar clase...'
+                disabled={!session}
+                onChange={setValue}
+                onSearch={async query => {
+                    if (!session) return []
+
+                    const classes = await searchClassesAction({
+                        teacher_id: session.userId,
+                        query,
+                    })
+
+                    return classes.classes.map(c => ({
+                        value: c.id,
                         label: getClassName({
                             career: c.career,
                             group: c.group,
                             semester: c.semester,
                             subject: c.subject,
                         }),
-                    })),
-                )
-            })
-        }, 500)
-        return () => clearTimeout(timeout)
-    }, [search, session])
-
-    return (
-        <Field>
-            <Popover open={open} onOpenChange={setOpen}>
-                <FieldLabel onClick={() => setOpen(true)} htmlFor='class'>
-                    Clase
-                </FieldLabel>
-                <PopoverTrigger
-                    render={
-                        <Button
-                            variant='outline'
-                            role='combobox'
-                            className='w-50 justify-between'
-                            aria-expanded={open}
-                        >
-                            {value ? value.label : 'Seleccionar Clase'}
-                            <ChevronDownIcon className='opacity-50' />
-                        </Button>
-                    }
-                />
-                <PopoverContent className='w-75 p-0'>
-                    <Command>
-                        <CommandInput
-                            id='class'
-                            placeholder='Buscar clase...'
-                            onValueChange={setSearch}
-                        />
-                        <CommandList>
-                            <CommandEmpty>No hay resultados</CommandEmpty>
-                            <CommandGroup>
-                                {items.map(item => (
-                                    <CommandItem
-                                        key={item.id}
-                                        value={item.label}
-                                        onSelect={() => {
-                                            setValue(item)
-                                            setOpen(false)
-                                        }}
-                                    >
-                                        {item.label}
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        </CommandList>
-                    </Command>
-                </PopoverContent>
-            </Popover>
-            <input name='class_id' value={value?.id} />
+                    }))
+                }}
+            />
         </Field>
     )
 }

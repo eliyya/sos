@@ -29,6 +29,7 @@ export const createClassEffect = ({
 }: CreateClassProps) =>
     Effect.gen(function* (_) {
         yield* _(requirePermission(PERMISSIONS_FLAGS.MANAGE_LABS))
+        console.log({ career_id })
 
         const prisma = yield* _(PrismaService)
 

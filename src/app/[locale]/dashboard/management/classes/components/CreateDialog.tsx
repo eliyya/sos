@@ -38,6 +38,7 @@ import {
 } from '@/actions/search.actions'
 
 import { SearchClassesContext } from '@/contexts/classes.context'
+import { CompletField } from '@/components/ui/complet-field'
 
 const teacherAtom = atom<{ label: string; value: string } | null>(null)
 const errorCareerIdAtom = atom('')
@@ -277,7 +278,7 @@ export function GroupInput() {
     const error = useAtomValue(errorGroupAtom)
 
     return (
-        <CompletInput
+        <CompletField
             label='Grupo'
             name='group'
             icon={UsersIcon}
@@ -294,7 +295,7 @@ export function SemesterInput() {
     const error = useAtomValue(errorSemesterAtom)
 
     return (
-        <CompletInput
+        <CompletField
             label='Semestre'
             name='semester'
             icon={HashIcon}

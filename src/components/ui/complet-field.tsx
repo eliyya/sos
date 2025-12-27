@@ -1,4 +1,4 @@
-import { Field, FieldLabel } from '@/components/ui/field'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import {
     InputGroup,
     InputGroupAddon,
@@ -20,6 +20,7 @@ interface CompletFieldProps extends ComponentPropsWithRef<
     tooltip?: string
     label: string
     icon?: LucideIcon
+    error?: string
 }
 export function CompletField({
     id,
@@ -27,6 +28,7 @@ export function CompletField({
     tooltip,
     type,
     icon,
+    error,
     ...props
 }: CompletFieldProps) {
     const rid = useId()
@@ -70,6 +72,7 @@ export function CompletField({
                     </InputGroupAddon>
                 </Activity>
             </InputGroup>
+            <FieldError errors={error ? [{ message: error }] : []} />
         </Field>
     )
 }
