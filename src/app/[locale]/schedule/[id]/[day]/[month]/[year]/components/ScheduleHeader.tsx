@@ -9,11 +9,25 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import {
     NavigationMenu,
+    NavigationMenuContent,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
 } from '@/components/ui/navigation-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover'
+import Link from 'next/link'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export function ScheduleHeader() {
     return (
@@ -96,19 +110,30 @@ interface AvatarMenuItemProps {
 }
 async function AvatarMenuItemProps({ username, image }: AvatarMenuItemProps) {
     return (
-        <NavigationMenuItem>
-            <NavigationMenuLink href={'#'}>
-                <Avatar>
-                    <AvatarImage
-                        src={
-                            image ??
-                            `https://api.dicebear.com/9.x/notionists-neutral/webp?flip=true&seed=${username}`
-                        }
-                        alt={username}
-                    />
-                    <AvatarFallback>{username}</AvatarFallback>
-                </Avatar>
-            </NavigationMenuLink>
-        </NavigationMenuItem>
+        <DropdownMenu>
+            <DropdownMenuTrigger
+                render={
+                    <Avatar>
+                        <AvatarImage
+                            src={
+                                image ??
+                                `https://api.dicebear.com/9.x/notionists-neutral/webp?flip=true&seed=${username}`
+                            }
+                            alt={username}
+                        />
+                        <AvatarFallback>{username}</AvatarFallback>
+                    </Avatar>
+                }
+            />
+            <DropdownMenuContent>
+                <DropdownMenuItem>
+                    <Link href={'#'}>profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                    <Link href={app.$locale.auth.logout('es')}>logout</Link>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 }
