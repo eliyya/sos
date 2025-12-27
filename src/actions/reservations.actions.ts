@@ -9,7 +9,14 @@ import {
 } from '@/services/reservations.service'
 import { Effect } from 'effect'
 import { AuthLive } from '@/layers/auth.layer'
-import { InvalidInputError } from '@/errors'
+import {
+    InvalidInputError,
+    PermissionError,
+    PrismaError,
+    UnauthorizedError,
+    UnexpectedError,
+} from '@/errors'
+import { ZodError } from 'zod'
 
 export async function getReservationAction({
     id,
@@ -68,8 +75,51 @@ export async function reserveLaboratoryAction(data: reserveLaboratoryProps) {
                                 return {
                                     status: 'error',
                                     type: 'invalid-input',
+                                    field: error.field,
+                                    message: error.message,
                                 } as const
                             }
+                            if (error instanceof ZodError) {
+                                const [issue] = error.issues
+                                return {
+                                    status: 'error',
+                                    type: 'invalid-input',
+                                    field: issue
+                                        .path[0] as keyof reserveLaboratoryProps,
+                                    message: error.message,
+                                } as const
+                            }
+                            if (error instanceof UnauthorizedError) {
+                                return {
+                                    status: 'error',
+                                    type: 'unauthorized',
+                                    message: error.message,
+                                } as const
+                            }
+                            if (error instanceof PermissionError) {
+                                return {
+                                    status: 'error',
+                                    type: 'permissions',
+                                    message: error.message,
+                                    missings: error.missings,
+                                } as const
+                            }
+                            if (error instanceof PrismaError) {
+                                return {
+                                    status: 'error',
+                                    type: 'unexpected',
+                                } as const
+                            }
+                            if (error instanceof UnexpectedError) {
+                                return {
+                                    status: 'error',
+                                    type: 'unexpected',
+                                } as const
+                            }
+                            return {
+                                status: 'error',
+                                type: 'unexpected',
+                            } as const
                         },
                     }),
                 ),

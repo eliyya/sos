@@ -17,7 +17,7 @@ export default async function LoggedScheduleBody({
         <>
             <Calendar lab={lab} />
             <InfoDialog />
-            <ReserveDialog />
+            <ReserveDialog laboratory_id={lab.id} />
         </>
     )
 }

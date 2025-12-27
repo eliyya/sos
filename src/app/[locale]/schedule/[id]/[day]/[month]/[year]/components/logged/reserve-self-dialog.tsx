@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useFormReserveStore } from '@/global/schedule.globals'
-import { startTransition, use, useEffect, useState } from 'react'
+import { startTransition, use, useEffect, useState, useTransition } from 'react'
 import { CurrentLaboratoryContext } from '@/contexts/laboratories.context'
 import {
     ChevronDownIcon,
@@ -40,11 +40,17 @@ import { getClassName } from './InfoDialog'
 import { searchClassesAction } from '@/actions/search.actions'
 import { authClient } from '@/lib/auth-client'
 import { Field, FieldLabel } from '@/components/ui/field'
+import { reserveLaboratoryAction } from '@/actions/reservations.actions'
+import { Temporal } from '@js-temporal/polyfill'
 
-export function ReserveDialog() {
+interface ReserveDialogProps {
+    laboratory_id: string
+}
+export function ReserveDialog({ laboratory_id }: ReserveDialogProps) {
     const date = useFormReserveStore(s => s.date)
     const setDate = useFormReserveStore(s => s.setDate)
     const { laboratory } = use(CurrentLaboratoryContext)
+    const [loading, startTransition] = useTransition()
 
     return (
         <Dialog
@@ -53,7 +59,42 @@ export function ReserveDialog() {
                 if (!open) setDate(null)
             }}
         >
-            <form>
+            <form
+                action={data => {
+                    const class_id = data.get('class_id') as string
+                    const name = data.get('name') as string
+                    const topic = data.get('topic') as string
+                    const students = data.get('students') as string
+                    const start = data.get('start') as string
+                    const duration = data.get('duration') as string
+
+                    const starts_at = Temporal.Instant.fromEpochMilliseconds(
+                        date ?? 0,
+                    )
+                        .toZonedDateTimeISO('America/Monterrey')
+                        .with({
+                            hour: parseInt(start.substring(0, 2), 10),
+                            minute: 0,
+                            second: 0,
+                            microsecond: 0,
+                            nanosecond: 0,
+                        })
+                    const ends_at = starts_at.add({
+                        hours: parseInt(duration),
+                    })
+                    startTransition(async () => {
+                        const res = await reserveLaboratoryAction({
+                            class_id,
+                            name,
+                            topic,
+                            students: parseInt(students),
+                            starts_at: starts_at.epochMilliseconds,
+                            ends_at: ends_at.epochMilliseconds,
+                            laboratory_id,
+                        })
+                    })
+                }}
+            >
                 <DialogContent className='sm:max-w-106.25'>
                     <DialogHeader>
                         <DialogTitle>Reserve {laboratory?.name}</DialogTitle>
@@ -79,7 +120,9 @@ export function ReserveDialog() {
                         <DialogClose
                             render={<Button variant='outline'>Cancel</Button>}
                         />
-                        <Button type='submit'>Reservar</Button>
+                        <Button type='submit' disabled={loading}>
+                            Reservar
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </form>
@@ -166,6 +209,7 @@ function ClassInput() {
                     </Command>
                 </PopoverContent>
             </Popover>
+            <input name='class_id' value={value?.id} />
         </Field>
     )
 }
@@ -288,7 +332,6 @@ function RestInfo() {
             label='Restante'
             icon={ClockFading}
             tooltip='Las horas de práctica restantes en la actual materia'
-            id='duration'
             autoComplete='off'
             value={rest}
             disabled

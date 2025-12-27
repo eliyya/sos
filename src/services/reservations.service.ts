@@ -7,7 +7,7 @@ import { requirePermission } from './auth.service'
 import { PERMISSIONS_FLAGS } from '@/bitfields/PermissionsBitField'
 import { z } from 'zod'
 import '@zod-plugin/effect'
-import { STATUS } from '@/prisma/client/enums'
+import { STATUS } from '@/prisma/generated/enums'
 
 export function getReservationEffect({ id }: { id: string }) {
     return Effect.gen(function* (_) {
@@ -138,6 +138,7 @@ export function reserveLaboratoryEffect(data: ReserveLaboratoryEffectProps) {
         } = yield* _(reserveLaboratorySchema.effect.parseSync(data))
 
         const prisma = yield* _(PrismaService)
+
         const clase = yield* _(
             Effect.tryPromise({
                 try: () =>
@@ -151,6 +152,7 @@ export function reserveLaboratoryEffect(data: ReserveLaboratoryEffectProps) {
                 catch: cause => new PrismaError({ cause }),
             }),
         )
+
         if (!clase) {
             return Effect.fail(
                 new InvalidInputError({
@@ -159,6 +161,7 @@ export function reserveLaboratoryEffect(data: ReserveLaboratoryEffectProps) {
                 }),
             )
         }
+
         if (clase.status != STATUS.ACTIVE) {
             yield* _(
                 Effect.fail(
