@@ -6,7 +6,6 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale } from 'next-intl/server'
 import { ThemeProvider } from 'next-themes'
 import { ReactNode } from 'react'
-import { ToastProvider, ToastViewport } from '@/components/Toast'
 import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
 import { MantineProvider } from '@mantine/core'
@@ -44,16 +43,13 @@ export default async function RootLayout({
                     defaultTheme='light'
                     enableSystem
                 >
-                    <ToastProvider swipeDirection='up' duration={3000}>
-                        <NextIntlClientProvider>
-                            <Provider>
-                                <MantineProvider>
-                                    <NuqsAdapter>{children}</NuqsAdapter>
-                                </MantineProvider>
-                            </Provider>
-                        </NextIntlClientProvider>
-                        <ToastViewport />
-                    </ToastProvider>
+                    <NextIntlClientProvider>
+                        <Provider>
+                            <MantineProvider>
+                                <NuqsAdapter>{children}</NuqsAdapter>
+                            </MantineProvider>
+                        </Provider>
+                    </NextIntlClientProvider>
                 </ThemeProvider>
                 <Toaster />
             </body>
