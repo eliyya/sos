@@ -16,7 +16,7 @@ import { use } from 'react'
 import { SearchLaboratoriesPromise } from '@/hooks/search.hooks'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { secondsToTime } from '@/lib/utils'
-import { Badge } from '@/components/Badge'
+import { Badge } from '@/components/ui/badge'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 
 interface ButtonsProps {

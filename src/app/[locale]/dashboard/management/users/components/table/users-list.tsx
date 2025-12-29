@@ -10,7 +10,7 @@ import {
     Pencil,
     Trash2,
 } from 'lucide-react'
-import { Badge } from '@/components/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/Button'
 import { TableRow, TableCell } from '@/components/Table'
 import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
