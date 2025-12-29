@@ -18,7 +18,7 @@ import { useTranslations } from 'next-intl'
 import { Temporal } from '@js-temporal/polyfill'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useToast } from '@/hooks/toast.hooks'
+import { toastPermissionError } from '@/components/ui/sonner'
 
 interface VisitsTableProps {
     laboratory_id: string
@@ -30,7 +30,6 @@ export function VisitsTable({ laboratory_id }: VisitsTableProps) {
     const [tableSignal, refreshTable] = useAtom(updateTableAtom)
     const t = useTranslations('cc')
     const router = useRouter()
-    const { Toast, openToast } = useToast()
 
     useEffect(() => {
         getTodayVisitsAction({
@@ -84,12 +83,9 @@ export function VisitsTable({ laboratory_id }: VisitsTableProps) {
                                             } else if (
                                                 res.type === 'permission'
                                             ) {
-                                                openToast({
-                                                    title: 'Error',
-                                                    description:
-                                                        'No tienes permiso para realizar esta acción.',
-                                                    variant: 'destructive',
-                                                })
+                                                toastPermissionError(
+                                                    res.missings,
+                                                )
                                                 return
                                             }
                                         },
@@ -101,7 +97,6 @@ export function VisitsTable({ laboratory_id }: VisitsTableProps) {
                         </TableCell>
                     </TableRow>
                 ))}
-                <Toast />
             </TableBody>
         </Table>
     )

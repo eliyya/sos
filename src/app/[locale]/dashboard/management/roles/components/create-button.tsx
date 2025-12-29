@@ -9,14 +9,14 @@ import { selectedRoleIdAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { useToast } from '@/hooks/toast.hooks'
+import { toast } from 'sonner'
+import { toastGenericError } from '@/components/ui/sonner'
 
 export function CreateButton() {
     const { setRoles } = useRoles()
     const [inTransition, startTransition] = useTransition()
     const setSelectedRoleId = useSetAtom(selectedRoleIdAtom)
     const router = useRouter()
-    const { openToast, Toast } = useToast()
 
     const onClick = async () =>
         startTransition(async () => {
@@ -36,20 +36,16 @@ export function CreateButton() {
                     return router.push(app.$locale.auth.login('es'))
                 }
                 if (response.type === 'permission') {
-                    return openToast({
-                        title: 'Acceso denegado',
-                        variant: 'destructive',
+                    toast.error('Acceso denegado', {
                         description:
                             'No tienes permiso para realizar esta acción.',
                     })
+                    return
                 }
                 if (response.type === 'unexpected') {
                     console.log(response)
-                    return openToast({
-                        title: 'Ha ocurrido un error',
-                        variant: 'destructive',
-                        description: 'Por favor, intenta de nuevo más tarde.',
-                    })
+                    toastGenericError()
+                    return
                 }
             }
         })
@@ -60,7 +56,6 @@ export function CreateButton() {
                 <PlusIcon className='mr-3' />
                 Crear Rol
             </Button>
-            <Toast />
         </>
     )
 }

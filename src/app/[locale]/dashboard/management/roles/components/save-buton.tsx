@@ -10,7 +10,7 @@ import {
 import { useRoles } from '@/hooks/roles.hooks'
 import { changuePermissions } from '@/actions/roles.actions'
 import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/toast.hooks'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 
@@ -21,7 +21,6 @@ export function SaveButton() {
     const [permissionsEdited, setPermissionsEdited] = useAtom(
         permissionsEditedAtom,
     )
-    const { Toast, openToast } = useToast()
     const router = useRouter()
 
     useEffect(() => {
@@ -55,29 +54,21 @@ export function SaveButton() {
                 )
             } else {
                 if (response.type === 'not-found') {
-                    openToast({
-                        title: 'Error',
+                    toast.error('Error', {
                         description: 'El rol no se encontro',
-                        variant: 'destructive',
                     })
                 } else if (response.type === 'permission') {
-                    openToast({
-                        title: 'Error',
+                    toast.error('Error', {
                         description: 'No tienes permiso para editar este rol',
-                        variant: 'destructive',
                     })
                 } else if (response.type === 'invalid-input') {
-                    openToast({
-                        title: 'Error',
+                    toast.error('Error', {
                         description:
                             'El rol es administrado por el sistema, no se puede editar',
-                        variant: 'destructive',
                     })
                 } else if (response.type === 'unexpected') {
-                    openToast({
-                        title: 'Error',
+                    toast.error('Error', {
                         description: 'Algo salio mal, intente de nuevo',
-                        variant: 'destructive',
                     })
                 } else if (response.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
@@ -130,7 +121,6 @@ export function SaveButton() {
             >
                 Restaurar
             </Button>
-            <Toast />
         </>
     )
 }
