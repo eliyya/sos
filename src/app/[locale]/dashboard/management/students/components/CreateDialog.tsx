@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createStudent } from '@/actions/students.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

@@ -11,7 +11,7 @@ import {
     Trash2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { TableRow, TableCell } from '@/components/Table'
 import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
 import { SearchUsersPromise } from '@/hooks/search.hooks'

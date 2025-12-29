@@ -4,7 +4,7 @@ import { atom, useAtom, useSetAtom } from 'jotai'
 import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createSubject } from '@/actions/subjects.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

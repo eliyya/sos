@@ -10,7 +10,7 @@ import {
     PencilIcon,
     Trash2Icon,
 } from 'lucide-react'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { TableRow, TableCell } from '@/components/Table'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
 import { use } from 'react'

@@ -4,7 +4,7 @@ import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { UsersIcon, HashIcon } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createClass } from '@/actions/classes.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogClose,

@@ -19,7 +19,7 @@ import {
     useTransition,
 } from 'react'
 import { editStudent } from '@/actions/students.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

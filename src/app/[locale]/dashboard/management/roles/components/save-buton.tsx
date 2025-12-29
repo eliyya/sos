@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useTransition } from 'react'
 import { PermissionsBitField } from '@/bitfields/PermissionsBitField'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { DEFAULT_ROLES } from '@/constants/client'
 import {
     permissionsEditedAtom,

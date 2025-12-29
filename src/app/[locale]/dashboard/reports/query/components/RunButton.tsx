@@ -3,7 +3,7 @@
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useTransition } from 'react'
 import { runQuery } from '@/actions/reports'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { queryAtom, queryErrorAtom, queryResultAtom } from '@/global/reports'
 
 export function RunButton() {

@@ -4,7 +4,7 @@ import { useAtom } from 'jotai'
 import { LogOutIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { finishVisitAction, getTodayVisitsAction } from '@/actions/cc.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     TableHeader,
     TableRow,

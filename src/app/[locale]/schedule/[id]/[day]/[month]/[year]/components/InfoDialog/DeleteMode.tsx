@@ -4,7 +4,7 @@ import { useSetAtom } from 'jotai'
 import { SaveIcon, TrashIcon, UserIcon } from 'lucide-react'
 import { Activity, useState, useTransition } from 'react'
 import { deletePractice } from '@/actions/practices'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { MessageError } from '@/components/Error'
 import { CompletInput } from '@/components/Inputs'
 import {

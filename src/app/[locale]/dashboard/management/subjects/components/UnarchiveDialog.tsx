@@ -17,7 +17,7 @@ import {
     useTransition,
 } from 'react'
 import { unarchiveSubject } from '@/actions/subjects.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

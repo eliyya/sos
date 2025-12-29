@@ -3,7 +3,7 @@
 import app from '@eliyya/type-routes'
 import { CalendarSearchIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { SimpleInput } from '@/components/Inputs'
 
 interface ChangueDateProps {

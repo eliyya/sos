@@ -8,7 +8,7 @@ import {
 import { Suspense } from 'react'
 import { FoooterTable, MachineList } from './machine-list'
 import { Skeleton } from '@mantine/core'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
 export function MachineTable() {

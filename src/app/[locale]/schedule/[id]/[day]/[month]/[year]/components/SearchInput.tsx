@@ -4,7 +4,7 @@ import app from '@eliyya/type-routes'
 import { Temporal } from '@js-temporal/polyfill'
 import { ChevronDownIcon } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
     Popover,

@@ -3,7 +3,7 @@
 import { useAtomValue } from 'jotai'
 import { SquarePenIcon } from 'lucide-react'
 import { startTransition, useEffect, useRef, useState } from 'react'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { DEFAULT_ROLES } from '@/constants/client'
 import { selectedRoleAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'

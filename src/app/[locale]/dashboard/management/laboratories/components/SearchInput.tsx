@@ -5,7 +5,7 @@ import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
 import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 
 export function Filters() {
     const { filters, changeFilters } = use(SearchLaboratoriesContext)

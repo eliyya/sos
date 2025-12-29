@@ -2,7 +2,7 @@
 
 import { useSetAtom } from 'jotai'
 import { Plus } from 'lucide-react'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { dialogAtom } from '@/global/management.globals'
 import { CreateLaboratoryDialog } from './CreateDialog'
 

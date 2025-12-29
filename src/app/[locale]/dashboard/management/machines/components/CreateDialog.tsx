@@ -4,7 +4,7 @@ import { useAtom, useSetAtom } from 'jotai'
 import { UserIcon, Save } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createMachine } from '@/actions/machines.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

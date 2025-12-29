@@ -4,7 +4,7 @@ import { CornerDownLeftIcon, SearchIcon } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
 import LabeledSwitch from '@/components/Switch'
 import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { SearchClassesContext } from '@/contexts/classes.context'
 
 export function Filters() {

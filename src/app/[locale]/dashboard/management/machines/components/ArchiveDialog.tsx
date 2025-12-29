@@ -12,7 +12,7 @@ import {
     useTransition,
 } from 'react'
 import { maintainanceMachine } from '@/actions/machines.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

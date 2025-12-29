@@ -12,7 +12,7 @@ import {
     useTransition,
 } from 'react'
 import { editCareer } from '@/actions/careers.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

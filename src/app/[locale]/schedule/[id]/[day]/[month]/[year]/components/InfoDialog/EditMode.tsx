@@ -8,7 +8,7 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { SaveIcon, UserIcon } from 'lucide-react'
 import { Activity, useEffect, useState, useTransition } from 'react'
 import { editPractice } from '@/actions/practices'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { MessageError } from '@/components/Error'
 import { CompletInput, RetornableCompletInput } from '@/components/Inputs'
 import {

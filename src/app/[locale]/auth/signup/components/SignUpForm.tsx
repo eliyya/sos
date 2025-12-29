@@ -10,7 +10,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { Activity, useEffect, useState, useTransition } from 'react'
 import { getAdminRole } from '@/actions/roles.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { MessageError } from '@/components/Error'
 import { authClient } from '@/lib/auth-client'
 import { capitalize, cn, truncateByUnderscore } from '@/lib/utils'

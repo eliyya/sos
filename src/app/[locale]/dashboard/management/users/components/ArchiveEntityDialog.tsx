@@ -11,7 +11,7 @@ import {
     useTransition,
 } from 'react'
 import { archiveUserAction } from '@/actions/users.actions'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,

@@ -9,7 +9,7 @@ import {
     Pencil,
     Trash2,
 } from 'lucide-react'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useSetAtom } from 'jotai'
 import { SearchStudentsPromise } from '@/hooks/search.hooks'
