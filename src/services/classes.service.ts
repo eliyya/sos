@@ -397,6 +397,7 @@ export const searchClassesEffect = ({
                                     select: {
                                         name: true,
                                         status: true,
+                                        alias: true,
                                     },
                                 },
                                 teacher: {
@@ -475,6 +476,13 @@ export const searchClassesEffect = ({
                         `(Archived) ${class_.career.name}`
                     : class_.career.status === STATUS.DELETED ? `Deleted career`
                     : class_.career.name,
+                alias: class_.career.alias,
+                display_alias:
+                    class_.career.status === STATUS.ACTIVE ? class_.career.alias
+                    : class_.career.status === STATUS.ARCHIVED ?
+                        `(Archived) ${class_.career.alias}`
+                    : class_.career.status === STATUS.DELETED ? `Deleted career`
+                    : class_.career.alias,
             },
         }))
 

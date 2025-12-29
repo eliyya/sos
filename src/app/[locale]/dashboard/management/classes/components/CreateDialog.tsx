@@ -1,33 +1,20 @@
 'use client'
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import {
-    UserIcon,
-    Save,
-    BookAIcon,
-    GraduationCapIcon,
-    UsersIcon,
-    HashIcon,
-} from 'lucide-react'
+import { UsersIcon, HashIcon } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createClass } from '@/actions/classes.actions'
 import { Button } from '@/components/Button'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
-import { CompletInput } from '@/components/Inputs'
-import { CompletAsyncSelect } from '@/components/Select'
-import {
-    careersSelectOptionsAtom,
-    dialogAtom,
-    selectedIdAtom,
-    subjectsSelectOptionsAtom,
-    usersSelectOptionsAtom,
-} from '@/global/management.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
@@ -36,11 +23,14 @@ import {
     searchSubjects,
     searchCareers,
 } from '@/actions/search.actions'
-
 import { SearchClassesContext } from '@/contexts/classes.context'
 import { CompletField } from '@/components/ui/complet-field'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import {
+    AsyncCombobox,
+    AsyncComboboxItem,
+} from '@/components/ui/async-combobox'
 
-const teacherAtom = atom<{ label: string; value: string } | null>(null)
 const errorCareerIdAtom = atom('')
 const errorSubjectIdAtom = atom('')
 const errorTeacherIdAtom = atom('')
@@ -70,6 +60,7 @@ export function CreateSubjectDialog() {
             const semester = Number(data.get('semester'))
             const subject_id = data.get('subject_id') as string
             const teacher_id = data.get('teacher_id') as string
+            console.log({ career_id, group, semester, subject_id, teacher_id })
             startTransition(async () => {
                 const res = await createClass({
                     career_id,
@@ -128,16 +119,11 @@ export function CreateSubjectDialog() {
             onOpenChange={state => openDialog(state ? 'CREATE' : null)}
         >
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{t('create_class')}</DialogTitle>
-                    {/* <DialogDescription>
-                        Edit the user&apos;s information
-                    </DialogDescription> */}
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
+                <form action={onAction}>
+                    <DialogHeader>
+                        <DialogTitle>{t('create_class')}</DialogTitle>
+                    </DialogHeader>
+
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
@@ -146,11 +132,14 @@ export function CreateSubjectDialog() {
                     <CareerInput />
                     <GroupInput />
                     <SemesterInput />
-
-                    <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
-                        {t('create')}
-                    </Button>
+                    <DialogFooter>
+                        <DialogClose
+                            render={<Button variant='outline'>Cancel</Button>}
+                        />
+                        <Button type='submit' disabled={inTransition}>
+                            Reservar
+                        </Button>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
@@ -158,118 +147,81 @@ export function CreateSubjectDialog() {
 }
 
 export function TeacherInput() {
-    const [teacher, setTeacher] = useAtom(teacherAtom)
     const error = useAtomValue(errorTeacherIdAtom)
-    const [defaultOptions, setUsersSelectOptions] = useAtom(
-        usersSelectOptionsAtom,
-    )
-
-    const loadOptions = useCallback(
-        (
-            inputValue: string,
-            callback: (options: { label: string; value: string }[]) => void,
-        ) => {
-            searchUsers({
-                query: inputValue,
-            }).then(res => {
-                const options = res.users.map(u => ({
-                    label: u.name,
-                    value: u.id,
-                }))
-                setUsersSelectOptions(options)
-                callback(options)
-            })
-        },
-        [setUsersSelectOptions],
-    )
-
     return (
-        <CompletAsyncSelect
-            label='Profesor'
-            name='teacher_id'
-            loadOptions={loadOptions}
-            icon={UserIcon}
-            value={teacher}
-            onChange={e => setTeacher(e)}
-            defaultOptions={defaultOptions}
-            error={error}
-            cacheOptions={true}
-        />
+        <Field>
+            <FieldLabel>Docente</FieldLabel>
+            <AsyncCombobox
+                name='teacher_id'
+                placeholder='Seleccionar docente'
+                searchPlaceholder='Buscar docente...'
+                onSearch={async query => {
+                    const classes = await searchUsers({
+                        query,
+                    })
+
+                    return classes.users.map(c => ({
+                        value: c.id,
+                        label: c.name,
+                    }))
+                }}
+            />
+            <FieldError errors={error ? [{ message: error }] : []} />
+        </Field>
     )
 }
 
 export function SubjectInput() {
     const error = useAtomValue(errorSubjectIdAtom)
-
-    const [defaultOptions, setSubjectsSelectOptions] = useAtom(
-        subjectsSelectOptionsAtom,
-    )
-
-    const loadOptions = useCallback(
-        (
-            inputValue: string,
-            callback: (options: { label: string; value: string }[]) => void,
-        ) => {
-            searchSubjects({
-                query: inputValue,
-            }).then(res => {
-                const options = res.subjects.map(subject => ({
-                    label: subject.name,
-                    value: subject.id,
-                }))
-                setSubjectsSelectOptions(options)
-                callback(options)
-            })
-        },
-        [setSubjectsSelectOptions],
-    )
-
     return (
-        <CompletAsyncSelect
-            label='Materia'
-            name='subject_id'
-            loadOptions={loadOptions}
-            icon={BookAIcon}
-            defaultOptions={defaultOptions}
-            error={error}
-        />
+        <Field>
+            <FieldLabel>Materia</FieldLabel>
+            <AsyncCombobox
+                name='subject_id'
+                placeholder='Seleccionar materia'
+                searchPlaceholder='Buscar materia...'
+                onSearch={async query => {
+                    const classes = await searchSubjects({
+                        query,
+                    })
+
+                    return classes.subjects.map(c => ({
+                        value: c.id,
+                        label: c.name,
+                    }))
+                }}
+            />
+            <FieldError errors={error ? [{ message: error }] : []} />
+        </Field>
     )
 }
 
 export function CareerInput() {
     const error = useAtomValue(errorCareerIdAtom)
-    const [defaultOptions, setCareersSelectOptions] = useAtom(
-        careersSelectOptionsAtom,
-    )
-
-    const loadOptions = useCallback(
-        (
-            inputValue: string,
-            callback: (options: { label: string; value: string }[]) => void,
-        ) => {
-            searchCareers({
-                query: inputValue,
-            }).then(res => {
-                const options = res.careers.map(career => ({
-                    label: career.name,
-                    value: career.id,
-                }))
-                setCareersSelectOptions(options)
-                callback(options)
-            })
-        },
-        [setCareersSelectOptions],
-    )
-
+    const [value, setValue] = useState<AsyncComboboxItem | null>(null)
     return (
-        <CompletAsyncSelect
-            label='Carrera'
-            name='career_id'
-            loadOptions={loadOptions}
-            icon={GraduationCapIcon}
-            defaultOptions={defaultOptions}
-            error={error}
-        />
+        <Field>
+            <FieldLabel>Carrera</FieldLabel>
+            <AsyncCombobox
+                name='career_id'
+                placeholder='Seleccionar carrera'
+                searchPlaceholder='Buscar carrera...'
+                disabled={false}
+                value={value}
+                onChange={setValue}
+                onSearch={async query => {
+                    const classes = await searchCareers({
+                        query,
+                    })
+
+                    return classes.careers.map(c => ({
+                        value: c.id,
+                        label: c.alias,
+                    }))
+                }}
+            />
+            <FieldError errors={error ? [{ message: error }] : []} />
+        </Field>
     )
 }
 

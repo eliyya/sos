@@ -22,7 +22,6 @@ export default async function ClassesPage() {
                     text={t('classes_management')}
                 />
                 <CreateButton />
-                <CreateSubjectDialog />
             </div>
             <Filters />
             <ClassesTable />
@@ -31,6 +30,7 @@ export default async function ClassesPage() {
             <ArchiveDialog />
             <DeleteDialog />
             <UnarchiveDialog />
+            <CreateSubjectDialog />
         </SearchClassesProvider>
     )
 }

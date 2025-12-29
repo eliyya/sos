@@ -31,9 +31,22 @@ export const auth = betterAuth({
                 where: { id: user.id },
             })
             return {
-                ...session,
+                createdAt: session.createdAt,
+                expiresAt: session.expiresAt,
+                id: session.id,
+                token: session.token,
+                updatedAt: session.updatedAt,
+                userId: session.userId,
+                ipAddress: session.ipAddress,
+                userAgent: session.userAgent,
                 user: {
-                    ...user,
+                    createdAt: user.createdAt,
+                    email: user.email,
+                    emailVerified: user.emailVerified,
+                    id: user.id,
+                    name: user.name,
+                    updatedAt: user.updatedAt,
+                    image: user.image,
                     permissions: (perm?.permissions ?? 0n).toString(),
                     username: dbuser!.username,
                 },
@@ -57,7 +70,6 @@ export const auth = betterAuth({
             expiresAt: 'expires_at',
             ipAddress: 'ip_address',
             userAgent: 'user_agent',
-            id: 'id',
             updatedAt: 'updated_at',
             userId: 'user_id',
         },
@@ -83,7 +95,6 @@ export const auth = betterAuth({
     account: {
         fields: {
             createdAt: 'created_at',
-            id: 'id',
             providerId: 'provider_id',
             providerType: 'provider_type',
             updatedAt: 'updated_at',
@@ -93,7 +104,6 @@ export const auth = betterAuth({
             idToken: 'id_token',
             accessTokenExpiresAt: 'access_token_expires_at',
             refreshTokenExpiresAt: 'refresh_token_expires_at',
-            scope: 'scope',
             password: 'password',
             accountId: 'account_id',
         },
@@ -101,9 +111,6 @@ export const auth = betterAuth({
     verification: {
         fields: {
             createdAt: 'created_at',
-            id: 'id',
-            identifier: 'identifier',
-            value: 'value',
             expiresAt: 'expires_at',
             updatedAt: 'updated_at',
         },

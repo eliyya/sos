@@ -11,8 +11,9 @@ import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
 import { MantineProvider } from '@mantine/core'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { Toaster } from '@/components/ui/sonner'
 
-const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
+const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,7 +30,11 @@ export default async function RootLayout({
     const locale = await getLocale()
     // const messages = await getMessages()
     return (
-        <html lang={locale} suppressHydrationWarning className={figtree.variable}>
+        <html
+            lang={locale}
+            suppressHydrationWarning
+            className={figtree.variable}
+        >
             <body
                 className={cn('flex min-h-screen flex-col', inter.className)}
                 suppressContentEditableWarning
@@ -50,6 +55,7 @@ export default async function RootLayout({
                         <ToastViewport />
                     </ToastProvider>
                 </ThemeProvider>
+                <Toaster />
             </body>
         </html>
     )

@@ -28,10 +28,7 @@ import { authClient } from '@/lib/auth-client'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { reserveLaboratoryAction } from '@/actions/reservations.actions'
 import { Temporal } from '@js-temporal/polyfill'
-import {
-    AsyncCombobox,
-    AsyncComboboxItem,
-} from '@/components/ui/async-combobox'
+import { AsyncCombobox } from '@/components/ui/async-combobox'
 
 interface ReserveDialogProps {
     laboratory_id: string
@@ -122,18 +119,13 @@ export function ReserveDialog({ laboratory_id }: ReserveDialogProps) {
 
 function ClassInput() {
     const { data: session } = authClient.useSession()
-    const [value, setValue] = useState<AsyncComboboxItem | null>(null)
-
     return (
         <Field>
             <FieldLabel>Clase</FieldLabel>
             <AsyncCombobox
                 name='class_id'
-                value={value}
                 placeholder='Seleccionar clase'
                 searchPlaceholder='Buscar clase...'
-                disabled={!session}
-                onChange={setValue}
                 onSearch={async query => {
                     if (!session) return []
 

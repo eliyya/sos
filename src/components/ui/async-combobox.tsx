@@ -48,7 +48,7 @@ export function AsyncCombobox(props: AsyncComboboxProps) {
         searchPlaceholder = 'Buscar...',
         onSearch,
         debounceMs = 500,
-        disabled,
+        disabled = false,
     } = props
 
     const isControlled = 'value' in props
@@ -88,13 +88,6 @@ export function AsyncCombobox(props: AsyncComboboxProps) {
         setOpen(false)
     }
 
-    const inputName = 'name' in props ? props.name : undefined
-
-    /* ------------------------------------------------------------
-     * Render
-     * ------------------------------------------------------------
-     */
-
     return (
         <>
             <Popover open={open} onOpenChange={setOpen}>
@@ -117,6 +110,7 @@ export function AsyncCombobox(props: AsyncComboboxProps) {
                     <Command>
                         <CommandInput
                             placeholder={searchPlaceholder}
+                            disabled={false}
                             onValueChange={setSearch}
                         />
                         <CommandList>
@@ -137,10 +131,10 @@ export function AsyncCombobox(props: AsyncComboboxProps) {
                 </PopoverContent>
             </Popover>
 
-            {inputName && (
+            {props.name && (
                 <input
                     type='hidden'
-                    name={inputName}
+                    name={props.name}
                     value={value?.value ?? ''}
                 />
             )}
