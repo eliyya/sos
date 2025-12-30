@@ -2,8 +2,9 @@ import app from '@eliyya/type-routes'
 import { LABORATORY_TYPE } from '@/prisma/generated/browser'
 import { PlusIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
-import { ButtonLink } from '@/components/Links'
 import { db } from '@/prisma/db'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default async function NullPage() {
     const lab = await db.laboratory.findFirst({
@@ -30,13 +31,19 @@ export default async function NullPage() {
                 <h1 className='mb-8 text-3xl font-bold'>
                     No existen centros de cómputo aun
                 </h1>
-                <ButtonLink
+                <Button
                     className='mt-2'
-                    href={app.$locale.dashboard.management.laboratories('es')}
-                >
-                    <PlusIcon className='mr-2 h-4 w-4' />
-                    Registrar nuevo centro de cómputo
-                </ButtonLink>
+                    render={
+                        <Link
+                            href={app.$locale.dashboard.management.laboratories(
+                                'es',
+                            )}
+                        >
+                            <PlusIcon className='mr-2 h-4 w-4' />
+                            Registrar nuevo centro de cómputo
+                        </Link>
+                    }
+                />
             </main>
         </div>
     )

@@ -12,8 +12,23 @@ import {
     PERMISSIONS_FLAGS,
     PermissionsBitField,
 } from '@/bitfields/PermissionsBitField'
-import { ConditionalLink } from '@/components/Links'
 import { headers } from 'next/headers'
+import { ReactNode } from 'react'
+import Link, { LinkProps } from 'next/link'
+
+interface ConditionalLinkProps extends LinkProps {
+    condition: boolean
+    children: ReactNode
+}
+function ConditionalLink({
+    condition,
+    children,
+    ...props
+}: ConditionalLinkProps) {
+    if (!condition) return <>{children}</>
+
+    return <Link {...props}>{children}</Link>
+}
 
 export const metadata: Metadata = {
     title: 'Panel de Administrador | ' + APP_NAME,

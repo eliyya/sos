@@ -1,17 +1,18 @@
 import app from '@eliyya/type-routes'
 import { STATUS } from '@/prisma/generated/browser'
-import { PlusIcon, UserIcon } from 'lucide-react'
+import { UserIcon } from 'lucide-react'
 import { headers } from 'next/headers'
 import {
     PermissionsBitField,
     PERMISSIONS_FLAGS,
 } from '@/bitfields/PermissionsBitField'
-import { ButtonLink } from '@/components/Links'
 import { APP_NAME } from '@/constants/client'
 import { auth } from '@/lib/auth'
 import { db } from '@/prisma/db'
 import { Suspense } from 'react'
 import { getTranslations } from 'next-intl/server'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default async function NullPage() {
     const t = await getTranslations('schedule')
@@ -47,10 +48,15 @@ async function GetContent() {
                     {t('welcome', { APP_NAME })}
                 </h2>
                 <p className='mb-8 text-lg'>{t('first_steps')}</p>
-                <ButtonLink href={app.$locale.auth.signup('es')}>
-                    <UserIcon className='mr-2 h-4 w-4' />
-                    {t('first_steps_button')}
-                </ButtonLink>
+                <Button
+                    className='mt-2'
+                    render={
+                        <Link href={app.$locale.auth.signup('es')}>
+                            <UserIcon className='mr-2 h-4 w-4' />
+                            {t('first_steps_button')}
+                        </Link>
+                    }
+                />
             </>
         )
 
@@ -58,12 +64,19 @@ async function GetContent() {
         return (
             <>
                 <p className='mb-8 text-lg'>{t('login_or_contact_admin')}</p>
-                <ButtonLink
-                    href={app.$locale.dashboard.management.laboratories('es')}
-                >
-                    <UserIcon className='mr-2 h-4 w-4' />
-                    {t('login')}
-                </ButtonLink>
+                <Button
+                    className='mt-2'
+                    render={
+                        <Link
+                            href={app.$locale.dashboard.management.laboratories(
+                                'es',
+                            )}
+                        >
+                            <UserIcon className='mr-2 h-4 w-4' />
+                            {t('login')}
+                        </Link>
+                    }
+                />
             </>
         )
     // si no tiene admin
@@ -71,9 +84,16 @@ async function GetContent() {
         return <p>{t('contact_admin')}</p>
     // es admin
     return (
-        <ButtonLink href={app.$locale.dashboard.management.laboratories('es')}>
-            <PlusIcon className='mr-2 h-4 w-4' />
-            {t('register_new_lab')}
-        </ButtonLink>
+        <Button
+            className='mt-2'
+            render={
+                <Link
+                    href={app.$locale.dashboard.management.laboratories('es')}
+                >
+                    <UserIcon className='mr-2 h-4 w-4' />
+                    {t('register_new_lab')}
+                </Link>
+            }
+        />
     )
 }
