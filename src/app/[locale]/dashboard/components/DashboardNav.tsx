@@ -5,46 +5,46 @@ import {
     BeakerIcon,
     LayoutDashboardIcon,
     LogOutIcon,
-    LucideIcon,
-    FileDownIcon,
-    FileSearchIcon,
-    MicroscopeIcon,
-    PcCaseIcon,
+    // LucideIcon,
+    // FileDownIcon,
+    // FileSearchIcon,
+    // MicroscopeIcon,
+    // PcCaseIcon,
     Calendar1Icon,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Accordion, AccordionSection } from '@/components/Accordion'
+// import { Accordion, AccordionSection } from '@/components/Accordion'
 import { APP_NAME } from '@/constants/client'
 import { cn } from '@/lib/utils'
 import { ManagementLink } from './management-link'
 
-const reportNavItems: {
-    title: string
-    href: string
-    icon: LucideIcon
-}[] = [
-    {
-        title: 'De Laboratorio',
-        href: '/dashboard/reports/lab',
-        icon: MicroscopeIcon,
-    },
-    {
-        title: 'De CC',
-        href: '/dashboard/reports/cc',
-        icon: PcCaseIcon,
-    },
-    {
-        title: 'Consultar Datos',
-        href: app.$locale.dashboard.reports.query('es'),
-        icon: FileSearchIcon,
-    },
-    {
-        title: 'Exportar Datos',
-        href: app.$locale.dashboard.export('es'),
-        icon: FileDownIcon,
-    },
-]
+// const reportNavItems: {
+//     title: string
+//     href: string
+//     icon: LucideIcon
+// }[] = [
+//     {
+//         title: 'De Laboratorio',
+//         href: '/dashboard/reports/lab',
+//         icon: MicroscopeIcon,
+//     },
+//     {
+//         title: 'De CC',
+//         href: '/dashboard/reports/cc',
+//         icon: PcCaseIcon,
+//     },
+//     {
+//         title: 'Consultar Datos',
+//         href: app.$locale.dashboard.reports.query('es'),
+//         icon: FileSearchIcon,
+//     },
+//     {
+//         title: 'Exportar Datos',
+//         href: app.$locale.dashboard.export('es'),
+//         icon: FileDownIcon,
+//     },
+// ]
 
 interface DashboardNavProps {
     className?: string
@@ -91,7 +91,7 @@ export function DashboardNav({ className }: DashboardNavProps) {
                 </Link>
                 <ManagementLink />
 
-                <Accordion defaultValue='item-2' type='single' collapsible>
+                {/* <Accordion defaultValue='item-2' type='single' collapsible>
                     <AccordionSection value='item-2' name='Reportes'>
                         {reportNavItems.map(item => (
                             <Link
@@ -110,7 +110,7 @@ export function DashboardNav({ className }: DashboardNavProps) {
                             </Link>
                         ))}
                     </AccordionSection>
-                </Accordion>
+                </Accordion> */}
 
                 <div className='mt-auto flex flex-1 flex-col justify-end'>
                     <div className='border-t' />
