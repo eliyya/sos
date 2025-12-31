@@ -1,6 +1,6 @@
 import { LABORATORY_TYPE, STATUS } from '@/prisma/generated/browser'
 import { Button } from '@/components/ui/button'
-import { Card, CardTitle, CardContent } from '@/components/Card'
+import { Card, CardTitle, CardContent } from '@/components/ui/card'
 import { CompletInput } from '@/components/Inputs'
 import { CompletSelect } from '@/components/Select'
 import { db } from '@/prisma/db'
