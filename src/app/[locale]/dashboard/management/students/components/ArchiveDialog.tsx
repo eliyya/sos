@@ -1,45 +1,30 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import {
-    Archive,
-    Ban,
-    CalendarRangeIcon,
-    GraduationCapIcon,
-    HashIcon,
-    UserIcon,
-    UsersIcon,
-} from 'lucide-react'
-import {
-    Activity,
-    Suspense,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { startTransition, Suspense, use, useCallback, useMemo } from 'react'
 import { archiveStudent } from '@/actions/students.actions'
-import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { CompletInput } from '@/components/Inputs'
 import { SearchStudentsContext } from '@/contexts/students.context'
+import { TableList } from '@/components/ui/table-list'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 function ArchiveDialog() {
     const [open, openDialog] = useAtom(dialogAtom)
-    const [inTransition, startTransition] = useTransition()
     const entityNc = useAtomValue(selectedIdAtom)
-    const [message, setMessage] = useState('')
+    // TODO: Add students translations
+    // const t = useTranslations('students')
     const router = useRouter()
     const { refresh, promise } = use(SearchStudentsContext)
     const { students } = use(promise)
@@ -52,109 +37,67 @@ function ArchiveDialog() {
         if (!entityNc) return
         startTransition(async () => {
             const res = await archiveStudent(entityNc)
+            openDialog(null)
             if (res.status === 'success') {
-                openDialog(null)
-                refresh()
-                return
+                return refresh()
             }
             if (res.type === 'not-found') {
                 refresh()
-                openDialog(null)
             } else if (res.type === 'permission') {
-                setMessage(res.message)
+                toastPermissionError(res.missings)
             } else if (res.type === 'unauthorized') {
                 router.replace(app.$locale.auth.login('es'))
             } else if (res.type === 'unexpected') {
-                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+                toastGenericError()
             }
         })
     }, [entityNc, openDialog, router, refresh])
 
+    const info = useMemo(
+        () =>
+            !entity ?
+                ({} as Record<string, string | number>)
+            :   {
+                    'Número de Control': entity.nc,
+                    Nombre: `${entity.firstname} ${entity.lastname}`,
+                    Semestre: entity.semester,
+                    Carrera: entity.career.displayalias,
+                    Grupo: entity.group,
+                },
+        [entity],
+    )
+
     if (!entity) return null
 
     return (
-        <Dialog
+        <AlertDialog
             open={open === 'ARCHIVE'}
             onOpenChange={status => {
                 if (!status) {
                     openDialog(null)
-                    setMessage('')
                 }
             }}
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Archivar Estudiante</DialogTitle>
-                    <DialogDescription>
-                        ¿Está seguro de archivar al estudiante{' '}
-                        {entity.firstname} {entity.lastname}?{' '}
-                        <strong>Esta acción es reversible</strong>
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <CompletInput
-                        disabled
-                        value={entity.nc}
-                        label='Numero de Control'
-                        icon={HashIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        value={`${entity.firstname} ${entity.lastname}`}
-                        label='Nombres'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        value={entity.semester}
-                        label='Semestre'
-                        icon={CalendarRangeIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        value={entity.career.displayalias}
-                        label='Carrera'
-                        icon={GraduationCapIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        value={entity.group}
-                        label='Grupo'
-                        icon={UsersIcon}
-                    />
-                    <div className='flex flex-row gap-2 *:flex-1'>
-                        <Button
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                openDialog(null)
-                            }}
-                        >
-                            <Ban className='mr-2 h-5 w-5' />
-                            Cancelar
-                        </Button>
-                        <Button
-                            type='submit'
-                            variant={'destructive'}
-                            disabled={inTransition}
-                        >
-                            <Archive className='mr-2 h-5 w-5' />
-                            Archivar
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Archivar Estudiante</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        ¿Está seguro de archivar a este estudiante?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <TableList info={info} />
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onAction}>
+                        Continue
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }
 
-export function SuspenseArchiveDialog() {
+function SuspenseArchiveDialog() {
     return (
         <Suspense>
             <ArchiveDialog />

@@ -1,12 +1,14 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { startTransition, Suspense, use, useCallback, useMemo } from 'react'
-import { archiveSubject } from '@/actions/subjects.actions'
+import { startTransition, use, useCallback, useMemo } from 'react'
+import { archiveUserAction } from '@/actions/users.actions'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
+import { useRoles } from '@/hooks/roles.hooks'
+import { DEFAULT_ROLES } from '@/constants/client'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { SearchSubjectsContext } from '@/contexts/subjects.context'
+import { SearchUsersContext } from '@/contexts/users.context'
 import { TableList } from '@/components/ui/table-list'
 import {
     AlertDialog,
@@ -20,39 +22,41 @@ import {
 } from '@/components/ui/alert-dialog'
 import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
-function ArchiveDialog() {
-    const [open, openDialog] = useAtom(dialogAtom)
+export function ArchiveEntityDialog() {
+    const [open, setOpen] = useAtom(dialogAtom)
     const entityId = useAtomValue(selectedIdAtom)
-    // TODO: Add subjects translations
-    // const t = useTranslations('subjects')
+    const { roles } = useRoles()
+    const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
+    const { refresh, promise } = use(SearchUsersContext)
     const router = useRouter()
-    const { promise, refresh } = use(SearchSubjectsContext)
-    const { subjects } = use(promise)
+    const { users } = use(promise)
 
-    const entity = useMemo(
-        () => subjects.find(s => s.id === entityId),
-        [subjects, entityId],
-    )
+    const entity = useMemo(() => {
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
 
-    const onAction = useCallback(() => {
+    const onAction = useCallback(async () => {
         if (!entityId) return
         startTransition(async () => {
-            const res = await archiveSubject(entityId)
-            openDialog(null)
-            if (res.status === 'success') {
+            const response = await archiveUserAction(entityId)
+            setOpen(null)
+            if (response.status === 'success') {
                 return refresh()
             }
-            if (res.type === 'not-found') {
+            if (response.type === 'not-allowed') {
+                setOpen('PREVENT_ARCHIVE_ADMIN')
+            } else if (response.type === 'not-found') {
                 refresh()
-            } else if (res.type === 'permission') {
-                toastPermissionError(res.missings)
-            } else if (res.type === 'unauthorized') {
+            } else if (response.type === 'permission') {
+                toastPermissionError(response.missings)
+            } else if (response.type === 'unauthorized') {
                 router.replace(app.$locale.auth.login('es'))
-            } else if (res.type === 'unexpected') {
+            } else if (response.type === 'unexpected') {
                 toastGenericError()
             }
         })
-    }, [entityId, openDialog, router, refresh])
+    }, [entityId, refresh, setOpen, router])
 
     const info = useMemo(
         () =>
@@ -60,24 +64,25 @@ function ArchiveDialog() {
                 ({} as Record<string, string | number>)
             :   {
                     Nombre: entity.name,
-                    'Horas Teóricas': entity.theory_hours,
-                    'Horas Prácticas': entity.practice_hours,
+                    Usuario: entity.username,
+                    Rol: entity.role.name,
                 },
         [entity],
     )
 
-    if (!entity) return null
+    if (!entity || !adminRole) return null
 
     return (
         <AlertDialog
             open={open === 'ARCHIVE'}
-            onOpenChange={state => openDialog(state ? 'ARCHIVE' : null)}
+            onOpenChange={op => setOpen(op ? 'ARCHIVE' : null)}
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Archivar Asignatura</AlertDialogTitle>
+                    <AlertDialogTitle>Archivar Usuario</AlertDialogTitle>
                     <AlertDialogDescription>
-                        ¿Está seguro de archivar esta asignatura?
+                        ¿Está seguro de archivar al usuario{' '}
+                        <strong>{entity.name}</strong>?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <TableList info={info} />
@@ -91,13 +96,3 @@ function ArchiveDialog() {
         </AlertDialog>
     )
 }
-
-function SuspenseArchiveDialog() {
-    return (
-        <Suspense>
-            <ArchiveDialog />
-        </Suspense>
-    )
-}
-
-export { SuspenseArchiveDialog as ArchiveDialog }

@@ -1,42 +1,28 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import {
-    ArchiveIcon,
-    BanIcon,
-    Clock8Icon,
-    MicroscopeIcon,
-    SquarePenIcon,
-} from 'lucide-react'
-import {
-    Activity,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
-import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
-import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
+import { startTransition, use, useCallback, useMemo } from 'react'
 import { archiveLaboratory } from '@/actions/laboratories.actions'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
-import { CompletInput } from '@/components/Inputs'
-import { LABORATORY_TYPE } from '@/prisma/generated/enums'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
+import { LABORATORY_TYPE } from '@/prisma/generated/enums'
+import { TableList } from '@/components/ui/table-list'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 export function ArchiveDialog() {
     const [open, setOpen] = useAtom(dialogAtom)
-    const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
-    const [message, setMessage] = useState('')
     const router = useRouter()
     const { refresh, promise } = use(SearchLaboratoriesContext)
     const { laboratories } = use(promise)
@@ -49,100 +35,60 @@ export function ArchiveDialog() {
         if (!entityId) return
         startTransition(async () => {
             const response = await archiveLaboratory(entityId)
+            setOpen(null)
             if (response.status === 'success') {
+                return refresh()
+            }
+            if (response.type === 'not-found') {
                 refresh()
-                setOpen(null)
-            } else {
-                if (response.type === 'not-found') {
-                    refresh()
-                    setOpen(null)
-                } else if (response.type === 'unexpected') {
-                    setMessage('Ha ocurrido un error, intente más tarde')
-                } else if (response.type === 'permission') {
-                    setMessage(
-                        'No tienes permiso para archivar este laboratorio',
-                    )
-                } else if (response.type === 'unauthorized') {
-                    router.replace('/login')
-                }
+            } else if (response.type === 'permission') {
+                toastPermissionError(response.missings)
+            } else if (response.type === 'unauthorized') {
+                router.replace('/login')
+            } else if (response.type === 'unexpected') {
+                toastGenericError()
             }
         })
     }, [entityId, refresh, setOpen, router])
 
+    const info = useMemo(
+        () =>
+            !entity ?
+                ({} as Record<string, string | number>)
+            :   {
+                    Nombre: entity.name,
+                    'Tipo de Laboratorio':
+                        entity.type === LABORATORY_TYPE.LABORATORY ?
+                            'Laboratorio'
+                        :   'Centro de Cómputo',
+                    'Horario de Apertura': entity.open_hour,
+                    'Horario de Cierre': entity.close_hour,
+                },
+        [entity],
+    )
+
     if (!entity) return null
 
     return (
-        <Dialog
+        <AlertDialog
             open={open === 'ARCHIVE'}
-            onOpenChange={state => {
-                if (!state) setOpen(null)
-            }}
+            onOpenChange={state => setOpen(state ? 'ARCHIVE' : null)}
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Archivar Laboratorio</DialogTitle>
-                    <DialogDescription>
-                        ¿Está seguro de archivar {entity.name}?
-                        <strong>Esta acción es reversible</strong>
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <CompletInput
-                        label='Nombre'
-                        disabled
-                        value={entity.name}
-                        icon={SquarePenIcon}
-                    />
-                    <CompletInput
-                        label='Tipo de Laboratorio'
-                        disabled
-                        value={
-                            entity.type === LABORATORY_TYPE.LABORATORY ?
-                                'Laboratorio'
-                            :   'Centro de Computo'
-                        }
-                        icon={MicroscopeIcon}
-                    />
-                    <CompletInput
-                        label='Horario de Apertura'
-                        disabled
-                        value={entity.open_hour}
-                        icon={Clock8Icon}
-                    />
-                    <CompletInput
-                        label='Horario de Cierre'
-                        disabled
-                        value={entity.close_hour}
-                        icon={Clock8Icon}
-                    />
-                    <div className='flex flex-row gap-2 *:flex-1'>
-                        <Button
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                setOpen(null)
-                            }}
-                        >
-                            <BanIcon className='mr-2 h-5 w-5' />
-                            Cancelar
-                        </Button>
-                        <Button
-                            type='submit'
-                            variant={'destructive'}
-                            disabled={inTransition}
-                        >
-                            <ArchiveIcon className='mr-2 h-5 w-5' />
-                            Archivar
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Archivar Laboratorio</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        ¿Está seguro de archivar este laboratorio?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <TableList info={info} />
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onAction}>
+                        Continue
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }
