@@ -31,7 +31,7 @@ import {
 import { Temporal } from '@js-temporal/polyfill'
 import { Effect } from 'effect'
 import { headers } from 'next/headers'
-import { Laboratory } from '@/prisma/client/browser'
+import { Laboratory } from '@/prisma/generated/browser'
 
 export async function createLaboratory({
     close_hour,

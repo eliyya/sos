@@ -8,7 +8,7 @@ import {
 import { createContext, startTransition, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { getLaboratoryAction } from '@/actions/laboratories.actions'
-import { Laboratory } from '@/prisma/client/browser'
+import { Laboratory } from '@/prisma/generated/browser'
 
 export const SearchLaboratoriesContext = createContext<
     SearchContext<'laboratories', typeof useFiltersBase>
