@@ -5,7 +5,7 @@ import { SearchIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { getUsersCountPerRole } from '@/actions/roles.actions'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/Card'
+import { Card, CardContent } from '@/components/ui/card'
 import { SimpleInput } from '@/components/Inputs'
 import { DEFAULT_ROLES } from '@/constants/client'
 import {

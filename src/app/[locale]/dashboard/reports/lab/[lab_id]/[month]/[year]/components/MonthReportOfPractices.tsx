@@ -1,7 +1,7 @@
 'use client'
 
 import { use } from 'react'
-import { Card } from '@/components/Card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
     Table,
     TableBody,
@@ -96,61 +96,63 @@ export default function MonthReportOfPractices({
 
     return (
         <Card>
-            <h2 className='p-4 text-2xl font-bold tracking-tight'>
-                Reporte de horas de prácticas del mes {selectedMonth} de{' '}
-                {selectedYear}
-            </h2>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Carrera</TableHead>
-                        <TableHead>Semana 1</TableHead>
-                        <TableHead>Semana 2</TableHead>
-                        <TableHead>Semana 3</TableHead>
-                        <TableHead>Semana 4</TableHead>
-                        <TableHead>Semana 5</TableHead>
-                        <TableHead>Total</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {data.map(career => (
-                        <TableRow key={career.id} className='text-center'>
-                            <TableCell className='text-left'>
-                                {career.name}
+            <CardContent>
+                <h2 className='p-4 text-2xl font-bold tracking-tight'>
+                    Reporte de horas de prácticas del mes {selectedMonth} de{' '}
+                    {selectedYear}
+                </h2>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Carrera</TableHead>
+                            <TableHead>Semana 1</TableHead>
+                            <TableHead>Semana 2</TableHead>
+                            <TableHead>Semana 3</TableHead>
+                            <TableHead>Semana 4</TableHead>
+                            <TableHead>Semana 5</TableHead>
+                            <TableHead>Total</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {data.map(career => (
+                            <TableRow key={career.id} className='text-center'>
+                                <TableCell className='text-left'>
+                                    {career.name}
+                                </TableCell>
+                                <TableCell>{career.weekly_hours[0]}</TableCell>
+                                <TableCell>{career.weekly_hours[1]}</TableCell>
+                                <TableCell>{career.weekly_hours[2]}</TableCell>
+                                <TableCell>{career.weekly_hours[3]}</TableCell>
+                                <TableCell>{career.weekly_hours[4]}</TableCell>
+                                <TableCell>
+                                    {career.weekly_hours.reduce(
+                                        (total, hours) => total + hours,
+                                        0,
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableCell colSpan={6} className='text-right'>
+                                Total
                             </TableCell>
-                            <TableCell>{career.weekly_hours[0]}</TableCell>
-                            <TableCell>{career.weekly_hours[1]}</TableCell>
-                            <TableCell>{career.weekly_hours[2]}</TableCell>
-                            <TableCell>{career.weekly_hours[3]}</TableCell>
-                            <TableCell>{career.weekly_hours[4]}</TableCell>
-                            <TableCell>
-                                {career.weekly_hours.reduce(
-                                    (total, hours) => total + hours,
+                            <TableCell className='text-center'>
+                                {data.reduce(
+                                    (total, career) =>
+                                        total +
+                                        career.weekly_hours.reduce(
+                                            (total, hours) => total + hours,
+                                            0,
+                                        ),
                                     0,
                                 )}
                             </TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={6} className='text-right'>
-                            Total
-                        </TableCell>
-                        <TableCell className='text-center'>
-                            {data.reduce(
-                                (total, career) =>
-                                    total +
-                                    career.weekly_hours.reduce(
-                                        (total, hours) => total + hours,
-                                        0,
-                                    ),
-                                0,
-                            )}
-                        </TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
+                    </TableFooter>
+                </Table>
+            </CardContent>
         </Card>
     )
 }
