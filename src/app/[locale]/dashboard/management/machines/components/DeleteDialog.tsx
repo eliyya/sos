@@ -77,9 +77,8 @@ function DeleteDialog() {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Dar de baja</AlertDialogTitle>
                     <AlertDialogDescription>
-                        ¿Está seguro de dar de baja la máquina{' '}
-                        <strong>{entity.number}</strong> con serie{' '}
-                        <strong>{entity.serie}</strong>?
+                        ¿Está seguro de dar de baja{' '}
+                        <strong>#{entity.number}</strong>?
                         <strong>Esta acción es irreversible</strong>
                         Tal vez busca colocarla en mantenimiento
                     </AlertDialogDescription>

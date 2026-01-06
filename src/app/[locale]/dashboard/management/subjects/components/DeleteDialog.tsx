@@ -74,8 +74,7 @@ function DeleteDialog() {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Eliminar Asignatura</AlertDialogTitle>
                     <AlertDialogDescription>
-                        ¿Está seguro de eliminar la asignatura{' '}
-                        <strong>{entity.name}</strong>?
+                        ¿Está seguro de eliminar <strong>{entity.name}</strong>?
                         <strong>Esta acción es irreversible</strong>
                     </AlertDialogDescription>
                 </AlertDialogHeader>

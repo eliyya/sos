@@ -47,18 +47,18 @@ function DeleteDialog() {
     const onAction = useCallback(() => {
         if (!entityId) return
         startTransition(async () => {
-            const response = await deleteCareer(entityId)
+            const res = await deleteCareer(entityId)
             setOpen(null)
-            if (response.status === 'success') {
+            if (res.status === 'success') {
                 return refresh()
             }
-            if (response.type === 'permission') {
-                toastPermissionError(response.missings)
-            } else if (response.type === 'unauthorized') {
-                router.replace(app.$locale.auth.login('es'))
-            } else if (response.type === 'not-found') {
+            if (res.type === 'not-found') {
                 refresh()
-            } else {
+            } else if (res.type === 'permission') {
+                toastPermissionError(res.missings)
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (res.type === 'unexpected') {
                 toastGenericError()
             }
         })

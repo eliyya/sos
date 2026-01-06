@@ -5,6 +5,7 @@ import { startTransition, use, useCallback, useMemo } from 'react'
 import { deleteLaboratory } from '@/actions/laboratories.actions'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
+import app from '@eliyya/type-routes'
 import { LABORATORY_TYPE } from '@/prisma/generated/enums'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 import { TableList } from '@/components/ui/table-list'
@@ -34,19 +35,19 @@ export function DeleteDialog() {
     const onAction = useCallback(async () => {
         if (!entityId) return
         startTransition(async () => {
-            const response = await deleteLaboratory(entityId)
+            const res = await deleteLaboratory(entityId)
             setOpen(null)
-            if (response.status === 'success') {
+            if (res.status === 'success') {
                 return refresh()
             }
-            if (response.type === 'not-found') {
+            if (res.type === 'not-found') {
                 refresh()
-            } else if (response.type === 'unexpected') {
+            } else if (res.type === 'permission') {
+                toastPermissionError(res.missings)
+            } else if (res.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (res.type === 'unexpected') {
                 toastGenericError()
-            } else if (response.type === 'permission') {
-                toastPermissionError(response.missings)
-            } else if (response.type === 'unauthorized') {
-                router.replace('/login')
             }
         })
     }, [entityId, setOpen, refresh, router])

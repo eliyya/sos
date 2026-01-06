@@ -39,24 +39,24 @@ export function DeleteEntityDialog() {
     const onAction = useCallback(() => {
         if (!entityId) return
         startTransition(async () => {
-            const response = await deleteUserAction(entityId)
+            const res = await deleteUserAction(entityId)
             setOpen(null)
-            if (response.status === 'success') {
+            if (res.status === 'success') {
                 return refresh()
             }
-            if (response.type === 'not-allowed') {
-                if (response.message === 'Unique admin cannot be deleted') {
+            if (res.type === 'not-allowed') {
+                if (res.message === 'Unique admin cannot be deleted') {
                     setOpen('PREVENT_ARCHIVE_ADMIN')
                 } else {
                     toastGenericError()
                 }
-            } else if (response.type === 'not-found') {
+            } else if (res.type === 'not-found') {
                 refresh()
-            } else if (response.type === 'permission') {
-                toastPermissionError(response.missings)
-            } else if (response.type === 'unauthorized') {
+            } else if (res.type === 'permission') {
+                toastPermissionError(res.missings)
+            } else if (res.type === 'unauthorized') {
                 router.replace(app.$locale.auth.login('es'))
-            } else if (response.type === 'unexpected') {
+            } else if (res.type === 'unexpected') {
                 toastGenericError()
             }
         })

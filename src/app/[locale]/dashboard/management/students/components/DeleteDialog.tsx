@@ -70,13 +70,13 @@ function DeleteDialog() {
     return (
         <AlertDialog
             open={open === 'DELETE'}
-            onOpenChange={state => openDialog(state ? 'DELETE' : null)}
+            onOpenChange={status => openDialog(status ? 'DELETE' : null)}
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Eliminar Estudiante</AlertDialogTitle>
                     <AlertDialogDescription>
-                        ¿Está seguro de eliminar al estudiante{' '}
+                        ¿Está seguro de eliminar{' '}
                         <strong>
                             {entity.firstname} {entity.lastname}
                         </strong>
