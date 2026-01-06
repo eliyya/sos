@@ -1,335 +1,227 @@
 'use client'
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import {
-    AtSignIcon,
-    KeyIcon,
-    SaveIcon,
-    TriangleIcon,
-    UserIcon,
-} from 'lucide-react'
-import {
-    Activity,
-    use,
-    useEffect,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
-import {
-    createUserAction,
-    usernameIsTakenAction,
-} from '@/actions/users.actions'
+import { Activity, use, useCallback, useState, useTransition } from 'react'
+import { createUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
-import { CompletInput } from '@/components/Inputs'
-import { CompletSelect } from '@/components/Select'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
-import { capitalize, truncateByUnderscore } from '@/lib/utils'
 import { useRoles } from '@/hooks/roles.hooks'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
+import { CompletField } from '@/components/ui/complet-field'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { AtSignIcon, KeyIcon, UserIcon } from 'lucide-react'
 
-const usernameAtom = atom('')
-const usernameErrorAtom = atom('')
-const canSuggestUsernameAtom = atom(false)
-const nameAtom = atom('')
-const nameErrorAtom = atom('')
-const passwordAtom = atom('')
-const passwordErrorAtom = atom('')
-const confirmPasswordAtom = atom('')
-const confirmPasswordErrorAtom = atom('')
-const passwordFocusAtom = atom(false)
+const errorUsernameAtom = atom('')
+const errorNameAtom = atom('')
+const errorPasswordAtom = atom('')
+const errorConfirmPasswordAtom = atom('')
+const errorRoleAtom = atom('')
 
 export function CreateUserDialog() {
-    const [open, setOpen] = useAtom(dialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const { refresh } = use(SearchUsersContext)
     const router = useRouter()
-    // data
-    const setTakenUser = useSetAtom(selectedIdAtom)
-    const setName = useSetAtom(nameAtom)
-    const setUsername = useSetAtom(usernameAtom)
-    const setPassword = useSetAtom(passwordAtom)
-    const setConfirmPassword = useSetAtom(confirmPasswordAtom)
-    const setUsernameError = useSetAtom(usernameErrorAtom)
+    const { refresh } = use(SearchUsersContext)
+    const { roles } = useRoles()
+
+    const setErrorUsername = useSetAtom(errorUsernameAtom)
+    const setErrorName = useSetAtom(errorNameAtom)
+    const setErrorPassword = useSetAtom(errorPasswordAtom)
+    const setErrorConfirmPassword = useSetAtom(errorConfirmPasswordAtom)
+    const setErrorRole = useSetAtom(errorRoleAtom)
+
+    const onAction = useCallback(
+        (data: FormData) => {
+            const username = data.get('username') as string
+            const name = data.get('name') as string
+            const password = data.get('password') as string
+            const confirmPassword = data.get('confirmPassword') as string
+            const role_id = data.get('role_id') as string
+
+            if (password !== confirmPassword) {
+                setErrorConfirmPassword('Las contraseñas no coinciden')
+                return
+            }
+
+            startTransition(async () => {
+                const res = await createUserAction({
+                    username,
+                    name,
+                    password,
+                    role_id,
+                })
+                if (res.status === 'success') {
+                    openDialog(null)
+                    refresh()
+                    return
+                }
+                if (res.type === 'permission') {
+                    setMessage('No tienes permiso para crear usuarios')
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.$locale.auth.login('es'))
+                } else if (res.type === 'invalid-input') {
+                    if (res.field === 'username') {
+                        setErrorUsername(res.message)
+                    } else if (res.field === 'name') {
+                        setErrorName(res.message)
+                    } else if (res.field === 'password') {
+                        setErrorPassword(res.message)
+                    } else if (res.field === 'role_id') {
+                        setErrorRole(res.message)
+                    }
+                } else if (res.type === 'already-exists') {
+                    setErrorUsername('Este nombre de usuario ya está en uso')
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
+                }
+            })
+        },
+        [
+            openDialog,
+            refresh,
+            router,
+            setErrorUsername,
+            setErrorName,
+            setErrorPassword,
+            setErrorConfirmPassword,
+            setErrorRole,
+        ],
+    )
 
     return (
         <Dialog
             open={open === 'CREATE'}
-            onOpenChange={open => {
-                if (!open) setOpen(null)
-            }}
+            onOpenChange={state => openDialog(state ? 'CREATE' : null)}
         >
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Crear Usuario</DialogTitle>
-                </DialogHeader>
-                <form
-                    action={data => {
-                        startTransition(async () => {
-                            const name = capitalize(
-                                (data.get('name') as string).trim(),
-                            )
-                            const username = (
-                                data.get('username') as string
-                            ).trim()
-                            const password = data.get('password') as string
-                            const role_id = data.get('role_id') as string
-                            const response =
-                                await usernameIsTakenAction(username)
-                            if (
-                                response.status === 'success' &&
-                                response.type === 'archived'
-                            ) {
-                                setOpen(null)
-                                setTakenUser(response.user.id)
-                                setOpen('UNARCHIVE_OR_DELETE')
-                                // reset
-                                setName('')
-                                setUsername('')
-                                setPassword('')
-                                setConfirmPassword('')
-                                return
-                            }
-                            const res = await createUserAction({
-                                name,
-                                password,
-                                username,
-                                role_id,
-                            })
-                            if (res.status === 'success') {
-                                refresh()
-                                setOpen(null)
-                                setName('')
-                                setUsername('')
-                                setPassword('')
-                                setConfirmPassword('')
-                                return
-                            }
-                            if (res.type === 'permission') {
-                                setMessage(
-                                    'No tienes permiso para crear esta asignatura',
-                                )
-                            } else if (res.type === 'unauthorized') {
-                                router.replace(app.$locale.auth.login('es'))
-                            } else if (res.type === 'better-error') {
-                                setMessage(
-                                    'Ha ocurrido un error, intentalo más tarde',
-                                )
-                            } else if (res.type === 'api-error') {
-                                if (
-                                    res.cause.code ===
-                                    'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL'
-                                ) {
-                                    setUsernameError('El usuario ya existe')
-                                } else {
-                                    console.log(res)
-                                    setMessage(
-                                        'Ha ocurrido un error, intentalo más tarde',
-                                    )
-                                }
-                            } else if (res.type === 'unexpected') {
-                                setMessage(
-                                    'Ha ocurrido un error, intentalo más tarde',
-                                )
-                            }
-                        })
-                    }}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
+                <form action={onAction}>
+                    <DialogHeader>
+                        <DialogTitle>Crear Usuario</DialogTitle>
+                    </DialogHeader>
+
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <NameInput />
+
                     <UsernameInput />
-                    <RoleSelect />
-                    <PasswordInput />
-                    <ConfirmPasswordInput />
-                    <Button type='submit' disabled={inTransition}>
-                        <SaveIcon className='mr-2 h-5 w-5' />
-                        Save
-                    </Button>
+                    <NameInput />
+                    <div className='flex w-full gap-4'>
+                        <PasswordInput />
+                        <ConfirmPasswordInput />
+                    </div>
+                    <RoleInput />
+
+                    <DialogFooter>
+                        <DialogClose
+                            render={<Button variant='outline'>Cancel</Button>}
+                        />
+                        <Button type='submit' disabled={inTransition}>
+                            Crear
+                        </Button>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
     )
 }
 
-export function RoleSelect() {
-    const { roles } = useRoles()
-    const rolesOptions = useMemo(() => {
-        return roles.map(role => ({
-            value: role.id,
-            label: role.name,
-        }))
-    }, [roles])
-
+function UsernameInput() {
+    const error = useAtomValue(errorUsernameAtom)
     return (
-        <CompletSelect
-            required
-            label='Rol'
-            name='role_id'
-            options={rolesOptions}
-            icon={TriangleIcon}
-        />
-    )
-}
-
-export function NameInput() {
-    const [name, setName] = useAtom(nameAtom)
-    const [error, setError] = useAtom(nameErrorAtom)
-    const setUsername = useSetAtom(usernameAtom)
-    const canSuggestUsername = useAtomValue(canSuggestUsernameAtom)
-
-    return (
-        <CompletInput
-            required
-            label='Nombre'
-            type='text'
-            name='name'
-            icon={UserIcon}
-            value={name}
-            error={error}
-            onChange={e => {
-                const name = e.target.value
-                setName(name)
-                setError('')
-                if (!canSuggestUsername) return
-                if (name.length < 3) return
-                setUsername(
-                    truncateByUnderscore(
-                        name.toLowerCase().replace(/\s+/g, '_'),
-                    ),
-                )
-            }}
-        />
-    )
-}
-
-export function UsernameInput() {
-    const [username, setUsername] = useAtom(usernameAtom)
-    const [error, setError] = useAtom(usernameErrorAtom)
-    const setCanSuggestUsername = useSetAtom(canSuggestUsernameAtom)
-    const [focus, setFocus] = useState(false)
-
-    return (
-        <CompletInput
-            required
-            label='Username'
-            type='text'
+        <CompletField
+            label='Nombre de Usuario'
             name='username'
             icon={AtSignIcon}
-            min={3}
-            max={30}
-            pattern='^[a-z0-9_]+$'
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
-            value={username}
+            type='text'
             error={error}
-            onChange={e => {
-                const username = e.target.value
-                setUsername(username)
-                setError('')
-                if (!username) return setCanSuggestUsername(true)
-                if (username && focus) setCanSuggestUsername(false)
-                if (username.length < 3)
-                    setError(
-                        'El nombre de usuario debe tener al menos 3 caracteres',
-                    )
-                if (username.length > 30)
-                    setError(
-                        'El nombre de usuario puede tener hasta 30 caracteres',
-                    )
-                if (!/^[a-z0-9_]+$/.test(username))
-                    setError(
-                        'El nombre de usuario debe contener solo minusculas, numeros y guiones bajos',
-                    )
-                if (username.includes(' '))
-                    setError('El nombre de usuario no debe contener espacios')
-            }}
+            required
         />
     )
 }
 
-export function PasswordInput() {
-    const [pass, setPassword] = useAtom(passwordAtom)
-    const [error, setError] = useAtom(passwordErrorAtom)
-    const setFocus = useSetAtom(passwordFocusAtom)
-
+function NameInput() {
+    const error = useAtomValue(errorNameAtom)
     return (
-        <CompletInput
+        <CompletField
+            label='Nombre Completo'
+            name='name'
+            icon={UserIcon}
+            type='text'
+            error={error}
             required
+        />
+    )
+}
+
+function PasswordInput() {
+    const error = useAtomValue(errorPasswordAtom)
+    return (
+        <CompletField
             label='Contraseña'
-            type='password'
             name='password'
             icon={KeyIcon}
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
-            value={pass}
+            type='password'
             error={error}
-            onChange={e => {
-                const password = e.target.value
-                setPassword(e.target.value)
-                setError('')
-                if (!password) return
-                if (!/[A-Z]/.test(password))
-                    return setError(
-                        'La contraseña debe contener al menos una mayúscula',
-                    )
-                if (!/[0-9]/.test(password))
-                    return setError(
-                        'La contraseña debe contener al menos un número',
-                    )
-                if (!/[!@#$%^&*]/.test(password))
-                    return setError(
-                        'La contraseña debe contener al menos un carácter especial como !@#$%^&*',
-                    )
-                if (password.length < 10)
-                    return setError(
-                        'La contraseña debe tener al menos 10 caracteres',
-                    )
-            }}
+            required
         />
     )
 }
 
-export function ConfirmPasswordInput() {
-    const [confirmPassword, setConfirmPassword] = useAtom(confirmPasswordAtom)
-    const [error, setError] = useAtom(confirmPasswordErrorAtom)
-    const focus = useAtomValue(passwordFocusAtom)
-    const password = useAtomValue(passwordAtom)
-
-    useEffect(() => {
-        const handler = setTimeout(async () => {
-            if (focus) return
-            if (confirmPassword !== password)
-                setError('Las contraseñas no coinciden')
-        }, 500)
-
-        return () => clearTimeout(handler)
-    }, [confirmPassword, password, setError, focus])
+function ConfirmPasswordInput() {
+    const error = useAtomValue(errorConfirmPasswordAtom)
     return (
-        <CompletInput
-            required
-            label='Confirm Password'
-            type='password'
-            name='password-confirm'
+        <CompletField
+            label='Confirmar Contraseña'
+            name='confirmPassword'
             icon={KeyIcon}
-            value={confirmPassword}
+            type='password'
             error={error}
-            onChange={e => {
-                setConfirmPassword(e.target.value)
-                setError('')
-            }}
+            required
         />
+    )
+}
+
+function RoleInput() {
+    const error = useAtomValue(errorRoleAtom)
+    const { roles } = useRoles()
+
+    return (
+        <Field>
+            <FieldLabel>Rol</FieldLabel>
+            <Select name='role_id'>
+                <SelectTrigger>
+                    <SelectValue placeholder='Seleccionar rol' />
+                </SelectTrigger>
+                <SelectContent>
+                    {roles.map(role => (
+                        <SelectItem key={role.id} value={role.id}>
+                            {role.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <FieldError errors={error ? [{ message: error }] : []} />
+        </Field>
     )
 }

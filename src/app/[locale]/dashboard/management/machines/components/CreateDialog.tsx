@@ -1,77 +1,113 @@
 'use client'
 
-import { useAtom, useSetAtom } from 'jotai'
-import { UserIcon, Save } from 'lucide-react'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createMachine } from '@/actions/machines.actions'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
-import { CompletInput, CompletTextarea } from '@/components/Inputs'
-import { CompletAsyncSelect } from '@/components/Select'
-import {
-    dialogAtom,
-    laboratoriesSelectOptionsAtom,
-    selectedIdAtom,
-} from '@/global/management.globals'
+import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { MACHINE_STATUS } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchMachinesContext } from '@/contexts/machines.context'
+import { CompletField } from '@/components/ui/complet-field'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import {
+    AsyncCombobox,
+    AsyncComboboxItem,
+} from '@/components/ui/async-combobox'
 import { searchLaboratories } from '@/actions/search.actions'
+import {
+    MonitorCheckIcon,
+    HashIcon,
+    UserIcon,
+    FileTextIcon,
+} from 'lucide-react'
+
+const errorNumberAtom = atom('')
+const errorProcessorAtom = atom('')
+const errorRamAtom = atom('')
+const errorStorageAtom = atom('')
+const errorLaboratoryAtom = atom('')
+const errorSerieAtom = atom('')
+const errorDescriptionAtom = atom('')
 
 export function CreateSubjectDialog() {
-    const [dialogOpened, openDialog] = useAtom(dialogAtom)
+    const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
     const setEntityToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
-    const [serieError, setSerieError] = useState('')
     const { refresh } = use(SearchMachinesContext)
 
+    const setErrorNumber = useSetAtom(errorNumberAtom)
+    const setErrorProcessor = useSetAtom(errorProcessorAtom)
+    const setErrorRam = useSetAtom(errorRamAtom)
+    const setErrorStorage = useSetAtom(errorStorageAtom)
+    const setErrorLaboratory = useSetAtom(errorLaboratoryAtom)
+    const setErrorSerie = useSetAtom(errorSerieAtom)
+    const setErrorDescription = useSetAtom(errorDescriptionAtom)
+
     const onAction = useCallback(
-        (formData: FormData) => {
-            const description = formData.get('description') as string
-            const number = Number(formData.get('number'))
-            const processor = formData.get('processor') as string
-            const ram = formData.get('ram') as string
-            const storage = formData.get('storage') as string
-            const laboratory_id = formData.get('laboratory_id') as string
-            const serie = formData.get('serie') as string
-            const status = formData.get('status') as MACHINE_STATUS
+        (data: FormData) => {
+            const number = Number(data.get('number'))
+            const processor = data.get('processor') as string
+            const ram = data.get('ram') as string
+            const storage = data.get('storage') as string
+            const laboratory_id = data.get('laboratory_id') as string
+            const serie = data.get('serie') as string
+            const description = data.get('description') as string
+            const status = MACHINE_STATUS.AVAILABLE
 
             startTransition(async () => {
                 const res = await createMachine({
-                    description,
                     number,
                     processor,
                     ram,
-                    status,
                     storage,
                     laboratory_id,
                     serie,
+                    description,
+                    status,
                 })
                 if (res.status === 'success') {
-                    refresh()
                     openDialog(null)
+                    refresh()
                     return
                 }
                 if (res.type === 'already-archived') {
                     setEntityToEdit(res.id)
                     openDialog('UNARCHIVE_OR_DELETE')
                 } else if (res.type === 'permission') {
-                    setMessage(res.message)
+                    setMessage('No tienes permiso para crear esta máquina')
                 } else if (res.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'invalid-input') {
-                    if (res.field === 'serie') {
-                        setSerieError('Esta serie ya existe')
+                    if (res.field === 'number') {
+                        setErrorNumber(res.message)
+                    } else if (res.field === 'processor') {
+                        setErrorProcessor(res.message)
+                    } else if (res.field === 'ram') {
+                        setErrorRam(res.message)
+                    } else if (res.field === 'storage') {
+                        setErrorStorage(res.message)
+                    } else if (res.field === 'laboratory_id') {
+                        setErrorLaboratory(res.message)
+                    } else if (res.field === 'serie') {
+                        setErrorSerie(res.message)
+                    } else if (res.field === 'description') {
+                        setErrorDescription(res.message)
                     }
+                } else if (res.type === 'already-exists') {
+                    setErrorNumber('Ya existe una máquina con este número')
                 } else if (res.type === 'unexpected') {
                     setMessage(
                         'Ha ocurrido un error inesperado, intente mas tarde',
@@ -79,112 +115,166 @@ export function CreateSubjectDialog() {
                 }
             })
         },
-        [openDialog, refresh, router, setEntityToEdit],
+        [
+            openDialog,
+            refresh,
+            router,
+            setEntityToEdit,
+            setErrorNumber,
+            setErrorProcessor,
+            setErrorRam,
+            setErrorStorage,
+            setErrorLaboratory,
+            setErrorSerie,
+            setErrorDescription,
+        ],
     )
 
     return (
         <Dialog
-            open={dialogOpened === 'CREATE'}
+            open={open === 'CREATE'}
             onOpenChange={state => openDialog(state ? 'CREATE' : null)}
         >
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Crear Máquina</DialogTitle>
-                </DialogHeader>
-                {/* <DialogDescription>
-                    Edit the user&apos;s information
-                </DialogDescription> */}
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
+                <form action={onAction}>
+                    <DialogHeader>
+                        <DialogTitle>Crear Máquina</DialogTitle>
+                    </DialogHeader>
+
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
-                    <CompletInput
-                        required
-                        label='Numero'
-                        type='number'
-                        name='number'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='Procesador'
-                        type='text'
-                        name='processor'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='RAM'
-                        type='text'
-                        name='ram'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='Almacenamiento'
-                        type='text'
-                        name='storage'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        required
-                        label='Serie'
-                        type='text'
-                        name='serie'
-                        icon={UserIcon}
-                        error={serieError}
-                    />
-                    <CompletTextarea
-                        label='Descripcion'
-                        name='description'
-                        icon={UserIcon}
-                    ></CompletTextarea>
-                    <LaboratoryInput />
 
-                    <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
-                        Crear
-                    </Button>
+                    <div className='flex w-full gap-4'>
+                        <NumberInput />
+                        <ProcessorInput />
+                    </div>
+                    <div className='flex w-full gap-4'>
+                        <RamInput />
+                        <StorageInput />
+                    </div>
+                    <LaboratoryInput />
+                    <SerieInput />
+                    <DescriptionInput />
+
+                    <DialogFooter>
+                        <DialogClose
+                            render={<Button variant='outline'>Cancel</Button>}
+                        />
+                        <Button type='submit' disabled={inTransition}>
+                            Crear
+                        </Button>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
     )
 }
 
-function LaboratoryInput() {
-    const [defaultlaboratoriesOptions, setLaboratoriesSelectOptions] = useAtom(
-        laboratoriesSelectOptionsAtom,
+function NumberInput() {
+    const error = useAtomValue(errorNumberAtom)
+    return (
+        <CompletField
+            label='Número'
+            name='number'
+            icon={HashIcon}
+            type='number'
+            error={error}
+            required
+        />
     )
+}
 
-    const loadOptions = useCallback(
-        (
-            inputValue: string,
-            callback: (options: { label: string; value: string }[]) => void,
-        ) => {
-            searchLaboratories({
-                query: inputValue,
-            }).then(res => {
-                const options = res.laboratories.map(laboratory => ({
-                    label: laboratory.name,
-                    value: laboratory.id,
-                }))
-                setLaboratoriesSelectOptions(options)
-                callback(options)
-            })
-        },
-        [setLaboratoriesSelectOptions],
+function ProcessorInput() {
+    const error = useAtomValue(errorProcessorAtom)
+    return (
+        <CompletField
+            label='Procesador'
+            name='processor'
+            icon={UserIcon}
+            type='text'
+            error={error}
+            required
+        />
     )
+}
+
+function RamInput() {
+    const error = useAtomValue(errorRamAtom)
+    return (
+        <CompletField
+            label='RAM'
+            name='ram'
+            icon={UserIcon}
+            type='text'
+            error={error}
+            required
+        />
+    )
+}
+
+function StorageInput() {
+    const error = useAtomValue(errorStorageAtom)
+    return (
+        <CompletField
+            label='Almacenamiento'
+            name='storage'
+            icon={UserIcon}
+            type='text'
+            error={error}
+            required
+        />
+    )
+}
+
+function LaboratoryInput() {
+    const error = useAtomValue(errorLaboratoryAtom)
+    const [value, setValue] = useState<AsyncComboboxItem | null>(null)
 
     return (
-        <CompletAsyncSelect
-            label='Laboratorio Asignado'
-            name='laboratory_id'
-            loadOptions={loadOptions}
-            defaultOptions={defaultlaboratoriesOptions}
+        <Field>
+            <FieldLabel>Laboratorio</FieldLabel>
+            <AsyncCombobox
+                name='laboratory_id'
+                placeholder='Seleccionar laboratorio'
+                searchPlaceholder='Buscar laboratorio...'
+                value={value}
+                onChange={setValue}
+                onSearch={async query => {
+                    const res = await searchLaboratories({ query })
+                    return res.laboratories.map(l => ({
+                        value: l.id,
+                        label: l.name,
+                    }))
+                }}
+            />
+            <FieldError errors={error ? [{ message: error }] : []} />
+        </Field>
+    )
+}
+
+function SerieInput() {
+    const error = useAtomValue(errorSerieAtom)
+    return (
+        <CompletField
+            label='Serie'
+            name='serie'
             icon={UserIcon}
+            type='text'
+            error={error}
+        />
+    )
+}
+
+function DescriptionInput() {
+    const error = useAtomValue(errorDescriptionAtom)
+    return (
+        <CompletField
+            label='Descripción'
+            name='description'
+            icon={FileTextIcon}
+            type='text'
+            error={error}
         />
     )
 }

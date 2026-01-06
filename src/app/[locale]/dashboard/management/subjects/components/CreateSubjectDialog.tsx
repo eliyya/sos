@@ -1,29 +1,32 @@
 'use client'
 
-import { atom, useAtom, useSetAtom } from 'jotai'
-import { Save, SquarePenIcon, ClockFadingIcon } from 'lucide-react'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createSubject } from '@/actions/subjects.actions'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
-import { CompletInput } from '@/components/Inputs'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchSubjectsContext } from '@/contexts/subjects.context'
+import { CompletField } from '@/components/ui/complet-field'
+import { ClockFadingIcon, SquarePenIcon } from 'lucide-react'
 
 const nameAtom = atom('')
 const errorNameAtom = atom('')
 
 const theoryHoursAtom = atom(1)
-const practiceHoursAtom = atom(0)
 const errorTheoryHoursAtom = atom('')
+
+const practiceHoursAtom = atom(0)
 const errorPracticeHoursAtom = atom('')
 
 export function CreateSubjectDialog() {
@@ -33,20 +36,20 @@ export function CreateSubjectDialog() {
     const setUserToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
     const { refresh } = use(SearchSubjectsContext)
-    // data
+
+    const setName = useSetAtom(nameAtom)
     const setTheoryHours = useSetAtom(theoryHoursAtom)
     const setPracticeHours = useSetAtom(practiceHoursAtom)
-    const setName = useSetAtom(nameAtom)
-    // errors
+
     const setErrorName = useSetAtom(errorNameAtom)
     const setErrorTheoryHours = useSetAtom(errorTheoryHoursAtom)
     const setErrorPracticeHours = useSetAtom(errorPracticeHoursAtom)
 
     const onAction = useCallback(
-        async (formData: FormData) => {
-            const name = formData.get('name') as string
-            const theory_hours = Number(formData.get('theory_hours'))
-            const practice_hours = Number(formData.get('practice_hours'))
+        (data: FormData) => {
+            const name = data.get('name') as string
+            const theory_hours = Number(data.get('theory_hours'))
+            const practice_hours = Number(data.get('practice_hours'))
 
             startTransition(async () => {
                 const res = await createSubject({
@@ -80,7 +83,9 @@ export function CreateSubjectDialog() {
                     setUserToEdit(res.id)
                     openDialog('EDIT')
                 } else if (res.type === 'unexpected') {
-                    setMessage('Ha ocurrido un error, intentalo más tarde')
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
                 }
             })
         },
@@ -101,37 +106,32 @@ export function CreateSubjectDialog() {
     return (
         <Dialog
             open={dialog === 'CREATE'}
-            onOpenChange={open => {
-                openDialog(open ? 'CREATE' : null)
-                if (!open) {
-                    setErrorName('')
-                }
-            }}
+            onOpenChange={state => openDialog(state ? 'CREATE' : null)}
         >
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Crear Asignatura</DialogTitle>
-                </DialogHeader>
-                {/* <DialogDescription>
-                    Edit the user&apos;s information
-                </DialogDescription> */}
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
+                <form action={onAction}>
+                    <DialogHeader>
+                        <DialogTitle>Crear Asignatura</DialogTitle>
+                    </DialogHeader>
+
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+
                     <NameInput />
                     <div className='flex w-full gap-4'>
-                        <TehoryHoursInput />
+                        <TheoryHoursInput />
                         <PracticeHoursInput />
                     </div>
 
-                    <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
-                        Crear
-                    </Button>
+                    <DialogFooter>
+                        <DialogClose
+                            render={<Button variant='outline'>Cancel</Button>}
+                        />
+                        <Button type='submit' disabled={inTransition}>
+                            Crear
+                        </Button>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
@@ -140,63 +140,66 @@ export function CreateSubjectDialog() {
 
 function NameInput() {
     const [name, setName] = useAtom(nameAtom)
-    const [error, setError] = useAtom(errorNameAtom)
+    const error = useAtomValue(errorNameAtom)
+    const setError = useSetAtom(errorNameAtom)
 
     return (
-        <CompletInput
-            required
+        <CompletField
             label='Nombre'
-            type='text'
             name='name'
             icon={SquarePenIcon}
+            type='text'
             value={name}
             onChange={e => {
                 setName(e.target.value)
                 setError('')
             }}
             error={error}
+            required
         />
     )
 }
 
-function TehoryHoursInput() {
+function TheoryHoursInput() {
     const [hours, setHours] = useAtom(theoryHoursAtom)
-    const [error, setError] = useAtom(errorTheoryHoursAtom)
+    const error = useAtomValue(errorTheoryHoursAtom)
+    const setError = useSetAtom(errorTheoryHoursAtom)
 
     return (
-        <CompletInput
-            required
-            label='Horas Teoricas'
-            type='number'
+        <CompletField
+            label='Horas Teóricas'
             name='theory_hours'
             icon={ClockFadingIcon}
+            type='number'
             value={hours}
             onChange={e => {
                 setHours(Number(e.target.value))
                 setError('')
             }}
             error={error}
+            required
         />
     )
 }
 
 function PracticeHoursInput() {
     const [hours, setHours] = useAtom(practiceHoursAtom)
-    const [error, setError] = useAtom(errorPracticeHoursAtom)
+    const error = useAtomValue(errorPracticeHoursAtom)
+    const setError = useSetAtom(errorPracticeHoursAtom)
 
     return (
-        <CompletInput
-            required
-            label='Horas Practicas'
-            type='number'
+        <CompletField
+            label='Horas Prácticas'
             name='practice_hours'
             icon={ClockFadingIcon}
+            type='number'
             value={hours}
             onChange={e => {
                 setHours(Number(e.target.value))
                 setError('')
             }}
             error={error}
+            required
         />
     )
 }

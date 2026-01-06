@@ -1,284 +1,208 @@
 'use client'
 
-import { LABORATORY_TYPE } from '@/prisma/generated/browser'
-import { atom, useAtom, useSetAtom } from 'jotai'
-import {
-    Clock8Icon,
-    MicroscopeIcon,
-    SaveIcon,
-    SquarePenIcon,
-} from 'lucide-react'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
+import { createLaboratory } from '@/actions/laboratories.actions'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
-import { CompletInput } from '@/components/Inputs'
-import { CompletSelect } from '@/components/Select'
-import { CLOCK_ICONS, ClockIcons, Hours } from '@/lib/clock'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
-import { createLaboratory } from '@/actions/laboratories.actions'
+import { LABORATORY_TYPE } from '@/prisma/generated/enums'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { timeToMinutes } from '@/lib/utils'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
+import { CompletField } from '@/components/ui/complet-field'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { Clock8Icon, MicroscopeIcon, SquarePenIcon } from 'lucide-react'
 
-const nameAtom = atom('')
 const errorNameAtom = atom('')
-const openHourAtom = atom('08:00')
 const errorOpenHourAtom = atom('')
-const closeHourAtom = atom('18:00')
 const errorCloseHourAtom = atom('')
-const defaultTypeAtom: {
-    value: LABORATORY_TYPE
-    label: string
-} = {
-    value: LABORATORY_TYPE.LABORATORY,
-    label: 'Laboratorio',
-}
-const typeAtom = atom(defaultTypeAtom)
 const errorTypeAtom = atom('')
 
 export function CreateLaboratoryDialog() {
+    const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
-    const [dialogOpened, openDialog] = useAtom(dialogAtom)
-    const { refresh } = use(SearchLaboratoriesContext)
+    const setEntityToEdit = useSetAtom(selectedIdAtom)
     const router = useRouter()
-    const selectLaboratory = useSetAtom(selectedIdAtom)
-    // inputs
-    const setName = useSetAtom(nameAtom)
-    const setNameError = useSetAtom(errorNameAtom)
-    const setOpenHour = useSetAtom(openHourAtom)
-    const setOpenHourError = useSetAtom(errorOpenHourAtom)
-    const setCloseHour = useSetAtom(closeHourAtom)
-    const setCloseHourError = useSetAtom(errorCloseHourAtom)
-    const setTypeError = useSetAtom(errorTypeAtom)
+    const { refresh } = use(SearchLaboratoriesContext)
+
+    const setErrorName = useSetAtom(errorNameAtom)
+    const setErrorOpenHour = useSetAtom(errorOpenHourAtom)
+    const setErrorCloseHour = useSetAtom(errorCloseHourAtom)
+    const setErrorType = useSetAtom(errorTypeAtom)
 
     const onAction = useCallback(
-        ({
-            name,
-            close_hour,
-            open_hour,
-            type,
-        }: {
-            name: string
-            close_hour: number
-            open_hour: number
-            type: LABORATORY_TYPE
-        }) =>
+        (data: FormData) => {
+            const name = data.get('name') as string
+            const open_hour = data.get('open_hour') as string
+            const close_hour = data.get('close_hour') as string
+            const type = data.get('type') as LABORATORY_TYPE
+
             startTransition(async () => {
-                const response = await createLaboratory({
+                const res = await createLaboratory({
                     name,
-                    close_hour,
                     open_hour,
+                    close_hour,
                     type,
                 })
-                if (response.status === 'success') {
-                    refresh()
+                if (res.status === 'success') {
                     openDialog(null)
-                    setName('')
-                    setNameError('')
-                    setOpenHour('08:00')
-                    setCloseHour('20:00')
-                } else {
-                    if (response.type === 'unauthorized') {
-                        router.replace(app.$locale.auth.login('es'))
-                    } else if (response.type === 'permission') {
-                        setMessage('No tienes permiso para crear laboratorios')
-                    } else if (response.type === 'invalid-input') {
-                        if (response.field === 'name') {
-                            setNameError(response.message)
-                        } else if (response.field === 'open_hour') {
-                            setOpenHourError(response.message)
-                        } else if (response.field === 'close_hour') {
-                            setCloseHourError(response.message)
-                        } else if (response.field === 'type') {
-                            setTypeError(response.message)
-                        }
-                    } else if (response.type === 'already-exists') {
-                        setNameError('El laboratorio ya existe')
-                    } else if (response.type === 'unexpected') {
-                        setMessage('Ha ocurrido un error, intente más tarde')
-                        console.log(response)
-                    } else if (response.type === 'already-archived') {
-                        selectLaboratory(response.id)
-                        openDialog('UNARCHIVE_OR_DELETE')
-                    }
+                    refresh()
+                    return
                 }
-            }),
+                if (res.type === 'already-archived') {
+                    setEntityToEdit(res.id)
+                    openDialog('UNARCHIVE_OR_DELETE')
+                } else if (res.type === 'permission') {
+                    setMessage('No tienes permiso para crear este laboratorio')
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.$locale.auth.login('es'))
+                } else if (res.type === 'invalid-input') {
+                    if (res.field === 'name') {
+                        setErrorName(res.message)
+                    } else if (res.field === 'open_hour') {
+                        setErrorOpenHour(res.message)
+                    } else if (res.field === 'close_hour') {
+                        setErrorCloseHour(res.message)
+                    } else if (res.field === 'type') {
+                        setErrorType(res.message)
+                    }
+                } else if (res.type === 'already-exists') {
+                    setErrorName('Ya existe un laboratorio con este nombre')
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
+                }
+            })
+        },
         [
-            refresh,
             openDialog,
-            setName,
-            setNameError,
-            setOpenHour,
-            setCloseHour,
+            refresh,
             router,
-            setOpenHourError,
-            setCloseHourError,
-            setTypeError,
-            selectLaboratory,
+            setEntityToEdit,
+            setErrorName,
+            setErrorOpenHour,
+            setErrorCloseHour,
+            setErrorType,
         ],
     )
 
     return (
         <Dialog
-            open={dialogOpened === 'CREATE'}
-            onOpenChange={open => {
-                if (!open) {
-                    openDialog(null)
-                    setName('')
-                    setOpenHour('08:00')
-                    setCloseHour('20:00')
-                }
-            }}
+            open={open === 'CREATE'}
+            onOpenChange={state => openDialog(state ? 'CREATE' : null)}
         >
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Crear Laboratorio</DialogTitle>
-                </DialogHeader>
-                <form
-                    action={data => {
-                        const name = data.get('name') as string
-                        const close_hour = timeToMinutes(
-                            data.get('close_hour') as string,
-                        )
-                        const open_hour = timeToMinutes(
-                            data.get('open_hour') as string,
-                        )
-                        const type = data.get('type') as LABORATORY_TYPE
-                        onAction({
-                            name,
-                            close_hour,
-                            open_hour,
-                            type,
-                        })
-                    }}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
+                <form action={onAction}>
+                    <DialogHeader>
+                        <DialogTitle>Crear Laboratorio</DialogTitle>
+                    </DialogHeader>
+
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+
                     <NameInput />
-                    <div className='flex gap-6'>
+                    <TypeInput />
+                    <div className='flex w-full gap-4'>
                         <OpenHourInput />
                         <CloseHourInput />
                     </div>
-                    <LaboratoryTypeSelect />
 
-                    <Button type='submit' disabled={inTransition}>
-                        <SaveIcon className='mr-2 h-5 w-5' />
-                        Crear
-                    </Button>
+                    <DialogFooter>
+                        <DialogClose
+                            render={<Button variant='outline'>Cancel</Button>}
+                        />
+                        <Button type='submit' disabled={inTransition}>
+                            Crear
+                        </Button>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
     )
 }
 
-export function NameInput() {
-    const [name, setName] = useAtom(nameAtom)
-    const [error, setError] = useAtom(errorNameAtom)
-
+function NameInput() {
+    const error = useAtomValue(errorNameAtom)
     return (
-        <CompletInput
-            required
+        <CompletField
             label='Nombre'
-            type='text'
             name='name'
             icon={SquarePenIcon}
-            value={name}
-            onChange={e => {
-                setName(e.target.value)
-                setError('')
-            }}
+            type='text'
             error={error}
+            required
         />
     )
 }
 
-export function LaboratoryTypeSelect() {
-    const [value, setValue] = useAtom(typeAtom)
-    const [error, setError] = useAtom(errorTypeAtom)
-
+function TypeInput() {
+    const error = useAtomValue(errorTypeAtom)
     return (
-        <CompletSelect
-            required
-            label='Tipo de Laboratorio'
-            name='type'
-            value={value}
-            onChange={e => {
-                setValue({
-                    value: e?.value ?? LABORATORY_TYPE.LABORATORY,
-                    label: e?.label ?? LABORATORY_TYPE.LABORATORY,
-                })
-                setError('')
-            }}
-            error={error}
-            options={[
-                {
-                    value: LABORATORY_TYPE.LABORATORY,
-                    label: 'Laboratorio',
-                },
-                {
-                    value: LABORATORY_TYPE.COMPUTER_CENTER,
-                    label: 'Centro de Computo',
-                },
-            ]}
-            icon={MicroscopeIcon}
-        />
+        <Field>
+            <FieldLabel>Tipo de Laboratorio</FieldLabel>
+            <Select name='type' defaultValue={LABORATORY_TYPE.LABORATORY}>
+                <SelectTrigger>
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value={LABORATORY_TYPE.LABORATORY}>
+                        Laboratorio
+                    </SelectItem>
+                    <SelectItem value={LABORATORY_TYPE.COMPUTER_CENTER}>
+                        Centro de Cómputo
+                    </SelectItem>
+                </SelectContent>
+            </Select>
+            <FieldError errors={error ? [{ message: error }] : []} />
+        </Field>
     )
 }
 
-export function OpenHourInput() {
-    const [value, setValue] = useAtom(openHourAtom)
-    const [error, setError] = useAtom(errorOpenHourAtom)
-    const [Icon, setIcon] = useState<ClockIcons>(Clock8Icon)
-
+function OpenHourInput() {
+    const error = useAtomValue(errorOpenHourAtom)
     return (
-        <CompletInput
-            required
-            label='Apertura'
-            type='time'
+        <CompletField
+            label='Horario de Apertura'
             name='open_hour'
-            icon={Icon}
-            value={value}
-            onChange={e => {
-                setValue(e.target.value)
-                setError('')
-                const hour = e.target.value.split(':')[0]
-                setIcon(CLOCK_ICONS[`${hour}:00` as Hours])
-            }}
+            icon={Clock8Icon}
+            type='time'
+            defaultValue='08:00'
             error={error}
+            required
         />
     )
 }
 
-export function CloseHourInput() {
-    const [value, setValue] = useAtom(closeHourAtom)
-    const [error, setError] = useAtom(errorCloseHourAtom)
-    const [Icon, setIcon] = useState<ClockIcons>(Clock8Icon)
-
+function CloseHourInput() {
+    const error = useAtomValue(errorCloseHourAtom)
     return (
-        <CompletInput
-            required
-            label='Cierre'
-            type='time'
+        <CompletField
+            label='Horario de Cierre'
             name='close_hour'
-            icon={Icon}
-            value={value}
-            onChange={e => {
-                setValue(e.target.value)
-                setError('')
-                const hour = e.target.value.split(':')[0]
-                setIcon(CLOCK_ICONS[`${hour}:00` as Hours])
-            }}
+            icon={Clock8Icon}
+            type='time'
+            defaultValue='18:00'
             error={error}
+            required
         />
     )
 }

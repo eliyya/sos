@@ -1,28 +1,28 @@
 'use client'
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Save, TagIcon, SquarePenIcon } from 'lucide-react'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
 import { createCareer } from '@/actions/careers.actions'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
-import { CompletInput } from '@/components/Inputs'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'
 import { SearchCareersContext } from '@/contexts/careers.context'
+import { CompletField } from '@/components/ui/complet-field'
+import { SquarePenIcon, TagIcon } from 'lucide-react'
 
-const nameAtom = atom('')
-const aliasAtom = atom('')
-const nameErrorAtom = atom('')
-const aliasErrorAtom = atom('')
+const errorNameAtom = atom('')
+const errorAliasAtom = atom('')
 
 export function CreateCareerDialog() {
     const [open, openDialog] = useAtom(dialogAtom)
@@ -32,12 +32,9 @@ export function CreateCareerDialog() {
     const router = useRouter()
     const setSelectedId = useSetAtom(selectedIdAtom)
     const { refresh } = use(SearchCareersContext)
-    // values
-    const setName = useSetAtom(nameAtom)
-    const setAlias = useSetAtom(aliasAtom)
-    // errors
-    const setNameError = useSetAtom(nameErrorAtom)
-    const setAliasError = useSetAtom(aliasErrorAtom)
+
+    const setErrorName = useSetAtom(errorNameAtom)
+    const setErrorAlias = useSetAtom(errorAliasAtom)
 
     const onAction = useCallback(
         (data: FormData) => {
@@ -45,33 +42,31 @@ export function CreateCareerDialog() {
             const alias = data.get('alias') as string
 
             startTransition(async () => {
-                const response = await createCareer({ name, alias })
-                if (response.status === 'success') {
+                const res = await createCareer({ name, alias })
+                if (res.status === 'success') {
                     openDialog(null)
-                    setName('')
-                    setAlias('')
                     refresh()
                     return
                 }
-                // error
-                if (response.type === 'permission') {
-                    setMessage(
-                        'You do not have permission to archive this career',
-                    )
-                    setTimeout(() => setMessage(''), 5_000)
-                } else if (response.type === 'unauthorized') {
-                    router.replace(app.$locale.auth.login('es'))
-                } else if (response.type === 'already-archived') {
+                if (res.type === 'already-archived') {
+                    setSelectedId(res.id)
                     openDialog('UNARCHIVE_OR_DELETE')
-                    setSelectedId(response.id)
-                } else if (response.type === 'invalid-input') {
-                    if (response.field === 'name')
-                        setNameError(response.message)
-                    if (response.field === 'alias')
-                        setAliasError(response.message)
-                } else {
-                    setMessage('Something went wrong')
-                    setTimeout(() => setMessage(''), 5_000)
+                } else if (res.type === 'permission') {
+                    setMessage('No tienes permiso para crear esta carrera')
+                } else if (res.type === 'unauthorized') {
+                    router.replace(app.$locale.auth.login('es'))
+                } else if (res.type === 'invalid-input') {
+                    if (res.field === 'name') {
+                        setErrorName(res.message)
+                    } else if (res.field === 'alias') {
+                        setErrorAlias(res.message)
+                    }
+                } else if (res.type === 'already-exists') {
+                    setErrorName('Ya existe una carrera con este nombre')
+                } else if (res.type === 'unexpected') {
+                    setMessage(
+                        'Ha ocurrido un error inesperado, intente mas tarde',
+                    )
                 }
             })
         },
@@ -80,38 +75,37 @@ export function CreateCareerDialog() {
             refresh,
             router,
             setSelectedId,
-            setNameError,
-            setAliasError,
-            setName,
-            setAlias,
+            setErrorName,
+            setErrorAlias,
         ],
     )
 
     return (
         <Dialog
             open={open === 'CREATE'}
-            onOpenChange={status => {
-                if (!status) openDialog(null)
-            }}
+            onOpenChange={state => openDialog(state ? 'CREATE' : null)}
         >
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{t('create_career')}</DialogTitle>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
+                <form action={onAction}>
+                    <DialogHeader>
+                        <DialogTitle>{t('create_career')}</DialogTitle>
+                    </DialogHeader>
+
                     <Activity mode={message ? 'visible' : 'hidden'}>
                         <MessageError>{message}</MessageError>
                     </Activity>
+
                     <NameInput />
                     <AliasInput />
 
-                    <Button type='submit' disabled={inTransition}>
-                        <Save className='mr-2 h-5 w-5' />
-                        {t('create')}
-                    </Button>
+                    <DialogFooter>
+                        <DialogClose
+                            render={<Button variant='outline'>Cancel</Button>}
+                        />
+                        <Button type='submit' disabled={inTransition}>
+                            {t('create')}
+                        </Button>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
@@ -119,36 +113,29 @@ export function CreateCareerDialog() {
 }
 
 function NameInput() {
-    const t = useTranslations('career')
-    const [name, setName] = useAtom(nameAtom)
-    const nameError = useAtomValue(nameErrorAtom)
+    const error = useAtomValue(errorNameAtom)
     return (
-        <CompletInput
-            required
-            label={t('name')}
-            type='text'
+        <CompletField
+            label='Nombre'
             name='name'
             icon={SquarePenIcon}
-            value={name}
-            onChange={e => setName(e.target.value)}
-            error={nameError}
+            type='text'
+            error={error}
+            required
         />
     )
 }
 
 function AliasInput() {
-    const t = useTranslations('career')
-    const [alias, setAlias] = useAtom(aliasAtom)
-    const aliasError = useAtomValue(aliasErrorAtom)
+    const error = useAtomValue(errorAliasAtom)
     return (
-        <CompletInput
-            label={t('alias')}
-            type='text'
+        <CompletField
+            label='Alias'
             name='alias'
             icon={TagIcon}
-            value={alias}
-            onChange={e => setAlias(e.target.value)}
-            error={aliasError}
+            type='text'
+            error={error}
+            required
         />
     )
 }
