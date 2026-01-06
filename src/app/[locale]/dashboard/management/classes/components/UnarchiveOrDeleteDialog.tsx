@@ -1,47 +1,29 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import {
-    ArchiveRestoreIcon,
-    BanIcon,
-    BookAIcon,
-    GraduationCapIcon,
-    HashIcon,
-    TrashIcon,
-    UserIcon,
-    UsersIcon,
-} from 'lucide-react'
-import {
-    Activity,
-    Suspense,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
+import { startTransition, Suspense, use, useCallback, useMemo } from 'react'
 import { unarchiveClass } from '@/actions/classes.actions'
 import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { CompletInput } from '@/components/Inputs'
 import { SearchClassesContext } from '@/contexts/classes.context'
+import { TableList } from '@/components/ui/table-list'
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(dialogAtom)
-    const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
-    const [message, setMessage] = useState('')
     const t = useTranslations('classes')
     const router = useRouter()
     const { promise, refresh } = use(SearchClassesContext)
@@ -51,41 +33,53 @@ function UnarchiveOrDeleteDialog() {
         return classes.find(c => c.id === entityId)
     }, [classes, entityId])
 
-    const onAction = useCallback(() => {
+    const onUnarchive = useCallback(() => {
         if (!entityId) return
         startTransition(async () => {
             const res = await unarchiveClass(entityId)
+            setOpen(null)
             if (res.status === 'success') {
-                setOpen(null)
-                refresh()
-                return
+                return refresh()
             }
             if (res.type === 'not-found') {
                 refresh()
-                setOpen(null)
             } else if (res.type === 'permission') {
-                setMessage(res.message)
+                toastPermissionError(res.missings)
             } else if (res.type === 'unauthorized') {
                 router.replace(app.$locale.auth.login('es'))
             } else if (res.type === 'unexpected') {
-                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+                toastGenericError()
             }
         })
     }, [entityId, setOpen, refresh, router])
 
+    const info = useMemo(
+        () =>
+            !entity ?
+                ({} as Record<string, string | number>)
+            :   {
+                    [t('teacher')]: entity.teacher.displayname,
+                    [t('subject')]: entity.subject.displayname,
+                    [t('career')]: entity.career.display_alias,
+                    [t('group')]: entity.group,
+                    [t('semester')]: entity.semester,
+                },
+        [entity, t],
+    )
+
     if (!entity) return null
 
     return (
-        <Dialog
+        <AlertDialog
             open={open === 'UNARCHIVE_OR_DELETE'}
             onOpenChange={status =>
                 setOpen(status ? 'UNARCHIVE_OR_DELETE' : null)
             }
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{t('archived_class')}</DialogTitle>
-                    <DialogDescription>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>{t('archived_class')}</AlertDialogTitle>
+                    <AlertDialogDescription>
                         {t('unarchived_or_delete_description', {
                             subject_name: entity.subject.displayname,
                             career: entity.career.displayname,
@@ -93,82 +87,37 @@ function UnarchiveOrDeleteDialog() {
                             semester: entity.semester + '',
                             teacher: entity.teacher.displayname,
                         })}
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <CompletInput
-                        label={t('group')}
-                        disabled
-                        value={entity.group + ''}
-                        icon={UsersIcon}
-                    />
-                    <CompletInput
-                        label={t('semester')}
-                        disabled
-                        value={entity.semester + ''}
-                        icon={HashIcon}
-                    />
-                    <CompletInput
-                        label={t('teacher')}
-                        disabled
-                        value={entity.teacher.displayname}
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        label={t('subject')}
-                        disabled
-                        value={entity.subject.displayname}
-                        icon={BookAIcon}
-                    />
-                    <CompletInput
-                        label={t('career')}
-                        disabled
-                        value={entity.career.displayname}
-                        icon={GraduationCapIcon}
-                    />
-                    <div className='flex flex-row gap-2 *:flex-1'>
-                        <Button
-                            type='button'
-                            variant='secondary'
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                setOpen(null)
-                            }}
-                        >
-                            <BanIcon className='mr-2 h-5 w-5' />
-                            {t('cancel')}
-                        </Button>
-                        <Button
-                            type='submit'
-                            variant='default'
-                            disabled={inTransition}
-                        >
-                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
-                            {t('unarchive')}
-                        </Button>
-                        <Button
-                            type='button'
-                            variant='destructive'
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                setOpen('DELETE')
-                            }}
-                        >
-                            <TrashIcon className='mr-2 h-5 w-5' />
-                            {t('delete')}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <TableList info={info} />
+                <AlertDialogFooter className='flex-col gap-2 sm:flex-row'>
+                    <Button
+                        variant='outline'
+                        onClick={() => setOpen(null)}
+                        className='flex-1'
+                    >
+                        <BanIcon className='mr-2 h-5 w-5' />
+                        {t('cancel')}
+                    </Button>
+                    <Button
+                        variant='default'
+                        onClick={onUnarchive}
+                        className='flex-1'
+                    >
+                        <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
+                        {t('unarchive')}
+                    </Button>
+                    <Button
+                        variant='destructive'
+                        onClick={() => setOpen('DELETE')}
+                        className='flex-1'
+                    >
+                        <TrashIcon className='mr-2 h-5 w-5' />
+                        {t('delete')}
+                    </Button>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }
 

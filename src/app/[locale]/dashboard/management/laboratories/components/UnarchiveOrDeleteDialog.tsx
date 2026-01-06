@@ -1,43 +1,28 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import {
-    ArchiveRestoreIcon,
-    BanIcon,
-    Clock8Icon,
-    MicroscopeIcon,
-    SquarePenIcon,
-    TrashIcon,
-} from 'lucide-react'
-import {
-    Activity,
-    useCallback,
-    useState,
-    useTransition,
-    use,
-    useMemo,
-} from 'react'
+import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
+import { startTransition, use, useCallback, useMemo } from 'react'
+import { unarchiveLaboratory } from '@/actions/laboratories.actions'
 import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
-import { unarchiveLaboratory } from '@/actions/laboratories.actions'
-import { CompletInput } from '@/components/Inputs'
 import { LABORATORY_TYPE } from '@/prisma/generated/enums'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
+import { TableList } from '@/components/ui/table-list'
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 export function UnarchiveOrDeleteDialog() {
     const [open, setOpen] = useAtom(dialogAtom)
-    const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
-    const [message, setMessage] = useState('')
     const { refresh, promise } = use(SearchLaboratoriesContext)
     const { laboratories } = use(promise)
     const router = useRouter()
@@ -46,118 +31,87 @@ export function UnarchiveOrDeleteDialog() {
         return laboratories?.find(l => l.id === entityId)
     }, [laboratories, entityId])
 
-    const onAction = useCallback(async () => {
+    const onUnarchive = useCallback(async () => {
         if (!entityId) return
         startTransition(async () => {
             const response = await unarchiveLaboratory(entityId)
+            setOpen(null)
             if (response.status === 'success') {
+                return refresh()
+            }
+            if (response.type === 'not-found') {
                 refresh()
-                setOpen(null)
-            } else {
-                if (response.type === 'not-found') {
-                    refresh()
-                    setOpen(null)
-                } else if (response.type === 'unexpected') {
-                    setMessage('Ha ocurrido un error, intente más tarde')
-                } else if (response.type === 'permission') {
-                    setMessage(
-                        'No tienes permiso para archivar este laboratorio',
-                    )
-                } else if (response.type === 'unauthorized') {
-                    router.replace('/login')
-                }
+            } else if (response.type === 'unexpected') {
+                toastGenericError()
+            } else if (response.type === 'permission') {
+                toastPermissionError(response.missings)
+            } else if (response.type === 'unauthorized') {
+                router.replace('/login')
             }
         })
-    }, [entityId, refresh, setOpen, router])
+    }, [entityId, setOpen, refresh, router])
+
+    const info = useMemo(
+        () =>
+            !entity ?
+                ({} as Record<string, string | number>)
+            :   {
+                    Nombre: entity.name,
+                    'Tipo de Laboratorio':
+                        entity.type === LABORATORY_TYPE.LABORATORY ?
+                            'Laboratorio'
+                        :   'Centro de Computo',
+                    'Horario de Apertura': entity.open_hour,
+                    'Horario de Cierre': entity.close_hour,
+                },
+        [entity],
+    )
 
     if (!entity) return null
 
     return (
-        <Dialog
+        <AlertDialog
             open={open === 'UNARCHIVE_OR_DELETE'}
-            onOpenChange={state => {
-                if (!state) setOpen(null)
-            }}
+            onOpenChange={state =>
+                setOpen(state ? 'UNARCHIVE_OR_DELETE' : null)
+            }
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Laboratorio archivado</DialogTitle>
-                    <DialogDescription>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Laboratorio archivado</AlertDialogTitle>
+                    <AlertDialogDescription>
                         El laboratorio {entity.name} está archivado. ¿Qué desea
-                        hacer? con <strong>{entity.name}</strong>?
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <CompletInput
-                        label='Nombre'
-                        disabled
-                        value={entity.name}
-                        icon={SquarePenIcon}
-                    />
-                    <CompletInput
-                        label='Tipo de Laboratorio'
-                        disabled
-                        value={
-                            entity.type === LABORATORY_TYPE.LABORATORY ?
-                                'Laboratorio'
-                            :   'Centro de Computo'
-                        }
-                        icon={MicroscopeIcon}
-                    />
-                    <CompletInput
-                        label='Horario de Apertura'
-                        disabled
-                        value={entity.open_hour}
-                        icon={Clock8Icon}
-                    />
-                    <CompletInput
-                        label='Horario de Cierre'
-                        disabled
-                        value={entity.close_hour}
-                        icon={Clock8Icon}
-                    />
-                    <div className='flex flex-row gap-2 *:flex-1'>
-                        <Button
-                            type='button'
-                            variant='secondary'
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                setOpen(null)
-                            }}
-                        >
-                            <BanIcon className='mr-2 h-5 w-5' />
-                            Cancelar
-                        </Button>
-                        <Button
-                            type='submit'
-                            variant='default'
-                            disabled={inTransition}
-                        >
-                            <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
-                            Desarchivar
-                        </Button>
-                        <Button
-                            type='button'
-                            variant='destructive'
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                setOpen('DELETE')
-                            }}
-                        >
-                            <TrashIcon className='mr-2 h-5 w-5' />
-                            Eliminar
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+                        hacer con <strong>{entity.name}</strong>?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <TableList info={info} />
+                <AlertDialogFooter className='flex-col gap-2 sm:flex-row'>
+                    <Button
+                        variant='outline'
+                        onClick={() => setOpen(null)}
+                        className='flex-1'
+                    >
+                        <BanIcon className='mr-2 h-5 w-5' />
+                        Cancelar
+                    </Button>
+                    <Button
+                        variant='default'
+                        onClick={onUnarchive}
+                        className='flex-1'
+                    >
+                        <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
+                        Desarchivar
+                    </Button>
+                    <Button
+                        variant='destructive'
+                        onClick={() => setOpen('DELETE')}
+                        className='flex-1'
+                    >
+                        <TrashIcon className='mr-2 h-5 w-5' />
+                        Eliminar
+                    </Button>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }
