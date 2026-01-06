@@ -1,38 +1,30 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, Trash2, User as UserIcon } from 'lucide-react'
-import {
-    Activity,
-    Suspense,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { startTransition, Suspense, use, useCallback, useMemo } from 'react'
 import { deleteClass } from '@/actions/classes.actions'
-import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
-import { CompletInput } from '@/components/Inputs'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
 import { SearchClassesContext } from '@/contexts/classes.context'
+import { TableList } from '@/components/ui/table-list'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 function DeleteDialog() {
     const [open, openDialog] = useAtom(dialogAtom)
-    const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
-    const [message, setMessage] = useState('')
+    const t = useTranslations('classes')
     const router = useRouter()
     const { promise, refresh } = use(SearchClassesContext)
     const { classes } = use(promise)
@@ -46,106 +38,63 @@ function DeleteDialog() {
         if (!entityId) return
         startTransition(async () => {
             const res = await deleteClass(entityId)
+            openDialog(null)
             if (res.status === 'success') {
-                refresh()
-                openDialog(null)
-                return
+                return refresh()
             }
             if (res.type === 'not-found') {
                 refresh()
-                openDialog(null)
             } else if (res.type === 'permission') {
-                setMessage('No tienes permiso para eliminar esta estudiante')
+                toastPermissionError(res.missings)
             } else if (res.type === 'unauthorized') {
                 router.replace(app.$locale.auth.login('es'))
             } else if (res.type === 'unexpected') {
-                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+                toastGenericError()
             }
         })
-    }, [entityId, refresh, openDialog, router])
+    }, [entityId, openDialog, router, refresh])
 
-    const t = useTranslations('classes')
+    const info = useMemo(
+        () =>
+            !entity ?
+                ({} as Record<string, string | number>)
+            :   {
+                    [t('teacher')]: entity.teacher.displayname,
+                    [t('subject')]: entity.subject.displayname,
+                    [t('career')]: entity.career.display_alias,
+                    [t('group')]: entity.group,
+                    [t('semester')]: entity.semester,
+                },
+        [entity, t],
+    )
 
     if (!entity) return null
 
     return (
-        <Dialog
+        <AlertDialog
             open={open === 'DELETE'}
             onOpenChange={state => openDialog(state ? 'DELETE' : null)}
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{t('delete_class')}</DialogTitle>
-                    <DialogDescription>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>{t('delete_class')}</AlertDialogTitle>
+                    <AlertDialogDescription>
                         {t('confirm_delete_class', {
                             subjectName: entity.subject.displayname,
                             teacherName: entity.teacher.displayname,
                         })}{' '}
                         <strong>{t('is_irreversible')}</strong>
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <CompletInput
-                        label={t('teacher')}
-                        disabled
-                        value={entity.teacher.displayname}
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        label={t('subject')}
-                        disabled
-                        value={entity.subject.displayname}
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        label={t('career')}
-                        disabled
-                        value={entity.career.displayname}
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        label={t('group')}
-                        icon={UserIcon}
-                        type='number'
-                        disabled
-                        value={entity.group}
-                    />
-                    <CompletInput
-                        label={t('semester')}
-                        icon={UserIcon}
-                        type='number'
-                        disabled
-                        value={entity.semester}
-                    />
-                    <div className='flex flex-row gap-2 *:flex-1'>
-                        <Button
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                openDialog(null)
-                            }}
-                        >
-                            <Ban className='mr-2 h-5 w-5' />
-                            {t('cancel')}
-                        </Button>
-                        <Button
-                            type='submit'
-                            variant={'destructive'}
-                            disabled={inTransition}
-                        >
-                            <Trash2 className='mr-2 h-5 w-5' />
-                            {t('delete')}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <TableList info={info} />
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={onAction}>
+                        {t('delete')}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }
 

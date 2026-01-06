@@ -1,37 +1,28 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { BanIcon, Trash2Icon, UserIcon } from 'lucide-react'
-import {
-    Activity,
-    Suspense,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { startTransition, Suspense, use, useCallback, useMemo } from 'react'
 import { deleteMachine } from '@/actions/machines.actions'
-import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
 import app from '@eliyya/type-routes'
-import { CompletInput } from '@/components/Inputs'
 import { SearchMachinesContext } from '@/contexts/machines.context'
+import { TableList } from '@/components/ui/table-list'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 function DeleteDialog() {
-    const [openedDialog, openDialog] = useAtom(dialogAtom)
-    const [inTransition, startTransition] = useTransition()
+    const [open, openDialog] = useAtom(dialogAtom)
     const entityId = useAtomValue(selectedIdAtom)
-    const [message, setMessage] = useState('')
     const router = useRouter()
     const { refresh, promise } = use(SearchMachinesContext)
 
@@ -45,102 +36,63 @@ function DeleteDialog() {
         if (!entity) return
         startTransition(async () => {
             const res = await deleteMachine(entity.id)
+            openDialog(null)
             if (res.status === 'success') {
-                refresh()
-                openDialog(null)
-                return
+                return refresh()
             }
             if (res.type === 'not-found') {
                 refresh()
-                openDialog(null)
             } else if (res.type === 'permission') {
-                setMessage('No tienes permiso para eliminar esta máquina')
+                toastPermissionError(res.missings)
             } else if (res.type === 'unauthorized') {
                 router.replace(app.$locale.auth.login('es'))
             } else if (res.type === 'unexpected') {
-                setMessage('Ha ocurrido un error inesperado, intente mas tarde')
+                toastGenericError()
             }
         })
     }, [entity, openDialog, router, refresh])
 
+    const info = useMemo(
+        () =>
+            !entity ?
+                ({} as Record<string, string | number>)
+            :   {
+                    Número: entity.number,
+                    Procesador: entity.processor,
+                    RAM: entity.ram,
+                    Almacenamiento: entity.storage,
+                    Serie: entity?.serie ?? '',
+                },
+        [entity],
+    )
+
     if (!entity) return null
 
     return (
-        <Dialog
-            open={openedDialog === 'DELETE'}
+        <AlertDialog
+            open={open === 'DELETE'}
             onOpenChange={state => openDialog(state ? 'DELETE' : null)}
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Dar de baja</DialogTitle>
-                    <DialogDescription>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Dar de baja</AlertDialogTitle>
+                    <AlertDialogDescription>
                         ¿Está seguro de dar de baja la máquina{' '}
                         <strong>{entity.number}</strong> con serie{' '}
                         <strong>{entity.serie}</strong>?
                         <strong>Esta acción es irreversible</strong>
                         Tal vez busca colocarla en mantenimiento
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <CompletInput
-                        disabled
-                        value={entity.number}
-                        label='Numero'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        value={entity.processor}
-                        label='Procesador'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        value={entity.ram}
-                        label='RAM'
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        label='Almacenamiento'
-                        value={entity.storage}
-                        icon={UserIcon}
-                    />
-                    <CompletInput
-                        disabled
-                        label='Serie'
-                        value={entity?.serie ?? ''}
-                        icon={UserIcon}
-                    />
-                    <div className='flex flex-row gap-2 *:flex-1'>
-                        <Button
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                openDialog(null)
-                            }}
-                        >
-                            <BanIcon className='mr-2 h-5 w-5' />
-                            Cancelar
-                        </Button>
-                        <Button
-                            type='submit'
-                            variant={'destructive'}
-                            disabled={inTransition}
-                        >
-                            <Trash2Icon className='mr-2 h-5 w-5' />
-                            Eliminar
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <TableList info={info} />
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onAction}>
+                        Continue
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }
 

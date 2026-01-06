@@ -1,32 +1,25 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
-import { Ban, Trash2 } from 'lucide-react'
-import {
-    Activity,
-    Suspense,
-    use,
-    useCallback,
-    useMemo,
-    useState,
-    useTransition,
-} from 'react'
+import { startTransition, Suspense, use, useCallback, useMemo } from 'react'
 import { deleteCareer } from '@/actions/careers.actions'
-import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/Dialog'
-import { MessageError } from '@/components/Error'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useTranslations } from 'next-intl'
 import app from '@eliyya/type-routes'
 import { useRouter } from 'next/navigation'
-import { CompletInput } from '@/components/Inputs'
 import { SearchCareersContext } from '@/contexts/careers.context'
+import { TableList } from '@/components/ui/table-list'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 function SuspenseDeleteDialog() {
     return (
@@ -40,9 +33,7 @@ export { SuspenseDeleteDialog as DeleteDialog }
 
 function DeleteDialog() {
     const [open, setOpen] = useAtom(dialogAtom)
-    const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
-    const [message, setMessage] = useState('')
     const t = useTranslations('career')
     const router = useRouter()
     const { refresh, promise } = use(SearchCareersContext)
@@ -57,84 +48,56 @@ function DeleteDialog() {
         if (!entityId) return
         startTransition(async () => {
             const response = await deleteCareer(entityId)
+            setOpen(null)
             if (response.status === 'success') {
+                return refresh()
+            }
+            if (response.type === 'permission') {
+                toastPermissionError(response.missings)
+            } else if (response.type === 'unauthorized') {
+                router.replace(app.$locale.auth.login('es'))
+            } else if (response.type === 'not-found') {
                 refresh()
-                setOpen(null)
             } else {
-                if (response.type === 'permission') {
-                    setMessage(
-                        'You do not have permission to delete this career',
-                    )
-                    setTimeout(() => setMessage(''), 5_000)
-                } else if (response.type === 'unauthorized') {
-                    router.replace(app.$locale.auth.login('es'))
-                } else if (response.type === 'not-found') {
-                    setMessage(response.message)
-                    setTimeout(() => setMessage(''), 5_000)
-                } else {
-                    setMessage('Something went wrong')
-                    setTimeout(() => setMessage(''), 5_000)
-                }
+                toastGenericError()
             }
         })
     }, [entityId, refresh, setOpen, router])
 
+    const info = useMemo(
+        () =>
+            !entity ?
+                ({} as Record<string, string | number>)
+            :   {
+                    [t('name')]: entity.name,
+                    [t('alias')]: entity.alias,
+                },
+        [entity, t],
+    )
+
     if (!entity) return null
 
     return (
-        <Dialog
+        <AlertDialog
             open={open === 'DELETE'}
-            onOpenChange={state => {
-                if (!state) setOpen(null)
-            }}
+            onOpenChange={state => setOpen(state ? 'DELETE' : null)}
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{t('delete_career')}</DialogTitle>
-                    <DialogDescription>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>{t('delete_career')}</AlertDialogTitle>
+                    <AlertDialogDescription>
                         {t('confirm_delete', { 'entity.name': entity.name })}{' '}
                         <strong>{t('is_irreversible')}</strong>
-                    </DialogDescription>
-                </DialogHeader>
-                <form
-                    action={onAction}
-                    className='flex w-full max-w-md flex-col justify-center gap-6'
-                >
-                    <Activity mode={message ? 'visible' : 'hidden'}>
-                        <MessageError>{message}</MessageError>
-                    </Activity>
-                    <CompletInput
-                        label={t('name')}
-                        disabled
-                        value={entity.name}
-                    />
-                    <CompletInput
-                        label={t('alias')}
-                        disabled
-                        value={entity.alias}
-                    />
-                    <div className='flex flex-row gap-2 *:flex-1'>
-                        <Button
-                            disabled={inTransition}
-                            onClick={e => {
-                                e.preventDefault()
-                                setOpen(null)
-                            }}
-                        >
-                            <Ban className='mr-2 h-5 w-5' />
-                            {t('cancell')}
-                        </Button>
-                        <Button
-                            type='submit'
-                            variant={'destructive'}
-                            disabled={inTransition}
-                        >
-                            <Trash2 className='mr-2 h-5 w-5' />
-                            {t('delete')}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <TableList info={info} />
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{t('cancell')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={onAction}>
+                        {t('delete')}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }

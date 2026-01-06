@@ -2,11 +2,13 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { startTransition, use, useCallback, useMemo } from 'react'
-import { deleteLaboratory } from '@/actions/laboratories.actions'
+import { deleteUserAction } from '@/actions/users.actions'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
+import { useRoles } from '@/hooks/roles.hooks'
+import { DEFAULT_ROLES } from '@/constants/client'
+import { SearchUsersContext } from '@/contexts/users.context'
 import { useRouter } from 'next/navigation'
-import { LABORATORY_TYPE } from '@/prisma/generated/enums'
-import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
+import app from '@eliyya/type-routes'
 import { TableList } from '@/components/ui/table-list'
 import {
     AlertDialog,
@@ -20,33 +22,42 @@ import {
 } from '@/components/ui/alert-dialog'
 import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
-export function DeleteDialog() {
+export function DeleteEntityDialog() {
     const [open, setOpen] = useAtom(dialogAtom)
     const entityId = useAtomValue(selectedIdAtom)
-    const { refresh, promise } = use(SearchLaboratoriesContext)
-    const { laboratories } = use(promise)
+    const { roles } = useRoles()
+    const adminRole = roles.find(r => r.name === DEFAULT_ROLES.ADMIN)
+    const { refresh, promise } = use(SearchUsersContext)
     const router = useRouter()
+    const { users } = use(promise)
 
     const entity = useMemo(() => {
-        return laboratories?.find(l => l.id === entityId)
-    }, [laboratories, entityId])
+        if (!entityId) return null
+        return users.find(user => user.id === entityId)
+    }, [entityId, users])
 
-    const onAction = useCallback(async () => {
+    const onAction = useCallback(() => {
         if (!entityId) return
         startTransition(async () => {
-            const response = await deleteLaboratory(entityId)
+            const response = await deleteUserAction(entityId)
             setOpen(null)
             if (response.status === 'success') {
                 return refresh()
             }
-            if (response.type === 'not-found') {
+            if (response.type === 'not-allowed') {
+                if (response.message === 'Unique admin cannot be deleted') {
+                    setOpen('PREVENT_ARCHIVE_ADMIN')
+                } else {
+                    toastGenericError()
+                }
+            } else if (response.type === 'not-found') {
                 refresh()
-            } else if (response.type === 'unexpected') {
-                toastGenericError()
             } else if (response.type === 'permission') {
                 toastPermissionError(response.missings)
             } else if (response.type === 'unauthorized') {
-                router.replace('/login')
+                router.replace(app.$locale.auth.login('es'))
+            } else if (response.type === 'unexpected') {
+                toastGenericError()
             }
         })
     }, [entityId, setOpen, refresh, router])
@@ -57,17 +68,13 @@ export function DeleteDialog() {
                 ({} as Record<string, string | number>)
             :   {
                     Nombre: entity.name,
-                    'Tipo de Laboratorio':
-                        entity.type === LABORATORY_TYPE.LABORATORY ?
-                            'Laboratorio'
-                        :   'Centro de Computo',
-                    'Horario de Apertura': entity.open_hour,
-                    'Horario de Cierre': entity.close_hour,
+                    Usuario: entity.username,
+                    Rol: entity.role.name,
                 },
         [entity],
     )
 
-    if (!entity) return null
+    if (!entity || !adminRole) return null
 
     return (
         <AlertDialog
@@ -76,9 +83,10 @@ export function DeleteDialog() {
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Eliminar Laboratorio</AlertDialogTitle>
+                    <AlertDialogTitle>Eliminar Usuario</AlertDialogTitle>
                     <AlertDialogDescription>
-                        ¿Está seguro de eliminar <strong>{entity.name}</strong>?
+                        ¿Está seguro de eliminar el usuario{' '}
+                        <strong>{entity.name}</strong>?
                         <strong>Esta acción es irreversible</strong>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
