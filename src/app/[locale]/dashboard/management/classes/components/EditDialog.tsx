@@ -26,7 +26,7 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
 import { useTranslations } from 'next-intl'
 import { RetornableCompletInput } from '@/components/Inputs'

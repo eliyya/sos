@@ -85,9 +85,7 @@ export function CreateSubjectDialog() {
                 } else if (res.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'invalid-input') {
-                    if (res.field === 'nc') {
-                        setErrorNc(res.message)
-                    } else if (res.field === 'firstname') {
+                    if (res.field === 'firstname') {
                         setErrorFirstname(res.message)
                     } else if (res.field === 'lastname') {
                         setErrorLastname(res.message)

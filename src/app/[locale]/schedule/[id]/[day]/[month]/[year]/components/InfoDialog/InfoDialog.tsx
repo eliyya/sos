@@ -9,7 +9,7 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import {
     modeAtom,
     eventInfoAtom,

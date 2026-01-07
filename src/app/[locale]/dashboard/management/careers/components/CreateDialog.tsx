@@ -61,8 +61,6 @@ export function CreateCareerDialog() {
                     } else if (res.field === 'alias') {
                         setErrorAlias(res.message)
                     }
-                } else if (res.type === 'already-exists') {
-                    setErrorName('Ya existe una carrera con este nombre')
                 } else if (res.type === 'unexpected') {
                     setMessage(
                         'Ha ocurrido un error inesperado, intente mas tarde',

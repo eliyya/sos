@@ -50,8 +50,8 @@ export function CreateLaboratoryDialog() {
     const onAction = useCallback(
         (data: FormData) => {
             const name = data.get('name') as string
-            const open_hour = data.get('open_hour') as string
-            const close_hour = data.get('close_hour') as string
+            const open_hour = parseInt(data.get('open_hour') as string)
+            const close_hour = parseInt(data.get('close_hour') as string)
             const type = data.get('type') as LABORATORY_TYPE
 
             startTransition(async () => {

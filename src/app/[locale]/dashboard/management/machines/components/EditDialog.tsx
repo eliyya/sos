@@ -19,7 +19,7 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { MessageError } from '@/components/Error'
 import { RetornableCompletInput } from '@/components/Inputs'
 import { RetornableCompletAsyncSelect } from '@/components/Select'

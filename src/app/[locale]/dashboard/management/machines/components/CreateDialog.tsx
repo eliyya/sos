@@ -91,23 +91,9 @@ export function CreateSubjectDialog() {
                 } else if (res.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'invalid-input') {
-                    if (res.field === 'number') {
-                        setErrorNumber(res.message)
-                    } else if (res.field === 'processor') {
-                        setErrorProcessor(res.message)
-                    } else if (res.field === 'ram') {
-                        setErrorRam(res.message)
-                    } else if (res.field === 'storage') {
-                        setErrorStorage(res.message)
-                    } else if (res.field === 'laboratory_id') {
-                        setErrorLaboratory(res.message)
-                    } else if (res.field === 'serie') {
+                    if (res.field === 'serie') {
                         setErrorSerie(res.message)
-                    } else if (res.field === 'description') {
-                        setErrorDescription(res.message)
                     }
-                } else if (res.type === 'already-exists') {
-                    setErrorNumber('Ya existe una máquina con este número')
                 } else if (res.type === 'unexpected') {
                     setMessage(
                         'Ha ocurrido un error inesperado, intente mas tarde',

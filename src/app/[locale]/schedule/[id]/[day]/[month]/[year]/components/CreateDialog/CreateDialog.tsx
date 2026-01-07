@@ -1,11 +1,15 @@
 'use client'
 
 import { useAtom } from 'jotai'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/Dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
 import { openCreateAtom } from '@/global/management-practices'
 import { CalendarDialog } from './CalendarDialog'
 import { CreateForm } from './CreateForm'
-
 
 interface CreateDialogProps {
     users: {

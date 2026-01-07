@@ -78,18 +78,6 @@ export function CreateUserDialog() {
                     setMessage('No tienes permiso para crear usuarios')
                 } else if (res.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
-                } else if (res.type === 'invalid-input') {
-                    if (res.field === 'username') {
-                        setErrorUsername(res.message)
-                    } else if (res.field === 'name') {
-                        setErrorName(res.message)
-                    } else if (res.field === 'password') {
-                        setErrorPassword(res.message)
-                    } else if (res.field === 'role_id') {
-                        setErrorRole(res.message)
-                    }
-                } else if (res.type === 'already-exists') {
-                    setErrorUsername('Este nombre de usuario ya está en uso')
                 } else if (res.type === 'unexpected') {
                     setMessage(
                         'Ha ocurrido un error inesperado, intente mas tarde',
@@ -211,7 +199,7 @@ function RoleInput() {
             <FieldLabel>Rol</FieldLabel>
             <Select name='role_id'>
                 <SelectTrigger>
-                    <SelectValue placeholder='Seleccionar rol' />
+                    <SelectValue>Seleccionar rol</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                     {roles.map(role => (

@@ -89,6 +89,7 @@ handler.set(/^\/([^/]+\/)?schedule(\/.*)?$/, async ctx => {
 })
 
 handler.use(/^\/([^/]+\/)?dashboard/, async ctx => {
+    // @ts-expect-error
     const session = await auth.api.getSession(ctx.request)
     if (!session) return ctx.redirect(app.$locale.auth.login('es'))
     const permissions = new PermissionsBitField(

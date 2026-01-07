@@ -7,7 +7,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { eventInfoAtom, reservationsAtom } from '@/global/management-practices'
 import { CompletInput } from '@/components/Inputs'
 import { Temporal } from '@js-temporal/polyfill'

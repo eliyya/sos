@@ -8,7 +8,7 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/Dialog'
+} from '@/components/ui/dialog'
 import { errorAtom } from '@/global/cc'
 import { useTranslations } from 'next-intl'
 
