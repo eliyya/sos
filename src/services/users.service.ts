@@ -61,9 +61,9 @@ export function archiveUserEffect(id: string) {
             }),
         )
         if (!user)
-            return yield* _(Effect.fail(new NotFoundError('User not found')))
+            return yield* _(Effect.fail(new NotFoundError('users.not_found')))
         if (user.status === STATUS.DELETED)
-            return yield* _(Effect.fail(new NotFoundError('User not found')))
+            return yield* _(Effect.fail(new NotFoundError('users.not_found')))
         if (user.status === STATUS.ARCHIVED) return user
 
         if (user.permissions_role.name === DEFAULT_ROLES.ADMIN) {
@@ -81,7 +81,9 @@ export function archiveUserEffect(id: string) {
             if (adminCount < 2)
                 yield* _(
                     Effect.fail(
-                        new NotAllowedError('Unique admin cannot be archived'),
+                        new NotAllowedError(
+                            'users.cannot_archive_unique_admin',
+                        ),
                     ),
                 )
         }
@@ -114,9 +116,9 @@ export function unarchiveUserEffect(id: string) {
             }),
         )
         if (!user)
-            return yield* _(Effect.fail(new NotFoundError('User not found')))
+            return yield* _(Effect.fail(new NotFoundError('users.not_found')))
         if (user.status === STATUS.DELETED)
-            return yield* _(Effect.fail(new NotFoundError('User not found')))
+            return yield* _(Effect.fail(new NotFoundError('users.not_found')))
         if (user.status === STATUS.ACTIVE) return user
 
         return yield* _(
@@ -148,9 +150,9 @@ export function deleteUserEffect(id: string) {
             }),
         )
         if (!user)
-            return yield* _(Effect.fail(new NotFoundError('User not found')))
+            return yield* _(Effect.fail(new NotFoundError('users.not_found')))
         if (user.status === STATUS.DELETED)
-            return yield* _(Effect.fail(new NotFoundError('User not found')))
+            return yield* _(Effect.fail(new NotFoundError('users.not_found')))
 
         if (user.permissions_role.name === DEFAULT_ROLES.ADMIN) {
             const adminCount = yield* _(
@@ -169,7 +171,7 @@ export function deleteUserEffect(id: string) {
             if (adminCount < 2)
                 yield* _(
                     Effect.fail(
-                        new NotAllowedError('Unique admin cannot be deleted'),
+                        new NotAllowedError('users.cannot_delete_unique_admin'),
                     ),
                 )
         }
@@ -233,7 +235,7 @@ export function editUserEffect({
             }),
         )
         if (!user)
-            return yield* _(Effect.fail(new NotFoundError('User not found')))
+            return yield* _(Effect.fail(new NotFoundError('users.not_found')))
 
         yield* _(
             Effect.tryPromise({
@@ -269,7 +271,7 @@ export function validatePasswordEffect(password: string) {
                 Effect.fail(
                     new InvalidInputError({
                         field: 'password',
-                        message: 'Password is required',
+                        message: 'validation.password_required',
                     }),
                 ),
             )
@@ -278,8 +280,7 @@ export function validatePasswordEffect(password: string) {
                 Effect.fail(
                     new InvalidInputError({
                         field: 'password',
-                        message:
-                            'Password must contain at least one uppercase letter',
+                        message: 'validation.password_uppercase',
                     }),
                 ),
             )
@@ -288,8 +289,7 @@ export function validatePasswordEffect(password: string) {
                 Effect.fail(
                     new InvalidInputError({
                         field: 'password',
-                        message:
-                            'Password must contain at least one lowercase letter',
+                        message: 'validation.password_lowercase',
                     }),
                 ),
             )
@@ -298,7 +298,7 @@ export function validatePasswordEffect(password: string) {
                 Effect.fail(
                     new InvalidInputError({
                         field: 'password',
-                        message: 'Password must contain at least one number',
+                        message: 'validation.password_number',
                     }),
                 ),
             )
@@ -307,8 +307,7 @@ export function validatePasswordEffect(password: string) {
                 Effect.fail(
                     new InvalidInputError({
                         field: 'password',
-                        message:
-                            'Password must contain at least one special character',
+                        message: 'validation.password_special',
                     }),
                 ),
             )
@@ -317,7 +316,7 @@ export function validatePasswordEffect(password: string) {
                 Effect.fail(
                     new InvalidInputError({
                         field: 'password',
-                        message: 'Password must be at least 10 characters long',
+                        message: 'validation.password_length',
                     }),
                 ),
             )

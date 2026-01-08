@@ -2,6 +2,7 @@
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { createUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,6 +40,8 @@ export function CreateUserDialog() {
     const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
+    const t = useTranslations('users')
+    const tc = useTranslations('common')
     const router = useRouter()
     const { refresh } = use(SearchUsersContext)
     const { roles } = useRoles()
@@ -58,7 +61,7 @@ export function CreateUserDialog() {
             const role_id = data.get('role_id') as string
 
             if (password !== confirmPassword) {
-                setErrorConfirmPassword('Las contraseñas no coinciden')
+                setErrorConfirmPassword(t('passwords_mismatch'))
                 return
             }
 
@@ -75,13 +78,11 @@ export function CreateUserDialog() {
                     return
                 }
                 if (res.type === 'permission') {
-                    setMessage('No tienes permiso para crear usuarios')
+                    setMessage(t('no_permission_create'))
                 } else if (res.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'unexpected') {
-                    setMessage(
-                        'Ha ocurrido un error inesperado, intente mas tarde',
-                    )
+                    setMessage(tc('unexpected_error'))
                 }
             })
         },
@@ -105,7 +106,7 @@ export function CreateUserDialog() {
             <DialogContent>
                 <form action={onAction}>
                     <DialogHeader>
-                        <DialogTitle>Crear Usuario</DialogTitle>
+                        <DialogTitle>{t('create_title')}</DialogTitle>
                     </DialogHeader>
 
                     <Activity mode={message ? 'visible' : 'hidden'}>
@@ -122,10 +123,14 @@ export function CreateUserDialog() {
 
                     <DialogFooter>
                         <DialogClose
-                            render={<Button variant='outline'>Cancel</Button>}
+                            render={
+                                <Button variant='outline'>
+                                    {tc('cancel')}
+                                </Button>
+                            }
                         />
                         <Button type='submit' disabled={inTransition}>
-                            Crear
+                            {t('create_button')}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -135,10 +140,11 @@ export function CreateUserDialog() {
 }
 
 function UsernameInput() {
+    const t = useTranslations('users')
     const error = useAtomValue(errorUsernameAtom)
     return (
         <CompletField
-            label='Nombre de Usuario'
+            label={t('username_label')}
             name='username'
             icon={AtSignIcon}
             type='text'
@@ -149,10 +155,11 @@ function UsernameInput() {
 }
 
 function NameInput() {
+    const t = useTranslations('users')
     const error = useAtomValue(errorNameAtom)
     return (
         <CompletField
-            label='Nombre Completo'
+            label={t('full_name_label')}
             name='name'
             icon={UserIcon}
             type='text'
@@ -163,10 +170,11 @@ function NameInput() {
 }
 
 function PasswordInput() {
+    const t = useTranslations('users')
     const error = useAtomValue(errorPasswordAtom)
     return (
         <CompletField
-            label='Contraseña'
+            label={t('password_label')}
             name='password'
             icon={KeyIcon}
             type='password'
@@ -177,10 +185,11 @@ function PasswordInput() {
 }
 
 function ConfirmPasswordInput() {
+    const t = useTranslations('users')
     const error = useAtomValue(errorConfirmPasswordAtom)
     return (
         <CompletField
-            label='Confirmar Contraseña'
+            label={t('confirm_password_label')}
             name='confirmPassword'
             icon={KeyIcon}
             type='password'
@@ -191,15 +200,16 @@ function ConfirmPasswordInput() {
 }
 
 function RoleInput() {
+    const t = useTranslations('users')
     const error = useAtomValue(errorRoleAtom)
     const { roles } = useRoles()
 
     return (
         <Field>
-            <FieldLabel>Rol</FieldLabel>
+            <FieldLabel>{t('role_label')}</FieldLabel>
             <Select name='role_id'>
                 <SelectTrigger>
-                    <SelectValue>Seleccionar rol</SelectValue>
+                    <SelectValue>{t('select_role')}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                     {roles.map(role => (

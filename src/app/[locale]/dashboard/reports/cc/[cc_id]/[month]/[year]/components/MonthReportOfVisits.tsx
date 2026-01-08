@@ -11,6 +11,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/Table'
+import { useTranslations } from 'next-intl'
 
 // Devuelve el número de semana dentro del mes (1 a 5)
 function getWeekOfMonth(date: Date) {
@@ -43,6 +44,7 @@ export function MonthReportOfVisits({
     ...props
 }: MonthReportOfVisitsProps) {
     const visits = use(props.data)
+    const t = useTranslations('reports')
 
     type WeeklyVisits = Record<
         string,
@@ -97,18 +99,21 @@ export function MonthReportOfVisits({
         <Card>
             <CardContent>
                 <h2 className='p-4 text-2xl font-bold tracking-tight'>
-                    Reporte de visitas del mes {selectedMonth} de {selectedYear}
+                    {t('visits_report_title', {
+                        month: selectedMonth,
+                        year: selectedYear.toString(),
+                    })}
                 </h2>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Carrera</TableHead>
-                            <TableHead>Semana 1</TableHead>
-                            <TableHead>Semana 2</TableHead>
-                            <TableHead>Semana 3</TableHead>
-                            <TableHead>Semana 4</TableHead>
-                            <TableHead>Semana 5</TableHead>
-                            <TableHead>Total</TableHead>
+                            <TableHead>{t('career')}</TableHead>
+                            <TableHead>{t('week_1')}</TableHead>
+                            <TableHead>{t('week_2')}</TableHead>
+                            <TableHead>{t('week_3')}</TableHead>
+                            <TableHead>{t('week_4')}</TableHead>
+                            <TableHead>{t('week_5')}</TableHead>
+                            <TableHead>{t('total')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -134,7 +139,7 @@ export function MonthReportOfVisits({
                     <TableFooter>
                         <TableRow className='text-center'>
                             <TableCell colSpan={6} className='text-right'>
-                                Total
+                                {t('total')}
                             </TableCell>
                             <TableCell className='text-center'>
                                 {data.reduce(

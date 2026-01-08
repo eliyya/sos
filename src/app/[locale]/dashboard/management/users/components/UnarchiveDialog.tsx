@@ -2,6 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { startTransition, use, useCallback, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { unarchiveUserAction } from '@/actions/users.actions'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { SearchUsersContext } from '@/contexts/users.context'
@@ -21,6 +22,7 @@ import {
 import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 export function UnarchiveEntityDialog() {
+    const t = useTranslations()
     const [open, setOpen] = useAtom(dialogAtom)
     const entityId = useAtomValue(selectedIdAtom)
     const { refresh, promise } = use(SearchUsersContext)
@@ -57,11 +59,11 @@ export function UnarchiveEntityDialog() {
             !entity ?
                 ({} as Record<string, string | number>)
             :   {
-                    Nombre: entity.name,
-                    Usuario: entity.username,
-                    Rol: entity.role.name,
+                    [t('users.full_name_label')]: entity.name,
+                    [t('users.username')]: entity.username,
+                    [t('users.role')]: entity.role.name,
                 },
-        [entity],
+        [entity, t],
     )
 
     if (!entity) return null
@@ -73,16 +75,18 @@ export function UnarchiveEntityDialog() {
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Desarchivar Usuario</AlertDialogTitle>
+                    <AlertDialogTitle>
+                        {t('users.unarchive_title')}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
                         ¿Está seguro de desarchivar al usuario {entity.name}?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <TableList info={info} />
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={onAction}>
-                        Continue
+                        {t('common.continue')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

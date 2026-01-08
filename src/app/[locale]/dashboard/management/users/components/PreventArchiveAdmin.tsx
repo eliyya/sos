@@ -2,6 +2,7 @@
 
 import { useAtom } from 'jotai'
 import { CheckCheckIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
@@ -13,6 +14,8 @@ import {
 import { dialogAtom } from '@/global/management.globals'
 
 export function PreventArchiveAdminDialog() {
+    const t = useTranslations('users')
+    const tc = useTranslations('common')
     const [open, setOpen] = useAtom(dialogAtom)
 
     return (
@@ -22,16 +25,12 @@ export function PreventArchiveAdminDialog() {
         >
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Parece que olvidaste algo</DialogTitle>
+                    <DialogTitle>{t('prevent_archive_title')}</DialogTitle>
                     <DialogDescription>
-                        Eres el único admin, no puedes dejar la aplicación sin
-                        administradores
+                        {t('prevent_archive_message')}
                     </DialogDescription>
                 </DialogHeader>
-                <span>
-                    Intenta dejarle la batuta a alguien más creando antes otro
-                    administrador
-                </span>
+                <span>{t('prevent_archive_suggestion')}</span>
                 <form
                     action={() => setOpen(null)}
                     className='flex w-full max-w-md flex-col justify-center gap-6'
@@ -39,7 +38,7 @@ export function PreventArchiveAdminDialog() {
                     <div className='flex flex-row gap-2 *:flex-1'>
                         <Button type='submit'>
                             <CheckCheckIcon className='mr-2 h-5 w-5' />
-                            Entendido
+                            {tc('understood')}
                         </Button>
                     </div>
                 </form>

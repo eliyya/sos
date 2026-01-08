@@ -16,6 +16,7 @@ import {
     useState,
     useTransition,
 } from 'react'
+import { useTranslations } from 'next-intl'
 import { editUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,6 +42,7 @@ const editConfirmPasswordErrorAtom = atom('')
 const passwordFocusAtom = atom(false)
 
 export function EditUserDialog() {
+    const t = useTranslations()
     const [open, setOpen] = useAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
     const entityId = useAtomValue(selectedIdAtom)
@@ -64,9 +66,11 @@ export function EditUserDialog() {
         >
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Edit @{oldUser.username}</DialogTitle>
+                    <DialogTitle>
+                        {t('users.edit_title')} @{oldUser.username}
+                    </DialogTitle>
                     <DialogDescription>
-                        Edit the user&apos;s information
+                        Editar la información del usuario @{oldUser.username}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -94,20 +98,18 @@ export function EditUserDialog() {
                                     setPasswordError(response.message)
                                 }
                             } else if (response.type === 'unexpected') {
-                                setMessage(
-                                    'Algo sucedio mal, intente nuevamente',
-                                )
+                                setMessage(t('users.unexpected_error'))
                                 setTimeout(setMessage, 5_000, '')
                                 return
                             } else if (response.type === 'permission') {
-                                setMessage('No tienes suficientes permisos')
+                                setMessage(t('users.insufficient_permissions'))
                                 setTimeout(setMessage, 5_000, '')
                                 return
                             } else if (response.type === 'unauthorized') {
                                 router.replace(app.$locale.auth.login('es'))
                                 return
                             }
-                            setMessage('Algo sucedio mal, intente nuevamente')
+                            setMessage(t('users.unexpected_error'))
                             setTimeout(setMessage, 5_000, '')
                         })
                     }}
@@ -125,7 +127,7 @@ export function EditUserDialog() {
 
                     <Button type='submit' disabled={inTransition}>
                         <SaveIcon className='mr-2 h-5 w-5' />
-                        Save
+                        {t('common.save')}
                     </Button>
                 </form>
             </DialogContent>
@@ -134,6 +136,7 @@ export function EditUserDialog() {
 }
 
 export function EditUsernameInput() {
+    const t = useTranslations()
     const entityId = useAtomValue(selectedIdAtom)
     const { promise } = use(SearchUsersContext)
     const { users } = use(promise)
@@ -149,7 +152,7 @@ export function EditUsernameInput() {
         <RetornableCompletInput
             originalValue={oldUser.username}
             required
-            label='Username'
+            label={t('users.username_label')}
             type='text'
             name='username'
             icon={AtSignIcon}
@@ -158,6 +161,7 @@ export function EditUsernameInput() {
 }
 
 export function EditRoleSelect() {
+    const t = useTranslations()
     const entityId = useAtomValue(selectedIdAtom)
     const { promise } = use(SearchUsersContext)
     const { users } = use(promise)
@@ -185,7 +189,7 @@ export function EditRoleSelect() {
 
     return (
         <RetornableCompletSelect
-            label='Rol'
+            label={t('users.role_label')}
             name='role_id'
             originalValue={originalRole}
             options={rolesOptions}
@@ -195,13 +199,14 @@ export function EditRoleSelect() {
 }
 
 export function EditPasswordInput() {
+    const t = useTranslations()
     const [password, setPassword] = useAtom(editPasswordAtom)
     const [error, setError] = useAtom(editPasswordErrorAtom)
 
     return (
         <RetornableCompletInput
             originalValue=''
-            label='Nueva contraseña'
+            label={t('users.new_password_label')}
             type='password'
             name='password'
             icon={KeyIcon}
@@ -230,6 +235,7 @@ export function EditPasswordInput() {
 }
 
 export function EditNameInput() {
+    const t = useTranslations()
     const entityId = useAtomValue(selectedIdAtom)
     const { promise } = use(SearchUsersContext)
     const { users } = use(promise)
@@ -245,7 +251,7 @@ export function EditNameInput() {
         <RetornableCompletInput
             originalValue={oldUser.name}
             required
-            label='Name'
+            label={t('users.full_name_label')}
             type='text'
             name='name'
             icon={UserIcon}
@@ -254,6 +260,7 @@ export function EditNameInput() {
 }
 
 export function ConfirmEditPasswordInput() {
+    const t = useTranslations()
     const [confirmPassword, setConfirmPassword] = useAtom(
         editConfirmPasswordAtom,
     )
@@ -265,14 +272,14 @@ export function ConfirmEditPasswordInput() {
         const handler = setTimeout(async () => {
             if (focus) return
             if (confirmPassword !== password)
-                setError('Las contraseñas no coinciden')
+                setError(t('users.passwords_mismatch'))
         }, 500)
 
         return () => clearTimeout(handler)
-    }, [confirmPassword, password, setError, focus])
+    }, [confirmPassword, password, setError, focus, t])
     return (
         <CompletInput
-            label='Confirmar contraseña'
+            label={t('users.confirm_password_label')}
             type='password'
             name='confirm-password'
             icon={KeyIcon}

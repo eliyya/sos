@@ -3,6 +3,7 @@
 import { useAtom, useAtomValue } from 'jotai'
 import { ArchiveRestoreIcon, BanIcon, TrashIcon } from 'lucide-react'
 import { startTransition, use, useCallback, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { unarchiveUserAction } from '@/actions/users.actions'
 import { Button } from '@/components/ui/button'
 import { selectedIdAtom, dialogAtom } from '@/global/management.globals'
@@ -21,6 +22,7 @@ import {
 import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 export function UnarchiveOrDeleteDialog() {
+    const t = useTranslations()
     const [open, setOpen] = useAtom(dialogAtom)
     const entityId = useAtomValue(selectedIdAtom)
     const { refresh, promise } = use(SearchUsersContext)
@@ -57,11 +59,11 @@ export function UnarchiveOrDeleteDialog() {
             !entity ?
                 ({} as Record<string, string | number>)
             :   {
-                    Nombre: entity.name,
-                    Usuario: entity.username,
-                    Rol: entity.role.name,
+                    [t('users.full_name_label')]: entity.name,
+                    [t('users.username')]: entity.username,
+                    [t('users.role')]: entity.role.name,
                 },
-        [entity],
+        [entity, t],
     )
 
     if (!entity) return null
@@ -73,10 +75,12 @@ export function UnarchiveOrDeleteDialog() {
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Usuario archivado</AlertDialogTitle>
+                    <AlertDialogTitle>
+                        {t('users.archived_user')}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
                         El usuario {entity.name} está archivado. ¿Qué desea
-                        hacer con él? <strong>{entity.name}</strong>?
+                        hacer con él?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <TableList info={info} />
@@ -87,7 +91,7 @@ export function UnarchiveOrDeleteDialog() {
                         className='flex-1'
                     >
                         <BanIcon className='mr-2 h-5 w-5' />
-                        Cancelar
+                        {t('common.cancel')}
                     </Button>
                     <Button
                         variant='default'
@@ -95,7 +99,7 @@ export function UnarchiveOrDeleteDialog() {
                         className='flex-1'
                     >
                         <ArchiveRestoreIcon className='mr-2 h-5 w-5' />
-                        Desarchivar
+                        {t('users.unarchive_title')}
                     </Button>
                     <Button
                         variant='destructive'
@@ -103,7 +107,7 @@ export function UnarchiveOrDeleteDialog() {
                         className='flex-1'
                     >
                         <TrashIcon className='mr-2 h-5 w-5' />
-                        Eliminar
+                        {t('users.delete_title')}
                     </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>

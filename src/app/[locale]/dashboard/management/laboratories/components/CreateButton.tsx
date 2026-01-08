@@ -1,12 +1,14 @@
 'use client'
 
 import { useSetAtom } from 'jotai'
+import { useTranslations } from 'next-intl'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { dialogAtom } from '@/global/management.globals'
 import { CreateLaboratoryDialog } from './CreateDialog'
 
 export function CreateButton() {
+    const t = useTranslations('laboratories')
     const openDialog = useSetAtom(dialogAtom)
 
     return (
@@ -14,7 +16,7 @@ export function CreateButton() {
             <CreateLaboratoryDialog />
             <Button onClick={() => openDialog('CREATE')}>
                 <Plus className='mr-3' />
-                Crear Laboratorio
+                {t('create_button')}
             </Button>
         </>
     )

@@ -2,6 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { startTransition, use, useCallback, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { archiveUserAction } from '@/actions/users.actions'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRoles } from '@/hooks/roles.hooks'
@@ -23,6 +24,8 @@ import {
 import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 export function ArchiveEntityDialog() {
+    const t = useTranslations('users')
+    const tc = useTranslations('common')
     const [open, setOpen] = useAtom(dialogAtom)
     const entityId = useAtomValue(selectedIdAtom)
     const { roles } = useRoles()
@@ -63,11 +66,11 @@ export function ArchiveEntityDialog() {
             !entity ?
                 ({} as Record<string, string | number>)
             :   {
-                    Nombre: entity.name,
-                    Usuario: entity.username,
-                    Rol: entity.role.name,
+                    [t('full_name_label')]: entity.name,
+                    [t('username')]: entity.username,
+                    [t('role')]: entity.role.name,
                 },
-        [entity],
+        [entity, t],
     )
 
     if (!entity || !adminRole) return null
@@ -79,17 +82,16 @@ export function ArchiveEntityDialog() {
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Archivar Usuario</AlertDialogTitle>
+                    <AlertDialogTitle>{t('archive_title')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        ¿Está seguro de archivar al usuario{' '}
-                        <strong>{entity.name}</strong>?
+                        {t('archive_confirmation', { name: entity.name })}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <TableList info={info} />
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={onAction}>
-                        Continue
+                        {tc('continue')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

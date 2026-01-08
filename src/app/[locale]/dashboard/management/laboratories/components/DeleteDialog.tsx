@@ -2,6 +2,7 @@
 
 import { useAtom, useAtomValue } from 'jotai'
 import { startTransition, use, useCallback, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { deleteLaboratory } from '@/actions/laboratories.actions'
 import { dialogAtom, selectedIdAtom } from '@/global/management.globals'
 import { useRouter } from 'next/navigation'
@@ -22,6 +23,8 @@ import {
 import { toastGenericError, toastPermissionError } from '@/components/ui/sonner'
 
 export function DeleteDialog() {
+    const t = useTranslations('laboratories')
+    const tCommon = useTranslations('common')
     const [open, setOpen] = useAtom(dialogAtom)
     const entityId = useAtomValue(selectedIdAtom)
     const { refresh, promise } = use(SearchLaboratoriesContext)
@@ -57,15 +60,15 @@ export function DeleteDialog() {
             !entity ?
                 ({} as Record<string, string | number>)
             :   {
-                    Nombre: entity.name,
-                    'Tipo de Laboratorio':
+                    [t('name_label')]: entity.name,
+                    [t('type_label')]:
                         entity.type === LABORATORY_TYPE.LABORATORY ?
-                            'Laboratorio'
-                        :   'Centro de Computo',
-                    'Horario de Apertura': entity.open_hour,
-                    'Horario de Cierre': entity.close_hour,
+                            t('laboratory_type')
+                        :   t('computer_center_type'),
+                    [t('opening_hours')]: entity.open_hour,
+                    [t('closing_hours')]: entity.close_hour,
                 },
-        [entity],
+        [entity, t],
     )
 
     if (!entity) return null
@@ -77,17 +80,17 @@ export function DeleteDialog() {
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Eliminar Laboratorio</AlertDialogTitle>
+                    <AlertDialogTitle>{t('delete_title')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        ¿Está seguro de eliminar <strong>{entity.name}</strong>?
-                        <strong>Esta acción es irreversible</strong>
+                        {t('delete_confirmation', { name: entity.name })}
+                        <strong>{tCommon('irreversible_action')}</strong>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <TableList info={info} />
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={onAction}>
-                        Continue
+                        {tCommon('continue')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

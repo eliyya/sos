@@ -13,38 +13,42 @@ import {
 } from '@/bitfields/PermissionsBitField'
 import { ConditionalLink } from '../../components/conditional-link'
 import { auth } from '@/lib/auth'
-
-// TODO traducir despues
-const stats = [
-    {
-        title: 'Estudiantes',
-        value: '45',
-        icon: UsersIcon,
-        description: 'Visitas registradas',
-        href: app.$locale.dashboard.management.students('es'),
-        permissions: PERMISSIONS_FLAGS.MANAGE_STUDENTS,
-    },
-    {
-        title: 'Maquinas',
-        value: '3',
-        icon: AlertCircleIcon,
-        description: 'Maquinas disponibles',
-        href: app.$locale.dashboard.management.machines('es'),
-        permissions: PERMISSIONS_FLAGS.MANAGE_MACHINES,
-    },
-]
+import { getTranslations } from 'next-intl/server'
 
 interface CCPageProps {
     params: Promise<{
         id: string
+        locale: string
     }>
 }
 export default async function CCPage({ params }: CCPageProps) {
+    const { id, locale } = await params
+    const t = await getTranslations('cc')
+    void locale // Evitamos warning de variable no utilizada
     const session = await auth.api.getSession()
     const permissions = new PermissionsBitField(session?.user.permissions)
-    const { id } = await params
     const cc = await db.laboratory.findUnique({ where: { id } })
     if (!cc) redirect(app.$locale.dashboard('es'))
+
+    const stats = [
+        {
+            title: t('students'),
+            value: '45',
+            icon: UsersIcon,
+            description: t('registered_visits'),
+            href: app.$locale.dashboard.management.students('es'),
+            permissions: PERMISSIONS_FLAGS.MANAGE_STUDENTS,
+        },
+        {
+            title: t('machines'),
+            value: '3',
+            icon: AlertCircleIcon,
+            description: t('available_machines'),
+            href: app.$locale.dashboard.management.machines('es'),
+            permissions: PERMISSIONS_FLAGS.MANAGE_MACHINES,
+        },
+    ]
+
     return (
         <>
             <DashboardHeader heading={`${cc.name}`} text='' />

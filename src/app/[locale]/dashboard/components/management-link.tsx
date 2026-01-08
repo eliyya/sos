@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import {
     PERMISSIONS_FLAGS,
     PermissionsBitField,
@@ -12,6 +13,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
 export function ManagementLink() {
+    const t = useTranslations('management')
     const pathname = usePathname().replace(/\/$/, '')
     const [route, setRoute] = useAtom(managementRouteSelected)
     const { data: session } = authClient.useSession()
@@ -51,7 +53,7 @@ export function ManagementLink() {
             )}
         >
             <BeakerIcon className='h-4 w-4' />
-            Gestion
+            {t('management')}
         </Link>
     )
 }

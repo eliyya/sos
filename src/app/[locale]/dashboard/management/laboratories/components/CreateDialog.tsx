@@ -2,6 +2,7 @@
 
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Activity, use, useCallback, useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { createLaboratory } from '@/actions/laboratories.actions'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,7 +28,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { Clock8Icon, MicroscopeIcon, SquarePenIcon } from 'lucide-react'
+import { Clock8Icon, SquarePenIcon } from 'lucide-react'
 
 const errorNameAtom = atom('')
 const errorOpenHourAtom = atom('')
@@ -35,6 +36,8 @@ const errorCloseHourAtom = atom('')
 const errorTypeAtom = atom('')
 
 export function CreateLaboratoryDialog() {
+    const t = useTranslations('laboratories')
+    const tCommon = useTranslations('common')
     const [open, openDialog] = useAtom(dialogAtom)
     const [message, setMessage] = useState('')
     const [inTransition, startTransition] = useTransition()
@@ -70,7 +73,7 @@ export function CreateLaboratoryDialog() {
                     setEntityToEdit(res.id)
                     openDialog('UNARCHIVE_OR_DELETE')
                 } else if (res.type === 'permission') {
-                    setMessage('No tienes permiso para crear este laboratorio')
+                    setMessage(t('no_permission_create'))
                 } else if (res.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'invalid-input') {
@@ -84,11 +87,9 @@ export function CreateLaboratoryDialog() {
                         setErrorType(res.message)
                     }
                 } else if (res.type === 'already-exists') {
-                    setErrorName('Ya existe un laboratorio con este nombre')
+                    setErrorName(t('already_exists'))
                 } else if (res.type === 'unexpected') {
-                    setMessage(
-                        'Ha ocurrido un error inesperado, intente mas tarde',
-                    )
+                    setMessage(tCommon('unexpected_error'))
                 }
             })
         },
@@ -101,6 +102,8 @@ export function CreateLaboratoryDialog() {
             setErrorOpenHour,
             setErrorCloseHour,
             setErrorType,
+            t,
+            tCommon,
         ],
     )
 
@@ -112,7 +115,7 @@ export function CreateLaboratoryDialog() {
             <DialogContent>
                 <form action={onAction}>
                     <DialogHeader>
-                        <DialogTitle>Crear Laboratorio</DialogTitle>
+                        <DialogTitle>{t('create_title')}</DialogTitle>
                     </DialogHeader>
 
                     <Activity mode={message ? 'visible' : 'hidden'}>
@@ -128,10 +131,14 @@ export function CreateLaboratoryDialog() {
 
                     <DialogFooter>
                         <DialogClose
-                            render={<Button variant='outline'>Cancel</Button>}
+                            render={
+                                <Button variant='outline'>
+                                    {tCommon('cancel')}
+                                </Button>
+                            }
                         />
                         <Button type='submit' disabled={inTransition}>
-                            Crear
+                            {tCommon('create')}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -141,10 +148,11 @@ export function CreateLaboratoryDialog() {
 }
 
 function NameInput() {
+    const t = useTranslations('laboratories')
     const error = useAtomValue(errorNameAtom)
     return (
         <CompletField
-            label='Nombre'
+            label={t('name_label')}
             name='name'
             icon={SquarePenIcon}
             type='text'
@@ -155,20 +163,21 @@ function NameInput() {
 }
 
 function TypeInput() {
+    const t = useTranslations('laboratories')
     const error = useAtomValue(errorTypeAtom)
     return (
         <Field>
-            <FieldLabel>Tipo de Laboratorio</FieldLabel>
+            <FieldLabel>{t('type_label')}</FieldLabel>
             <Select name='type' defaultValue={LABORATORY_TYPE.LABORATORY}>
                 <SelectTrigger>
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value={LABORATORY_TYPE.LABORATORY}>
-                        Laboratorio
+                        {t('laboratory_type')}
                     </SelectItem>
                     <SelectItem value={LABORATORY_TYPE.COMPUTER_CENTER}>
-                        Centro de Cómputo
+                        {t('computer_center_type')}
                     </SelectItem>
                 </SelectContent>
             </Select>
@@ -178,10 +187,11 @@ function TypeInput() {
 }
 
 function OpenHourInput() {
+    const t = useTranslations('laboratories')
     const error = useAtomValue(errorOpenHourAtom)
     return (
         <CompletField
-            label='Horario de Apertura'
+            label={t('opening_hours')}
             name='open_hour'
             icon={Clock8Icon}
             type='time'
@@ -193,10 +203,11 @@ function OpenHourInput() {
 }
 
 function CloseHourInput() {
+    const t = useTranslations('laboratories')
     const error = useAtomValue(errorCloseHourAtom)
     return (
         <CompletField
-            label='Horario de Cierre'
+            label={t('closing_hours')}
             name='close_hour'
             icon={Clock8Icon}
             type='time'

@@ -64,34 +64,30 @@ export function RegisterVisitForm(props: RegisterVisitFormProps) {
                 if (res.type === 'unauthorized') {
                     router.replace(app.$locale.auth.login('es'))
                 } else if (res.type === 'permission') {
-                    setError('No tienes permiso para registrar esta visita')
+                    setError(t('no_permission_register'))
                 } else if (res.type === 'already-archived') {
-                    setError(
-                        'Estás intentando registrar un estudiante archivado',
-                    )
+                    setError(t('archived_student_error'))
                 } else if (res.type === 'already-exists') {
-                    setError(
-                        'Estás itentando registrar a un estudiante que ya está registrado',
-                    )
+                    setError(t('already_registered_error'))
                 } else if (res.type === 'unexpected') {
-                    setError('Ocurrió un error inesperado')
+                    setError(t('unexpected_error'))
                 } else if (res.type === 'invalid-input') {
                     // TODO set errors per field
                     if (res.field === 'career_id') {
-                        setError('La carrera seleccionada no es válida')
+                        setError(t('invalid_career'))
                     } else if (res.field === 'firstname') {
-                        setError('El nombre no es válido')
+                        setError(t('invalid_name'))
                     } else if (res.field === 'lastname') {
-                        setError('El apellido no es válido')
+                        setError(t('invalid_lastname'))
                     } else if (res.field === 'semester') {
-                        setError('El semestre no es válido')
+                        setError(t('invalid_semester'))
                     } else if (res.field === 'group') {
-                        setError('El grupo no es válido')
+                        setError(t('invalid_group'))
                     }
                 }
             })
         },
-        [refreshTable, router, setError],
+        [refreshTable, router, setError, t],
     )
 
     // debounce findStudent

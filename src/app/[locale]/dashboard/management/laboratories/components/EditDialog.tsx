@@ -17,6 +17,7 @@ import {
     useState,
     useTransition,
 } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
@@ -34,12 +35,14 @@ import { useRouter } from 'next/navigation'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'
 import { Skeleton } from '@mantine/core'
 
-const labTypeLabel = {
-    [LABORATORY_TYPE.LABORATORY]: 'Laboratorio',
-    [LABORATORY_TYPE.COMPUTER_CENTER]: 'Centro de Cómputo',
+function getLabTypeLabel(t: (key: any) => string, type: LABORATORY_TYPE) {
+    return type === LABORATORY_TYPE.LABORATORY ?
+            t('laboratory_type')
+        :   t('computer_center_type')
 }
 
 export function EditDialog() {
+    const t = useTranslations('laboratories')
     const [dialogOpened, openDialog] = useAtom(dialogAtom)
 
     return (
@@ -51,9 +54,9 @@ export function EditDialog() {
         >
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Editar Laboratorio</DialogTitle>
+                    <DialogTitle>{t('edit_title')}</DialogTitle>
                     {/* <DialogDescription>
-                        Edita el laboratorio {old.name}
+                        {t('edit_description')} {old.name}
                     </DialogDescription> */}
                 </DialogHeader>
                 <Suspense fallback={<EditFormSkeleton />}>
@@ -65,6 +68,8 @@ export function EditDialog() {
 }
 
 function EditForm() {
+    const t = useTranslations('laboratories')
+    const tCommon = useTranslations('common')
     const openDialog = useSetAtom(dialogAtom)
     const [inTransition, startTransition] = useTransition()
     const [message, setMessage] = useState('')
@@ -98,25 +103,23 @@ function EditForm() {
                     openDialog(null)
                 } else {
                     if (response.type === 'already-exists') {
-                        setMessage('El laboratorio ya existe')
+                        setMessage(t('laboratory_exists'))
                     } else if (response.type === 'invalid-input') {
                         setMessage(response.message)
                     } else if (response.type === 'not-found') {
                         refresh()
                         openDialog(null)
                     } else if (response.type === 'permission') {
-                        setMessage(
-                            'No tienes permiso para editar este laboratorio',
-                        )
+                        setMessage(t('no_permission_edit'))
                     } else if (response.type === 'unauthorized') {
                         router.replace('/login')
                     } else if (response.type === 'unexpected') {
-                        setMessage('Ha ocurrido un error, intente más tarde')
+                        setMessage(tCommon('unexpected_error'))
                     }
                 }
             })
         },
-        [old, openDialog, router, refresh],
+        [old, openDialog, router, refresh, t, tCommon],
     )
 
     if (!old) return null
@@ -132,7 +135,7 @@ function EditForm() {
             <input type='hidden' value={old.id} name='id' />
             <RetornableCompletInput
                 required
-                label='Nombre'
+                label={t('name_label')}
                 type='text'
                 name='name'
                 originalValue={old.name}
@@ -140,7 +143,7 @@ function EditForm() {
             ></RetornableCompletInput>
             <RetornableCompletInput
                 required
-                label='Apertura'
+                label={t('opening')}
                 type='time'
                 name='open_hour'
                 originalValue={secondsToTime(old.open_hour * 60)}
@@ -148,34 +151,37 @@ function EditForm() {
             ></RetornableCompletInput>
             <RetornableCompletInput
                 required
-                label='Cierre'
+                label={t('closing')}
                 type='time'
                 name='close_hour'
                 originalValue={secondsToTime(old.close_hour * 60)}
                 icon={ClockIcon}
             ></RetornableCompletInput>
             <RetornableCompletSelect
-                label='Tipo de Laboratorio'
+                label={t('type_label')}
                 name='type'
                 originalValue={{
                     value: old.type,
-                    label: labTypeLabel[old.type],
+                    label: getLabTypeLabel(t, old.type),
                 }}
                 options={[
                     {
                         value: LABORATORY_TYPE.LABORATORY,
-                        label: labTypeLabel[LABORATORY_TYPE.LABORATORY],
+                        label: getLabTypeLabel(t, LABORATORY_TYPE.LABORATORY),
                     },
                     {
                         value: LABORATORY_TYPE.COMPUTER_CENTER,
-                        label: labTypeLabel[LABORATORY_TYPE.COMPUTER_CENTER],
+                        label: getLabTypeLabel(
+                            t,
+                            LABORATORY_TYPE.COMPUTER_CENTER,
+                        ),
                     },
                 ]}
                 icon={MicroscopeIcon}
             />
             <Button type='submit' disabled={inTransition}>
                 <SaveIcon className='mr-2 h-5 w-5' />
-                Save
+                {tCommon('save')}
             </Button>
         </form>
     )

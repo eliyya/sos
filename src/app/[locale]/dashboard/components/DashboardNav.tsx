@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import app from '@eliyya/type-routes'
 import {
     BeakerIcon,
@@ -51,6 +52,7 @@ interface DashboardNavProps {
 }
 
 export function DashboardNav({ className }: DashboardNavProps) {
+    const t = useTranslations('nav')
     const pathname = usePathname().replace(/\/$/, '')
 
     return (
@@ -80,14 +82,14 @@ export function DashboardNav({ className }: DashboardNavProps) {
                     )}
                 >
                     <LayoutDashboardIcon className='h-4 w-4' />
-                    Dashboard
+                    {t('dashboard')}
                 </Link>
                 <Link
                     href={'/schedule'}
                     className='hover:bg-accent text-muted-foreground flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                 >
                     <Calendar1Icon className='h-4 w-4' />
-                    Horario
+                    {t('schedule')}
                 </Link>
                 <ManagementLink />
 
@@ -121,7 +123,7 @@ export function DashboardNav({ className }: DashboardNavProps) {
                         className='text-muted-foreground hover:bg-accent my-4 flex items-center gap-3 rounded-md px-4 py-2 text-sm'
                     >
                         <LogOutIcon className='h-4 w-4' />
-                        Cerrar Sesión
+                        {t('logout')}
                     </Link>
                 </div>
             </div>

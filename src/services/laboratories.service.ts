@@ -48,7 +48,7 @@ export const createLaboratoryEffect = ({
                 Effect.fail(
                     new InvalidInputError({
                         field: 'type',
-                        message: 'Type is required',
+                        message: 'laboratories.type_required',
                     }),
                 ),
             )
@@ -60,7 +60,7 @@ export const createLaboratoryEffect = ({
                 Effect.fail(
                     new InvalidInputError({
                         field: 'type',
-                        message: 'Type is required',
+                        message: 'laboratories.type_required',
                     }),
                 ),
             )
@@ -69,7 +69,7 @@ export const createLaboratoryEffect = ({
                 Effect.fail(
                     new InvalidInputError({
                         field: 'open_hour',
-                        message: 'Hours must be positive',
+                        message: 'laboratories.hours_positive',
                     }),
                 ),
             )
@@ -78,7 +78,7 @@ export const createLaboratoryEffect = ({
                 Effect.fail(
                     new InvalidInputError({
                         field: 'close_hour',
-                        message: 'Hours must be positive',
+                        message: 'laboratories.hours_positive',
                     }),
                 ),
             )
@@ -87,7 +87,7 @@ export const createLaboratoryEffect = ({
                 Effect.fail(
                     new InvalidInputError({
                         field: 'close_hour',
-                        message: 'Close hour must be greater than open hour',
+                        message: 'laboratories.close_hour_greater',
                     }),
                 ),
             )
@@ -107,13 +107,16 @@ export const createLaboratoryEffect = ({
                     Effect.fail(
                         new AlreadyArchivedError(
                             lab.id,
-                            'Laboratory already archived',
+                            'laboratories.already_archived',
                         ),
                     ),
                 )
             return yield* _(
                 Effect.fail(
-                    new AlreadyExistsError(lab.id, 'Laboratory already exists'),
+                    new AlreadyExistsError(
+                        lab.id,
+                        'laboratories.already_exists',
+                    ),
                 ),
             )
         }
@@ -170,7 +173,7 @@ export const editLaboratoryEffect = ({
                 Effect.fail(
                     new InvalidInputError({
                         field: 'close_hour',
-                        message: 'Close hour must be greater than open hour',
+                        message: 'laboratories.close_hour_greater',
                     }),
                 ),
             )
@@ -190,7 +193,7 @@ export const editLaboratoryEffect = ({
                     Effect.fail(
                         new AlreadyExistsError(
                             exists.id,
-                            'Laboratory already exists',
+                            'laboratories.already_exists',
                         ),
                     ),
                 )

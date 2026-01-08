@@ -13,15 +13,28 @@ import {
     PermissionsBitField,
 } from '@/bitfields/PermissionsBitField'
 import { headers } from 'next/headers'
+import { getTranslations } from 'next-intl/server'
 
 import { ConditionalLink } from './components/conditional-link'
 
-export const metadata: Metadata = {
-    title: 'Panel de Administrador | ' + APP_NAME,
-    description: 'gestión de laboratorios y usuarios',
+export async function generateMetadata({
+    params: { locale },
+}: {
+    params: { locale: string }
+}) {
+    const t = await getTranslations('dashboard')
+    return {
+        title: `${t('panel_title')} | ${APP_NAME}`,
+        description: t('panel_description'),
+    }
 }
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({
+    params: { locale },
+}: {
+    params: { locale: string }
+}) {
+    const t = await getTranslations('dashboard')
     const session = await auth.api.getSession({
         headers: await headers(),
     })
@@ -79,35 +92,35 @@ export default async function AdminDashboardPage() {
     const users = await db.user.count()
     const stats = [
         {
-            title: 'Laboratorios',
+            title: t('laboratories'),
             value: labs.length,
             icon: BeakerIcon,
-            description: 'Laboratorios activos',
-            href: app.$locale.dashboard.management.laboratories('es'),
+            description: t('active_laboratories'),
+            href: app.$locale.dashboard.management.laboratories(locale),
             permissions: PERMISSIONS_FLAGS.MANAGE_LABS,
         },
         {
-            title: 'Reservas',
+            title: t('reservations'),
             value: practices,
             icon: CalendarIcon,
-            description: 'Reservas este mes',
-            href: app.$locale.schedule.null('es'),
+            description: t('reservations_this_month'),
+            href: app.$locale.schedule.null(locale),
             permissions: PERMISSIONS_FLAGS.CAN_LOGIN,
         },
         {
-            title: 'Visitas',
+            title: t('visits'),
             value: visits.length,
             icon: CalendarIcon,
-            description: 'Visitas este mes',
-            href: app.$locale.dashboard('es'),
+            description: t('visits_this_month'),
+            href: app.$locale.dashboard(locale),
             permissions: PERMISSIONS_FLAGS.CAN_LOGIN,
         },
         {
-            title: 'Usuarios',
+            title: t('users'),
             value: users,
             icon: UsersIcon,
-            description: 'Usuarios registrados',
-            href: app.$locale.dashboard.management.users('es'),
+            description: t('registered_users'),
+            href: app.$locale.dashboard.management.users(locale),
             permissions: PERMISSIONS_FLAGS.MANAGE_USERS,
         },
     ]
@@ -115,8 +128,8 @@ export default async function AdminDashboardPage() {
     return (
         <main className='flex flex-1 flex-col gap-4 p-8'>
             <DashboardHeader
-                heading='Panel de Administracion'
-                text='Gestiona laboratorio, reservas y usuarios del sistemas.'
+                heading={t('admin_panel')}
+                text={t('admin_description')}
             />
             <div className='grid gap-8'>
                 <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
@@ -150,13 +163,13 @@ export default async function AdminDashboardPage() {
                     ))}
                 </div>
                 <h2 className='text-2xl font-bold tracking-tight'>
-                    Centros de Computo
+                    {t('computer_centers')}
                 </h2>
                 <div className='grid gap-4 md:grid-cols-2'>
                     {ccs.map(CC => (
                         <ConditionalLink
                             key={CC.id}
-                            href={app.$locale.dashboard.cc.$id('es', CC.id)}
+                            href={app.$locale.dashboard.cc.$id(locale, CC.id)}
                             condition={permissions.has(
                                 PERMISSIONS_FLAGS.SESSION_CC,
                             )}
@@ -182,7 +195,7 @@ export default async function AdminDashboardPage() {
                                             }
                                         </h3>
                                         <p className='text-muted-foreground mt-1 text-xs'>
-                                            Visitas hoy
+                                            {t('visits_today')}
                                         </p>
                                     </div>
                                 </div>
