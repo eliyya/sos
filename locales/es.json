@@ -231,7 +231,11 @@
             "previous": "Anterior",
             "next": "Siguiente",
             "page": "Página {current} de {total}"
-        }
+        },
+        "type_required": "El tipo es requerido",
+        "hours_positive": "Las horas deben ser positivas",
+        "close_hour_greater": "La hora de cierre debe ser mayor que la hora de apertura",
+        "already_archived": "El laboratorio ya está archivado"
     },
     "validation": {
         "password_required": "La contraseña es requerida",
@@ -240,12 +244,6 @@
         "password_number": "La contraseña debe contener al menos un número",
         "password_special": "La contraseña debe contener al menos un carácter especial",
         "password_length": "La contraseña debe tener al menos 10 caracteres"
-    },
-    "laboratories": {
-        "type_required": "El tipo es requerido",
-        "hours_positive": "Las horas deben ser positivas",
-        "close_hour_greater": "La hora de cierre debe ser mayor que la hora de apertura",
-        "already_archived": "El laboratorio ya está archivado"
     },
     "common": {
         "name": "Nombre",

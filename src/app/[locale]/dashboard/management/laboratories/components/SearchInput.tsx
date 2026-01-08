@@ -2,7 +2,7 @@
 
 import { CornerDownLeftIcon, SearchIcon } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
-import LabeledSwitch from '@/components/Switch'
+import { LabeledSwitch } from '@/components/ui/switch'
 import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { SearchLaboratoriesContext } from '@/contexts/laboratories.context'

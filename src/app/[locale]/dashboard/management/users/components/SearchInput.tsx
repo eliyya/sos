@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { SimpleInput } from '@/components/Inputs'
-import LabeledSwitch from '@/components/Switch'
+import { LabeledSwitch } from '@/components/ui/switch'
 import { SearchUsersContext } from '@/contexts/users.context'
 import { CornerDownLeftIcon, SearchIcon } from 'lucide-react'
 import { FormEvent, use, useCallback, useEffect, useRef } from 'react'

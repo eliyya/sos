@@ -1,7 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill'
 import { LABORATORY_TYPE, STATUS } from '@/prisma/generated/browser'
 import { BeakerIcon, CalendarIcon, UsersIcon } from 'lucide-react'
-import { Metadata } from 'next'
 import { DashboardHeader } from '@/app/[locale]/dashboard/components/DashboardHeader'
 import { Card, CardContent } from '@/components/ui/card'
 import { APP_NAME } from '@/constants/client'
@@ -17,11 +16,7 @@ import { getTranslations } from 'next-intl/server'
 
 import { ConditionalLink } from './components/conditional-link'
 
-export async function generateMetadata({
-    params: { locale },
-}: {
-    params: { locale: string }
-}) {
+export async function generateMetadata() {
     const t = await getTranslations('dashboard')
     return {
         title: `${t('panel_title')} | ${APP_NAME}`,
@@ -32,7 +27,7 @@ export async function generateMetadata({
 export default async function AdminDashboardPage({
     params: { locale },
 }: {
-    params: { locale: string }
+    params: { locale: 'es' }
 }) {
     const t = await getTranslations('dashboard')
     const session = await auth.api.getSession({

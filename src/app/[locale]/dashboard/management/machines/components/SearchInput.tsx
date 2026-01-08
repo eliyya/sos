@@ -2,10 +2,10 @@
 
 import { CornerDownLeftIcon, SearchIcon } from 'lucide-react'
 import { SimpleInput } from '@/components/Inputs'
-import LabeledSwitch from '@/components/Switch'
+import { LabeledSwitch } from '@/components/ui/switch'
 import { FormEvent, use, useCallback, useEffect, useRef } from 'react'
 import { SearchMachinesContext } from '@/contexts/machines.context'
-import { Button } from '@mantine/core'
+import { Button } from '@/components/ui/button'
 
 export function Filters() {
     const { filters, changeFilters } = use(SearchMachinesContext)

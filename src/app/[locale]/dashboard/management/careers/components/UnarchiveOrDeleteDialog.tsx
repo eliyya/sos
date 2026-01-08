@@ -91,7 +91,7 @@ function UnarchiveOrDeleteDialog() {
                         className='flex-1'
                     >
                         <BanIcon className='mr-2 h-5 w-5' />
-                        {t('cancell')}
+                        {t('cancel')}
                     </Button>
                     <Button
                         variant='default'

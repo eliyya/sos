@@ -92,7 +92,7 @@ function DeleteDialog() {
                 </AlertDialogHeader>
                 <TableList info={info} />
                 <AlertDialogFooter>
-                    <AlertDialogCancel>{t('cancell')}</AlertDialogCancel>
+                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={onAction}>
                         {t('delete')}
                     </AlertDialogAction>

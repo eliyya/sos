@@ -64,8 +64,8 @@ export function ArchiveDialog() {
                         entity.type === LABORATORY_TYPE.LABORATORY ?
                             t('laboratory_type')
                         :   t('computer_center_type'),
-                    [t('opening_hours')]: entity.open_hour,
-                    [t('closing_hours')]: entity.close_hour,
+                    [t('opening')]: entity.open_hour,
+                    [t('closing')]: entity.close_hour,
                 },
         [entity, t],
     )

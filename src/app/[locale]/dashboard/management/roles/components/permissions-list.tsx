@@ -7,7 +7,7 @@ import {
     PERMISSIONS_FLAGS,
 } from '@/bitfields/PermissionsBitField'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/Switch'
+import { Switch } from '@/components/ui/switch'
 import { DEFAULT_ROLES } from '@/constants/client'
 import {
     openDeleteAtom,

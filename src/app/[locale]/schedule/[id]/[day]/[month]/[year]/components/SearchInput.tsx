@@ -29,22 +29,20 @@ export function SearchInput() {
                 Buscar Fecha
             </Label>
             <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger
-                    render={
-                        <Button
-                            variant='outline'
-                            id='date'
-                            className='w-48 justify-between font-normal'
-                        >
-                            {Temporal.PlainDate.from({
-                                year: Number(year),
-                                month: Number(month),
-                                day: Number(day),
-                            }).toLocaleString('es-MX')}
-                            <ChevronDownIcon />
-                        </Button>
-                    }
-                ></PopoverTrigger>
+                <PopoverTrigger>
+                    <Button
+                        variant='outline'
+                        id='date'
+                        className='w-48 justify-between font-normal'
+                    >
+                        {Temporal.PlainDate.from({
+                            year: Number(year),
+                            month: Number(month),
+                            day: Number(day),
+                        }).toLocaleString('es-MX')}
+                        <ChevronDownIcon />
+                    </Button>
+                </PopoverTrigger>
                 <PopoverContent
                     className='w-auto overflow-hidden p-0'
                     align='start'

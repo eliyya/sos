@@ -48,7 +48,7 @@ export function DeleteEntityDialog() {
                 return refresh()
             }
             if (res.type === 'not-allowed') {
-                if (res.message === 'Unique admin cannot be deleted') {
+                if (res.message === 'users.cannot_delete_unique_admin') {
                     setOpen('PREVENT_ARCHIVE_ADMIN')
                 } else {
                     toastGenericError()
